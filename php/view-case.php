@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <title>CMS - Home</title>
-	
+
 	<!-- Webpage Icon -->
 	<link rel="icon" href="../images/favicon.ico">
 
@@ -19,7 +19,7 @@
 
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-	
+
 	<!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
@@ -57,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Case Management System</a>
+                <a class="navbar-brand" href="home.php">Case Management System</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -213,10 +213,10 @@
                             <a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#">Active</a>
+                                    <a href="activecases.php">Active</a>
                                 </li>
                                 <li>
-                                    <a href="#">Closed</a>
+                                    <a href="closedcases.php">Closed</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
@@ -240,10 +240,10 @@
                             <!-- /.nav-second-level -->
                         </li>
 						<li>
-                            <a href="#"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+                            <a href="calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
                         </li>
 						<li>
-                            <a href="#"><i class="fa fa-users fa-fw"></i> User Management</a>
+                            <a href="usermanagement.php"><i class="fa fa-users fa-fw"></i> User Management</a>
                         </li>
                     </ul>
                 </div>
@@ -278,7 +278,7 @@
     <script src="../vendor/raphael/raphael.min.js"></script>
     <script src="../vendor/morrisjs/morris.min.js"></script>
     <script src="../data/morris-data.js"></script>
-	
+
 	<!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
@@ -295,7 +295,7 @@
         });
     });
     </script>
-	
+
 </body>
 
 </html>
