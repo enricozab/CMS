@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Home</title>
+    <title>CMS - View Case</title>
 
 	<!-- Webpage Icon -->
 	<link rel="icon" href="../images/favicon.ico">
@@ -251,14 +251,36 @@
             </div>
             <!-- /.navbar-static-side -->
         </nav>
-
+		<?php
+			$cn=$_GET['cn'];
+			$off=$_GET['off'];
+			$type=$_GET['type'];
+			$date=$_GET['date'];
+			$stat=$_GET['stat'];
+		?>
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header">Case No.: 0000001</h3>
+                    <h4 class="page-header"><b>Case No. <?php echo $cn; ?></b></h4>
+					<b>Offense:</b> <?php echo $off; ?><br>
+					<b>Type:</b> <?php echo $type; ?><br>
+					<b>Date Filed:</b> <?php echo $date; ?><br>
+					<b>Status:</b> <?php echo $stat; ?><br><br>
+					<b>Student ID No.:</b> 11530022<br>
+					<b>Student Name:</b> Enrico Miguel. M. Zabayle<br><br>
+					<b>Reported by:</b> --- <br>
+					<b>Apprehended by:</b> --- <br>
                 </div>
-                <!-- /.col-lg-12 -->
             </div>
+			<br><br><br>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<b>Details</b> &nbsp;<a href="#"><i class="fa fa-edit fa-fw"></i></a>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<p>Caught cheating by the professor during finals</p>
+				</div>
         </div>
         <!-- /#page-wrapper -->
 

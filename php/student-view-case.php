@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Home</title>
+    <title>CMS - View Case</title>
 
 	<!-- Webpage Icon -->
 	<link rel="icon" href="../images/favicon.ico">
@@ -210,9 +210,6 @@
                             <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
 						<li>
-                            <a href="#"><i class="fa fa-plus fa-fw"></i> New Case</a>
-                        </li>
-						<li>
                             <a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -222,6 +219,7 @@
                                     <a href="closedcases.php">Closed</a>
                                 </li>
                             </ul>
+                            <!-- /.nav-second-level -->
                         </li>
 						<li>
                             <a href="#"><i class="fa fa-file-text-o fa-fw"></i> Files<span class="fa arrow"></span></a>
@@ -230,6 +228,7 @@
                                     <a href="#">File 1</a>
                                 </li>
                             </ul>
+                            <!-- /.nav-second-level -->
                         </li>
 						<li>
                             <a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
@@ -238,6 +237,7 @@
                                     <a href="#">Report 1</a>
                                 </li>
                             </ul>
+                            <!-- /.nav-second-level -->
                         </li>
 						<li>
                             <a href="calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
@@ -245,185 +245,46 @@
 						<li>
                             <a href="usermanagement.php"><i class="fa fa-users fa-fw"></i> User Management</a>
                         </li>
-						<li>
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="../pages/panels-wells.html">Panels and Wells</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/buttons.html">Buttons</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/notifications.html">Notifications</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/typography.html">Typography</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/icons.html"> Icons</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/grid.html">Grid</a>
-                                </li>
-                            </ul>
-                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
             </div>
             <!-- /.navbar-static-side -->
         </nav>
-
+		<?php
+			$cn=$_GET['cn'];
+			$off=$_GET['off'];
+			$type=$_GET['type'];
+			$date=$_GET['date'];
+			$stat=$_GET['stat'];
+		?>
         <div id="page-wrapper">
             <div class="row">
-                <div class="col-lg-8">
-                    <h3 class="page-header">Dashboard</h3>
+                <div class="col-lg-6">
+                    <h4 class="page-header"><b>Case No. <?php echo $cn; ?></b></h4>
+					<b>Offense:</b> <?php echo $off; ?><br>
+					<b>Type:</b> <?php echo $type; ?><br>
+					<b>Date Filed:</b> <?php echo $date; ?><br>
+					<b>Status:</b> <?php echo $stat; ?><br><br>
+					<b>Reported by:</b> --- <br>
+					<b>Apprehended by:</b> --- <br>
                 </div>
-                <!-- /.col-lg-12 -->
-            </div>
-			<!-- rows of boxes -->
-			<div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-comments fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">26</div>
-                                    <div>New Comments!</div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-green">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-tasks fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">12</div>
-                                    <div>New Tasks!</div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-yellow">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-shopping-cart fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">124</div>
-                                    <div>New Orders!</div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-red">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-support fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">13</div>
-                                    <div>Support Tickets!</div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                    </div>
+				<div class="col-lg-6">
+                    <h4 class="page-header"><b>List of Forms</b></h4>
+					Form 1<br>
+					Form 2<br>
+					Form 3<br>
                 </div>
             </div>
-			<!-- case notification table -->
-			<div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <b>Case Notifications</b>
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
-                                <thead>
-                                    <tr>
-                                        <th>Case No.</th>
-                                        <th>Offense</th>
-                                        <th>Type</th>
-                                        <th>Date Filed</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='student-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
-                                        <td>00000001</td>
-                                        <td>Cheating</td>
-                                        <td>Major</td>
-                                        <td>10/12/2018</td>
-                                        <td>Closed</td>
-                                    </tr>
-									<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='student-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
-                                        <td>00000002</td>
-                                        <td>Left ID</td>
-                                        <td>Minor</td>
-                                        <td>10/13/2018</td>
-                                        <td>Pending</td>
-                                    </tr>
-									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=Pending';">
-                                        <td>00000003</td>
-                                        <td>Cheating</td>
-                                        <td>Major</td>
-                                        <td>10/13/2018</td>
-                                        <td>Pending</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!-- /.table-responsive -->
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
+			<br><br><br>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<b>Details</b>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<p>Caught cheating by the professor during finals</p>
+				</div>
         </div>
         <!-- /#page-wrapper -->
 
@@ -455,8 +316,8 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {
-        $('#case-notif-table').DataTable({
-            "order": [[ 0, "desc" ]]
+        $('#dataTables-example').DataTable({
+            responsive: true
         });
     });
     </script>
