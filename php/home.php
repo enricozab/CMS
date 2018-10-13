@@ -407,12 +407,12 @@
                                         <td>10/13/2018</td>
                                         <td>Pending</td>
                                     </tr>
-									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=Pending';">
+									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
                                         <td>00000003</td>
                                         <td>Cheating</td>
                                         <td>Major</td>
                                         <td>10/13/2018</td>
-                                        <td>Pending</td>
+                                        <td>For Review</td>
                                     </tr>
                                 </tbody>
                             </table>
