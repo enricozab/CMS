@@ -355,11 +355,11 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Case Notifications
+                            <b>Case Notifications</b>
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
                                 <thead>
                                     <tr>
                                         <th>Case No.</th>
@@ -370,12 +370,26 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="odd gradeX" onmouseover="this.style.cursor='pointer'" onclick="location.href='view-case.php';">
+                                    <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='view-case.php';">
                                         <td>00000001</td>
                                         <td>Cheating</td>
                                         <td>Major</td>
-                                        <td class="center">10/12/2018</td>
-                                        <td class="center">Pending</td>
+                                        <td>10/12/2018</td>
+                                        <td>Pending</td>
+                                    </tr>
+									<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='view-case.php';">
+                                        <td>00000002</td>
+                                        <td>Left ID</td>
+                                        <td>Minor</td>
+                                        <td>10/13/2018</td>
+                                        <td>Pending</td>
+                                    </tr>
+									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='view-case.php';">
+                                        <td>00000003</td>
+                                        <td>Cheating</td>
+                                        <td>Major</td>
+                                        <td>10/13/2018</td>
+                                        <td>Pending</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -419,8 +433,8 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {
-        $('#dataTables-example').DataTable({
-            responsive: true
+        $('#case-notif-table').DataTable({
+            "order": [[ 0, "desc" ]]
         });
     });
     </script>
