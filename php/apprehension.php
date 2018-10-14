@@ -266,9 +266,9 @@
 
                 <div class="col-lg-12">
 
-                  <b>Student IDN</b><br>
-                  <select id="select" class="form-control" style = "width: 100px;">
-                      <option value="" disabled selected>IDN</option>
+                  <b>Student ID No.</b><br>
+                  <select id="select" class="form-control" style = "width: 150px;">
+                      <option value="" disabled selected>Enter ID No.</option>
                       <option>12345678</option>
                       <option>11111111</option>
                       <option>12312415</option>
@@ -314,7 +314,7 @@
 
                   <br>
 
-                  <b>Complainant</b><input class="form-control" style = "width: 100px;" placeholder="Enter IDN">
+                  <b>Complainant</b><input class="form-control" style = "width: 150px;" placeholder="Enter ID No.">
 
                   <br>
 

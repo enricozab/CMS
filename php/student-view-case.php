@@ -271,7 +271,7 @@
           					<b>Type:</b> <?php echo $type; ?><br>
           					<b>Date Filed:</b> <?php echo $date; ?><br>
           					<b>Status:</b> <?php echo $stat; ?><br><br>
-          					<b>Reported by:</b> --- <br>
+          					<b>Complainant:</b> --- <br>
           					<b>Apprehended by:</b> --- <br>
                 </div>
 

@@ -272,14 +272,13 @@
           					<b>Status:</b> <?php echo $stat; ?><br><br>
           					<b>Student ID No.:</b> 11530022<br>
           					<b>Student Name:</b> Enrico Miguel. M. Zabayle<br><br>
-          					<b>Reported by:</b> --- <br>
+          					<b>Complainant:</b> --- <br>
           					<b>Apprehended by:</b> --- <br>
 
                 </div>
 
                 <div class="col-lg-6">
-
-                  <div class="panel panel-default">
+					<div class="panel panel-default">
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Updates</b>
                       </div>
@@ -294,21 +293,42 @@
                                   </div>
                                   <div id="collapseOne" class="panel-collapse collapse in">
                                       <div class="panel-body">
-                                          <div class = "col-xs-5">
+										<div class="table-responsive">
+											<table class="table">
+												<tbody>
+													<tr>
+														<td>Reviewing Forms</td>
+														<td>Carlos Garcia</td>
+														<td><i>10/14/18</i></td>
+													</tr>
+													<tr>
+														<td>Submitting Forms</td>
+														<td>Enrico Miguel M. Zabayle</td>
+														<td><i>10/13/18</i></td>
+													</tr>
+													<tr>
+														<td>Passed Alleged Case</td>
+														<td>Debbie Simon</td>
+														<td><i>10/10/18</i></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+                                          <!--<div class = "col-xs-5">
                                             Reviewing Forms<br>
                                             Submitting Forms<br>
                                             Passed Alleged Case
                                           </div>
                                           <div class = "col-xs-5">
                                             Carlos Garcia<br>
-                                            Enrico Miguel. M. Zabayle<br>
+                                            Enrico Miguel M. Zabayle<br>
                                             Debbie Simon
                                           </div>
                                           <div class = "col-xs-2">
                                             <i>10/14/18</i><br>
                                             <i>10/13/18</i><br>
                                             <i>10/10/18</i>
-                                          </div>
+                                          </div>-->
                                       </div>
                                   </div>
                               </div>
@@ -349,14 +369,18 @@
 
         <br>
 
-        <h4><b>Evidences</b></h4><br>
-        <b style = "padding-right: 5px;">Photo: </b><button type="button" class="btn btn-outline btn-info btn-xs">Add</button>
-        <b style = "padding-left: 100px; padding-right: 5px;">Text: </b> <button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-        <!--<br>
-        <button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
-
-        <br><br><br>
-
+        <h4><b>Evidence</b></h4><br>
+		<div class="row">
+			<div class="col-lg-3">
+				<b>Document/Photo:</b><input type="file">
+			</div>
+			<div class="col-lg-3">
+				<b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
+			</div>
+			<!--<br>
+			<button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
+			<br><br><br>
+		</div>
     </div>
     <!-- /#wrapper -->
 
