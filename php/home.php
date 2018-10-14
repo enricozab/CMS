@@ -209,10 +209,10 @@
                         <li>
                             <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
-						<li>
-                            <a href="#"><i class="fa fa-plus fa-fw"></i> New Case</a>
+						            <li>
+                            <a href="apprehension.php"><i class="fa fa-plus fa-fw"></i> New Case</a>
                         </li>
-						<li>
+						            <li>
                             <a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -223,7 +223,7 @@
                                 </li>
                             </ul>
                         </li>
-						<li>
+						            <li>
                             <a href="#"><i class="fa fa-file-text-o fa-fw"></i> Files<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -231,7 +231,7 @@
                                 </li>
                             </ul>
                         </li>
-						<li>
+						            <li>
                             <a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -239,13 +239,13 @@
                                 </li>
                             </ul>
                         </li>
-						<li>
+						            <li>
                             <a href="calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
                         </li>
-						<li>
+						            <li>
                             <a href="usermanagement.php"><i class="fa fa-users fa-fw"></i> User Management</a>
                         </li>
-						<li>
+					              <li>
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
