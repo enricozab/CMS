@@ -9,8 +9,11 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Bootstrap Admin Theme</title>
+    <title>CMS - Login</title>
 
+	<!-- Webpage Icon -->
+	<link rel="icon" href="../images/favicon.ico">
+	
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -33,6 +36,82 @@
 </head>
 
 <body>
+	<?php
+		session_start();
+		/*require_once('mysql_connect.php');
+		/*
+			if (isset($_SESSION['badlogin'])){
+				if ($_SESSION['badlogin']>=5)
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/blocked.php");
+			}
+		*/
+		$message = NULL;
+		if (isset($_POST['login'])){
+			//if(empty($_POST['username']) || empty($_POST['password'])){
+			if (empty($_POST['email'])){
+				$_SESSION['email']=FALSE;
+				$message.='<p>You forgot to enter your username!</p>';
+			}
+			else {
+				$_SESSION['email']=$_POST['email'];
+			}
+
+			if (empty($_POST['password'])){
+				$_SESSION['password']=FALSE;
+				$message.='<p>You forgot to enter your password!</p>';
+			}
+			else {
+				$_SESSION['password']=$_POST['password'];
+			}
+
+				/*$query='SELECT usertype, EMPID, email, emailpassword FROM EMPLOYEES WHERE username="'.$_SESSION["username"].'" AND PASSWORD = password("'.$_SESSION["password"].'")';
+				$result=mysqli_query($dbc,$query);
+				$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+
+				if (!$result) {
+					echo mysqli_error($dbc);
+				}
+				
+				$_SESSION['email'] = $row["email"];
+				$_SESSION['emailpassword'] = $row["emailpassword"];
+
+				if ($row["usertype"]==101) {
+					$_SESSION['usertype']=101;
+					$_SESSION['cashname']=$row["EMPID"];
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/cashier/cashier.php");
+				}
+				else if($row["usertype"]==102){
+					$_SESSION['usertype']=102;
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/koic/home.php");
+				}
+				else if($row["usertype"]==103){
+					$_SESSION['usertype']=103;
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/manager/home.php");
+				}
+
+				else {
+					$message.='<h5 style="color:red;text-align:center;">Your username and password didn\'t match. Please try again.</h5>';
+					if (isset($_SESSION['badlogin']))
+						$_SESSION['badlogin']++;
+					else
+						$_SESSION['badlogin']=1;
+				}*/
+			if (!isset($message)) {
+				if($_SESSION['email']=="student@dlsu.edu.ph" && $_SESSION['password']=="1234"){
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student-home.php");
+				}
+				else if($_SESSION['email']=="do@dlsu.edu.ph" && $_SESSION['password']=="1234"){
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/do-home.php");
+				}
+				else if($_SESSION['email']=="oulc@dlsu.edu.ph" && $_SESSION['password']=="1234"){
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/oulc-home.php");
+				}
+			}
+		}	
+		/*End of main Submit conditional*/
+
+		echo $message;
+	?>
 
     <div class="container">
         <div class="row">
@@ -42,7 +121,7 @@
                         <h3 class="panel-title">Please Sign In</h3>
                     </div>
                     <div class="panel-body">
-                        <form role="form">
+                        <form role="form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                             <fieldset>
                                 <div class="form-group">
                                     <input class="form-control" placeholder="E-mail" name="email" type="email" autofocus>
@@ -56,7 +135,7 @@
                                     </label>
                                 </div>
                                 <!-- Change this to a button or input when using this as a form -->
-                                <a href="home.php" class="btn btn-lg btn-success btn-block">Login</a>
+                                <button type="submit" name="login" class="btn btn-lg btn-success btn-block">Login</button>
                             </fieldset>
                         </form>
                     </div>

@@ -57,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="home.php">Case Management System</a>
+                <a class="navbar-brand" href="do-home.php">Case Management System</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -207,7 +207,7 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="do-home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
 						<li>
                             <a href="apprehension.php"><i class="fa fa-plus fa-fw"></i> New Case</a>

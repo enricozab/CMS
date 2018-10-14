@@ -57,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="home.php">Case Management System</a>
+                <a class="navbar-brand" href="oulc-home.php">Case Management System</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -207,10 +207,7 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                        </li>
-						<li>
-                            <a href="apprehension.php"><i class="fa fa-plus fa-fw"></i> New Case</a>
+                            <a href="oulc-home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
 						<li>
                             <a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
@@ -232,41 +229,7 @@
                             </ul>
                         </li>
 						<li>
-                            <a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="#">Report 1</a>
-                                </li>
-                            </ul>
-                        </li>
-						<li>
                             <a href="calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
-                        </li>
-						<li>
-                            <a href="usermanagement.php"><i class="fa fa-users fa-fw"></i> User Management</a>
-                        </li>
-					    <li>
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="../pages/panels-wells.html">Panels and Wells</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/buttons.html">Buttons</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/notifications.html">Notifications</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/typography.html">Typography</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/icons.html"> Icons</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/grid.html">Grid</a>
-                                </li>
-                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -393,21 +356,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
+                                    <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='student-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
                                         <td>00000001</td>
                                         <td>Cheating</td>
                                         <td>Major</td>
                                         <td>10/12/2018</td>
                                         <td>Closed</td>
                                     </tr>
-									<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
+									<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='student-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
                                         <td>00000002</td>
                                         <td>Left ID</td>
                                         <td>Minor</td>
                                         <td>10/13/2018</td>
                                         <td>Pending</td>
                                     </tr>
-									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
+									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='student-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
                                         <td>00000003</td>
                                         <td>Cheating</td>
                                         <td>Major</td>
