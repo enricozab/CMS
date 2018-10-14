@@ -47,8 +47,16 @@
 		*/
 		$message = NULL;
 		if (isset($_POST['login'])){
-			//if(empty($_POST['username']) || empty($_POST['password'])){
-			if (empty($_POST['email'])){
+			if(empty($_POST['email']) || empty($_POST['password'])) {
+				$_SESSION['email']=FALSE;
+				$_SESSION['password']=FALSE;
+				$message.='<p>You forgot to enter your username/password!</p>';
+			}
+			else {
+				$_SESSION['email']=$_POST['email'];
+				$_SESSION['password']=$_POST['password'];
+			}
+			/*if (empty($_POST['email'])){
 				$_SESSION['email']=FALSE;
 				$message.='<p>You forgot to enter your username!</p>';
 			}
@@ -96,6 +104,7 @@
 					else
 						$_SESSION['badlogin']=1;
 				}*/
+				
 			if (!isset($message)) {
 				if($_SESSION['email']=="student@dlsu.edu.ph" && $_SESSION['password']=="1234"){
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student-home.php");
@@ -106,19 +115,19 @@
 				else if($_SESSION['email']=="oulc@dlsu.edu.ph" && $_SESSION['password']=="1234"){
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/oulc-home.php");
 				}
+				else {
+					$message.='Your username and password didn\'t match. Please try again.';
+				}
 			}
 		}	
 		/*End of main Submit conditional*/
-
-		echo $message;
 	?>
-
     <div class="container">
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Please Sign In</h3>
+                        <h3 class="panel-title" align="center"><b>Welcome to CMS!</b></h3>
                     </div>
                     <div class="panel-body">
                         <form role="form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -142,6 +151,25 @@
                 </div>
             </div>
         </div>
+		<!-- Modal -->
+		<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Login Failed</h4>
+					</div>
+					<div class="modal-body">
+						<?php echo $message; ?>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
     </div>
 
     <!-- jQuery -->
@@ -155,7 +183,16 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-
+	
+	<script>
+	<?php
+		if (isset($message)) { ?>
+			$(document).ready(function(){
+				$("#loginModal").modal("show");
+			});
+	<?php	
+		} ?>
+	</script>
 </body>
 
 </html>
