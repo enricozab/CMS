@@ -209,6 +209,10 @@
                         <li>
                             <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
+
+                        <li>
+                            <a href="apprehension.php"><i class="fa fa-plus fa-fw"></i> New Case</a>
+                        </li>
 						<li>
                             <a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
