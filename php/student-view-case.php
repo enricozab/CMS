@@ -260,20 +260,23 @@
 		?>
         <div id="page-wrapper">
             <div class="row">
+
+                <h3 class="page-header"><b>Alleged Case No. <?php echo $cn; ?></b></h3>
+
                 <div class="col-lg-6">
-                    <h4 class="page-header"><b>Case No. <?php echo $cn; ?></b></h4>
-					<b>Offense:</b> <?php echo $off; ?><br>
-					<b>Type:</b> <?php echo $type; ?><br>
-					<b>Date Filed:</b> <?php echo $date; ?><br>
-					<b>Status:</b> <?php echo $stat; ?><br><br>
-					<b>Reported by:</b> --- <br>
-					<b>Apprehended by:</b> --- <br>
+          					<b>Offense:</b> <?php echo $off; ?><br>
+          					<b>Type:</b> <?php echo $type; ?><br>
+          					<b>Date Filed:</b> <?php echo $date; ?><br>
+          					<b>Status:</b> <?php echo $stat; ?><br><br>
+          					<b>Reported by:</b> --- <br>
+          					<b>Apprehended by:</b> --- <br>
                 </div>
-				<div class="col-lg-6">
-                    <h4 class="page-header"><b>List of Forms</b></h4>
-					Form 1<br>
-					Form 2<br>
-					Form 3<br>
+
+                <div class="col-lg-6">
+                    <h4><b>List of Forms</b></h4>
+          					Form 1<br>
+          					Form 2<br>
+          					Form 3<br>
                 </div>
             </div>
 			<br><br><br>
@@ -287,6 +290,19 @@
 				</div>
         </div>
         <!-- /#page-wrapper -->
+
+        <br>
+
+        <h4><b>Evidences</b></h4><br>
+        <b style = "padding-right: 5px;">Photo: </b><button type="button" class="btn btn-outline btn-info btn-xs">Add</button>
+        <b style = "padding-left: 100px; padding-right: 5px;">Text: </b> <button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button>
+        <b style = "padding-left: 50px;"></b>
+        <!--<button type="button" class="btn btn-info btn-sm">Upload Evidences</button>-->
+
+        <br><br><br>
+
+        <button type="button" class="btn btn-danger disabled">Appeal</button>
+        <br><br><br>
 
     </div>
     <!-- /#wrapper -->
