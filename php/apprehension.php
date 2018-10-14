@@ -42,6 +42,11 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- FOR SEARCHABLE DROP -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.jquery.min.js"></script>
+    <link rel = "stylesheet" href = "./extra-css/bootstrap-chosen.css"/>
+
 </head>
 
 <body>
@@ -259,21 +264,21 @@
             <div class="row">
                 <h3 class="page-header">Student Apprehension</h3>
 
-                <div class="col-lg-6">
+                <div class="col-lg-12">
 
                   <b>Student IDN</b><br>
                   <select id="select" class="form-control" style = "width: 100px;">
-                      <option value="" disabled selected>-</option>
+                      <option value="" disabled selected>IDN</option>
                       <option>12345678</option>
                       <option>11111111</option>
                       <option>12312415</option>
                   </select>
 
-                  <br>
+                  <br><b>Offense</b>
 
-                  <b>Offense</b>
-                  <select multiple class="form-control" style = "height: 120px;">
-                      <option>Cheating</option>
+                  <select class = "chosen-select">
+                      <option value="" disabled selected>Select Offense</option>
+                      <option value = "cheating">Cheating </option>
                       <option>Lost ID</option>
                       <option>Disrespect</option>
                       <option>Dress Code</option>
@@ -281,7 +286,45 @@
                       <option>Fraud</option>
                       <option>Fraud</option>
                       <option>Fraud</option>
+                      <option value = "other">Other</option>
                   </select>
+                  <br><div id = "content"></div>
+
+                  <script type="text/javascript">
+
+                    $('.chosen-select').chosen();
+                    $('.chosen-select').change(function() {
+                      var offense_id = $(this).val();
+
+                      if (offense_id == "other") {
+                        $('#content').append (
+
+                          "<br><b>New Offense</b> <input class='form-control' placeholder='Enter Offense That's Not In List'>"
+                        );
+                      }
+
+                      else if (offense_id == "cheating") {
+                        $('#content').append (
+                          "<br><b>Types</b> <select id='select' class='form-control' style = 'width: 300px;'><option value='' disabled selected>Types</option><option>With Kodigo</option><option>Glancing</option><option>Searching</option></select>"
+                        );
+                      }
+                    });
+
+                  </script>
+
+                  <br>
+
+                  <b>Complainant</b><input class="form-control" style = "width: 100px;" placeholder="Enter IDN">
+
+                  <br>
+
+                  <b>Details</b><textarea class="form-control" rows="3"></textarea>
+
+                  <br><br><br>
+
+                  <button type="button" class="btn btn-primary">Submit</button>
+
+                  <br><br><br>
 
                 </div>
 
