@@ -260,18 +260,78 @@
 		?>
         <div id="page-wrapper">
             <div class="row">
-                <div class="col-lg-12">
-                    <h4 class="page-header"><b>Case No. <?php echo $cn; ?></b></h4>
-					<b>Offense:</b> <?php echo $off; ?><br>
-					<b>Type:</b> <?php echo $type; ?><br>
-					<b>Date Filed:</b> <?php echo $date; ?><br>
-					<b>Status:</b> <?php echo $stat; ?><br><br>
-					<b>Student ID No.:</b> 11530022<br>
-					<b>Student Name:</b> Enrico Miguel. M. Zabayle<br><br>
-					<b>Reported by:</b> --- <br>
-					<b>Apprehended by:</b> --- <br>
+               <h3 class="page-header"><b>Alleged Case No. <?php echo $cn; ?></b></h3>
+                <div class="col-lg-6">
+
+          					<b>Offense:</b> <?php echo $off; ?><br>
+          					<b>Type:</b> <?php echo $type; ?><br>
+          					<b>Date Filed:</b> <?php echo $date; ?><br>
+          					<b>Status:</b> <?php echo $stat; ?><br><br>
+          					<b>Student ID No.:</b> 11530022<br>
+          					<b>Student Name:</b> Enrico Miguel. M. Zabayle<br><br>
+          					<b>Reported by:</b> --- <br>
+          					<b>Apprehended by:</b> --- <br>
+
                 </div>
-            </div>
+
+                <div class="col-lg-6">
+
+                  <div class="panel panel-default">
+                      <div class="panel-heading">
+                          <b style = "font-size: 17px;">Updates</b>
+                      </div>
+                      <!-- .panel-heading -->
+                      <div class="panel-body">
+                          <div class="panel-group" id="accordion">
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">Lifecycle</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseOne" class="panel-collapse collapse in">
+                                      <div class="panel-body">
+                                          <div class = "col-xs-5">
+                                            Reviewing Forms<br>
+                                            Submitting Forms<br>
+                                            Passed Alleged Case
+                                          </div>
+                                          <div class = "col-xs-5">
+                                            Carlos Garcia<br>
+                                            Enrico Miguel. M. Zabayle<br>
+                                            Debbie Simon
+                                          </div>
+                                          <div class = "col-xs-2">
+                                            <i>10/14/18</i><br>
+                                            <i>10/13/18</i><br>
+                                            <i>10/10/18</i>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style = "font-size: 15px;">Submitted Forms</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseTwo" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                          Form 1<br>
+                                          Form 2<br>
+                                          Form 3<br>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- .panel-body -->
+                  </div>
+
+                </div>
+          </div>
+
 			<br><br><br>
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -283,6 +343,16 @@
 				</div>
         </div>
         <!-- /#page-wrapper -->
+
+        <br>
+
+        <h4><b>Evidences</b></h4><br>
+        <b style = "padding-right: 5px;">Photo: </b><button type="button" class="btn btn-outline btn-info btn-xs">Add</button>
+        <b style = "padding-left: 100px; padding-right: 5px;">Text: </b> <button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
+        <!--<br>
+        <button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
+
+        <br><br><br>
 
     </div>
     <!-- /#wrapper -->
