@@ -266,13 +266,7 @@
 
                 <div class="col-lg-12">
 
-                  <b>Student IDN</b><br>
-                  <select id="select" class="form-control" style = "width: 100px;">
-                      <option value="" disabled selected>IDN</option>
-                      <option>12345678</option>
-                      <option>11111111</option>
-                      <option>12312415</option>
-                  </select>
+                  <b>Student IDN</b><input class="form-control" style = "width: 100px;" placeholder="Enter IDN">
 
                   <br><b>Offense</b>
 
