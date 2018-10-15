@@ -157,10 +157,10 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="do-home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+					<a href="faculty-home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
 				</li>
 				<li>
-					<a href="do-apprehension.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>
+					<a href="faculty-apprehension.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>
 				</li>
 			</ul>
 		</div>
