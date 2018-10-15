@@ -74,10 +74,10 @@
                 <div class="col-lg-6">
                     <h4><b>List of Forms to Fill Out</b></h4>
                     <ul>
-                      <li>Investigation Report</li>
-                      <li>Readmission to Class Slip (If Applicable)</li>
-                      <li>Academic Service Edorsement Form</li>
-                      <li>Referral Form (for OCCS, FORMS, etc.)</li>
+                      <li>Discipline Case Feedback From</li>
+                      <li>Discipline Case Investigation Evaluation</li>
+                      <li>ITEO Service Evaluation Form</li>
+                      <li>FORMS Program Registration (for ID cases)</li>
                     </ul>
                 </div>
             </div>
