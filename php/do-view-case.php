@@ -49,7 +49,7 @@
     <div id="wrapper">
 
         <?php include 'do-sidebar.php';?>
-		
+
 		<?php
 			$cn=$_GET['cn'];
 			$off=$_GET['off'];
@@ -89,42 +89,27 @@
                                   </div>
                                   <div id="collapseOne" class="panel-collapse collapse in">
                                       <div class="panel-body">
-										<div class="table-responsive">
-											<table class="table">
-												<tbody>
-													<tr>
-														<td>Reviewing Forms</td>
-														<td>Carlos Garcia</td>
-														<td><i>10/14/18</i></td>
-													</tr>
-													<tr>
-														<td>Submitting Forms</td>
-														<td>Enrico Miguel M. Zabayle</td>
-														<td><i>10/13/18</i></td>
-													</tr>
-													<tr>
-														<td>Passed Alleged Case</td>
-														<td>Debbie Simon</td>
-														<td><i>10/10/18</i></td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-                                          <!--<div class = "col-xs-5">
-                                            Reviewing Forms<br>
-                                            Submitting Forms<br>
-                                            Passed Alleged Case
-                                          </div>
-                                          <div class = "col-xs-5">
-                                            Carlos Garcia<br>
-                                            Enrico Miguel M. Zabayle<br>
-                                            Debbie Simon
-                                          </div>
-                                          <div class = "col-xs-2">
-                                            <i>10/14/18</i><br>
-                                            <i>10/13/18</i><br>
-                                            <i>10/10/18</i>
-                                          </div>-->
+                    										<div class="table-responsive">
+                    											<table class="table">
+                    												<tbody>
+                    													<tr>
+                    														<td>Reviewing Forms</td>
+                    														<td>Carlos Garcia</td>
+                    														<td><i>10/14/18</i></td>
+                    													</tr>
+                    													<tr>
+                    														<td>Submitting Forms</td>
+                    														<td>Enrico Miguel M. Zabayle</td>
+                    														<td><i>10/13/18</i></td>
+                    													</tr>
+                    													<tr>
+                    														<td>Passed Alleged Case</td>
+                    														<td>Debbie Simon</td>
+                    														<td><i>10/10/18</i></td>
+                    													</tr>
+                    												</tbody>
+                    											</table>
+                    										</div>
                                       </div>
                                   </div>
                               </div>
@@ -137,10 +122,23 @@
                                   </div>
                                   <div id="collapseTwo" class="panel-collapse collapse">
                                       <div class="panel-body">
-                                          Form 1<br>
-                                          Form 2<br>
-                                          Form 3<br>
-                                      </div>
+                                        <div class="table-responsive">
+                                          <table class="table">
+                                            <tbody>
+                                              <tr>
+                                                <td>Form 1</td>
+                                                <td><i>10/14/18</i></td>
+                                              </tr>
+                                              <tr>
+                                                <td>Form 2</td>
+                                                <td><i>10/10/18</i></td>
+                                              </tr>
+                                              <tr>
+                                                <td>Form 3</td>
+                                                <td><i>10/10/18</i></td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
                                   </div>
                               </div>
                           </div>
