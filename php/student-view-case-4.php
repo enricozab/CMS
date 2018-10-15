@@ -73,11 +73,9 @@
                 </div>
 
                 <div class="col-lg-6">
-                    <h4><b>List of Forms to Fill Out</b></h4>
+                    <h4><b>List of Forms  to Fill Out</b></h4>
                     <ul>
-                      <li>Discipline Case Feedback From</li>
-                      <li>Discipline Case Investigation Evaluation</li>
-                      <li>ITEO Service Evaluation Form</li>
+                      <li>Investigation Report</li>
                     </ul>
                 </div>
             </div>

@@ -109,10 +109,6 @@
 
                   <b>Details</b><textarea class="form-control" rows="3"></textarea>
 
-                  <br>
-
-                  <b>Comments</b><textarea class="form-control" rows="3"></textarea>
-
                   <br><br><br>
 
                   <button type="button" class="btn btn-primary">Submit</button>

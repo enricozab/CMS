@@ -77,21 +77,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
+                                    <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='faculty-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
                                         <td>00000001</td>
                                         <td>Cheating</td>
                                         <td>Major</td>
                                         <td>10/12/2018</td>
                                         <td>Closed</td>
                                     </tr>
-									<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
+									<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='faculty-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
                                         <td>00000002</td>
                                         <td>Left ID</td>
                                         <td>Minor</td>
                                         <td>10/13/2018</td>
                                         <td>Pending</td>
                                     </tr>
-									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
+									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='faculty-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
                                         <td>00000003</td>
                                         <td>Cheating</td>
                                         <td>Major</td>
