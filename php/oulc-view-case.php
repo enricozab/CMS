@@ -48,7 +48,7 @@
 
     <div id="wrapper">
 
-        <?php include 'oulc-sidebar.php';?>
+    <?php include 'do-sidebar.php';?>
 
 		<?php
 			$cn=$_GET['cn'];
@@ -59,29 +59,100 @@
 		?>
         <div id="page-wrapper">
             <div class="row">
-
-                <h3 class="page-header"><b>Alleged Case No. <?php echo $cn; ?></b></h3>
-
+               <h3 class="page-header"><b>Alleged Case No. <?php echo $cn; ?></b></h3>
                 <div class="col-lg-6">
+
           					<b>Offense:</b> <?php echo $off; ?><br>
           					<b>Type:</b> <?php echo $type; ?><br>
           					<b>Date Filed:</b> <?php echo $date; ?><br>
           					<b>Status:</b> <?php echo $stat; ?><br><br>
+          					<b>Student ID No.:</b> 11530022<br>
+          					<b>Student Name:</b> Enrico Miguel. M. Zabayle<br><br>
           					<b>Complainant:</b> --- <br>
           					<b>Apprehended by:</b> --- <br>
+
                 </div>
 
                 <div class="col-lg-6">
-                    <h4><b>List of Forms</b></h4>
-          					Form 1<br>
-          					Form 2<br>
-          					Form 3<br>
+					          <div class="panel panel-default">
+                      <div class="panel-heading">
+                          <b style = "font-size: 17px;">Updates</b>
+                      </div>
+                      <!-- .panel-heading -->
+                      <div class="panel-body">
+                          <div class="panel-group" id="accordion">
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">History</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseOne" class="panel-collapse collapse in">
+                                      <div class="panel-body">
+                    										<div class="table-responsive">
+                    											<table class="table">
+                    												<tbody>
+                    													<tr>
+                    														<td>Reviewing Forms</td>
+                    														<td>Carlos Garcia</td>
+                    														<td><i>10/14/18</i></td>
+                    													</tr>
+                    													<tr>
+                    														<td>Submitting Forms</td>
+                    														<td>Enrico Miguel M. Zabayle</td>
+                    														<td><i>10/13/18</i></td>
+                    													</tr>
+                    													<tr>
+                    														<td>Passed Alleged Case</td>
+                    														<td>Debbie Simon</td>
+                    														<td><i>10/10/18</i></td>
+                    													</tr>
+                    												</tbody>
+                    											</table>
+                    										</div>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style = "font-size: 15px;">Submitted Forms</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseTwo" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                        <div class="table-responsive">
+                                          <table class="table">
+                                            <tbody>
+                                              <tr>
+                                                <td>Form 1</td>
+                                                <td><i>10/14/18</i></td>
+                                              </tr>
+                                              <tr>
+                                                <td>Form 2</td>
+                                                <td><i>10/10/18</i></td>
+                                              </tr>
+                                              <tr>
+                                                <td>Form 3</td>
+                                                <td><i>10/10/18</i></td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- .panel-body -->
+                  </div>
                 </div>
+              </div>
             </div>
-			<br><br><br>
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<b>Details</b>
+          </div>
+			<br><br>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+					<b>Details</b> &nbsp;<a href="#"><i class="fa fa-edit fa-fw"></i></a>
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body">
@@ -92,16 +163,36 @@
 
         <br>
 
-        <h4><b>Evidences</b></h4><br>
-        <b style = "padding-right: 5px;">Photo: </b><button type="button" class="btn btn-outline btn-info btn-xs">Add</button>
-        <b style = "padding-left: 100px; padding-right: 5px;">Text: </b> <button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button>
-        <b style = "padding-left: 50px;"></b>
-        <!--<button type="button" class="btn btn-info btn-sm">Upload Evidences</button>-->
+      <h4><b>Evidence</b></h4><br>
+		  <div class="row">
+			   <div class="col-lg-3">
+				    <b>Document/Photo:</b><input type="file">
+			   </div>
+			   <div class="col-lg-3">
+				    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
+			   </div>
+			   <!--<br>
+			   <button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
+			   <br><br><br><br>
+		  </div>
 
-        <br><br><br>
+      <br>
 
-        <button type="button" class="btn btn-danger disabled">Appeal</button>
-        <br><br><br>
+      <b><i>Conduct hearing?</i></b>
+      <div class="radio">
+          <label>
+              <input type="radio" name="yesHearing" id="yesHearing" value="yes">Yes
+          </label>
+      </div>
+      <div class="radio">
+          <label>
+              <input type="radio" name="noHearing" id="noHearing" value="no">No
+          </label>
+      </div>
+      <br>
+      <button type="button" class="btn btn-outline btn-primary">Submit</button>
+
+      <br><br><br>
 
     </div>
     <!-- /#wrapper -->
@@ -129,13 +220,6 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
-    <script>
-    $(document).ready(function() {
-        $('#dataTables-example').DataTable({
-            responsive: true
-        });
-    });
-    </script>
 
 </body>
 
