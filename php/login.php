@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<!--
+student@dlsu.edu.ph
+do@dlsu.edu.ph
+oulc@dlsu.edu.ph
+
+Pass: 1234
+
+-->
+
 <html lang="en">
 
 <head>
