@@ -261,6 +261,9 @@
                 <div class="col-lg-12">
                     <h3 class="page-header">Calendar</h3>
                 </div>
+                <div>
+                  <img src="../images/calendar.png" width="1500" height="700">
+                </div>
                 <!-- /.col-lg-12 -->
             </div>
         </div>
