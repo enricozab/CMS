@@ -61,17 +61,11 @@
 
                 <div class="col-lg-12">
 
-                  <b>Student ID No.</b><br>
-                  <select id="select" class="form-control" style = "width: 150px;">
-                      <option value="" disabled selected>Enter ID No.</option>
-                      <option>12345678</option>
-                      <option>11111111</option>
-                      <option>12312415</option>
-                  </select>
+                  <b>Student ID Number</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID Number">
 
-                  <br><b>Offense</b>
+                  <br><b>Offense</b><br>
 
-                  <select class = "chosen-select">
+                  <select class = "chosen-select" style="width:200px;">
                       <option value="" disabled selected>Select Offense</option>
                       <option value = "cheating">Cheating </option>
                       <option>Lost ID</option>
@@ -109,7 +103,7 @@
 
                   <br>
 
-                  <b>Complainant</b><input class="form-control" style = "width: 150px;" placeholder="Enter ID No.">
+                  <b>Complainant</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID Number">
 
                   <br>
 

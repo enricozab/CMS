@@ -266,11 +266,11 @@
 
                 <div class="col-lg-12">
 
-                  <b>Student IDN</b><input class="form-control" style = "width: 100px;" placeholder="Enter IDN">
+                  <b>Student ID Number</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID Number">
 
-                  <br><b>Offense</b>
+                  <br><b>Offense</b><br>
 
-                  <select class = "chosen-select">
+                  <select class = "chosen-select" style="width:200px;">
                       <option value="" disabled selected>Select Offense</option>
                       <option value = "cheating">Cheating </option>
                       <option>Lost ID</option>
@@ -308,7 +308,7 @@
 
                   <br>
 
-                  <b>Complainant</b><input class="form-control" style = "width: 100px;" placeholder="Enter IDN">
+                  <b>Complainant</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID Number">
 
                   <br>
 
