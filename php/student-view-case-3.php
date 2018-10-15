@@ -69,6 +69,7 @@
           					<b>Status:</b> <?php echo $stat; ?><br><br>
           					<b>Complainant:</b> --- <br>
           					<b>Apprehended by:</b> --- <br>
+                    <b>Investigating Officer:</b> Debbie Simon <br>
                 </div>
 
                 <div class="col-lg-6">
