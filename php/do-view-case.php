@@ -11,8 +11,8 @@
 
     <title>CMS - View Case</title>
 
-	<!-- Webpage Icon -->
-	<link rel="icon" href="../images/favicon.ico">
+    <!-- Webpage Icon -->
+	  <link rel="icon" href="../images/favicon.ico">
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-	<!-- DataTables CSS -->
+	  <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
@@ -48,7 +48,7 @@
 
     <div id="wrapper">
 
-        <?php include 'do-sidebar.php';?>
+    <?php include 'do-sidebar.php';?>
 
 		<?php
 			$cn=$_GET['cn'];
@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="col-lg-6">
-					<div class="panel panel-default">
+					          <div class="panel panel-default">
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Updates</b>
                       </div>
@@ -84,7 +84,7 @@
                               <div class="panel panel-default">
                                   <div class="panel-heading">
                                       <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">Lifecycle</a>
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">History</a>
                                       </h4>
                                   </div>
                                   <div id="collapseOne" class="panel-collapse collapse in">
@@ -145,13 +145,13 @@
                       </div>
                       <!-- .panel-body -->
                   </div>
-
                 </div>
+              </div>
+            </div>
           </div>
-
-			<br><br><br>
-			<div class="panel panel-default">
-				<div class="panel-heading">
+			<br><br>
+      <div class="panel panel-default">
+        <div class="panel-heading">
 					<b>Details</b> &nbsp;<a href="#"><i class="fa fa-edit fa-fw"></i></a>
 				</div>
 				<!-- /.panel-heading -->
@@ -163,18 +163,18 @@
 
         <br>
 
-        <h4><b>Evidence</b></h4><br>
-		<div class="row">
-			<div class="col-lg-3">
-				<b>Document/Photo:</b><input type="file">
-			</div>
-			<div class="col-lg-3">
-				<b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-			</div>
-			<!--<br>
-			<button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
-			<br><br><br>
-		</div>
+      <h4><b>Evidence</b></h4><br>
+		  <div class="row">
+			   <div class="col-lg-3">
+				    <b>Document/Photo:</b><input type="file">
+			   </div>
+			   <div class="col-lg-3">
+				    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
+			   </div>
+			   <!--<br>
+			   <button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
+			   <br><br><br><br>
+		  </div>
     </div>
     <!-- /#wrapper -->
 
