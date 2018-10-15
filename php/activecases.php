@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Home</title>
+    <title>CMS - Active Cases</title>
 
 	<!-- Webpage Icon -->
 	<link rel="icon" href="../images/favicon.ico">
