@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - View Case</title>
+    <title>CMS - Home</title>
 
 	<!-- Webpage Icon -->
 	<link rel="icon" href="../images/favicon.ico">
@@ -48,62 +48,18 @@
 
     <div id="wrapper">
 
-        <?php include 'oulc-sidebar.php';?>
+      <?php include 'student-sidebar.php';?>
 
-		<?php
-			$cn=$_GET['cn'];
-			$off=$_GET['off'];
-			$type=$_GET['type'];
-			$date=$_GET['date'];
-			$stat=$_GET['stat'];
-		?>
-        <div id="page-wrapper">
-            <div class="row">
-
-                <h3 class="page-header"><b>Alleged Case No. <?php echo $cn; ?></b></h3>
-
-                <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $off; ?><br>
-          					<b>Type:</b> <?php echo $type; ?><br>
-          					<b>Date Filed:</b> <?php echo $date; ?><br>
-          					<b>Status:</b> <?php echo $stat; ?><br><br>
-          					<b>Complainant:</b> --- <br>
-          					<b>Apprehended by:</b> --- <br>
-                </div>
-
-                <div class="col-lg-6">
-                    <h4><b>List of Forms</b></h4>
-          					Form 1<br>
-          					Form 2<br>
-          					Form 3<br>
-                </div>
-            </div>
-			<br><br><br>
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<b>Details</b>
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<p>Caught cheating by the professor during finals</p>
-				</div>
+      <div id="page-wrapper">
+        <div class="row">
+          <div class="col-lg-12">
+            <h3 class="page-header">Calendar</h3>
+          </div>
+          <div>
+            <img src="../images/calendar.png" width="1500" height="700">
+          </div>
         </div>
-        <!-- /#page-wrapper -->
-
-        <br>
-
-        <h4><b>Evidences</b></h4><br>
-        <b style = "padding-right: 5px;">Photo: </b><button type="button" class="btn btn-outline btn-info btn-xs">Add</button>
-        <b style = "padding-left: 100px; padding-right: 5px;">Text: </b> <button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button>
-        <b style = "padding-left: 50px;"></b>
-        <!--<button type="button" class="btn btn-info btn-sm">Upload Evidences</button>-->
-
-        <br><br><br>
-
-        <button type="button" class="btn btn-danger disabled">Appeal</button>
-        <br><br><br>
-
-    </div>
+      </div>
     <!-- /#wrapper -->
 
     <!-- jQuery -->

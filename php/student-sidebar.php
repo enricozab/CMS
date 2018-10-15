@@ -179,7 +179,7 @@
 					</ul>
 				</li>
 				<li>
-					<a href="calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="student-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 			</ul>
 		</div>
