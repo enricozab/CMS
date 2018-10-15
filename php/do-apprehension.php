@@ -61,7 +61,7 @@
 
                 <div class="col-lg-12">
 
-                  <b>Student ID Number</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID Number">
+                  <b>Student ID No.</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID No.">
 
                   <br><b>Offense</b><br>
 
@@ -108,6 +108,10 @@
                   <br>
 
                   <b>Details</b><textarea class="form-control" rows="3"></textarea>
+
+                  <br>
+
+                  <b>Comments</b><textarea class="form-control" rows="3"></textarea>
 
                   <br><br><br>
 
