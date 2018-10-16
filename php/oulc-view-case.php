@@ -158,25 +158,11 @@
 				<div class="panel-body">
 					<p>Caught cheating by the professor during finals</p>
 				</div>
-        </div>
-        <!-- /#page-wrapper -->
+      </div>
 
-        <br>
+      <button type="button" class="btn btn-outline btn-primary">Review Evidence</button>
 
-      <h4><b>Evidence</b></h4><br>
-		  <div class="row">
-			   <div class="col-lg-3">
-				    <b>Document/Photo:</b><input type="file">
-			   </div>
-			   <div class="col-lg-3">
-				    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-			   </div>
-			   <!--<br>
-			   <button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
-			   <br><br><br><br>
-		  </div>
-
-      <br>
+      <br><br>
 
       <b><i>Conduct hearing?</i></b>
       <div class="radio">
@@ -190,7 +176,7 @@
           </label>
       </div>
       <br>
-      <button type="button" class="btn btn-outline btn-primary">Submit</button>
+      <button type="button" class="btn btn-primary">Submit</button>
 
       <br><br><br>
 

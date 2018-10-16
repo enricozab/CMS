@@ -108,9 +108,9 @@
                   <br>
 
                   <b>Details</b><textarea class="form-control" rows="3" readonly>Student cheated using a phone in GREATWK midterms exam</textarea>
-				  
+
 				  <br>
-				  
+
 				  <b>Comments</b><textarea class="form-control" rows="3" ></textarea>
                   <br><br><br>
 
