@@ -207,7 +207,7 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Notifications</a>
                         </li>
 						            <li>
                             <a href="apprehension.php"><i class="fa fa-plus fa-fw"></i> New Case</a>
