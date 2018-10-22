@@ -140,10 +140,32 @@
                                               </tr>
                                             </tbody>
                                           </table>
+                                        </div>
+                                      </div>
                                   </div>
                               </div>
-                          </div>
-                      </div>
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" style = "font-size: 15px;">Submitted Evidence</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseThree" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                        <div class="table-responsive">
+                                          <table class="table">
+                                            <tbody>
+                                              <tr>
+                                                <td>Evidence 1</td>
+                                                <td><i>10/14/18</i></td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+
                       <!-- .panel-body -->
                   </div>
                 </div>
