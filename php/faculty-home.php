@@ -53,7 +53,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-8">
-                    <h3 class="page-header">Dashboard</h3>
+                    <h3 class="page-header">Notifications</h3>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
