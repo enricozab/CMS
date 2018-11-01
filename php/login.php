@@ -22,7 +22,7 @@ Pass: 1234
 
 	<!-- Webpage Icon -->
 	<link rel="icon" href="../images/favicon.ico">
-	
+
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -88,7 +88,7 @@ Pass: 1234
 				if (!$result) {
 					echo mysqli_error($dbc);
 				}
-				
+
 				$_SESSION['email'] = $row["email"];
 				$_SESSION['emailpassword'] = $row["emailpassword"];
 
@@ -113,7 +113,7 @@ Pass: 1234
 					else
 						$_SESSION['badlogin']=1;
 				}*/
-				
+
 			if (!isset($message)) {
 				if($_SESSION['email']=="student@dlsu.edu.ph" && $_SESSION['password']=="1234"){
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student-home.php");
@@ -124,11 +124,14 @@ Pass: 1234
 				else if($_SESSION['email']=="oulc@dlsu.edu.ph" && $_SESSION['password']=="1234"){
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/oulc-home.php");
 				}
+        else if($_SESSION['email']=="faculty@dlsu.edu.ph" && $_SESSION['password']=="1234"){
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty-home.php");
+				}
 				else {
 					$message.='Your username and password didn\'t match. Please try again.';
 				}
 			}
-		}	
+		}
 		/*End of main Submit conditional*/
 	?>
     <div class="container">
@@ -192,14 +195,14 @@ Pass: 1234
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-	
+
 	<script>
 	<?php
 		if (isset($message)) { ?>
 			$(document).ready(function(){
 				$("#loginModal").modal("show");
 			});
-	<?php	
+	<?php
 		} ?>
 	</script>
 </body>

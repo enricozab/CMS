@@ -46,7 +46,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="oulc-home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+					<a href="oulc-home.php"><i class="fa fa-bell fa-fw"></i> Notifications</a>
 				</li>
 				<li>
 					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>

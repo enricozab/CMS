@@ -60,51 +60,41 @@
 			<!-- case notification table -->
 			<div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <b>Case Notifications</b>
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
-                                <thead>
-                                    <tr>
-                                        <th>Case No.</th>
-                                        <th>Offense</th>
-                                        <th>Type</th>
-                                        <th>Date Filed</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
-                                        <td>00000001</td>
-                                        <td>Cheating</td>
-                                        <td>Major</td>
-                                        <td>10/12/2018</td>
-                                        <td>Closed</td>
-                                    </tr>
-									<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
-                                        <td>00000002</td>
-                                        <td>Left ID</td>
-                                        <td>Minor</td>
-                                        <td>10/13/2018</td>
-                                        <td>Pending</td>
-                                    </tr>
-									<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
-                                        <td>00000003</td>
-                                        <td>Cheating</td>
-                                        <td>Major</td>
-                                        <td>10/13/2018</td>
-                                        <td>For Review</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!-- /.table-responsive -->
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
+                  <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
+                      <thead>
+                          <tr>
+                              <th>Case No.</th>
+                              <th>Offense</th>
+                              <th>Type</th>
+                              <th>Date Filed</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
+                              <td>00000001</td>
+                              <td>Cheating</td>
+                              <td>Major</td>
+                              <td>10/12/2018</td>
+                              <td>Closed</td>
+                          </tr>
+				                  <tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
+                              <td>00000002</td>
+                              <td>Left ID</td>
+                              <td>Minor</td>
+                              <td>10/13/2018</td>
+                              <td>Pending</td>
+                          </tr>
+				                  <tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
+                              <td>00000003</td>
+                              <td>Cheating</td>
+                              <td>Major</td>
+                              <td>10/13/2018</td>
+                              <td>For Review</td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <!-- /.table-responsive -->
                 </div>
                 <!-- /.col-lg-12 -->
             </div>

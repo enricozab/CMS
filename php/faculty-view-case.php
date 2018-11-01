@@ -70,11 +70,11 @@
 							<b>Investigating Officer:</b> <?php echo $investigating_officer; ?><br><br>
           					<!-- NOT SURE <b>Status:</b> <?php /*echo $stat; */?> -->
                 </div>
-				
+
             </div>
-			
+
 			<br>
-			
+
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<b>Details</b>
@@ -88,16 +88,18 @@
 
         <br>
 
-        <h4><b>Evidences</b></h4><br>
-        <b style = "padding-right: 5px;">Photo: </b><button type="button" class="btn btn-outline btn-info btn-xs">Add</button>
-        <b style = "padding-left: 100px; padding-right: 5px;">Text: </b> <button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button>
-        <b style = "padding-left: 50px;"></b>
-        <!--<button type="button" class="btn btn-info btn-sm">Upload Evidences</button>-->
-
-        <br><br><br>
-
-        <button type="button" class="btn btn-danger disabled">Appeal</button>
-        <br><br><br>
+        <h4><b>Evidence</b></h4><br>
+  		  <div class="row">
+  			   <div class="col-lg-3">
+  				    <b>Document/Photo:</b><input type="file">
+  			   </div>
+  			   <div class="col-lg-3">
+  				    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
+  			   </div>
+  			   <!--<br>
+  			   <button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
+  			   <br><br><br><br>
+  		  </div>
 
     </div>
     <!-- /#wrapper -->
