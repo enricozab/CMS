@@ -46,7 +46,10 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="do-home.php"><i class="fa fa-bell fa-fw"></i> Notifications</a>
+					<a href="do-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications</a>
+				</li>
+				<li>
+					<a href="do-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports</a>
 				</li>
 				<li>
 					<a href="do-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
@@ -63,7 +66,7 @@
 					</ul>
 				</li>
 				<li>
-					<a href="#"><i class="fa fa-file-text-o fa-fw"></i> Files<span class="fa arrow"></span></a>
+					<a href="#"><i class="fa fa-folder-open  fa-fw"></i> Files<span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
 						<li>
 							<a href="#">File 1</a>

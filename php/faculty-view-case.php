@@ -48,7 +48,7 @@
 
     <div id="wrapper">
 
-        <?php include 'oulc-sidebar.php';?>
+    <?php include 'faculty-sidebar.php';?>
 
 		<?php
 			$cn=$_GET['cn'];
@@ -56,7 +56,7 @@
 			$type=$_GET['type'];
 			$date=$_GET['date'];
 			$stat=$_GET['stat'];
-			$investigating_officer=$_GET['officer'];
+			//$investigating_officer=$_GET['officer'];
 		?>
         <div id="page-wrapper">
             <div class="row">
@@ -67,7 +67,7 @@
           					<b>Offense:</b> <?php echo $off; ?><br>
           					<b>Type:</b> <?php echo $type; ?><br>
           					<b>Date Filed:</b> <?php echo $date; ?><br>
-							<b>Investigating Officer:</b> <?php echo $investigating_officer; ?><br><br>
+							      <b>Investigating Officer:</b> <?php //echo $investigating_officer; ?><br><br>
           					<!-- NOT SURE <b>Status:</b> <?php /*echo $stat; */?> -->
                 </div>
 

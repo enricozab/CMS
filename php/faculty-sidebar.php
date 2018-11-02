@@ -51,7 +51,7 @@
 					<a href="faculty-home.php"><i class="fa fa-bell fa-fw"></i> Notifications</a>
 				</li>
 				<li>
-					<a href="faculty-apprehension.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>
+					<a href="faculty-report-student.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>
 				</li>
 			</ul>
 		</div>

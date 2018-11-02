@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Apprehension</title>
+    <title>CMS - Report Student</title>
 
 	<!-- Webpage Icon -->
 	<link rel="icon" href="../images/favicon.ico">
@@ -50,26 +50,38 @@
 </head>
 
 <body>
+    <?php
+      session_start();
+      require_once('./mysql_connect.php');
+
+      $message = NULL;
+  		if (isset($_POST['submit'])){
+        $query="INSERT INTO INCIDENT_REPORTS ('REPORTED_STUDENT_ID','DETAILS','COMPLAINANT','DATE_FILED','IF_NEW') VALUES ('{$_POST['studentID']}','{$_POST['details']}',1)";
+        $result=mysqli_query($dbc,$query);
+        $message = "Incident report was submitted successfully!";
+      }
+    ?>
 
     <div id="wrapper">
 
-        <?php include 'faculty-sidebar.php';?>
+        <?php include 'faculty-sidebar.php'; ?>
 
         <div id="page-wrapper">
             <div class="row">
-                <h3 class="page-header">Student Apprehension</h3>
+                <h3 class="page-header">Incident Report</h3>
 
                 <div class="col-lg-12">
+                  <form role="form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                    <b>Student ID No.</b><input name="studentID" class="form-control" style = "width: 200px;" placeholder="Enter ID No." required />
 
-                  <b>Student ID No.</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID No.">
+                    <br>
 
-                  <br>
+                    <b>Details</b><textarea name="details" class="form-control" rows="3" required></textarea>
 
-                  <b>Details</b><textarea class="form-control" rows="3"></textarea>
+                    <br><br><br>
 
-                  <br><br><br>
-
-                  <button type="button" class="btn btn-primary">Submit</button>
+                    <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+                  </form>
 
                   <br><br><br>
 
@@ -84,6 +96,23 @@
 
     </div>
     <!-- /#wrapper -->
+    <!-- Modal -->
+		<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Incident Report</b></h4>
+					</div>
+					<div class="modal-body">
+						<?php echo $message; ?>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
+    </div>
 
     <!-- jQuery -->
     <script src="../vendor/jquery/jquery.min.js"></script>
@@ -107,6 +136,15 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <script>
+  	<?php
+  		if (isset($message)) { ?>
+  			$(document).ready(function(){
+  				$("#loginModal").modal("show");
+  			});
+  	<?php
+  		} ?>
+  	</script>
 </body>
 
 </html>

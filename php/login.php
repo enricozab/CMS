@@ -47,7 +47,7 @@ Pass: 1234
 <body>
 	<?php
 		session_start();
-		/*require_once('mysql_connect.php');
+		require_once('./mysql_connect.php');
 		/*
 			if (isset($_SESSION['badlogin'])){
 				if ($_SESSION['badlogin']>=5)
@@ -115,17 +115,21 @@ Pass: 1234
 				}*/
 
 			if (!isset($message)) {
-				if($_SESSION['email']=="student@dlsu.edu.ph" && $_SESSION['password']=="1234"){
+        $query='SELECT USER_TYPE_ID FROM USERS WHERE EMAIL="'.$_SESSION["email"].'" AND PASSWORD="'.$_SESSION["password"].'"';
+        $result=mysqli_query($dbc,$query);
+        $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+        
+				if($row['USER_TYPE_ID']==1){
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student-home.php");
 				}
-				else if($_SESSION['email']=="do@dlsu.edu.ph" && $_SESSION['password']=="1234"){
+        else if($row['USER_TYPE_ID']==2){
+					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty-home.php");
+				}
+        else if($row['USER_TYPE_ID']==3){
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/do-home.php");
 				}
-				else if($_SESSION['email']=="oulc@dlsu.edu.ph" && $_SESSION['password']=="1234"){
+				else if($row['USER_TYPE_ID']==8){
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/oulc-home.php");
-				}
-        else if($_SESSION['email']=="faculty@dlsu.edu.ph" && $_SESSION['password']=="1234"){
-					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty-home.php");
 				}
 				else {
 					$message.='Your username and password didn\'t match. Please try again.';
@@ -163,25 +167,23 @@ Pass: 1234
                 </div>
             </div>
         </div>
-		<!-- Modal -->
-		<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel"><b>Login Failed</b></h4>
-					</div>
-					<div class="modal-body">
-						<?php echo $message; ?>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
-					</div>
-				</div>
-				<!-- /.modal-content -->
-			</div>
-			<!-- /.modal-dialog -->
-		</div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Login Failed</b></h4>
+          </div>
+          <div class="modal-body">
+            <?php echo $message; ?>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- jQuery -->
