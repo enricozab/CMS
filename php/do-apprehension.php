@@ -67,66 +67,57 @@
                 <h3 class="page-header">Student Apprehension</h3>
 
                 <div class="col-lg-12">
-
-                  <b>Student ID No.</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID No.">
-
-                  <br><b>Offense</b><br>
-
-                  <select class = "chosen-select" style="width:200px;">
-                      <option value="" disabled selected>Select Offense</option>
-                      <option value = "cheating">Cheating </option>
-                      <option>Lost ID</option>
-                      <option>Disrespect</option>
-                      <option>Dress Code</option>
-                      <option>Plagiarism</option>
-                      <option>Fraud</option>
-                      <option>Fraud</option>
-                      <option>Fraud</option>
-                      <option value = "other">Other</option>
-                  </select>
-                  <br><div id = "content"></div>
-
-                  <script type="text/javascript">
-
-                    $('.chosen-select').chosen();
-                    $('.chosen-select').change(function() {
-                      var offense_id = $(this).val();
-
-                      if (offense_id == "other") {
-                        $('#content').append (
-
-                          "<br><b>New Offense</b> <input class='form-control' placeholder='Enter Offense That's Not In List'>"
-                        );
-                      }
-
-                      else if (offense_id == "cheating") {
-                        $('#content').append (
-                          "<br><b>Types</b> <select id='select' class='form-control' style = 'width: 300px;'><option value='' disabled selected>Types</option><option>With Kodigo</option><option>Glancing</option><option>Searching</option></select>"
-                        );
-                      }
-                    });
-
-                  </script>
-
-                  <br>
-
-                  <b>Complainant</b><input class="form-control" style = "width: 200px;" placeholder="Enter ID Number">
-
-                  <br>
-
-                  <b>Details</b><textarea class="form-control" rows="3"></textarea>
-
+                  <?php
+                    //Gets list of offenses
+                    $query2='SELECT OFFENSE_ID, DESCRIPTION FROM REF_OFFENSES';
+                    $result2=mysqli_query($dbc,$query2);
+                    if(!$result2){
+                      echo mysqli_error($dbc);
+                    }
+                  ?>
+                  <form id="form">
+                    <div class="form-group" style='width: 200px;'>
+                      <label>Student <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No." required/>
+                    </div>
+                    <div class="form-group" style='width: 200px;'>
+                      <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="offense" class="form-control" required>
+                        <option value="" disabled selected>Select Offense</option>
+                        <?php
+                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                          echo
+                            "<option value=\"{$row2['OFFENSE_ID']}\">{$row2['DESCRIPTION']}</option>";
+                        }
+                        ?>
+                      </select>
+                    </div>
+                    <div id="other" class="form-group" style="width: 200px;" hidden>
+                      <label>If other, please specify <span style="font-weight:normal; color:red;">*</span></label>
+                      <input id="other-offense" class="form-control"></input>
+                    </div>
+                    <div id="cheat" class="form-group" style='width: 200px;' hidden>
+                      <label>Type of Cheating <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="cheat-type" class="form-control">
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="withkodigo">With Kodigo</option>
+                        <option value="glancing">Glancing</option>
+                        <option value="searching">Searching</option>
+                      </select>
+                    </div>
+                    <div class="form-group" style = "width: 200px;">
+                      <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No." required/>
+                    </div>
+                    <div class="form-group">
+                      <label>Details <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <textarea id="details" class="form-control" rows="3" required></textarea>
+  				          </div>
+                    <br><br>
+                    <button type="submit" id="apprehend" name="apprehend" class="btn btn-primary">Apprehend</button>
+                  </form>
                   <br><br><br>
-
-                  <button type="button" class="btn btn-primary">Submit</button>
-
-                  <br><br><br>
-
                 </div>
-
-                <div class="col-lg-6">
-                </div>
-                <!-- /.col-lg-12 -->
             </div>
         </div>
         <!-- /#page-wrapper -->
@@ -160,8 +151,77 @@
     $(document).ready(function() {
         <?php include 'do-notif-scripts.php'?>
     });
+
+    function isNumberKey(evt){
+      var charCode = (evt.which) ? evt.which : event.keyCode
+      if (charCode > 31 && (charCode < 48 || charCode > 57))
+          return false;
+      return true;
+    }
+
+    /*$('#offense').on('change',function() {
+      var offense_id=$(this).val();
+      if(offense_id==1) {
+        $('#other').hide();
+        $('#other-offense').attr('required','false');
+        $('#cheat').show();
+        $('#cheat-type').attr('required','true');
+      }
+      else if(offense_id==8) {
+        $('#other').show();
+        $('#other-offense').attr('required','true');
+        $('#cheat').hide();
+        $('#cheat-type').attr('required','false');
+      }
+      else{
+        $('#other').hide();
+        $('#other-offense').attr('required','false');
+        $('#cheat').hide();
+        $('#cheat-type').attr('required','false');
+      }
+    });*/
+
+    $('form').submit(function(e) {
+      e.preventDefault();
+      $.ajax({
+          url: '../ajax/do-insert-case.php',
+          type: 'POST',
+          data: {
+              incidentreportID: 0,
+              studentID: $('#studentID').val(),
+              offenseID: $('#offense').val(),
+              otherOffense: $('#other-offense').val(),
+              cheatingType: $('#cheat-type').val(),
+              complainantID: $('#complainantID').val(),
+              details: $('#details').val(),
+              comments: ""
+          },
+          success: function(msg) {
+              <?php $message="Submitted successfully!"; ?>
+              $("#alertModal").modal("show");
+          }
+      });
+      $('#form')[0].reset();
+    });
     </script>
 
+    <!-- Modal -->
+		<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
+					</div>
+					<div class="modal-body">
+						<?php echo $message; ?>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
+    </div>
 </body>
 
 </html>

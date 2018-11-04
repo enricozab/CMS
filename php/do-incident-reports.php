@@ -73,6 +73,7 @@
                               <th>Incident Report No.</th>
                               <th>Complainant</th>
                               <th>Date Filed</th>
+                              <th>Status</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -80,10 +81,11 @@
                           $query2='SELECT 	IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                                             CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
                                             DATE_FILED,
+                                            STATUS,
                                             IR.IF_NEW AS IF_NEW
-                                  FROM 	  INCIDENT_REPORTS IR
+                                  FROM 	    INCIDENT_REPORTS IR
                                   JOIN	    USERS U ON IR.COMPLAINANT_ID = U.USER_ID
-                                  ORDER BY IR.DATE_FILED';
+                                  ORDER BY  IR.DATE_FILED';
                           $result2=mysqli_query($dbc,$query2);
                           if(!$result2){
                             echo mysqli_error($dbc);
@@ -94,6 +96,7 @@
                                     <td>{$row2['INCIDENT_REPORT_ID']} <span id=\"{$row2['INCIDENT_REPORT_ID']}\" class=\"badge\"></span></td>
                                     <td>{$row2['COMPLAINANT']}</td>
                                     <td>{$row2['DATE_FILED']}</td>
+                                    <td>{$row2['STATUS']}</td>
                                     </tr>";
                             }
                           }

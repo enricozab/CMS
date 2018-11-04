@@ -89,6 +89,9 @@ Pass: 1234
           else if($_SESSION['user_type_id']==3){
   					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/do-home.php");
   				}
+          else if($_SESSION['user_type_id']==4){
+  					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/hdo-home.php");
+  				}
   				else if($_SESSION['user_type_id']==8){
   					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/oulc-home.php");
   				}

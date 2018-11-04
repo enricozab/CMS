@@ -47,10 +47,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="do-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
-				</li>
-				<li>
-					<a href="do-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge"></span></a>
+					<a href="hdo-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="do-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>

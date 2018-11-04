@@ -63,7 +63,7 @@
                       <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No." required />
                     </div>
                     <div class="form-group">
-                      <label>Details  <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <label>Details <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
                       <textarea id="details" name="details" class="form-control" rows="3" required></textarea>
                     </div>
                     <br><br>

@@ -14,7 +14,7 @@ if (!isset($_GET['irn']))
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Apprehension</title>
+    <title>CMS - Incident Report</title>
 
   	<!-- Webpage Icon -->
   	<link rel="icon" href="../images/favicon.ico">
@@ -78,6 +78,7 @@ if (!isset($_GET['irn']))
                                        IR.COMPLAINANT_ID AS COMPLAINANT_ID,
                                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
                                        DATE_FILED,
+                                       STATUS,
                                        IR.IF_NEW AS IF_NEW
                             FROM 	  	 INCIDENT_REPORTS IR
                             JOIN	     USERS U ON IR.COMPLAINANT_ID = U.USER_ID
@@ -85,6 +86,8 @@ if (!isset($_GET['irn']))
                             WHERE		   IR.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"
                             ORDER BY 	 IR.DATE_FILED';
                     $result2=mysqli_query($dbc,$query2);
+
+                    //Gets list of offenses
                     $query3='SELECT OFFENSE_ID, DESCRIPTION FROM REF_OFFENSES';
                     $result3=mysqli_query($dbc,$query3);
                     if(!$result2 && !$result3){
@@ -137,7 +140,7 @@ if (!isset($_GET['irn']))
                       <textarea id="comments" class="form-control" rows="3"></textarea>
                     </div>
                     <br><br>
-                    <button type="submit" id="apprehend" name="apprehend" class="btn btn-primary">Apprehend</button>
+                    <button type="submit" id="apprehend" onclick="ifSubmitted()" name="apprehend" class="btn btn-primary">Apprehend</button>
                   </form>
                   <br><br><br>
                   <?php
@@ -151,6 +154,22 @@ if (!isset($_GET['irn']))
                     }
 
                     include 'do-notif-queries.php';
+
+                    if($row2['STATUS']=="For review by Head of DO"){
+                      $query3='SELECT C.OFFENSE_ID AS OFFENSE_ID,
+                              			  RO.DESCRIPTION AS DESCRIPTION,
+                                      C.COMMENTS AS COMMENTS
+                              FROM 		CASES C
+                              JOIN		REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+                              WHERE   C.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"';
+                      $result3=mysqli_query($dbc,$query3);
+                      if(!$result3){
+                        echo mysqli_error($dbc);
+                      }
+                      else{
+                        $row3=mysqli_fetch_array($result3,MYSQLI_ASSOC);
+                      }
+                    }
                   ?>
                 </div>
             </div>
@@ -187,7 +206,7 @@ if (!isset($_GET['irn']))
       <?php include 'do-notif-scripts.php' ?>
     });
 
-    $('#offense').on('change',function() {
+    /*$('#offense').on('change',function() {
       var offense_id=$(this).val();
       if(offense_id==1) {
         $('#other').hide();
@@ -207,11 +226,18 @@ if (!isset($_GET['irn']))
         $('#cheat').hide();
         $('#cheat-type').attr('required','false');
       }
-    });
+    });*/
 
     $('form').submit(function(e) {
       e.preventDefault();
+      console.log(<?php echo $_GET['irn']; ?>);
+      console.log(<?php echo $row2['REPORTED_STUDENT_ID']; ?>);
+      console.log($('#offense').val());
       console.log($('#other-offense').val());
+      console.log($('#cheat-type').val());
+      console.log(<?php echo $row2['COMPLAINANT_ID']; ?>);
+      console.log("<?php echo $row2['DETAILS']; ?>");
+      console.log($('#comments').val());
       $.ajax({
           url: '../ajax/do-insert-case.php',
           type: 'POST',
@@ -223,17 +249,34 @@ if (!isset($_GET['irn']))
               cheatingType: $('#cheat-type').val(),
               complainantID: <?php echo $row2['COMPLAINANT_ID']; ?>,
               details: "<?php echo $row2['DETAILS']; ?>",
-              comments: $('#comments').val(),
-              apprehendedbyID: <?php echo $_SESSION['user_id']; ?>
+              comments: $('#comments').val()
           },
           success: function(msg) {
-              <?php $message="Submitted successfully!"; ?>
+              <?php $message="Student is apprehended"; ?>
               $("#alertModal").modal("show");
           }
       });
-      $('#form')[0].reset();
-      console.log("KALBO");
     });
+
+    //Changes button text and disabled
+    function ifSubmitted(){
+      $('#comments').attr("disabled", "disabled");
+      $('#apprehend').attr("disabled", "disabled");
+      $('#apprehend').text("Apprehended");
+      $('#offense').attr("disabled", "disabled");
+    }
+
+    <?php
+      if($row2['STATUS']=="For review by Head of DO"){ ?>
+        $('#comments').attr("disabled", "disabled");
+        $('#comments').text("<?php echo $row3['COMMENTS']; ?>");
+        $('#apprehend').attr("disabled", "disabled");
+        $('#apprehend').text("Apprehended");
+        $('#offense').attr("disabled", "disabled");
+        $('select[id=offense] > option:first-child').text('<?php echo $row3['DESCRIPTION']; ?>');
+    <?php
+      }
+    ?>
     </script>
 
     <!-- Modal -->
