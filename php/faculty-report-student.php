@@ -1,3 +1,4 @@
+<?php include 'faculty.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,26 +43,11 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- FOR SEARCHABLE DROP -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.jquery.min.js"></script>
-    <link rel = "stylesheet" href = "./extra-css/bootstrap-chosen.css"/>
 
 </head>
 
 <body>
-    <?php
-      session_start();
-      require_once('./mysql_connect.php');
-
-      $message = NULL;
-  		if (isset($_POST['submit'])){
-        $query="INSERT INTO INCIDENT_REPORTS ('REPORTED_STUDENT_ID','DETAILS','COMPLAINANT','DATE_FILED','IF_NEW') VALUES ('{$_POST['studentID']}','{$_POST['details']}',1)";
-        $result=mysqli_query($dbc,$query);
-        $message = "Incident report was submitted successfully!";
-      }
-    ?>
-
+    <?php $message = NULL ?>
     <div id="wrapper">
 
         <?php include 'faculty-sidebar.php'; ?>
@@ -71,20 +57,19 @@
                 <h3 class="page-header">Incident Report</h3>
 
                 <div class="col-lg-12">
-                  <form role="form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                    <b>Student ID No.</b><input name="studentID" class="form-control" style = "width: 200px;" placeholder="Enter ID No." required />
-
-                    <br>
-
-                    <b>Details</b><textarea name="details" class="form-control" rows="3" required></textarea>
-
-                    <br><br><br>
-
+                  <form id="form">
+                    <div class="form-group" style = "width: 200px;">
+                      <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No." required />
+                    </div>
+                    <div class="form-group">
+                      <label>Details  <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <textarea id="details" name="details" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <br><br>
                     <button type="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
-
                   <br><br><br>
-
                 </div>
 
                 <div class="col-lg-6">
@@ -96,23 +81,6 @@
 
     </div>
     <!-- /#wrapper -->
-    <!-- Modal -->
-		<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel"><b>Incident Report</b></h4>
-					</div>
-					<div class="modal-body">
-						<?php echo $message; ?>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
-					</div>
-				</div>
-			</div>
-    </div>
 
     <!-- jQuery -->
     <script src="../vendor/jquery/jquery.min.js"></script>
@@ -137,14 +105,49 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <script>
-  	<?php
-  		if (isset($message)) { ?>
-  			$(document).ready(function(){
-  				$("#loginModal").modal("show");
-  			});
-  	<?php
-  		} ?>
+    function isNumberKey(evt){
+      var charCode = (evt.which) ? evt.which : event.keyCode
+      if (charCode > 31 && (charCode < 48 || charCode > 57))
+          return false;
+      return true;
+    }
+
+    $('form').submit(function(e) {
+      e.preventDefault();
+      $.ajax({
+          url: '../ajax/faculty-insert-incident-report.php',
+          type: 'POST',
+          data: {
+              studentID: $('#studentID').val(),
+              details: $('#details').val()
+          },
+          success: function(msg) {
+              <?php $message="Submitted successfully!"; ?>
+              $("#alertModal").modal("show");
+          }
+      });
+      $('#form')[0].reset();
+    });
   	</script>
+
+    <!-- Modal -->
+		<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Incident Report</b></h4>
+					</div>
+					<div class="modal-body">
+						<?php echo $message; ?>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
+    </div>
+
 </body>
 
 </html>

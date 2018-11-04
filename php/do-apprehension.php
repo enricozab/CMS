@@ -1,3 +1,4 @@
+<?php include 'do.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,6 +51,12 @@
 </head>
 
 <body>
+
+  <?php
+    require_once('./mysql_connect.php');
+
+    include 'do-notif-queries.php'
+  ?>
 
     <div id="wrapper">
 
@@ -148,6 +155,12 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        <?php include 'do-notif-scripts.php'?>
+    });
+    </script>
 
 </body>
 

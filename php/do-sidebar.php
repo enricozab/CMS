@@ -12,6 +12,7 @@
 	<!-- /.navbar-header -->
 
 	<ul class="nav navbar-top-links navbar-right">
+		<li><b>Welcome, <?php echo $_SESSION['first_name']; ?>!</b></li>
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 				<i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
@@ -49,7 +50,7 @@
 					<a href="do-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications</a>
 				</li>
 				<li>
-					<a href="do-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports</a>
+					<a href="do-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="do-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>

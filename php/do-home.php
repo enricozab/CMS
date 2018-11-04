@@ -1,3 +1,4 @@
+<?php include 'do.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,94 +47,100 @@
 
 <body>
 
-    <div id="wrapper">
+  <?php
+    require_once('./mysql_connect.php');
 
-        <?php include 'do-sidebar.php';?>
+    include 'do-notif-queries.php'
+  ?>
 
-        <div id="page-wrapper">
-            <div class="row">
-                <div class="col-lg-8">
-                    <h3 class="page-header">Case Notifications</h3>
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
+  <div id="wrapper">
+
+    <?php include 'do-sidebar.php';?>
+
+    <div id="page-wrapper">
+      <div class="row">
+          <div class="col-lg-8">
+              <h3 class="page-header">Case Notifications</h3>
+          </div>
+          <!-- /.col-lg-12 -->
+      </div>
 			<!-- case notification table -->
 			<div class="row">
-                <div class="col-lg-12">
-                  <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
-                      <thead>
-                          <tr>
-                              <th>Case No.</th>
-                              <th>Offense</th>
-                              <th>Type</th>
-                              <th>Date Filed</th>
-                              <th>Status</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
-                              <td>00000001</td>
-                              <td>Cheating</td>
-                              <td>Major</td>
-                              <td>10/12/2018</td>
-                              <td>Closed</td>
-                          </tr>
-				                  <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
-                              <td>00000002</td>
-                              <td>Left ID</td>
-                              <td>Minor</td>
-                              <td>10/13/2018</td>
-                              <td>Pending</td>
-                          </tr>
-				                  <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
-                              <td>00000003 &nbsp;<span class="badge">NEW</span></td>
-                              <td>Cheating</td>
-                              <td>Major</td>
-                              <td>10/13/2018</td>
-                              <td>For Review</td>
-                          </tr>
-                      </tbody>
-                  </table>
-                  <!-- /.table-responsive -->
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
+        <div class="col-lg-12">
+          <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
+              <thead>
+                  <tr>
+                      <th>Case No.</th>
+                      <th>Offense</th>
+                      <th>Type</th>
+                      <th>Date Filed</th>
+                      <th>Status</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
+                      <td>00000001</td>
+                      <td>Cheating</td>
+                      <td>Major</td>
+                      <td>10/12/2018</td>
+                      <td>Closed</td>
+                  </tr>
+                  <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
+                      <td>00000002</td>
+                      <td>Left ID</td>
+                      <td>Minor</td>
+                      <td>10/13/2018</td>
+                      <td>Pending</td>
+                  </tr>
+                  <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
+                      <td>00000003 &nbsp;<span class="badge">NEW</span></td>
+                      <td>Cheating</td>
+                      <td>Major</td>
+                      <td>10/13/2018</td>
+                      <td>For Review</td>
+                  </tr>
+              </tbody>
+          </table>
+          <!-- /.table-responsive -->
         </div>
-        <!-- /#page-wrapper -->
-
+        <!-- /.col-lg-12 -->
+      </div>
     </div>
-    <!-- /#wrapper -->
+    <!-- /#page-wrapper -->
+  </div>
+  <!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
+  <!-- jQuery -->
+  <script src="../vendor/jquery/jquery.min.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+  <!-- Metis Menu Plugin JavaScript -->
+  <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
-    <!-- Morris Charts JavaScript -->
-    <script src="../vendor/raphael/raphael.min.js"></script>
-    <script src="../vendor/morrisjs/morris.min.js"></script>
-    <script src="../data/morris-data.js"></script>
+  <!-- Morris Charts JavaScript -->
+  <script src="../vendor/raphael/raphael.min.js"></script>
+  <script src="../vendor/morrisjs/morris.min.js"></script>
+  <script src="../data/morris-data.js"></script>
 
-	<!-- DataTables JavaScript -->
-    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
-    <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
+<!-- DataTables JavaScript -->
+  <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+  <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+  <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
 
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
+  <!-- Custom Theme JavaScript -->
+  <script src="../dist/js/sb-admin-2.js"></script>
 
-	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
-    <script>
-    $(document).ready(function() {
-        $('#case-notif-table').DataTable({
-            "order": [[ 0, "desc" ]]
-        });
-    });
-    </script>
+<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+  <script>
+  $(document).ready(function() {
+      $('#case-notif-table').DataTable({
+          "order": [[ 0, "desc" ]]
+      });
+      <?php include 'do-notif-scripts.php'?>
+  });
+  </script>
 
 </body>
 

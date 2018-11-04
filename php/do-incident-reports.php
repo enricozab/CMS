@@ -1,3 +1,4 @@
+<?php include 'do.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,6 +47,12 @@
 
 <body>
 
+  <?php
+    require_once('./mysql_connect.php');
+
+    include 'do-notif-queries.php'
+  ?>
+
     <div id="wrapper">
 
         <?php include 'do-sidebar.php';?>
@@ -57,8 +64,8 @@
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-			<!-- case notification table -->
-			<div class="row">
+      			<!-- case notification table -->
+      			<div class="row">
                 <div class="col-lg-12">
                   <table width="100%" class="table table-striped table-bordered table-hover" id="incident-reports-table">
                       <thead>
@@ -69,21 +76,28 @@
                           </tr>
                       </thead>
                       <tbody>
-                          <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000001&off=Cheating&type=Major&date=10/12/2018&stat=Closed';">
-                              <td>00000001</td>
-                              <td>Cheating</td>
-                              <td>10/12/2018</td>
-                          </tr>
-				                  <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
-                              <td>00000002</td>
-                              <td>Minor</td>
-                              <td>10/13/2018</td>
-                          </tr>
-				                  <tr onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
-                              <td>00000003 &nbsp;<span class="badge">NEW</span></td>
-                              <td>Cheating</td>
-                              <td>10/13/2018</td>
-                          </tr>
+                        <?php
+                          $query2='SELECT 	IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
+                                            CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
+                                            DATE_FILED,
+                                            IR.IF_NEW AS IF_NEW
+                                  FROM 	  INCIDENT_REPORTS IR
+                                  JOIN	    USERS U ON IR.COMPLAINANT_ID = U.USER_ID
+                                  ORDER BY IR.DATE_FILED';
+                          $result2=mysqli_query($dbc,$query2);
+                          if(!$result2){
+                            echo mysqli_error($dbc);
+                          }
+                          else{
+                            while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                              echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='do-view-incident-report.php?irn={$row2['INCIDENT_REPORT_ID']}'\">
+                                    <td>{$row2['INCIDENT_REPORT_ID']} <span id=\"{$row2['INCIDENT_REPORT_ID']}\" class=\"badge\"></span></td>
+                                    <td>{$row2['COMPLAINANT']}</td>
+                                    <td>{$row2['DATE_FILED']}</td>
+                                    </tr>";
+                            }
+                          }
+                        ?>
                       </tbody>
                   </table>
                   <!-- /.table-responsive -->
@@ -122,8 +136,26 @@
     <script>
     $(document).ready(function() {
         $('#incident-reports-table').DataTable({
-            "order": [[ 2, "desc" ]]
+          "order": [[ 2, "desc" ]]
         });
+
+        <?php include 'do-notif-scripts.php' ?>
+
+        <?php
+        $result2=mysqli_query($dbc,$query2);
+        if(!$result2){
+          echo mysqli_error($dbc);
+        }
+        else{
+          while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+            if($row2['IF_NEW']){ ?>
+              $('<?php echo "#".$row2['INCIDENT_REPORT_ID'] ?>').text('NEW');
+            <?php }
+            else{ ?>
+              $('<?php echo "#".$row2['INCIDENT_REPORT_ID'] ?>').text('');
+            <?php }
+          }
+        } ?>
     });
     </script>
 

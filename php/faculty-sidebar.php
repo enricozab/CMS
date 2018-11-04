@@ -12,7 +12,7 @@
 	<!-- /.navbar-header -->
 
 	<ul class="nav navbar-top-links navbar-right">
-
+		<li><b>Welcome, <?php echo $_SESSION['first_name']; ?>!</b></li>
 		<!-- /.dropdown -->
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -48,7 +48,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="faculty-home.php"><i class="fa fa-bell fa-fw"></i> Notifications</a>
+					<a href="faculty-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications</a>
 				</li>
 				<li>
 					<a href="faculty-report-student.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>

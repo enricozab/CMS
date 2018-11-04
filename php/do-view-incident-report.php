@@ -1,3 +1,8 @@
+<?php include 'do.php' ?>
+<?php
+if (!isset($_GET['irn']))
+    header("Location: http://".$_SERVER['HTTP_HOST']."/cms/php/do-home.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,8 +16,8 @@
 
     <title>CMS - Apprehension</title>
 
-	<!-- Webpage Icon -->
-	<link rel="icon" href="../images/favicon.ico">
+  	<!-- Webpage Icon -->
+  	<link rel="icon" href="../images/favicon.ico">
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -20,7 +25,7 @@
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-	<!-- DataTables CSS -->
+	  <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
@@ -42,87 +47,135 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- FOR SEARCHABLE DROP -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- FOR SEARCHABLE DROP-->
+    <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.jquery.min.js"></script>
-    <link rel = "stylesheet" href = "./extra-css/bootstrap-chosen.css"/>
+    <link rel="stylesheet" href ="./extra-css/bootstrap-chosen.css"/>
 
 </head>
 
 <body>
 
+  <?php
+    require_once('./mysql_connect.php');
+  ?>
+
     <div id="wrapper">
 
-        <?php include 'do-sidebar.php';?>
+        <?php include 'do-sidebar.php'; ?>
 
         <div id="page-wrapper">
             <div class="row">
-                <h3 class="page-header">View Incident Report</h3>
+                <h3 class="page-header">Incident Report No.: <?php echo $_GET['irn']; ?></h3>
 
                 <div class="col-lg-12">
-
-                  <b>Student</b><input class="form-control" style = "width: 300px;" value="11533758 :  Jacqueline Del Rosario" readonly>
-
-                  <br><b>Offense</b><br>
-
-                  <select class = "chosen-select" style="width:300px;">
-                      <option value="" disabled selected>Select Offense</option>
-                      <option value = "cheating">Cheating </option>
-                      <option>Lost ID</option>
-                      <option>Disrespect</option>
-                      <option>Dress Code</option>
-                      <option>Plagiarism</option>
-                      <option>Fraud</option>
-                      <option>Fraud</option>
-                      <option>Fraud</option>
-                      <option value = "other">Other</option>
-                  </select>
-                  <br><div id = "content"></div>
-
-                  <script type="text/javascript">
-
-                    $('.chosen-select').chosen();
-                    $('.chosen-select').change(function() {
-                      var offense_id = $(this).val();
-
-                      if (offense_id == "other") {
-                        $('#content').append (
-
-                          "<br><b>New Offense</b> <input class='form-control' placeholder='Enter Offense That's Not In List'>"
-                        );
+                  <?php
+                    //Gets incident report data
+                    $query2='SELECT 	 IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
+                                       IR.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
+                                       CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS STUDENT,
+                                       IR.DETAILS AS DETAILS,
+                                       IR.COMPLAINANT_ID AS COMPLAINANT_ID,
+                                       CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
+                                       DATE_FILED,
+                                       IR.IF_NEW AS IF_NEW
+                            FROM 	  	 INCIDENT_REPORTS IR
+                            JOIN	     USERS U ON IR.COMPLAINANT_ID = U.USER_ID
+                            JOIN	     USERS U2 ON IR.REPORTED_STUDENT_ID = U2.USER_ID
+                            WHERE		   IR.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"
+                            ORDER BY 	 IR.DATE_FILED';
+                    $result2=mysqli_query($dbc,$query2);
+                    $query3='SELECT OFFENSE_ID, DESCRIPTION FROM REF_OFFENSES';
+                    $result3=mysqli_query($dbc,$query3);
+                    if(!$result2 && !$result3){
+                      echo mysqli_error($dbc);
+                    }
+                    else{
+                      $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+                    }
+                  ?>
+                  <form id="form">
+                    <div class="form-group" style='width: 300px;'>
+                      <label>Student</label>
+                      <input class="form-control" value="<?php echo $row2['REPORTED_STUDENT_ID'].' : '.$row2['STUDENT']; ?>" readonly>
+                    </div>
+                    <div class="form-group" style='width: 300px;'>
+                      <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="offense" class="form-control" required>
+                        <option value="" disabled selected>Select Offense</option>
+                        <?php
+                        while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)){
+                          echo
+                            "<option value=\"{$row3['OFFENSE_ID']}\">{$row3['DESCRIPTION']}</option>";
+                        }
+                        ?>
+                      </select>
+                    </div>
+                    <div id="other" class="form-group" style="width: 300px;" hidden>
+                      <label>If other, please specify <span style="font-weight:normal; color:red;">*</span></label>
+                      <input id="other-offense" class="form-control"></input>
+                    </div>
+                    <div id="cheat" class="form-group" style='width: 300px;' hidden>
+                      <label>Type of Cheating <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="cheat-type" class="form-control">
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="withkodigo">With Kodigo</option>
+                        <option value="glancing">Glancing</option>
+                        <option value="searching">Searching</option>
+                      </select>
+                    </div>
+                    <script>
+                    <$('#offense').on('change',function() {
+                      var offense_id=$(this).val();
+                      if(offense_id==1) {
+                        $('#other').hide();
+                        $('#other-offense').attr('required','false');
+                        $('#cheat').show();
+                        $('#cheat-type').attr('required','true');
                       }
-
-                      else if (offense_id == "cheating") {
-                        $('#content').append (
-                          "<br><b>Types</b> <select id='select' class='form-control' style = 'width: 300px;'><option value='' disabled selected>Types</option><option>With Kodigo</option><option>Glancing</option><option>Searching</option></select>"
-                        );
+                      else if(offense_id==8) {
+                        $('#other').show();
+                        $('#other-offense').attr('required','true');
+                        $('#cheat').hide();
+                        $('#cheat-type').attr('required','false');
+                      }
+                      else{
+                        $('#other').hide();
+                        $('#other-offense').attr('required','false');
+                        $('#cheat').hide();
+                        $('#cheat-type').attr('required','false');
                       }
                     });
-
-                  </script>
-
-                  <br>
-
-                  <b>Complainant</b><input class="form-control" style = "width: 300px;" value="574611234 : Macario Mendez" readonly>
-
-                  <br>
-
-                  <b>Details</b><textarea class="form-control" rows="3" readonly>Student cheated using a phone in GREATWK midterms exam</textarea>
-
-				  <br>
-
-				  <b>Comments</b><textarea class="form-control" rows="3" ></textarea>
+                    </script>
+                    <div class="form-group" style = "width: 300px;">
+                      <label>Complainant</label>
+                      <input class="form-control" value="<?php echo $row2['COMPLAINANT_ID'].' : '.$row2['COMPLAINANT']; ?>" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Details</label>
+                      <textarea class="form-control" rows="3" readonly><?php echo $row2['DETAILS']; ?></textarea>
+  				          </div>
+                    <div class="form-group">
+  				            <label>Comments <span style="font-weight:normal; font-style:italic; font-size:12px;">(Optional)</span></label>
+                      <textarea id="comments" class="form-control" rows="3"></textarea>
+                    </div>
+                    <br><br>
+                    <button type="submit" id="apprehend" name="apprehend" class="btn btn-primary">Apprehend</button>
+                  </form>
                   <br><br><br>
+                  <?php
+                    //Removes 'new' badge and reduces notif's count
+                    if($row2['IF_NEW']){
+                      $query3='UPDATE INCIDENT_REPORTS SET IF_NEW=0 WHERE INCIDENT_REPORT_ID="'.$_GET['irn'].'"';
+                      $result3=mysqli_query($dbc,$query3);
+                      if(!$result3){
+                        echo mysqli_error($dbc);
+                      }
+                    }
 
-                  <button type="button" class="btn btn-primary">Submit</button>
-
-                  <br><br><br>
-
+                    include 'do-notif-queries.php';
+                  ?>
                 </div>
-
-                <div class="col-lg-6">
-                </div>
-                <!-- /.col-lg-12 -->
             </div>
         </div>
         <!-- /#page-wrapper -->
@@ -144,7 +197,7 @@
     <script src="../vendor/morrisjs/morris.min.js"></script>
     <script src="../data/morris-data.js"></script>
 
-	<!-- DataTables JavaScript -->
+	   <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
     <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
@@ -152,6 +205,57 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <script>
+    $(document).ready(function() {
+      <?php include 'do-notif-scripts.php' ?>
+    });
+    </script>
+
+    <script>
+    $('form').submit(function(e) {
+      e.preventDefault();
+      console.log($('#other-offense').val());
+      $.ajax({
+          url: '../ajax/do-insert-case.php',
+          type: 'POST',
+          data: {
+              incidentreportID: <?php echo $_GET['irn']; ?>,
+              studentID: <?php echo $row2['REPORTED_STUDENT_ID']; ?>,
+              offenseID: $('#offense').val(),
+              otherOffense: $('#other-offense').val(),
+              cheatingType: $('#cheat-type').val(),
+              complainantID: <?php echo $row2['COMPLAINANT_ID']; ?>,
+              details: "<?php echo $row2['DETAILS']; ?>",
+              comments: $('#comments').val(),
+              apprehendedbyID: <?php echo $_SESSION['user_id']; ?>
+          },
+          success: function(msg) {
+              <?php $message="Submitted successfully!"; ?>
+              $("#alertModal").modal("show");
+          }
+      });
+      $('#form')[0].reset();
+      console.log("KALBO");
+    });
+    </script>
+
+    <!-- Modal -->
+		<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
+					</div>
+					<div class="modal-body">
+						<?php echo $message; ?>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
+    </div>
 </body>
 
 </html>

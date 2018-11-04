@@ -1,3 +1,4 @@
+<?php include 'do.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,6 +46,12 @@
 </head>
 
 <body>
+
+  <?php
+    require_once('./mysql_connect.php');
+
+    include 'do-notif-queries.php'
+  ?>
 
     <div id="wrapper">
 
@@ -123,6 +130,7 @@
         $('#active-cases-table').DataTable({
             "order": [[ 0, "desc" ]]
         });
+        <?php include 'do-notif-scripts.php' ?>
     });
     </script>
 

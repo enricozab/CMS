@@ -1,3 +1,4 @@
+<?php include 'faculty.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 

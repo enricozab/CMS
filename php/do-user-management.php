@@ -1,3 +1,4 @@
+<?php include 'do.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,6 +47,12 @@
 
 <body>
 
+  <?php
+    require_once('./mysql_connect.php');
+
+    include 'do-notif-queries.php'
+  ?>
+
     <div id="wrapper">
 
         <?php include 'do-sidebar.php';?>
@@ -88,9 +95,7 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {
-        $('#dataTables-example').DataTable({
-            responsive: true
-        });
+      <?php include 'do-notif-scripts.php' ?>
     });
     </script>
 
