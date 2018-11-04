@@ -186,10 +186,8 @@ if (!isset($_GET['irn']))
     $(document).ready(function() {
       <?php include 'do-notif-scripts.php' ?>
     });
-    </script>
 
-    <script>
-    <$('#offense').on('change',function() {
+    $('#offense').on('change',function() {
       var offense_id=$(this).val();
       if(offense_id==1) {
         $('#other').hide();
@@ -210,9 +208,7 @@ if (!isset($_GET['irn']))
         $('#cheat-type').attr('required','false');
       }
     });
-    </script>
 
-    <script>
     $('form').submit(function(e) {
       e.preventDefault();
       console.log($('#other-offense').val());
