@@ -12,8 +12,8 @@
 
     <title>CMS - Home</title>
 
-	<!-- Webpage Icon -->
-	<link rel="icon" href="../images/favicon.ico">
+  	<!-- Webpage Icon -->
+  	<link rel="icon" href="../images/favicon.ico">
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -50,12 +50,12 @@
   <?php
     require_once('./mysql_connect.php');
 
-    include 'hdo-notif-queries.php'
+    include 'hdo-notif-queries.php';
   ?>
 
   <div id="wrapper">
 
-    <?php include 'hdo-sidebar.php';?>
+    <?php include 'hdo-sidebar.php'; ?>
 
     <div id="page-wrapper">
       <div class="row">
@@ -113,7 +113,7 @@
                       echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-case.php?cn={$row2['CASE_ID']}'\">
                             <td>{$row2['CASE_ID']} <span id=\"{$row2['CASE_ID']}\" class=\"badge\"></span></td>
                             <td>{$row2['OFFENSE_DESCRIPTION']}</td>
-                            <td>MINOR</td>
+                            <td>Minor</td>
                             <td>{$row2['DATE_FILED']}</td>
                             <td>{$row2['LAST_UPDATE']}</td>
                             <td>{$row2['STATUS']}</td>

@@ -50,7 +50,40 @@
   <?php
     require_once('./mysql_connect.php');
 
-    include 'hdo-notif-queries.php'
+    include 'hdo-notif-queries.php';
+
+    $query2='SELECT 		C.CASE_ID AS CASE_ID,
+                        C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
+                        C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
+                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
+                        C.OFFENSE_ID AS OFFENSE_ID,
+                        RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
+                        C.OTHER_OFFENSE AS OTHER_OFFENSE,
+                        C.CHEATING_TYPE AS CHEATING_TYPE,
+                        C.COMPLAINANT_ID AS COMPLAINANT_ID,
+                        CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
+                        C.DETAILS AS DETAILS,
+                        C.COMMENTS AS COMMENTS,
+                        C.APPREHENDED_BY_ID AS APPREHENDED_BY_ID,
+                        CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS APPREHENDED_BY,
+                        C.DATE_FILED AS DATE_FILED,
+                        C.STATUS AS STATUS,
+                        C.LAST_UPDATE AS LAST_UPDATE,
+                        C.DATE_CLOSED AS DATE_CLOSED,
+                        C.IF_NEW AS IF_NEW
+            FROM 		    CASES C
+            LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+            LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
+            LEFT JOIN	  USERS U2 ON C.APPREHENDED_BY_ID = U2.USER_ID
+            LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+            WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"';
+    $result2=mysqli_query($dbc,$query2);
+    if(!$result2){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+    }
   ?>
 
     <div id="wrapper">
@@ -60,17 +93,18 @@
             <div class="row">
                <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
                 <div class="col-lg-6">
-
-          					<b>Offense:</b> <?php echo $off; ?><br>
-          					<b>Type:</b> <?php echo $type; ?><br>
-          					<b>Date Filed:</b> <?php echo $date; ?><br>
-          					<b>Status:</b> <?php echo $stat; ?><br><br>
-          					<b>Student ID No.:</b> 11530022<br>
-          					<b>Student Name:</b> Enrico Miguel. M. Zabayle<br><br>
-          					<b>Complainant:</b> --- <br>
-          					<b>Apprehended by:</b> --- <br>
-                    <b>Investigating Officer:</b> Debbie Simon <br>
-
+          					<b>Offense:</b> <?php echo $row2['OFFENSE_DESCRIPTION']; ?><br>
+          					<b>Type:</b> <?php echo 'Minor'; ?><br>
+          					<b>Date Filed:</b> <?php echo $row2['DATE_FILED']; ?><br>
+                    <b>Last Update:</b> <?php echo $row2['LAST_UPDATE']; ?><br>
+          					<b>Status:</b> <?php echo $row2['STATUS']; ?><br>
+                    <br>
+          					<b>Student ID No.:</b> <?php echo $row2['REPORTED_STUDENT_ID']; ?><br>
+          					<b>Student Name:</b> <?php echo $row2['STUDENT']; ?><br>
+                    <br>
+          					<b>Complainant:</b> <?php echo $row2['COMPLAINANT']; ?><br>
+          					<b>Apprehended by:</b> <?php echo $row2['APPREHENDED_BY']; ?><br>
+                    <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
 
                 <div class="col-lg-6">
@@ -152,29 +186,28 @@
 			<br><br>
       <div class="panel panel-default">
         <div class="panel-heading">
-					<b>Details</b> &nbsp;<a href="#"><i class="fa fa-edit fa-fw"></i></a>
+					<b>Details</b>
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body">
 					<p>Caught cheating by the professor during finals</p>
 				</div>
+      </div>
+      <br>
+      <form id="form">
+        <div class="form-group" style='width: 400px;'>
+          <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
+          <select id="ido" class="form-control" required>
+            <option value="" disabled selected>Select an IDO</option>
+            <option value="beyonce">Beyonce Knowles</option>
+            <option value="alicia">Alicia Keys</option>
+            <option value="britney">Britney Spears</option>
+          </select>
         </div>
-        <!-- /#page-wrapper -->
-
-        <br>
-
-      <h4><b>Evidence</b></h4><br>
-		  <div class="row">
-			   <div class="col-lg-3">
-				    <b>Document/Photo:</b><input type="file">
-			   </div>
-			   <div class="col-lg-3">
-				    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-			   </div>
-			   <!--<br>
-			   <button type="button" class="btn btn-info btn-default">Upload Evidences</button>-->
-			   <br><br><br><br>
-		  </div>
+        <br><br>
+        <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <br><br><br>
     </div>
     <!-- /#wrapper -->
 
