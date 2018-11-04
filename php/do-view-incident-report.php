@@ -124,29 +124,6 @@ if (!isset($_GET['irn']))
                         <option value="searching">Searching</option>
                       </select>
                     </div>
-                    <script>
-                    <$('#offense').on('change',function() {
-                      var offense_id=$(this).val();
-                      if(offense_id==1) {
-                        $('#other').hide();
-                        $('#other-offense').attr('required','false');
-                        $('#cheat').show();
-                        $('#cheat-type').attr('required','true');
-                      }
-                      else if(offense_id==8) {
-                        $('#other').show();
-                        $('#other-offense').attr('required','true');
-                        $('#cheat').hide();
-                        $('#cheat-type').attr('required','false');
-                      }
-                      else{
-                        $('#other').hide();
-                        $('#other-offense').attr('required','false');
-                        $('#cheat').hide();
-                        $('#cheat-type').attr('required','false');
-                      }
-                    });
-                    </script>
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant</label>
                       <input class="form-control" value="<?php echo $row2['COMPLAINANT_ID'].' : '.$row2['COMPLAINANT']; ?>" readonly>
@@ -208,6 +185,30 @@ if (!isset($_GET['irn']))
     <script>
     $(document).ready(function() {
       <?php include 'do-notif-scripts.php' ?>
+    });
+    </script>
+
+    <script>
+    <$('#offense').on('change',function() {
+      var offense_id=$(this).val();
+      if(offense_id==1) {
+        $('#other').hide();
+        $('#other-offense').attr('required','false');
+        $('#cheat').show();
+        $('#cheat-type').attr('required','true');
+      }
+      else if(offense_id==8) {
+        $('#other').show();
+        $('#other-offense').attr('required','true');
+        $('#cheat').hide();
+        $('#cheat-type').attr('required','false');
+      }
+      else{
+        $('#other').hide();
+        $('#other-offense').attr('required','false');
+        $('#cheat').hide();
+        $('#cheat-type').attr('required','false');
+      }
     });
     </script>
 
