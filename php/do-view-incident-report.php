@@ -140,7 +140,7 @@ if (!isset($_GET['irn']))
                       <textarea id="comments" class="form-control" rows="3"></textarea>
                     </div>
                     <br><br>
-                    <button type="submit" id="apprehend" onclick="ifSubmitted()" name="apprehend" class="btn btn-primary">Apprehend</button>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
                   <?php
@@ -230,14 +230,6 @@ if (!isset($_GET['irn']))
 
     $('form').submit(function(e) {
       e.preventDefault();
-      console.log(<?php echo $_GET['irn']; ?>);
-      console.log(<?php echo $row2['REPORTED_STUDENT_ID']; ?>);
-      console.log($('#offense').val());
-      console.log($('#other-offense').val());
-      console.log($('#cheat-type').val());
-      console.log(<?php echo $row2['COMPLAINANT_ID']; ?>);
-      console.log("<?php echo $row2['DETAILS']; ?>");
-      console.log($('#comments').val());
       $.ajax({
           url: '../ajax/do-insert-case.php',
           type: 'POST',
@@ -252,26 +244,23 @@ if (!isset($_GET['irn']))
               comments: $('#comments').val()
           },
           success: function(msg) {
-              <?php $message="Student is apprehended"; ?>
+              <?php $message="Submitted successfully!"; ?>
               $("#alertModal").modal("show");
           }
       });
+      $('#comments').attr("disabled", "disabled");
+      $('#submit').attr("disabled", "disabled");
+      $('#submit').text("Submitted");
+      $('#offense').attr("disabled", "disabled");
     });
 
     //Changes button text and disabled
-    function ifSubmitted(){
-      $('#comments').attr("disabled", "disabled");
-      $('#apprehend').attr("disabled", "disabled");
-      $('#apprehend').text("Apprehended");
-      $('#offense').attr("disabled", "disabled");
-    }
-
     <?php
       if($row2['STATUS']=="For review by Head of DO"){ ?>
         $('#comments').attr("disabled", "disabled");
         $('#comments').text("<?php echo $row3['COMMENTS']; ?>");
-        $('#apprehend').attr("disabled", "disabled");
-        $('#apprehend').text("Apprehended");
+        $('#submit').attr("disabled", "disabled");
+        $('#submit').text("Submitted");
         $('#offense').attr("disabled", "disabled");
         $('select[id=offense] > option:first-child').text('<?php echo $row3['DESCRIPTION']; ?>');
     <?php

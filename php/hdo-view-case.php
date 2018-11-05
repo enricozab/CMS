@@ -1,4 +1,8 @@
 <?php include 'hdo.php' ?>
+<?php
+if (!isset($_GET['cn']))
+    header("Location: http://".$_SERVER['HTTP_HOST']."/cms/php/hdo-home.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -49,8 +53,6 @@
 
   <?php
     require_once('./mysql_connect.php');
-
-    include 'hdo-notif-queries.php';
 
     $query2='SELECT 		C.CASE_ID AS CASE_ID,
                         C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
@@ -194,20 +196,43 @@
 				</div>
       </div>
       <br>
+      <?php
+        $query3='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 5';
+        $result3=mysqli_query($dbc,$query3);
+        if(!$result3){
+          echo mysqli_error($dbc);
+        }
+      ?>
       <form id="form">
-        <div class="form-group" style='width: 400px;'>
+        <div id="assignIDO" class="form-group" style='width: 400px;'>
           <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
           <select id="ido" class="form-control" required>
             <option value="" disabled selected>Select an IDO</option>
-            <option value="beyonce">Beyonce Knowles</option>
-            <option value="alicia">Alicia Keys</option>
-            <option value="britney">Britney Spears</option>
+            <?php
+            while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)){
+              echo
+                "<option value=\"{$row3['USER_ID']}\">{$row3['IDO']}</option>";
+            }
+            ?>
           </select>
         </div>
         <br><br>
         <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
       </form>
       <br><br><br>
+
+      <?php
+        //Removes 'new' badge and reduces notif's count
+        if($row2['IF_NEW']){
+          $query3='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+          $result3=mysqli_query($dbc,$query3);
+          if(!$result3){
+            echo mysqli_error($dbc);
+          }
+        }
+
+        include 'hdo-notif-queries.php';
+      ?>
     </div>
     <!-- /#wrapper -->
 

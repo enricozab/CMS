@@ -76,11 +76,11 @@
                     }
                   ?>
                   <form id="form">
-                    <div class="form-group" style='width: 200px;'>
+                    <div class="form-group" style='width: 300px;'>
                       <label>Student <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No." required/>
                     </div>
-                    <div class="form-group" style='width: 200px;'>
+                    <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="offense" class="form-control" required>
                         <option value="" disabled selected>Select Offense</option>
@@ -92,11 +92,11 @@
                         ?>
                       </select>
                     </div>
-                    <div id="other" class="form-group" style="width: 200px;" hidden>
+                    <div id="other" class="form-group" style="width: 300px;" hidden>
                       <label>If other, please specify <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="other-offense" class="form-control"></input>
                     </div>
-                    <div id="cheat" class="form-group" style='width: 200px;' hidden>
+                    <div id="cheat" class="form-group" style='width: 300px;' hidden>
                       <label>Type of Cheating <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="cheat-type" class="form-control">
                         <option value="" disabled selected>Select Type</option>
@@ -105,7 +105,7 @@
                         <option value="searching">Searching</option>
                       </select>
                     </div>
-                    <div class="form-group" style = "width: 200px;">
+                    <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No." required/>
                     </div>

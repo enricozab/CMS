@@ -83,9 +83,6 @@
 					<a href="do-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="do-user-management.php"><i class="fa fa-users fa-fw"></i> User Management</a>
-				</li>
-				<li>
 					<a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
 						<li>
