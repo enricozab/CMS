@@ -104,7 +104,7 @@ if (!isset($_GET['irn']))
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="offense" class="form-control" required>
+                      <select id="offense" class="chosen-select" required>
                         <option value="" disabled selected>Select Offense</option>
                         <?php
                         while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)){
@@ -179,9 +179,6 @@ if (!isset($_GET['irn']))
     </div>
     <!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 
@@ -201,71 +198,79 @@ if (!isset($_GET['irn']))
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
-    <script>
+    <script type='text/javascript'>
     $(document).ready(function() {
       <?php include 'do-notif-scripts.php' ?>
-    });
 
-    /*$('#offense').on('change',function() {
-      var offense_id=$(this).val();
-      if(offense_id==1) {
-        $('#other').hide();
-        $('#other-offense').attr('required','false');
-        $('#cheat').show();
-        $('#cheat-type').attr('required','true');
-      }
-      else if(offense_id==8) {
-        $('#other').show();
-        $('#other-offense').attr('required','true');
-        $('#cheat').hide();
-        $('#cheat-type').attr('required','false');
-      }
-      else{
-        $('#other').hide();
-        $('#other-offense').attr('required','false');
-        $('#cheat').hide();
-        $('#cheat-type').attr('required','false');
-      }
-    });*/
+      $('.chosen-select').chosen();
 
-    $('form').submit(function(e) {
-      e.preventDefault();
-      $.ajax({
-          url: '../ajax/do-insert-case.php',
-          type: 'POST',
-          data: {
-              incidentreportID: <?php echo $_GET['irn']; ?>,
-              studentID: <?php echo $row2['REPORTED_STUDENT_ID']; ?>,
-              offenseID: $('#offense').val(),
-              otherOffense: $('#other-offense').val(),
-              cheatingType: $('#cheat-type').val(),
-              complainantID: <?php echo $row2['COMPLAINANT_ID']; ?>,
-              details: "<?php echo $row2['DETAILS']; ?>",
-              comments: $('#comments').val()
-          },
-          success: function(msg) {
-              <?php $message="Submitted successfully!"; ?>
-              $("#alertModal").modal("show");
+      $('#offense').on('change',function() {
+          var offense_id=$(this).val();
+          if(offense_id==1) {
+            $('#other').hide();
+            $('#other-offense').attr('required','false');
+            $('#cheat').show();
+            $('#cheat-type').attr('required','true');
           }
-      });
-      $('#comments').attr("disabled", "disabled");
-      $('#submit').attr("disabled", "disabled");
-      $('#submit').text("Submitted");
-      $('#offense').attr("disabled", "disabled");
+          else if(offense_id==8) {
+            $('#other').show();
+            $('#other-offense').attr('required','true');
+            $('#cheat').hide();
+            $('#cheat-type').attr('required','false');
+          }
+          else{
+            $('#other').hide();
+            $('#other-offense').attr('required','false');
+            $('#cheat').hide();
+            $('#cheat-type').attr('required','false');
+          }
+        });
+
+        $('#submit').click(function(){
+          var isEmpty = true;
+          if ($.trim($('#offense').val()).length == 0) {
+            isEmpty = false;
+          }
+          if(isEmpty) {
+            $('#message').text('Submitted successfully!');
+          }
+          else {
+            $('#message').text('Please fill all the required (*) fields!');
+          }
+          $.ajax({
+              url: '../ajax/do-insert-case.php',
+              type: 'POST',
+              data: {
+                  incidentreportID: <?php echo $_GET['irn']; ?>,
+                  studentID: <?php echo $row2['REPORTED_STUDENT_ID']; ?>,
+                  offenseID: $('#offense').val(),
+                  otherOffense: $('#other-offense').val(),
+                  cheatingType: $('#cheat-type').val(),
+                  complainantID: <?php echo $row2['COMPLAINANT_ID']; ?>,
+                  details: "<?php echo $row2['DETAILS']; ?>",
+                  comments: $('#comments').val()
+              },
+              success: function(msg) {
+                  <?php $message="Submitted successfully!"; ?>
+                  $("#alertModal").modal("show");
+              }
+          });
+
+          $('#form').find('input, textarea, button, select').attr('disabled','disabled');
+          $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
+        });
     });
 
     //Changes button text and disabled
     <?php
       if($row2['STATUS']=="For review by Head of DO"){ ?>
-        $('#comments').attr("disabled", "disabled");
+        $('#form').find('input, textarea, button, select').attr('disabled','disabled');
+        $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
         $('#comments').text("<?php echo $row3['COMMENTS']; ?>");
-        $('#submit').attr("disabled", "disabled");
         $('#submit').text("Submitted");
-        $('#offense').attr("disabled", "disabled");
-        $('select[id=offense] > option:first-child').text('<?php echo $row3['DESCRIPTION']; ?>');
-    <?php
-      }
-    ?>
+        $('select[class=chosen-select] > option:first-child').text('<?php echo $row3['DESCRIPTION']; ?>');
+    <?php } ?>
+
     </script>
 
     <!-- Modal -->

@@ -44,7 +44,7 @@
     <![endif]-->
 
     <!-- FOR SEARCHABLE DROP -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.jquery.min.js"></script>
     <link rel = "stylesheet" href = "./extra-css/bootstrap-chosen.css"/>
 
@@ -82,7 +82,7 @@
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="offense" class="form-control" required>
+                      <select id="offense" class="chosen-select" required>
                         <option value="" disabled selected>Select Offense</option>
                         <?php
                         while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
@@ -114,7 +114,7 @@
                       <textarea id="details" class="form-control" rows="3" required></textarea>
   				          </div>
                     <br><br>
-                    <button type="submit" id="apprehend" name="apprehend" class="btn btn-primary">Apprehend</button>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
                 </div>
@@ -124,9 +124,6 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -149,59 +146,78 @@
 
     <script>
     $(document).ready(function() {
-        <?php include 'do-notif-scripts.php'?>
-    });
+      <?php include 'do-notif-scripts.php'?>
 
-    function isNumberKey(evt){
-      var charCode = (evt.which) ? evt.which : event.keyCode
-      if (charCode > 31 && (charCode < 48 || charCode > 57))
-          return false;
-      return true;
-    }
+      function isNumberKey(evt){
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+      }
 
-    /*$('#offense').on('change',function() {
-      var offense_id=$(this).val();
-      if(offense_id==1) {
-        $('#other').hide();
-        $('#other-offense').attr('required','false');
-        $('#cheat').show();
-        $('#cheat-type').attr('required','true');
-      }
-      else if(offense_id==8) {
-        $('#other').show();
-        $('#other-offense').attr('required','true');
-        $('#cheat').hide();
-        $('#cheat-type').attr('required','false');
-      }
-      else{
-        $('#other').hide();
-        $('#other-offense').attr('required','false');
-        $('#cheat').hide();
-        $('#cheat-type').attr('required','false');
-      }
-    });*/
+      $('.chosen-select').chosen();
 
-    $('form').submit(function(e) {
-      e.preventDefault();
-      $.ajax({
-          url: '../ajax/do-insert-case.php',
-          type: 'POST',
-          data: {
-              incidentreportID: 0,
-              studentID: $('#studentID').val(),
-              offenseID: $('#offense').val(),
-              otherOffense: $('#other-offense').val(),
-              cheatingType: $('#cheat-type').val(),
-              complainantID: $('#complainantID').val(),
-              details: $('#details').val(),
-              comments: ""
-          },
-          success: function(msg) {
-              <?php $message="Submitted successfully!"; ?>
-              $("#alertModal").modal("show");
-          }
+      $('#offense').on('change',function() {
+        var offense_id=$(this).val();
+        if(offense_id==1) {
+          $('#other').hide();
+          $('#other-offense').attr('required','false');
+          $('#cheat').show();
+          $('#cheat-type').attr('required','true');
+        }
+        else if(offense_id==8) {
+          $('#other').show();
+          $('#other-offense').attr('required','true');
+          $('#cheat').hide();
+          $('#cheat-type').attr('required','false');
+        }
+        else{
+          $('#other').hide();
+          $('#other-offense').attr('required','false');
+          $('#cheat').hide();
+          $('#cheat-type').attr('required','false');
+        }
       });
-      $('#form')[0].reset();
+
+      $('#submit').click(function() {
+        var isEmpty = true;
+        if ($.trim($('#studentID').val()).length == 0) {
+          isEmpty = false;
+        }
+        if ($.trim($('#complainantID').val()).length == 0) {
+          isEmpty = false;
+        }
+        if ($.trim($('#offense').val()).length == 0) {
+          isEmpty = false;
+        }
+        if ($.trim($('#details').val()).length == 0) {
+          isEmpty = false;
+        }
+        if(isEmpty) {
+          $('#message').text('Submitted successfully!');
+        }
+        else {
+          $('#message').text('Please fill all the required (*) fields!');
+        }
+        $.ajax({
+            url: '../ajax/do-insert-case.php',
+            type: 'POST',
+            data: {
+                incidentreportID: 0,
+                studentID: $('#studentID').val(),
+                offenseID: $('#offense').val(),
+                otherOffense: $('#other-offense').val(),
+                cheatingType: $('#cheat-type').val(),
+                complainantID: $('#complainantID').val(),
+                details: $('#details').val(),
+                comments: ""
+            },
+            success: function(msg) {
+                $("#alertModal").modal("show");
+            }
+        });
+        $('#form')[0].reset();
+      });
     });
     </script>
 
@@ -214,7 +230,7 @@
 						<h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
 					</div>
 					<div class="modal-body">
-						<?php echo $message; ?>
+						<p id="message"></p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>

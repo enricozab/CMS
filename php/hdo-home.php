@@ -87,6 +87,7 @@
                                       RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
                                       C.OTHER_OFFENSE AS OTHER_OFFENSE,
                                       C.CHEATING_TYPE AS CHEATING_TYPE,
+                                      RO.TYPE AS TYPE,
                                       C.COMPLAINANT_ID AS COMPLAINANT_ID,
                                       CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
                                       C.DETAILS AS DETAILS,
@@ -113,7 +114,7 @@
                       echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-case.php?cn={$row2['CASE_ID']}'\">
                             <td>{$row2['CASE_ID']} <span id=\"{$row2['CASE_ID']}\" class=\"badge\"></span></td>
                             <td>{$row2['OFFENSE_DESCRIPTION']}</td>
-                            <td>Minor</td>
+                            <td>{$row2['TYPE']}</td>
                             <td>{$row2['DATE_FILED']}</td>
                             <td>{$row2['LAST_UPDATE']}</td>
                             <td>{$row2['STATUS']}</td>
