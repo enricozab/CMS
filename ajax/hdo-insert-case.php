@@ -2,19 +2,25 @@
   session_start();
   require_once('../mysql_connect.php');
 
-  if({$_POST['incidentreportID']} != 0) {
-    $query="INSERT INTO CASES (INCIDENT_REPORT_ID,REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DETAILS,HANDLED_BY_ID)
-              VALUES ('{$_POST['incidentreportID']}','{$_POST['studentID']}','{$_POST['offenseID']}','{$_POST['offenseID']}','{$_POST['complainantID']}','{$_POST['details']}','{$_POST['assignIDO']}')";
+  $cheatType = 'NULL';
+  if($_POST['cheatingType'] != null){
+    $cheatType = $_POST['cheatingType'];
   }
-  else{
-    $query="INSERT INTO CASES (REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DETAILS,HANDLED_BY_ID)
-              VALUES ('{$_POST['studentID']}','{$_POST['offenseID']}','{$_POST['cheatingType']}','{$_POST['complainantID']}','{$_POST['details']}','{$_POST['assignIDO']}')";
+
+  $incidentReport = 'NULL';
+  if($_POST['incidentreportID'] != null){
+    $incidentReport = $_POST['incidentreportID'];
   }
+  //Insert in cases
+  $query="INSERT INTO CASES (INCIDENT_REPORT_ID,REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DETAILS,HANDLED_BY_ID)
+            VALUES ($incidentReport,'{$_POST['studentID']}','{$_POST['offenseID']}',$cheatType,'{$_POST['complainantID']}','{$_POST['details']}','{$_POST['assignIDO']}')";
+
   $result=mysqli_query($dbc,$query);
   if(!$result){
     echo 'mysqli_error($dbc)';
   }
 
+  //Insert in users_ido
   $query="SELECT USER_ID FROM USERS_IDO WHERE USER_ID = {$_POST['assignIDO']} LIMIT 1";
   $result=mysqli_query($dbc,$query);
   if(!$result){

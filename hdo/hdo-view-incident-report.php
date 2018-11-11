@@ -231,8 +231,8 @@ if (!isset($_GET['irn']))
           ids.push('#cheat-type');
         }
         else{
-          if($.inArray('#cheat', ids) !== -1){
-            ids.splice(ids.indexOf('#cheat'),1);
+          if($.inArray('#cheat-type', ids) !== -1){
+            ids.splice(ids.indexOf('#cheat-type'),1);
           }
         }
 
@@ -280,13 +280,15 @@ if (!isset($_GET['irn']))
       if(!$result2){
         echo mysqli_error($dbc);
       }
-      if($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){ ?>
-        $('#form').find('input, textarea, button, select').attr('disabled','disabled');
-        $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
-        $('#submit').text("Submitted");
-        $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>');
-        $('select[id=ido] > option:first-child').text('<?php echo $row2['IDO']; ?>');
-    <?php } ?>
+      else{
+        if($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){ ?>
+          $('#form').find('input, textarea, button, select').attr('disabled','disabled');
+          $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
+          $('#submit').text("Submitted");
+          $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>');
+          $('select[id=ido] > option:first-child').text('<?php echo $row2['IDO']; ?>');
+      <?php }
+      } ?>
 
     </script>
 

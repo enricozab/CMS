@@ -47,7 +47,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="student-home.php"><i class="fa fa-bell fa-fw"></i> Notifications</a>
+					<a href="student-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
 				</li>
 				<!--<li>
 					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
