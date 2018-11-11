@@ -73,6 +73,7 @@
                       <th>Date Filed</th>
                       <th>Last Update</th>
                       <th>Status</th>
+                      <th>Remarks</th>
                   </tr>
               </thead>
               <tbody>
@@ -95,6 +96,7 @@
                                       C.STATUS_ID AS STATUS_ID,
                                       S.DESCRIPTION AS STATUS_DESCRIPTION,
                                       C.REMARKS_ID AS REMARKS_ID,
+                                      R.DESCRIPTION AS REMARKS_DESCRIPTION,
                                       C.LAST_UPDATE AS LAST_UPDATE,
                                       C.OULC_VERDICT AS OULC_VERDICT,
                                       C.HEARING_DATE AS HEARING_DATE,
@@ -107,6 +109,7 @@
                           LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
                           LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
                           LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
+                          LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
                           ORDER BY	  C.LAST_UPDATE';
                   $result2=mysqli_query($dbc,$query2);
                   if(!$result2){
@@ -121,6 +124,7 @@
                             <td>{$row2['DATE_FILED']}</td>
                             <td>{$row2['LAST_UPDATE']}</td>
                             <td>{$row2['STATUS_DESCRIPTION']}</td>
+                            <td>{$row2['REMARKS_DESCRIPTION']}</td>
                             </tr>";
                     }
                   }

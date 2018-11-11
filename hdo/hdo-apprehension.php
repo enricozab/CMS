@@ -109,7 +109,7 @@
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Location</label>
-                      <input class="form-control">
+                      <input id="location" class="form-control">
                     </div>
                     <div class="form-group">
                       <label>Details <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
@@ -221,6 +221,7 @@
                   offenseID: $('#offense').val(),
                   cheatingType: $('#cheat-type').val(),
                   complainantID: $('#complainantID').val(),
+                  location: $('#location').val(),
                   details: $('#details').val(),
                   assignIDO: $('#ido').val()
               },
