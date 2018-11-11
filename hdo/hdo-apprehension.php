@@ -46,7 +46,7 @@
     <!-- FOR SEARCHABLE DROP -->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../extra-css/chosen.jquery.min.js"></script>
-    <link rel = "stylesheet" href = "../bootstrap-chosen.css"/>
+    <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
 </head>
 
@@ -107,10 +107,33 @@
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No."/>
                     </div>
+                    <div class="form-group" style='width: 300px;'>
+                      <label>Location</label>
+                      <input class="form-control">
+                    </div>
                     <div class="form-group">
                       <label>Details <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
                       <textarea id="details" class="form-control" rows="3"></textarea>
   				          </div>
+                    <?php
+                      $query2='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 4';
+                      $result2=mysqli_query($dbc,$query2);
+                      if(!$result2){
+                        echo mysqli_error($dbc);
+                      }
+                    ?>
+                    <div class="form-group" style='width: 400px;'>
+                      <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="ido" class="form-control">
+                        <option value="" disabled selected>Select IDO</option>
+                        <?php
+                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                          echo
+                            "<option value=\"{$row2['USER_ID']}\">{$row2['IDO']}</option>";
+                        }
+                        ?>
+                      </select>
+                    </div>
                     <br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
@@ -134,7 +157,7 @@
     <script src="../vendor/morrisjs/morris.min.js"></script>
     <script src="../data/morris-data.js"></script>
 
-	<!-- DataTables JavaScript -->
+	  <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
     <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
@@ -165,44 +188,50 @@
         }
       });
 
+      $('form').submit(function(e) {
+        e.preventDefault();
+      });
+
       $('#submit').click(function() {
+        var ids = ['#offense','#details','#ido'];
         var isEmpty = true;
-        if ($.trim($('#studentID').val()).length == 0) {
-          isEmpty = false;
+
+        if($('#cheat').is(":visible")){
+          ids.push('#cheat-type');
         }
-        if ($.trim($('#complainantID').val()).length == 0) {
-          isEmpty = false;
+        else{
+          if($.inArray('#cheat-type', ids) !== -1){
+            ids.splice(ids.indexOf('#cheat-type'),1);
+          }
         }
-        if ($.trim($('#offense').val()).length == 0) {
-          isEmpty = false;
+
+        for(var i = 0; i < ids.length; ++i ){
+          if($.trim($(ids[i]).val()).length == 0){
+            isEmpty = false;
+          }
         }
-        if ($.trim($('#details').val()).length == 0) {
-          isEmpty = false;
-        }
+
         if(isEmpty) {
-          $('#message').text('Submitted successfully!');
-        }
-        else {
-          $('#message').text('Please fill all the required (*) fields!');
-        }
-        $.ajax({
-            url: '../ajax/do-insert-case.php',
-            type: 'POST',
-            data: {
-                incidentreportID: 0,
-                studentID: $('#studentID').val(),
-                offenseID: $('#offense').val(),
-                otherOffense: $('#other-offense').val(),
-                cheatingType: $('#cheat-type').val(),
-                complainantID: $('#complainantID').val(),
-                details: $('#details').val(),
-                comments: ""
-            },
-            success: function(msg) {
-                $("#alertModal").modal("show");
-            }
-        });
-        $('#form')[0].reset();
+          $.ajax({
+              url: '../ajax/hdo-insert-case.php',
+              type: 'POST',
+              data: {
+                  incidentreportID: null,
+                  studentID: $('#studentID').val(),
+                  offenseID: $('#offense').val(),
+                  cheatingType: $('#cheat-type').val(),
+                  complainantID: $('#complainantID').val(),
+                  details: $('#details').val(),
+                  assignIDO: $('#ido').val()
+              },
+              success: function(msg) {
+                  $('#message').text('Submitted successfully!');
+                  $('#form')[0].reset();
+              }
+          });
+        };
+
+        $("#alertModal").modal("show");
       });
     });
     </script>
@@ -216,7 +245,7 @@
 						<h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
 					</div>
 					<div class="modal-body">
-						<p id="message"></p>
+						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>

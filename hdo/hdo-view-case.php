@@ -96,6 +96,7 @@ if (!isset($_GET['cn']))
     <div id="wrapper">
 
     <?php include 'hdo-sidebar.php';?>
+    
         <div id="page-wrapper">
             <div class="row">
                <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
