@@ -193,7 +193,7 @@
       });
 
       $('#submit').click(function() {
-        var ids = ['#offense','#details','#ido'];
+        var ids = ['#studentID','#offense','#complainantID','#location','#details'];
         var isEmpty = true;
 
         if($('#cheat').is(":visible")){
@@ -224,13 +224,11 @@
                   location: $('#location').val(),
                   details: $('#details').val(),
                   assignIDO: $('#ido').val()
-              },
-              success: function(msg) {
-                  $('#message').text('Submitted successfully!');
-                  $('#form')[0].reset();
               }
           });
-        };
+          $('#message').text('Submitted successfully!');
+          $('#form')[0].reset();
+        }
 
         $("#alertModal").modal("show");
       });

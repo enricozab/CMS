@@ -181,7 +181,7 @@
         }
         else{
           while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-            if($row['IF_NEW']){ ?>
+            if($row['IF_NEW'] and $row['REMARKS_ID'] == 2){ ?>
               $('<?php echo "#".$row['CASE_ID'] ?>').text('NEW');
             <?php }
             else{ ?>

@@ -225,7 +225,7 @@ if (!isset($_GET['cn']))
 
       <?php
         //Removes 'new' badge and reduces notif's count
-        if($row['IF_NEW']){
+        if($row['IF_NEW'] and $row['REMARKS_ID'] == 2){
           $query2='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
           $result2=mysqli_query($dbc,$query2);
           if(!$result2){
@@ -266,11 +266,45 @@ if (!isset($_GET['cn']))
     <?php include 'student-notif-scripts.php' ?>
 
     $('#submit').click(function() {
-      
-    }
+      $.ajax({
+          url: '../ajax/student-submit-forms.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+              $('#message').text('Submitted successfully!');
+              $("#submit").attr('disabled', true).text("Submitted");
+
+              $("#alertModal").modal("show");
+          }
+      });
+    });
   });
+
+  <?php
+    if($row['REMARKS_ID'] != 2){ ?>
+      $("#submit").attr('disabled', true).text("Submitted");
+  <?php } ?>
   </script>
 
+  <!-- Modal -->
+  <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message"></message>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
