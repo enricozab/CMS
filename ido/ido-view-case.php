@@ -1,4 +1,4 @@
-<?php include 'student.php' ?>
+<?php include 'hdo.php' ?>
 <?php
 if (!isset($_GET['cn']))
     header("Location: http://".$_SERVER['HTTP_HOST']."/cms/php/hdo-home.php");
@@ -47,28 +47,21 @@ if (!isset($_GET['cn']))
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- FOR SEARCHABLE DROP -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-    <script src="../extra-css/chosen.jquery.min.js"></script>
-    <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
-
 </head>
 
 <body>
 
   <?php
-    $query='SELECT 		C.CASE_ID AS CASE_ID,
+    $query2='SELECT 		C.CASE_ID AS CASE_ID,
                         C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                         C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                         CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
                         C.OFFENSE_ID AS OFFENSE_ID,
                         RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
-                        RO.TYPE AS  TYPE,
                         C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
                         RO.TYPE AS TYPE,
                         C.COMPLAINANT_ID AS COMPLAINANT_ID,
                         CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
-                        C.LOCATION AS LOCATION,
                         C.DETAILS AS DETAILS,
                         C.ADMISSION_TYPE_ID AS ADMISSION_TYPE_ID,
                         C.HANDLED_BY_ID AS HANDLED_BY_ID,
@@ -91,35 +84,34 @@ if (!isset($_GET['cn']))
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
+    $result2=mysqli_query($dbc,$query2);
+    if(!$result2){
       echo mysqli_error($dbc);
     }
     else{
-      $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+      $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
     }
   ?>
 
     <div id="wrapper">
 
-    <?php include 'student-sidebar.php';?>
-
+    <?php include 'hdo-sidebar.php';?>
+    
         <div id="page-wrapper">
             <div class="row">
                <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
                 <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location:</b> <?php echo $row['LOCATION']; ?><br>
-          					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
-                    <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
-          					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
+          					<b>Offense:</b> <?php echo $row2['OFFENSE_DESCRIPTION']; ?><br>
+          					<b>Type:</b> <?php echo 'Minor'; ?><br>
+          					<b>Date Filed:</b> <?php echo $row2['DATE_FILED']; ?><br>
+                    <b>Last Update:</b> <?php echo $row2['LAST_UPDATE']; ?><br>
+          					<b>Status:</b> <?php echo $row2['STATUS_DESCRIPTION']; ?><br>
                     <br>
-          					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
-          					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
+          					<b>Student ID No.:</b> <?php echo $row2['REPORTED_STUDENT_ID']; ?><br>
+          					<b>Student Name:</b> <?php echo $row2['STUDENT']; ?><br>
                     <br>
-          					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-          					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+          					<b>Complainant:</b> <?php echo $row2['COMPLAINANT']; ?><br>
+          					<b>Investigated by:</b> <?php echo $row2['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
 
@@ -189,10 +181,32 @@ if (!isset($_GET['cn']))
                                               </tr>
                                             </tbody>
                                           </table>
+                                        </div>
+                                      </div>
                                   </div>
                               </div>
-                          </div>
-                      </div>
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" style = "font-size: 15px;">Submitted Evidence</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseThree" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                        <div class="table-responsive">
+                                          <table class="table">
+                                            <tbody>
+                                              <tr>
+                                                <td>Evidence 1</td>
+                                                <td><i>10/14/18</i></td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+
                       <!-- .panel-body -->
                   </div>
                 </div>
@@ -206,10 +220,17 @@ if (!isset($_GET['cn']))
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body">
-					<p><?php echo $row['DETAILS']; ?></p>
+					<p>Caught cheating by the professor during finals</p>
 				</div>
       </div>
       <br>
+      <?php
+        $query3='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 5';
+        $result3=mysqli_query($dbc,$query3);
+        if(!$result3){
+          echo mysqli_error($dbc);
+        }
+      ?>
       <h4><b>Evidence</b></h4><br>
       <div class="row">
          <div class="col-lg-3">
@@ -225,15 +246,15 @@ if (!isset($_GET['cn']))
 
       <?php
         //Removes 'new' badge and reduces notif's count
-        if($row['IF_NEW'] and $row['REMARKS_ID'] == 2){
-          $query2='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
-          $result2=mysqli_query($dbc,$query2);
-          if(!$result2){
+        if($row2['IF_NEW']){
+          $query3='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+          $result3=mysqli_query($dbc,$query3);
+          if(!$result3){
             echo mysqli_error($dbc);
           }
         }
 
-        include 'student-notif-queries.php';
+        include 'hdo-notif-queries.php';
       ?>
     </div>
     <!-- /#wrapper -->
@@ -263,48 +284,10 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-    <?php include 'student-notif-scripts.php' ?>
-
-    $('#submit').click(function() {
-      $.ajax({
-          url: '../ajax/student-submit-forms.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>
-          },
-          success: function(msg) {
-              $('#message').text('Submitted successfully!');
-              $("#submit").attr('disabled', true).text("Submitted");
-
-              $("#alertModal").modal("show");
-          }
-      });
-    });
+    <?php include 'hdo-notif-scripts.php' ?>
   });
-
-  <?php
-    if($row['REMARKS_ID'] != 2){ ?>
-      $("#submit").attr('disabled', true).text("Submitted");
-  <?php } ?>
   </script>
 
-  <!-- Modal -->
-  <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
-        </div>
-        <div class="modal-body">
-          <p id="message"></message>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </body>
 
 </html>

@@ -252,17 +252,16 @@ if (!isset($_GET['irn']))
                   offenseID: $('#offense').val(),
                   cheatingType: $('#cheat-type').val(),
                   complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
+                  location: "<?php echo $row['LOCATION']; ?>",
                   details: "<?php echo $row['DETAILS']; ?>",
                   assignIDO: $('#ido').val()
-              },
-              success: function(msg) {
-                  $('#message').text('Submitted successfully!');
-                  $('#form').find('input, textarea, button, select').attr('disabled','disabled');
-                  $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
-                  $('#submit').text("Submitted");
               }
           });
-        };
+          $('#message').text('Submitted successfully!');
+          $('#form').find('input, textarea, button, select').attr('disabled','disabled');
+          $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
+          $('#submit').text("Submitted");
+        }
 
         $("#alertModal").modal("show");
       });

@@ -1,4 +1,4 @@
-<?php include 'hdo.php' ?>
+<?php include 'ido.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,12 +48,12 @@
 <body>
 
   <?php
-    include 'hdo-notif-queries.php';
+    include 'ido-notif-queries.php';
   ?>
 
   <div id="wrapper">
 
-    <?php include 'hdo-sidebar.php'; ?>
+    <?php include 'ido-sidebar.php'; ?>
 
     <div id="page-wrapper">
       <div class="row">
@@ -78,53 +78,54 @@
               </thead>
               <tbody>
                 <?php
-                  $query2='SELECT 		C.CASE_ID AS CASE_ID,
-                                			C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
-                                      C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
-                                      CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
-                                      C.OFFENSE_ID AS OFFENSE_ID,
-                                      RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
-                                      C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
-                                      RO.TYPE AS TYPE,
-                                      C.COMPLAINANT_ID AS COMPLAINANT_ID,
-                                      CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
-                                      C.DETAILS AS DETAILS,
-                                      C.ADMISSION_TYPE_ID AS ADMISSION_TYPE_ID,
-                                      C.HANDLED_BY_ID AS HANDLED_BY_ID,
-                                      CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS HANDLED_BY,
-                                      C.DATE_FILED AS DATE_FILED,
-                                      C.STATUS_ID AS STATUS_ID,
-                                      S.DESCRIPTION AS STATUS_DESCRIPTION,
-                                      C.REMARKS_ID AS REMARKS_ID,
-                                      R.DESCRIPTION AS REMARKS_DESCRIPTION,
-                                      C.LAST_UPDATE AS LAST_UPDATE,
-                                      C.OULC_VERDICT AS OULC_VERDICT,
-                                      C.HEARING_DATE AS HEARING_DATE,
-                                      C.DATE_CLOSED AS DATE_CLOSED,
-                                      C.IF_NEW AS IF_NEW
-                          FROM 		    CASES C
-                          LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
-                          LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
-                          LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
-                          LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
-                          LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
-                          LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
-                          LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
-                          ORDER BY	  C.LAST_UPDATE';
-                  $result2=mysqli_query($dbc,$query2);
-                  if(!$result2){
+                $query='SELECT 		  C.CASE_ID AS CASE_ID,
+                                    C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
+                                    C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
+                                    CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
+                                    C.OFFENSE_ID AS OFFENSE_ID,
+                                    RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
+                                    C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
+                                    RO.TYPE AS TYPE,
+                                    C.COMPLAINANT_ID AS COMPLAINANT_ID,
+                                    CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
+                                    C.DETAILS AS DETAILS,
+                                    C.ADMISSION_TYPE_ID AS ADMISSION_TYPE_ID,
+                                    C.HANDLED_BY_ID AS HANDLED_BY_ID,
+                                    CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS HANDLED_BY,
+                                    C.DATE_FILED AS DATE_FILED,
+                                    C.STATUS_ID AS STATUS_ID,
+                                    S.DESCRIPTION AS STATUS_DESCRIPTION,
+                                    C.REMARKS_ID AS REMARKS_ID,
+                                    R.DESCRIPTION AS REMARKS_DESCRIPTION,
+                                    C.LAST_UPDATE AS LAST_UPDATE,
+                                    C.OULC_VERDICT AS OULC_VERDICT,
+                                    C.HEARING_DATE AS HEARING_DATE,
+                                    C.DATE_CLOSED AS DATE_CLOSED,
+                                    C.IF_NEW AS IF_NEW
+                        FROM 		    CASES C
+                        LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                        LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
+                        LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+                        LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+                        LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
+                        LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
+                        LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
+                        WHERE       C.HANDLED_BY_ID = "'.$_SESSION['user_id'].'"
+                        ORDER BY	  C.LAST_UPDATE';
+                        $result=mysqli_query($dbc,$query);
+                  if(!$result){
                     echo mysqli_error($dbc);
                   }
                   else{
-                    while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-                      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-case.php?cn={$row2['CASE_ID']}'\">
-                            <td>{$row2['CASE_ID']} <span id=\"{$row2['CASE_ID']}\" class=\"badge\"></span></td>
-                            <td>{$row2['OFFENSE_DESCRIPTION']}</td>
-                            <td>{$row2['TYPE']}</td>
-                            <td>{$row2['DATE_FILED']}</td>
-                            <td>{$row2['LAST_UPDATE']}</td>
-                            <td>{$row2['STATUS_DESCRIPTION']}</td>
-                            <td>{$row2['REMARKS_DESCRIPTION']}</td>
+                    while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
+                      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='ido-view-case.php?cn={$row['CASE_ID']}'\">
+                            <td>{$row['CASE_ID']} <span id=\"{$row['CASE_ID']}\" class=\"badge\"></span></td>
+                            <td>{$row['OFFENSE_DESCRIPTION']}</td>
+                            <td>{$row['TYPE']}</td>
+                            <td>{$row['DATE_FILED']}</td>
+                            <td>{$row['LAST_UPDATE']}</td>
+                            <td>{$row['STATUS_DESCRIPTION']}</td>
+                            <td>{$row['REMARKS_DESCRIPTION']}</td>
                             </tr>";
                     }
                   }
@@ -169,20 +170,20 @@
           "order": [[ 4, "desc" ]]
       });
 
-      <?php include 'hdo-notif-scripts.php'?>
+      <?php include 'ido-notif-scripts.php'?>
 
       <?php
-      $result2=mysqli_query($dbc,$query2);
-      if(!$result2){
+      $result=mysqli_query($dbc,$query);
+      if(!$result){
         echo mysqli_error($dbc);
       }
       else{
-        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-          if($row2['IF_NEW']){ ?>
-            $('<?php echo "#".$row2['CASE_ID'] ?>').text('NEW');
+        while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
+          if($row['IF_NEW']){ ?>
+            $('<?php echo "#".$row['CASE_ID'] ?>').text('NEW');
           <?php }
           else{ ?>
-            $('<?php echo "#".$row2['CASE_ID'] ?>').text('');
+            $('<?php echo "#".$row['CASE_ID'] ?>').text('');
           <?php }
         }
       } ?>

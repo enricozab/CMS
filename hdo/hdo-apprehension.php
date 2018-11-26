@@ -94,13 +94,24 @@
                       <label>If other, please specify <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="other-offense" class="form-control"></input>
                     </div>
+                    <?php
+                      //Gets list of cheat types
+                      $query2='SELECT CHEATING_TYPE_ID, DESCRIPTION FROM REF_CHEATING_TYPE';
+                      $result2=mysqli_query($dbc,$query2);
+                      if(!$result2){
+                        echo mysqli_error($dbc);
+                      }
+                    ?>
                     <div id="cheat" class="form-group" style='width: 300px;' hidden>
-                      <label>Type of Cheating <span style="font-weight:normal; color:red;">*</span></label>
+                      <label>Cheating Type <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="cheat-type" class="form-control">
                         <option value="" disabled selected>Select Type</option>
-                        <option value="withkodigo">With Kodigo</option>
-                        <option value="glancing">Glancing</option>
-                        <option value="searching">Searching</option>
+                        <?php
+                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                          echo
+                            "<option value=\"{$row2['CHEATING_TYPE_ID']}\">{$row2['DESCRIPTION']}</option>";
+                        }
+                        ?>
                       </select>
                     </div>
                     <div class="form-group" style = "width: 300px;">
@@ -109,7 +120,7 @@
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Location</label>
-                      <input class="form-control">
+                      <input id="location" class="form-control">
                     </div>
                     <div class="form-group">
                       <label>Details <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
@@ -193,7 +204,7 @@
       });
 
       $('#submit').click(function() {
-        var ids = ['#offense','#details','#ido'];
+        var ids = ['#studentID','#offense','#complainantID','#location','#details','#ido'];
         var isEmpty = true;
 
         if($('#cheat').is(":visible")){
@@ -221,15 +232,14 @@
                   offenseID: $('#offense').val(),
                   cheatingType: $('#cheat-type').val(),
                   complainantID: $('#complainantID').val(),
+                  location: $('#location').val(),
                   details: $('#details').val(),
                   assignIDO: $('#ido').val()
-              },
-              success: function(msg) {
-                  $('#message').text('Submitted successfully!');
-                  $('#form')[0].reset();
               }
           });
-        };
+          $('#message').text('Submitted successfully!');
+          $('#form')[0].reset();
+        }
 
         $("#alertModal").modal("show");
       });
