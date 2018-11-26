@@ -57,6 +57,18 @@ Pass: 1234
 					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/blocked.php");
 			}
 		*/
+
+    // SIGN IN API
+    $g_client = new Google_Client();
+
+    $g_client->setClientId("837302867476-vfgekenddut1bmuggvfesfjued90fviv.apps.googleusercontent.com");
+    $g_client->setClientSecret("iwiNAZPU0RJyC_Tt14q684of");
+    $g_client->setRedirectUri("http://localhost/Google/signin.php");
+    $g_client->setScopes("email");
+
+    $auth_url = $g_client->createAuthUrl();
+
+
 		$message = NULL;
 		if (isset($_POST['login'])){
 			if(empty($_POST['email']) || empty($_POST['password'])) {
@@ -107,7 +119,11 @@ Pass: 1234
                     <div class="panel-heading">
                         <h3 class="panel-title" align="center"><b>Welcome to CMS!</b></h3>
                     </div>
-                    <div class="panel-body">
+
+                    <div class="panel-body" align="center">
+
+                      <a href="<?php echo $auth_url ?>">Login Through Google</a>
+                      <!--
                         <form role="form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                             <fieldset>
                                 <div class="form-group">
@@ -121,10 +137,10 @@ Pass: 1234
                                         <input name="remember" type="checkbox" value="Remember Me">Remember Me
                                     </label>
                                 </div>
-                                <!-- Change this to a button or input when using this as a form -->
+                                <!-- Change this to a button or input when using this as a form
                                 <button type="submit" name="login" class="btn btn-lg btn-success btn-block">Login</button>
                             </fieldset>
-                        </form>
+                        </form>-->
                     </div>
                 </div>
             </div>
