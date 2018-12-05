@@ -2,6 +2,7 @@
   session_start();
   session_unset();
   require_once('./mysql_connect.php');
+  require ("vendor/autoload.php");
 ?>
 <!DOCTYPE html>
 <!--
@@ -63,58 +64,77 @@ Pass: 1234
 
     $g_client->setClientId("837302867476-vfgekenddut1bmuggvfesfjued90fviv.apps.googleusercontent.com");
     $g_client->setClientSecret("iwiNAZPU0RJyC_Tt14q684of");
-    $g_client->setRedirectUri("http://localhost/Google/signin.php");
+    $g_client->setRedirectUri("http://localhost/CMS/login.php");
     $g_client->setScopes("email");
 
     $auth_url = $g_client->createAuthUrl();
+    $auth_code = isset($_GET['code']) ? $_GET['code'] : NULL;
 
+    if(isset($auth_code)) {
 
-		$message = NULL;
-		if (isset($_POST['login'])){
-			if(empty($_POST['email']) || empty($_POST['password'])) {
-				$_SESSION['email']=FALSE;
-				$_SESSION['password']=FALSE;
-				$message.='<p>You forgot to enter your username/password!</p>';
-			}
-			else {
-				$_SESSION['email']=$_POST['email'];
-				$_SESSION['password']=$_POST['password'];
-			}
+      try {
 
-			if (!isset($message)) {
-        $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$_SESSION["email"].'" AND PASSWORD="'.$_SESSION["password"].'"';
-        $result=mysqli_query($dbc,$query);
-        $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
-        if($row){
-          $_SESSION['user_id']=$row['USER_ID'];
-          $_SESSION['first_name']=$row['FIRST_NAME'];
-          $_SESSION['last_name']=$row['LAST_NAME'];
-          $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
-          $_SESSION['phone']=$row['PHONE'];
+        $access_token = $g_client->fetchAccessTokenWithAuthCode($auth_code);
+        $g_client->setAccessToken($access_token);
+        //var_dump($access_token); - just to check if we're getting something
 
-          if($_SESSION['user_type_id']==1){
-  					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student/student-home.php");
-  				}
-          else if($_SESSION['user_type_id']==2){
-  					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty/faculty-home.php");
-  				}
-          else if($_SESSION['user_type_id']==3){
-  					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/hdo/hdo-home.php");
-  				}
-          else if($_SESSION['user_type_id']==4){
-  					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ido/ido-home.php");
-  				}
-  				else if($_SESSION['user_type_id']==7){
-  					header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
-  				}
+      } catch (Exception $e){
+
+        echo $e->getMessage();
+
+      }
+
+      try {
+
+        $pay_load = $g_client->verifyIdToken();
+
+        //var_dump($pay_load);
+
+      } catch (Exception $e) {
+
+        echo $e->getMessage();
+
+      }
+    }
+
+    else {
+      $pay_load = null;
+    }
+
+    // CMS
+
+    $email = $pay_load["email"];
+    $message = NULL;
+
+    if (!isset($message)) {
+      $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$email.'"';
+      $result=mysqli_query($dbc,$query);
+      $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+      if($row){
+        $_SESSION['user_id']=$row['USER_ID'];
+        $_SESSION['first_name']=$row['FIRST_NAME'];
+        $_SESSION['last_name']=$row['LAST_NAME'];
+        $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
+        $_SESSION['phone']=$row['PHONE'];
+
+        if($_SESSION['user_type_id']==1){
+          header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student/student-home.php");
         }
-				else {
-					$message.='Your username and password didn\'t match. Please try again.';
-				}
-			}
-		}
-		/*End of main Submit conditional*/
-	?>
+        else if($_SESSION['user_type_id']==2){
+          header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty/faculty-home.php");
+        }
+        else if($_SESSION['user_type_id']==3){
+          header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/hdo/hdo-home.php");
+        }
+        else if($_SESSION['user_type_id']==4){
+          header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ido/ido-home.php");
+        }
+        else if($_SESSION['user_type_id']==7){
+          header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
+        }
+      }
+    }?>
+
     <div class="container">
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
@@ -125,25 +145,43 @@ Pass: 1234
 
                     <div class="panel-body" align="center">
 
-                      <a href="<?php echo $auth_url ?>">Login Through Google</a>
-                      <!--
-                        <form role="form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                            <fieldset>
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="E-mail" name="email" type="email" autofocus>
-                                </div>
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="Password" name="password" type="password" value="">
-                                </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input name="remember" type="checkbox" value="Remember Me">Remember Me
-                                    </label>
-                                </div>
-                                <!-- Change this to a button or input when using this as a form
-                                <button type="submit" name="login" class="btn btn-lg btn-success btn-block">Login</button>
-                            </fieldset>
-                        </form>-->
+                      <?php
+                        if ($email == NULL) {
+                          ?>
+                          <a href="<?php echo $auth_url ?>">Login Through Google</a>
+                          <?php
+                        }
+
+                        else {
+
+                          $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$email.'"';
+                          $result=mysqli_query($dbc,$query);
+                          $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+                          if($row){
+                            $_SESSION['user_id']=$row['USER_ID'];
+                            $_SESSION['first_name']=$row['FIRST_NAME'];
+                            $_SESSION['last_name']=$row['LAST_NAME'];
+                            $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
+                            $_SESSION['phone']=$row['PHONE'];
+
+                            if($_SESSION['user_type_id']==1){
+                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student/student-home.php");
+                            }
+                            else if($_SESSION['user_type_id']==2){
+                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty/faculty-home.php");
+                            }
+                            else if($_SESSION['user_type_id']==3){
+                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/hdo/hdo-home.php");
+                            }
+                            else if($_SESSION['user_type_id']==4){
+                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ido/ido-home.php");
+                            }
+                            else if($_SESSION['user_type_id']==7){
+                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
+                            }
+                          }
+                        }
+                      ?>
                     </div>
                 </div>
             </div>
