@@ -148,7 +148,9 @@ Pass: 1234
                       <?php
                         if ($email == NULL) {
                           ?>
-                          <a href="<?php echo $auth_url ?>">Login Through Google</a>
+                          <a class="btn btn-danger" href="<?php echo $auth_url ?>">
+                              <i class="fa fa-google-plus"></i> Sign in with Google
+                          </a>
                           <?php
                         }
 

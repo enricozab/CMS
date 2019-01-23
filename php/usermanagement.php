@@ -260,6 +260,103 @@
                 <div class="col-lg-12">
                     <h3 class="page-header">User Management</h3>
                 </div>
+				
+				<div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            User
+                        </div>
+                        <!-- .panel-heading -->
+                        <div class="panel-body">
+                            <div class="panel-group" id="accordion">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Create User</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+											<label>First Name</label>
+                                            <input class="form-control">
+											<br>
+											<label>Last Name</label>
+                                            <input class="form-control">
+											<br>
+											<label>DLSU Email</label>
+                                            <input class="form-control">
+											<br>
+											<label>User Type</label>
+                                            <select class="form-control">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                            </select>
+											<br>
+											<label>Phone Number</label>
+                                            <input class="form-control">
+											<br>
+											<button type="submit" class="btn btn-default">Create User</button>
+											<br>
+										</div>
+                                    </div>
+                                </div>
+								
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Edit User</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse">
+                                        <div class="panel-body">
+											<label>Select User</label>
+                                            <select class="form-control">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                            </select>
+											<br>
+											<label>First Name</label>
+                                            <input class="form-control">
+											<br>
+											<label>Last Name</label>
+                                            <input class="form-control">
+											<br>
+											<label>DLSU Email</label>
+                                            <input class="form-control">
+											<br>
+											<label>User Type</label>
+                                            <select class="form-control">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                            </select>
+											<br>
+											<label>Phone Number</label>
+                                            <input class="form-control">
+											<br>
+											<button type="submit" class="btn btn-default">Edit User</button>
+											<br><br>
+											Notes: after selecting a user in the first dropdown select, the information will update in the other text inputs
+										</div>
+                                    </div>
+                                </div>
+								
+                            </div>
+                        </div>
+                        <!-- .panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+                
                 <!-- /.col-lg-12 -->
             </div>
         </div>

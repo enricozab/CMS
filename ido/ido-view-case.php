@@ -57,7 +57,7 @@ if (!isset($_GET['cn']))
 <body>
 
   <?php
-    $query='SELECT 		C.CASE_ID AS CASE_ID,
+    $query='SELECT 		  C.CASE_ID AS CASE_ID,
                         C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                         C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                         CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
@@ -220,12 +220,16 @@ if (!isset($_GET['cn']))
          </div>
       </div>
       <br><br><br>
-      <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+      <div class="row">
+        <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
+        <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
+        <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+      </div>
       <br><br><br><br>
 
       <?php
         //Removes 'new' badge and reduces notif's count
-        if($row['IF_NEW'] and $row['REMARKS_ID'] == 2){
+        if($row['IF_NEW']){
           $query2='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
           $result2=mysqli_query($dbc,$query2);
           if(!$result2){
@@ -275,6 +279,22 @@ if (!isset($_GET['cn']))
           success: function(msg) {
               $('#message').text('Submitted successfully!');
               $("#submit").attr('disabled', true).text("Submitted");
+              $("#return").attr('disabled', true);
+
+              $("#alertModal").modal("show");
+          }
+      });
+    });
+
+    $('#return').click(function() {
+      $.ajax({
+          url: '../ajax/student-return-forms.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+              $('#message').text('Returned successfully!');
 
               $("#alertModal").modal("show");
           }
@@ -283,8 +303,9 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['REMARKS_ID'] != 3){ ?>
+    if($row['REMARKS_ID'] != 2 and $row['REMARKS_ID'] != 6){ ?>
       $("#submit").attr('disabled', true).text("Submitted");
+      $("#return").attr('disabled', true);
   <?php } ?>
   </script>
 
