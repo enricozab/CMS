@@ -24,7 +24,7 @@
 				<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
 				</li>
 				<li class="divider"></li>
-				<li><a href="../login.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+				<li><a href="../login.php" ><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 				</li>
 			</ul>
 			<!-- /.dropdown-user -->
@@ -59,3 +59,14 @@
 	</div>
 	<!-- /.navbar-static-side -->
 </nav>
+<script>
+function logout() {
+	$.ajax({
+			url: 'https://www.google.com/accounts/Logout',
+			type: 'POST',
+			success: function(msg) {
+				alert("HAHAHA");
+			}
+	});
+}
+</script>
