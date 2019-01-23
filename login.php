@@ -157,6 +157,7 @@ Pass: 1234
                           $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$email.'"';
                           $result=mysqli_query($dbc,$query);
                           $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+
                           if($row){
                             $_SESSION['user_id']=$row['USER_ID'];
                             $_SESSION['first_name']=$row['FIRST_NAME'];
@@ -179,6 +180,12 @@ Pass: 1234
                             else if($_SESSION['user_type_id']==7){
                               header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
                             }
+                          }
+
+                          else {
+                            ?>
+                            <a href="<?php echo $auth_url ?>">Invalid Email. Please try again.</a>
+                            <?php
                           }
                         }
                       ?>
