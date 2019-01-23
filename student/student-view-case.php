@@ -283,7 +283,7 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['REMARKS_ID'] != 2){ ?>
+    if($row['REMARKS_ID'] != 2 and $row['REMARKS_ID'] !=6){ ?>
       $("#submit").attr('disabled', true).text("Submitted");
   <?php } ?>
   </script>
