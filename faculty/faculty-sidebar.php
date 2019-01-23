@@ -59,14 +59,3 @@
 	</div>
 	<!-- /.navbar-static-side -->
 </nav>
-<script>
-function logout() {
-	$.ajax({
-			url: 'https://www.google.com/accounts/Logout',
-			type: 'POST',
-			success: function(msg) {
-				alert("HAHAHA");
-			}
-	});
-}
-</script>
