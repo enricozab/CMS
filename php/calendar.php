@@ -262,7 +262,7 @@
                     <h3 class="page-header">Calendar</h3>
                 </div>
                 <div>
-                  <img src="../images/calendar.png" width="1500" height="700">
+                  <iframe src="https://calendar.google.com/calendar/b/3/embed?height=600&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=verdectgroup%40gmail.com&amp;color=%231B887A&amp;ctz=Asia%2FManila" style="border-width:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
