@@ -1,7 +1,7 @@
 <?php include 'student.php' ?>
 <?php
 if (!isset($_GET['cn']))
-    header("Location: http://".$_SERVER['HTTP_HOST']."/cms/php/hdo-home.php");
+    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/student/student-home.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +57,7 @@ if (!isset($_GET['cn']))
 <body>
 
   <?php
-    $query='SELECT 		C.CASE_ID AS CASE_ID,
+    $query='SELECT 		  C.CASE_ID AS CASE_ID,
                         C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                         C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                         CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
@@ -225,11 +225,22 @@ if (!isset($_GET['cn']))
 
       <?php
         //Removes 'new' badge and reduces notif's count
-        if($row['IF_NEW'] and $row['REMARKS_ID'] == 2){
-          $query2='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
-          $result2=mysqli_query($dbc,$query2);
-          if(!$result2){
-            echo mysqli_error($dbc);
+        $query2='SELECT 		SC.CASE_ID AS CASE_ID,
+                            SC.IF_NEW AS IF_NEW
+                FROM 		    STUDENT_CASES SC
+                WHERE   	  SC.USER_ID = "'.$_SESSION['user_id'].'" AND SC.CASE_ID = "'.$_GET['cn'].'"';
+        $result2=mysqli_query($dbc,$query2);
+        if(!$result2){
+          echo mysqli_error($dbc);
+        }
+        else{
+          $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+          if($row2['IF_NEW']){
+            $query2='UPDATE STUDENT_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+            $result2=mysqli_query($dbc,$query2);
+            if(!$result2){
+              echo mysqli_error($dbc);
+            }
           }
         }
 
@@ -263,6 +274,7 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
+
     <?php include 'student-notif-scripts.php' ?>
 
     $('#submit').click(function() {
@@ -283,7 +295,7 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['REMARKS_ID'] != 2 and $row['REMARKS_ID'] !=6){ ?>
+    if($row['REMARKS_ID'] != 3 or $row['REMARKS_ID'] > 4){ ?>
       $("#submit").attr('disabled', true).text("Submitted");
   <?php } ?>
   </script>

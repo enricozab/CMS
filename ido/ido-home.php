@@ -173,17 +173,22 @@
       <?php include 'ido-notif-scripts.php'?>
 
       <?php
-      $result=mysqli_query($dbc,$query);
-      if(!$result){
+      //Removes 'new' badge and reduces notif's count
+      $query2='SELECT 		IC.CASE_ID AS CASE_ID,
+                          IC.IF_NEW AS IF_NEW
+              FROM 		    IDO_CASES IC
+              WHERE   	  IC.USER_ID = "'.$_SESSION['user_id'].'"';
+      $result2=mysqli_query($dbc,$query2);
+      if(!$result2){
         echo mysqli_error($dbc);
       }
       else{
-        while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-          if($row['IF_NEW']){ ?>
-            $('<?php echo "#".$row['CASE_ID'] ?>').text('NEW');
+        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+          if($row2['IF_NEW']){ ?>
+            $('<?php echo "#".$row2['CASE_ID'] ?>').text('NEW');
           <?php }
           else{ ?>
-            $('<?php echo "#".$row['CASE_ID'] ?>').text('');
+            $('<?php echo "#".$row2['CASE_ID'] ?>').text('');
           <?php }
         }
       } ?>

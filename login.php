@@ -41,6 +41,9 @@ Pass: 1234
     <!-- Custom Fonts -->
     <link href="./vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <!-- Animated background -->
+    <link href="./extra-css/gradient-bg.css" rel="stylesheet" type="text/css">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -135,7 +138,61 @@ Pass: 1234
       }
     }?>
 
-    <div class="container">
+    <div style="position: absolute; top: 50%; left: 50%; width:800px; margin-left:-400px; margin-top: -100px;" align="center">
+      <div>
+        <h1 style="font-family: Helvetica; font-size: 60px;"><b>Welcome to CMS!</b></h1>
+      </div>
+    </div>
+    <div style="position: absolute; top: 50%; left: 50%; width: 300px; margin-left: -150px;" align="center">
+      <?php
+        if ($email == NULL) {
+          ?>
+          <a align="center" class="btn btn-danger" href="<?php echo $auth_url ?>">
+            <i class="fa fa-google-plus"></i> Sign in with Google
+          </a>
+          <?php
+        }
+
+        else {
+
+          $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$email.'"';
+          $result=mysqli_query($dbc,$query);
+          $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+
+          if($row){
+            $_SESSION['user_id']=$row['USER_ID'];
+            $_SESSION['first_name']=$row['FIRST_NAME'];
+            $_SESSION['last_name']=$row['LAST_NAME'];
+            $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
+            $_SESSION['phone']=$row['PHONE'];
+
+            if($_SESSION['user_type_id']==1){
+              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student/student-home.php");
+            }
+            else if($_SESSION['user_type_id']==2){
+              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty/faculty-home.php");
+            }
+            else if($_SESSION['user_type_id']==3){
+              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/hdo/hdo-home.php");
+            }
+            else if($_SESSION['user_type_id']==4){
+              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ido/ido-home.php");
+            }
+            else if($_SESSION['user_type_id']==7){
+              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
+            }
+          }
+
+          else {
+            ?>
+            <a href="<?php echo $auth_url ?>">Invalid Email. Please try again.</a>
+            <?php
+          }
+        }
+      ?>
+    </div>
+
+    <!--<div class="container">
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-default">
@@ -145,57 +202,13 @@ Pass: 1234
 
                     <div class="panel-body" align="center">
 
-                      <?php
-                        if ($email == NULL) {
-                          ?>
-                          <a class="btn btn-danger" href="<?php echo $auth_url ?>">
-                              <i class="fa fa-google-plus"></i> Sign in with Google
-                          </a>
-                          <?php
-                        }
 
-                        else {
 
-                          $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$email.'"';
-                          $result=mysqli_query($dbc,$query);
-                          $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
-
-                          if($row){
-                            $_SESSION['user_id']=$row['USER_ID'];
-                            $_SESSION['first_name']=$row['FIRST_NAME'];
-                            $_SESSION['last_name']=$row['LAST_NAME'];
-                            $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
-                            $_SESSION['phone']=$row['PHONE'];
-
-                            if($_SESSION['user_type_id']==1){
-                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student/student-home.php");
-                            }
-                            else if($_SESSION['user_type_id']==2){
-                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/faculty/faculty-home.php");
-                            }
-                            else if($_SESSION['user_type_id']==3){
-                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/hdo/hdo-home.php");
-                            }
-                            else if($_SESSION['user_type_id']==4){
-                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ido/ido-home.php");
-                            }
-                            else if($_SESSION['user_type_id']==7){
-                              header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
-                            }
-                          }
-
-                          else {
-                            ?>
-                            <a href="<?php echo $auth_url ?>">Invalid Email. Please try again.</a>
-                            <?php
-                          }
-                        }
-                      ?>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
     <!-- Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">

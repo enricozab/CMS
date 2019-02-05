@@ -47,6 +47,9 @@
 </head>
 
 <body>
+
+    <?php include 'faculty-notif-queries.php'; ?>
+
     <?php $message = NULL ?>
     <div id="wrapper">
 
@@ -110,6 +113,9 @@
 
     <script>
     $(document).ready(function() {
+
+      <?php include 'faculty-notif-scripts.php' ?>
+
       function isNumberKey(evt){
         var charCode = (evt.which) ? evt.which : event.keyCode
         if (charCode > 31 && (charCode < 48 || charCode > 57))

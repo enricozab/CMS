@@ -1,7 +1,7 @@
 <?php include 'hdo.php' ?>
 <?php
 if (!isset($_GET['cn']))
-    header("Location: http://".$_SERVER['HTTP_HOST']."/cms/php/hdo-home.php");
+    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/hdo/hdo-home.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -96,7 +96,7 @@ if (!isset($_GET['cn']))
     <div id="wrapper">
 
     <?php include 'hdo-sidebar.php';?>
-    
+
         <div id="page-wrapper">
             <div class="row">
                <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
@@ -241,7 +241,7 @@ if (!isset($_GET['cn']))
          </div>
       </div>
       <br><br><br>
-      <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" id="submit" name="submit" class="btn btn-primary" disabled>Submit</button>
       <br><br><br><br>
 
       <?php

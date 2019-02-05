@@ -1,7 +1,7 @@
 <?php include 'ido.php' ?>
 <?php
 if (!isset($_GET['cn']))
-    header("Location: http://".$_SERVER['HTTP_HOST']."/cms/php/hdo-home.php");
+    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/ido/ido-home.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,7 +63,7 @@ if (!isset($_GET['cn']))
                         CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
                         C.OFFENSE_ID AS OFFENSE_ID,
                         RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
-                        RO.TYPE AS  TYPE,
+                        RO.TYPE AS TYPE,
                         C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
                         RO.TYPE AS TYPE,
                         C.COMPLAINANT_ID AS COMPLAINANT_ID,
@@ -209,7 +209,14 @@ if (!isset($_GET['cn']))
 					<p><?php echo $row['DETAILS']; ?></p>
 				</div>
       </div>
-      <br>
+      <button type="button" class="btn btn-outline btn-primary btn-sm" id="addcomment"><span class=" fa fa-plus"></span>&nbsp; Add comment</button>
+      <div class="form-group" id="commentarea" hidden>
+        <label>Comment <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span>
+          <span id="closecomment" style="font-weight:normal; color:red; cursor: pointer;"><i class="fa fa-times"></i></span>
+        </label>
+        <textarea id="comment" name="comment" class="form-control" rows="3"></textarea>
+      </div>
+      <br><br>
       <h4><b>Evidence</b></h4><br>
       <div class="row">
          <div class="col-lg-3">
@@ -221,21 +228,33 @@ if (!isset($_GET['cn']))
       </div>
       <br><br><br>
       <div class="row">
+        <div>
         <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
         <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
-        <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button></div>
       </div>
-      <br><br><br><br>
+      <br><br><br>
 
       <?php
-        //Removes 'new' badge and reduces notif's count
-        if($row['IF_NEW']){
-          $query2='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+      //Removes 'new' badge and reduces notif's count
+      $query2='SELECT 		IC.CASE_ID AS CASE_ID,
+                          IC.IF_NEW AS IF_NEW
+              FROM 		    IDO_CASES IC
+              WHERE   	  IC.USER_ID = "'.$_SESSION['user_id'].'" AND IC.CASE_ID = "'.$_GET['cn'].'"';
+      $result2=mysqli_query($dbc,$query2);
+      if(!$result2){
+        echo mysqli_error($dbc);
+      }
+      else{
+        $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+        if($row2['IF_NEW']){
+          $query2='UPDATE IDO_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
           $result2=mysqli_query($dbc,$query2);
           if(!$result2){
             echo mysqli_error($dbc);
           }
         }
+      }
 
         include 'ido-notif-queries.php';
       ?>
@@ -269,17 +288,18 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
     <?php include 'ido-notif-scripts.php' ?>
 
-    $('#submit').click(function() {
+    $('#endorse').click(function() {
       $.ajax({
-          url: '../ajax/student-submit-forms.php',
+          url: '../ajax/',
           type: 'POST',
           data: {
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
-              $('#message').text('Submitted successfully!');
-              $("#submit").attr('disabled', true).text("Submitted");
+              $('#message').text('Endorsed to OULC successfully!');
+              $("#endorse").attr('disabled', true).text("Endorsed");
               $("#return").attr('disabled', true);
+              $("#dismiss").attr('disabled', true);
 
               $("#alertModal").modal("show");
           }
@@ -288,10 +308,11 @@ if (!isset($_GET['cn']))
 
     $('#return').click(function() {
       $.ajax({
-          url: '../ajax/student-return-forms.php',
+          url: '../ajax/ido-return-forms.php',
           type: 'POST',
           data: {
               caseID: <?php echo $_GET['cn']; ?>
+              comment: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
               $('#message').text('Returned successfully!');
@@ -300,12 +321,32 @@ if (!isset($_GET['cn']))
           }
       });
     });
+
+    $('#addcomment').click(function() {
+      $("#addcomment").hide();
+      $("#commentarea").show();
+    });
+
+    $('#closecomment').click(function() {
+      $("#addcomment").show();
+      $("#comment").val("");
+      $("#commentarea").hide();
+    });
   });
 
   <?php
-    if($row['REMARKS_ID'] != 2 and $row['REMARKS_ID'] != 6){ ?>
-      $("#submit").attr('disabled', true).text("Submitted");
+    if($row['TYPE'] != "Major"){ ?>
+      $("#endorse").hide();
+  <?php }
+    if($row['REMARKS_ID'] < 3){ ?>
+      $("#endorse").attr('disabled', true);
       $("#return").attr('disabled', true);
+      $("#dismiss").attr('disabled', true);
+  <?php }
+    if($row['REMARKS_ID'] > 3){ ?>
+      $("#endorse").attr('disabled', true).text("Endorsed");
+      $("#return").attr('disabled', true);
+      $("#dismiss").attr('disabled', true);
   <?php } ?>
   </script>
 

@@ -253,7 +253,7 @@ if (!isset($_GET['irn']))
                   cheatingType: $('#cheat-type').val(),
                   complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
                   location: "<?php echo $row['LOCATION']; ?>",
-                  details: "<?php echo $row['DETAILS']; ?>",
+                  details: $('#details').val(),
                   assignIDO: $('#ido').val()
               }
           });
