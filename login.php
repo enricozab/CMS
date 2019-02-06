@@ -138,15 +138,15 @@ Pass: 1234
       }
     }?>
 
-    <div style="position: absolute; top: 50%; left: 50%; width:200px; height: 200px; margin-left:-100px; margin-top: -140px;" align="center">
-      <img src="./images/newlogo.png">
-    </div>
     <div style="position: absolute; top: 50%; left: 50%; width:800px; margin-left:-400px; margin-top: -100px;" align="center">
       <div>
         <h1 style="font-family: Helvetica; font-size: 60px;"><b>Welcome to CMS!</b></h1>
       </div>
     </div>
-    <div style="position: absolute; top: 50%; left: 50%; width: 300px; margin-left: -150px; margin-top: 40px;" align="center">
+    <div style="position: absolute; top: 50%; left: 50%; width:800px; margin-left:-400px; margin-top: -20px;" align="center">
+      <h4 style="font-family: Helvetica; font-size: 15px;"><i>Case Management System for De La Salle University</i></h4>
+    </div>
+    <div style="position: absolute; top: 50%; left: 50%; width: 300px; margin-left: -150px; margin-top: 30px;" align="center">
       <?php
         if ($email == NULL) {
           ?>
@@ -193,6 +193,9 @@ Pass: 1234
           }
         }
       ?>
+    </div>
+    <div style="position: absolute; top: 100%; left: 50%; width:800px; margin-left:-400px; margin-top: -40px;" align="center">
+      <h4 style="font-family: Helvetica; font-size: 10px;">All rights reserved 2019</h4>
     </div>
 
     <!--<div class="container">
