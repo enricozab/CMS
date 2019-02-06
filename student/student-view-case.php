@@ -295,7 +295,7 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['REMARKS_ID'] != 3 or $row['REMARKS_ID'] > 4){ ?>
+    if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
       $("#submit").attr('disabled', true).text("Submitted");
   <?php } ?>
   </script>

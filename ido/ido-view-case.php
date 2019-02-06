@@ -77,6 +77,7 @@ if (!isset($_GET['cn']))
                         C.STATUS_ID AS STATUS_ID,
                         S.DESCRIPTION AS STATUS_DESCRIPTION,
                         C.REMARKS_ID AS REMARKS_ID,
+                        C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
                         C.OULC_VERDICT AS OULC_VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
@@ -214,7 +215,7 @@ if (!isset($_GET['cn']))
         <label>Comment <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span>
           <span id="closecomment" style="font-weight:normal; color:red; cursor: pointer;"><i class="fa fa-times"></i></span>
         </label>
-        <textarea id="comment" name="comment" class="form-control" rows="3"></textarea>
+        <textarea id="comment" name="comment" class="form-control" rows="3"><?php echo $row['COMMENT']; ?></textarea>
       </div>
       <br><br>
       <h4><b>Evidence</b></h4><br>
@@ -311,13 +312,16 @@ if (!isset($_GET['cn']))
           url: '../ajax/ido-return-forms.php',
           type: 'POST',
           data: {
-              caseID: <?php echo $_GET['cn']; ?>
-              comment: <?php echo $_GET['cn']; ?>
+              caseID: <?php echo $_GET['cn']; ?>,
+              comment: $('#comment').val()
           },
           success: function(msg) {
-              $('#message').text('Returned successfully!');
+            $('#message').text('Returned to student successfully!');
+            $("#endorse").attr('disabled', true);
+            $("#return").attr('disabled', true);
+            $("#dismiss").attr('disabled', true);
 
-              $("#alertModal").modal("show");
+            $("#alertModal").modal("show");
           }
       });
     });
@@ -338,12 +342,12 @@ if (!isset($_GET['cn']))
     if($row['TYPE'] != "Major"){ ?>
       $("#endorse").hide();
   <?php }
-    if($row['REMARKS_ID'] < 3){ ?>
+    if($row['REMARKS_ID'] < 3 or $row['REMARKS_ID'] == 4){ ?>
       $("#endorse").attr('disabled', true);
       $("#return").attr('disabled', true);
       $("#dismiss").attr('disabled', true);
   <?php }
-    if($row['REMARKS_ID'] > 3){ ?>
+    if($row['REMARKS_ID'] > 3 and $row['REMARKS_ID'] != 4){ ?>
       $("#endorse").attr('disabled', true).text("Endorsed");
       $("#return").attr('disabled', true);
       $("#dismiss").attr('disabled', true);

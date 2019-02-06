@@ -7,7 +7,11 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="student-home.php">Case Management System</a>
+		<a class="navbar-brand" href="student-home.php">
+			<div class="row">
+				&nbsp; <img src="../images/newlogo.png" style="width: 30px; height: 30px;">&nbsp; Case Management System
+			</div>
+		</a>
 	</div>
 	<!-- /.navbar-header -->
 
