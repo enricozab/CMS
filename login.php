@@ -132,8 +132,8 @@ Pass: 1234
         else if($_SESSION['user_type_id']==4){
           header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ido/ido-home.php");
         }
-        else if($_SESSION['user_type_id']==7){
-          header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
+        else if($_SESSION['user_type_id']==6){
+          header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/aulc/aulc-home.php");
         }
       }
     }?>
@@ -195,7 +195,7 @@ Pass: 1234
       ?>
     </div>
     <div style="position: absolute; top: 100%; left: 50%; width:800px; margin-left:-400px; margin-top: -40px;" align="center">
-      <h4 style="font-family: Helvetica; font-size: 10px;">All rights reserved 2019</h4>
+      <h4 style="font-family: Arial; font-size: 10px;">All rights reserved 2019</h4>
     </div>
 
     <!--<div class="container">

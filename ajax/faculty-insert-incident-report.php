@@ -6,6 +6,6 @@
             VALUES ('{$_POST['studentID']}','{$_POST['location']}','{$_POST['details']}','{$_SESSION['user_id']}')";
   $result=mysqli_query($dbc,$query);
   if(!$result){
-    echo 'mysqli_error($dbc)';
+    echo mysqli_error($dbc);
   }
 ?>

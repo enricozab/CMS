@@ -77,6 +77,7 @@ if (!isset($_GET['cn']))
                         C.STATUS_ID AS STATUS_ID,
                         S.DESCRIPTION AS STATUS_DESCRIPTION,
                         C.REMARKS_ID AS REMARKS_ID,
+                        C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
                         C.OULC_VERDICT AS OULC_VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
@@ -209,19 +210,53 @@ if (!isset($_GET['cn']))
 					<p><?php echo $row['DETAILS']; ?></p>
 				</div>
       </div>
-      <br>
-      <h4><b>Evidence</b></h4><br>
-      <div class="row">
-         <div class="col-lg-3">
-            <b>Document/Photo:</b><input type="file">
-         </div>
-         <div class="col-lg-3">
-            <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-         </div>
+
+      <div class="form-group" id="commentarea" hidden>
+        <label>Comment</label>
+        <textarea id="comment" name="comment" class="form-control" rows="3" disabled><?php echo $row['COMMENT']; ?></textarea>
       </div>
-      <br><br><br>
+
+      <br><br>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <b>Evidence</b></h4>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                 <div class="col-sm-6">
+                    <b>Document/Photo:</b><input type="file">
+                 </div>
+                 <div class="col-sm-6">
+                    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
+                 </div>
+              </div>
+              <div>
+                <span class="fa fa-plus" style="color: #5bc0de;">&nbsp; <a href="#" style="color: #5bc0de;">Add another file</a></span>
+              </div>
+              <br>
+              <button type="upload" id="upload" name="upload" class="btn btn-info btn-sm">Upload</button>
+            </div>
+          </div>
+        </div>
+        <!-- Verdict panel -->
+        <div id="verdictarea" class="col-lg-6" hidden>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <b>Verdict</b>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+              <textarea id="verdict" name="verdict" class="form-control" rows="1" disabled><?php echo $row['OULC_VERDICT']; ?></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br><br>
       <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
-      <br><br><br><br>
+      <br><br><br>
 
       <?php
         //Removes 'new' badge and reduces notif's count
@@ -297,6 +332,12 @@ if (!isset($_GET['cn']))
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
       $("#submit").attr('disabled', true).text("Submitted");
+  <?php }
+    if($row['COMMENT'] != null ){ ?>
+      $("#commentarea").show();
+  <?php }
+    if($row['OULC_VERDICT'] != null ){ ?>
+      $("#verdictarea").show();
   <?php } ?>
   </script>
 

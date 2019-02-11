@@ -18,7 +18,7 @@
 
   $result=mysqli_query($dbc,$query);
   if(!$result){
-    echo 'mysqli_error($dbc)';
+    echo mysqli_error($dbc);
   }
 
   //

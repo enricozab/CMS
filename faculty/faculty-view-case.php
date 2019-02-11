@@ -205,16 +205,43 @@ if (!isset($_GET['cn']))
 				</div>
       </div>
       <br>
-      <h4><b>Evidence</b></h4><br>
       <div class="row">
-         <div class="col-lg-3">
-            <b>Document/Photo:</b><input type="file">
-         </div>
-         <div class="col-lg-3">
-            <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-         </div>
+        <div class="col-lg-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <b>Evidence</b></h4>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                 <div class="col-sm-6">
+                    <b>Document/Photo:</b><input type="file">
+                 </div>
+                 <div class="col-sm-6">
+                    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
+                 </div>
+              </div>
+              <div>
+                <span class="fa fa-plus" style="color: #5bc0de;">&nbsp; <a href="#" style="color: #5bc0de;">Add another file</a></span>
+              </div>
+              <br>
+              <button type="upload" id="upload" name="upload" class="btn btn-info btn-sm">Upload</button>
+            </div>
+          </div>
+        </div>
+        <!-- Verdict panel -->
+        <div id="verdictarea" class="col-lg-6" hidden>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <b>Verdict</b>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+              <textarea id="verdict" name="verdict" class="form-control" rows="1" disabled><?php echo $row['OULC_VERDICT']; ?></textarea>
+            </div>
+          </div>
+        </div>
       </div>
-      <br><br><br><br>
+      <br><br><br>
 
       <?php
         //Removes 'new' badge and reduces notif's count
@@ -267,13 +294,16 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-    <?php include 'student-notif-scripts.php' ?>
+    <?php include 'faculty-notif-scripts.php' ?>
 
   });
 
   <?php
     if($row['REMARKS_ID'] != 2 and $row['REMARKS_ID'] !=6){ ?>
       $("#submit").attr('disabled', true).text("Submitted");
+  <?php }
+    if($row['OULC_VERDICT'] != null ){ ?>
+      $("#verdictarea").show();
   <?php } ?>
   </script>
 

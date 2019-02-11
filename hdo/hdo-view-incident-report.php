@@ -243,6 +243,7 @@ if (!isset($_GET['irn']))
         }
 
         if(isEmpty) {
+          console.log($('#details').val());
           $.ajax({
               url: '../ajax/hdo-insert-case.php',
               type: 'POST',
@@ -270,7 +271,8 @@ if (!isset($_GET['irn']))
     //Changes button text and disabled
     <?php
       $query2='SELECT   RO.DESCRIPTION AS DESCRIPTION,
-                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS IDO
+                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS IDO,
+                        C.DETAILS AS DETAILS
               FROM 		  CASES C
               JOIN      REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
               JOIN      USERS U ON C.HANDLED_BY_ID = U.USER_ID
@@ -286,6 +288,7 @@ if (!isset($_GET['irn']))
           $('#submit').text("Submitted");
           $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>');
           $('select[id=ido] > option:first-child').text('<?php echo $row2['IDO']; ?>');
+          $('#details').val('<?php echo $row['DETAILS']; ?>');
       <?php }
       } ?>
 
