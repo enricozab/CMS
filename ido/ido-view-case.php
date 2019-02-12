@@ -438,6 +438,9 @@ if (!isset($_GET['cn']))
       $("#dismiss").attr('disabled', true);
       $("#verdict").attr('disabled', true);
       $("#endorse").attr('disabled', true);
+  <?php
+      if($row['REMARKS_ID'] > 4) { ?>
+        $("#verdict").val("<?php echo $row['OULC_VERDICT']; ?>");
   <?php if($row['REMARKS_ID'] < 7) { ?>
           $("#endorse").text("Endorsed");
   <?php }
@@ -446,8 +449,8 @@ if (!isset($_GET['cn']))
   <?php }
         else if($row['REMARKS_ID'] == 9) { ?>
           $("#dismiss").text("Dismissed");
-          $("#verdict").val("<?php echo $row['OULC_VERDICT']; ?>");
   <?php }
+      }
     }
     if($row['COMMENT'] != null){ ?>
       $("#addcomment").hide();
