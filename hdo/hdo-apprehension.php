@@ -76,7 +76,7 @@
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
                       <label>Student <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No."/>
+                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
@@ -180,12 +180,18 @@
     $(document).ready(function() {
       <?php include 'hdo-notif-scripts.php'?>
 
-      function isNumberKey(evt){
-        var charCode = (evt.which) ? evt.which : event.keyCode
-        if (charCode > 31 && (charCode < 48 || charCode > 57))
+      $('.studentID').keypress(validateNumber);
+
+      function validateNumber(event) {
+        var key = window.event ? event.keyCode : event.which;
+        if (event.keyCode === 8 || event.keyCode === 46) {
+            return true;
+        } else if ( key < 48 || key > 57 ) {
             return false;
-        return true;
-      }
+        } else {
+            return true;
+        }
+      };
 
       $('.chosen-select').chosen();
 

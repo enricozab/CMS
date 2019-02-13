@@ -72,6 +72,7 @@ if (!isset($_GET['irn']))
                                        CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS STUDENT,
                                        IR.LOCATION AS LOCATION,
                                        IR.DETAILS AS DETAILS,
+                                       IR.DATE_INCIDENT AS DATE_INCIDENT,
                                        IR.COMPLAINANT_ID AS COMPLAINANT_ID,
                                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
                                        DATE_FILED,
@@ -134,13 +135,20 @@ if (!isset($_GET['irn']))
                       <input class="form-control" value="<?php echo $row['COMPLAINANT_ID'].' : '.$row['COMPLAINANT']; ?>" readonly>
                     </div>
                     <div class="form-group" style='width: 300px;'>
-                      <label>Location</label>
+                      <label>Location of the Incident</label>
                       <input class="form-control" value="<?php echo $row['LOCATION']; ?>" readonly>
                     </div>
+                    <div class="form-group" style='width: 300px;'>
+                      <label>Date and Time of the Incident</label>
+                      <input class="form-control" value="<?php echo $row['DATE_INCIDENT']; ?>" readonly>
+                    </div>
                     <div class="form-group">
-                      <label>Details </label>
-                      <textarea id="details" class="form-control" rows="3"><?php echo $row['DETAILS']; ?></textarea>
+                      <label>Summary of the Incident </label>
+                      <textarea id="details" class="form-control" style="width:600px;" rows="5"><?php echo $row['DETAILS']; ?></textarea>
   				          </div>
+                    <br>
+                    <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+                    <br><br><br>
                     <?php
                       $query2='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 4';
                       $result2=mysqli_query($dbc,$query2);
@@ -271,8 +279,7 @@ if (!isset($_GET['irn']))
     //Changes button text and disabled
     <?php
       $query2='SELECT   RO.DESCRIPTION AS DESCRIPTION,
-                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS IDO,
-                        C.DETAILS AS DETAILS
+                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS IDO
               FROM 		  CASES C
               JOIN      REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
               JOIN      USERS U ON C.HANDLED_BY_ID = U.USER_ID
@@ -283,7 +290,8 @@ if (!isset($_GET['irn']))
       }
       else{
         if($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){ ?>
-          $('#form').find('input, textarea, button, select').attr('disabled','disabled');
+          $('#form').find('button, select').attr('disabled',true);
+          $('#details').attr('readonly',true);
           $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
           $('#submit').text("Submitted");
           $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>');

@@ -61,19 +61,48 @@
 
                 <div class="col-lg-12">
                   <form id="form">
-                    <div class="form-group" style = "width: 300px;">
-                      <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No."/>
+                    <div id="studentinvolved">
+                      <div class="form-group" style = "width: 300px;">
+                        <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                        <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                      </div>
                     </div>
+                    <div id="appendstudent">
+                      <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another student</a></span>
+                    </div>
+                    <br>
                     <div class="form-group" style = "width: 300px;">
-                      <label>Location  <span style="font-weight:normal; color:red;">*</span></label>
+                      <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="location" name="location" class="form-control" placeholder="Enter Location"/>
                     </div>
+                    <div class="form-group" style = "width: 160px;">
+                      <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
+                      <input id="date" type="date" name="date" class="form-control"/>
+                    </div>
+                    <div class="form-group" style = "width: 160px;">
+                      <label>Time of the Incident <span style="font-weight:normal; color:red;">*</span></label>
+                      <input id="time" type="time" name="time" class="form-control"/>
+                    </div>
                     <div class="form-group">
-                      <label>Details <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <textarea id="details" name="details" class="form-control" rows="3"></textarea>
+                      <label>Please provide a summary of the incident <span style="font-weight:normal; color:red;">*</span></label>
+                      <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5"></textarea>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                      <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
+                      <br><br>
+                      <div id="evidencelist">
+                        <div class="form-group" style="width:300px;">
+                          <input type="file">
+                        </div>
+                      </div>
+                      <div id="appendevidence">
+                        <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another file</a></span>
+                      </div>
                     </div>
                     <br><br>
+                    <i>*Insert HelloSign*</i>
+                    <br><br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
@@ -116,20 +145,60 @@
 
       <?php include 'faculty-notif-scripts.php' ?>
 
-      function isNumberKey(evt){
-        var charCode = (evt.which) ? evt.which : event.keyCode
-        if (charCode > 31 && (charCode < 48 || charCode > 57))
+      $('.studentID').keypress(validateNumber);
+
+      $(document).on('keypress', '.studentID', function(){
+        $(this).keypress(validateNumber);
+      });
+
+      function validateNumber(event) {
+        var key = window.event ? event.keyCode : event.which;
+        if (event.keyCode === 8 || event.keyCode === 46) {
+            return true;
+        } else if ( key < 48 || key > 57 ) {
             return false;
-        return true;
-      }
+        } else {
+            return true;
+        }
+      };
+
+      $("#appendstudent").click(function(){
+        $("#studentinvolved").append('<div class="form-group input-group" style="width: 300px;" id="newstudent"><input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>'+
+        '<span id="removestudent" style="cursor: pointer;" class="input-group-addon"><span style="color:red;" class="fa fa-times"></span></span>'+
+        '</div>');
+      });
+
+      $("#appendevidence").click(function(){
+        $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
+        '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
+        '<input type="file">'+
+
+        '</div>');
+      });
+
+      $(document).on('click', '#removestudent', function(){
+        $(this).closest("#newstudent").remove();
+      });
+
+      $(document).on('click', '#removeevidence', function(){
+        $(this).closest("#newsevidence").remove();
+      });
 
       $('form').submit(function(e) {
         e.preventDefault();
       });
 
       $('#submit').click(function() {
-        var ids = ['#studentID','#location','#details'];
+        var ids = ['#location','#date','#time','textarea'];
         var isEmpty = true;
+        var studentlist = [];
+
+        $('.studentID').each(function(i, obj){
+          if(obj.value.length == 0){
+            isEmpty = false;
+          }
+          studentlist.push(parseInt(obj.value));
+        });
 
         for(var i = 0; i < ids.length; ++i ) {
           if($.trim($(ids[i]).val()).length == 0) {
@@ -138,12 +207,16 @@
         }
 
         if(isEmpty) {
+          console.log($('#date').val());
+          console.log($('#time').val());
           $.ajax({
               url: '../ajax/faculty-insert-incident-report.php',
               type: 'POST',
               data: {
-                  studentID: $('#studentID').val(),
+                  studentID: studentlist,
                   location: $('#location').val(),
+                  date: $('#date').val(),
+                  time: $('#time').val(),
                   details: $('#details').val()
               },
               success: function(msg) {

@@ -110,7 +110,7 @@
                         LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
                         LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
                         LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
-                        WHERE       C.HANDLED_BY_ID = "'.$_SESSION['user_id'].'"
+                        LEFT JOIN   AULC_CASES AU ON C.CASE_ID = AU.CASE_ID
                         ORDER BY	  C.LAST_UPDATE';
                         $result=mysqli_query($dbc,$query);
                   if(!$result){
@@ -118,7 +118,7 @@
                   }
                   else{
                     while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-                      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='ido-view-case.php?cn={$row['CASE_ID']}'\">
+                      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='aulc-view-case.php?cn={$row['CASE_ID']}'\">
                             <td>{$row['CASE_ID']} <span id=\"{$row['CASE_ID']}\" class=\"badge\"></span></td>
                             <td>{$row['OFFENSE_DESCRIPTION']}</td>
                             <td>{$row['TYPE']}</td>
@@ -174,10 +174,9 @@
 
       <?php
       //Removes 'new' badge and reduces notif's count
-      $query2='SELECT 		IC.CASE_ID AS CASE_ID,
-                          IC.IF_NEW AS IF_NEW
-              FROM 		    IDO_CASES IC
-              WHERE   	  IC.USER_ID = "'.$_SESSION['user_id'].'"';
+      $query2='SELECT 		AU.CASE_ID AS CASE_ID,
+                          AU.IF_NEW AS IF_NEW
+              FROM 		    AULC_CASES AU';
       $result2=mysqli_query($dbc,$query2);
       if(!$result2){
         echo mysqli_error($dbc);

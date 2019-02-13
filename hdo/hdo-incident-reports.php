@@ -75,13 +75,13 @@
                       </thead>
                       <tbody>
                         <?php
-                          $query='SELECT 	IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
+                          $query='SELECT 	  IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                                             CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
                                             DATE_FILED,
                                             IR.IF_NEW AS IF_NEW
                                   FROM 	    INCIDENT_REPORTS IR
                                   JOIN	    USERS U ON IR.COMPLAINANT_ID = U.USER_ID
-                                  ORDER BY  IR.DATE_FILED';
+                                  ORDER BY  IR.DATE_FILED, IR.INCIDENT_REPORT_ID DESC';
                           $result=mysqli_query($dbc,$query);
                           if(!$result){
                             echo mysqli_error($dbc);

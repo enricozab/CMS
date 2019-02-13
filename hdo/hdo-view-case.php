@@ -216,7 +216,7 @@ if (!isset($_GET['cn']))
 			<br><br>
       <div class="panel panel-default">
         <div class="panel-heading">
-					<b>Details</b>
+					<b>Summary of the Incident</b>
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body">

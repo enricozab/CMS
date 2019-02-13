@@ -99,149 +99,67 @@ if (!isset($_GET['cn']))
 
     <?php include 'faculty-sidebar.php';?>
 
-        <div id="page-wrapper">
-            <div class="row">
-               <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
-                <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location:</b> <?php echo $row['LOCATION']; ?><br>
-          					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
-                    <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
-          					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
-                    <br>
-          					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
-          					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
-                    <br>
-          					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-          					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
-                    <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-                </div>
-
-                <div class="col-lg-6">
-					          <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Updates</b>
-                      </div>
-                      <!-- .panel-heading -->
-                      <div class="panel-body">
-                          <div class="panel-group" id="accordion">
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">History</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseOne" class="panel-collapse collapse in">
-                                      <div class="panel-body">
-                    										<div class="table-responsive">
-                    											<table class="table">
-                    												<tbody>
-                    													<tr>
-                    														<td>Reviewing Forms</td>
-                    														<td>Carlos Garcia</td>
-                    														<td><i>10/14/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Submitting Forms</td>
-                    														<td>Enrico Miguel M. Zabayle</td>
-                    														<td><i>10/13/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Passed Alleged Case</td>
-                    														<td>Debbie Simon</td>
-                    														<td><i>10/10/18</i></td>
-                    													</tr>
-                    												</tbody>
-                    											</table>
-                    										</div>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style = "font-size: 15px;">Submitted Forms</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseTwo" class="panel-collapse collapse">
-                                      <div class="panel-body">
-                                        <div class="table-responsive">
-                                          <table class="table">
-                                            <tbody>
-                                              <tr>
-                                                <td>Form 1</td>
-                                                <td><i>10/14/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 2</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 3</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      <!-- .panel-body -->
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-			<br><br>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-					<b>Details</b>
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<p><?php echo $row['DETAILS']; ?></p>
-				</div>
-      </div>
-      <br>
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Evidence</b></h4>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                 <div class="col-sm-6">
-                    <b>Document/Photo:</b><input type="file">
-                 </div>
-                 <div class="col-sm-6">
-                    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-                 </div>
-              </div>
-              <div>
-                <span class="fa fa-plus" style="color: #5bc0de;">&nbsp; <a href="#" style="color: #5bc0de;">Add another file</a></span>
-              </div>
+      <div id="page-wrapper">
+        <div class="row">
+          <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+            <div class="col-lg-6">
+    					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
+    					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
+              <b>Location:</b> <?php echo $row['LOCATION']; ?><br>
+    					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
+              <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
+    					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
               <br>
-              <button type="upload" id="upload" name="upload" class="btn btn-info btn-sm">Upload</button>
+    					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
+    					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
+              <br>
+    					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
+    					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+              <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+            </div>
+
+          <div class="col-lg-6">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                  <b style = "font-size: 17px;">Submitted Forms</b>
+              </div>
+              <!-- .panel-heading -->
+              <div class="panel-body">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td>Form 1</td>
+                      <td><i>10/14/18</i></td>
+                    </tr>
+                    <tr>
+                      <td>Form 2</td>
+                      <td><i>10/10/18</i></td>
+                    </tr>
+                    <tr>
+                      <td>Form 3</td>
+                      <td><i>10/10/18</i></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- .panel-body -->
             </div>
           </div>
         </div>
-        <!-- Verdict panel -->
-        <div id="verdictarea" class="col-lg-6" hidden>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Verdict</b>
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-              <textarea id="verdict" name="verdict" class="form-control" rows="1" disabled><?php echo $row['OULC_VERDICT']; ?></textarea>
-            </div>
-          </div>
+  			<br><br>
+  			<!-- /.panel-heading -->
+        <div class="form-group">
+          <label>Summary of the Incident</label>
+          <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
         </div>
+        <div class="form-group" id="verdictarea" hidden>
+          <label>Verdict</label>
+          <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly><?php echo $row['OULC_VERDICT']; ?></textarea>
+        </div>
+        <br><br>
+        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+        <br><br><br><br><br>
       </div>
-      <br><br><br>
 
       <?php
         //Removes 'new' badge and reduces notif's count
@@ -299,9 +217,6 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['REMARKS_ID'] != 2 and $row['REMARKS_ID'] !=6){ ?>
-      $("#submit").attr('disabled', true).text("Submitted");
-  <?php }
     if($row['OULC_VERDICT'] != null ){ ?>
       $("#verdictarea").show();
   <?php } ?>

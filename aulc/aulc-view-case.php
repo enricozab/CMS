@@ -1,7 +1,7 @@
-<?php include 'ido.php' ?>
+<?php include 'aulc.php' ?>
 <?php
 if (!isset($_GET['cn']))
-    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/ido/ido-home.php");
+    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/aulc/aulc-home.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -103,7 +103,7 @@ if (!isset($_GET['cn']))
 
     <div id="wrapper">
 
-    <?php include 'ido-sidebar.php';?>
+    <?php include 'aulc-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
@@ -210,39 +210,10 @@ if (!isset($_GET['cn']))
 					<p><?php echo $row['DETAILS']; ?></p>
 				</div>
       </div>
-      <button type="button" class="btn btn-outline btn-primary btn-sm" id="addcomment"><span class=" fa fa-plus"></span>&nbsp; Add comment</button>
-      <div class="form-group" id="commentarea" hidden>
-        <label>Comment <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span>
-          <span id="closecomment" style="font-weight:normal; color:red; cursor: pointer;"><i class="fa fa-times"></i></span>
-        </label>
-        <textarea id="comment" name="comment" class="form-control" rows="3"><?php echo $row['COMMENT']; ?></textarea>
-      </div>
 
-      <br><br>
+      <br>
 
       <div class="row">
-        <div class="col-lg-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Evidence</b></h4>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                 <div class="col-sm-6">
-                    <b>Document/Photo:</b><input type="file">
-                 </div>
-                 <div class="col-sm-6">
-                    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-                 </div>
-              </div>
-              <div>
-                <span class="fa fa-plus" style="color: #5bc0de;">&nbsp; <a href="#" style="color: #5bc0de;">Add another file</a></span>
-              </div>
-              <br>
-              <button type="upload" id="upload" name="upload" class="btn btn-info btn-sm">Upload</button>
-            </div>
-          </div>
-        </div>
         <!-- Verdict panel -->
         <div class="col-lg-6">
           <div class="panel panel-default">
@@ -255,26 +226,24 @@ if (!isset($_GET['cn']))
             </div>
           </div>
         </div>
+        <button type="submit" id="viewevidence" name="upload" class="btn btn-outline btn-info">View evidence</button>
       </div>
-
-      <button type="button" class="btn btn-outline btn-primary btn-sm" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for interview</button>
-      <br><br>
 
       <br>
       <div class="row">
         <div class="col-sm-6">
           <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
-          <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
-          <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button></div>
+          <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+        </div>
       </div>
       <br><br><br>
 
       <?php
       //Removes 'new' badge and reduces notif's count
-      $query2='SELECT 		IC.CASE_ID AS CASE_ID,
-                          IC.IF_NEW AS IF_NEW
-              FROM 		    IDO_CASES IC
-              WHERE   	  IC.USER_ID = "'.$_SESSION['user_id'].'" AND IC.CASE_ID = "'.$_GET['cn'].'"';
+      $query2='SELECT 		AU.CASE_ID AS CASE_ID,
+                          AU.IF_NEW AS IF_NEW
+              FROM 		    AULC_CASES AU
+              WHERE   	  AU.CASE_ID = "'.$_GET['cn'].'"';
       $result2=mysqli_query($dbc,$query2);
       if(!$result2){
         echo mysqli_error($dbc);
@@ -282,7 +251,7 @@ if (!isset($_GET['cn']))
       else{
         $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
         if($row2['IF_NEW']){
-          $query2='UPDATE IDO_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+          $query2='UPDATE AULC_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
           $result2=mysqli_query($dbc,$query2);
           if(!$result2){
             echo mysqli_error($dbc);
@@ -290,7 +259,7 @@ if (!isset($_GET['cn']))
         }
       }
 
-        include 'ido-notif-queries.php';
+        include 'aulc-notif-queries.php';
       ?>
     </div>
     <!-- /#wrapper -->
@@ -320,139 +289,11 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-    <?php include 'ido-notif-scripts.php' ?>
+    <?php include 'aulc-notif-scripts.php' ?>
 
-    $('#endorse').click(function() {
-      if($('#endorse').text() == "Endorse") {
-        $.ajax({
-            url: '../ajax/ido-endorse-case.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                verdict: $('#verdict').val()
-            },
-            success: function(msg) {
-                $('#message').text('Endorsed to OULC successfully!');
-                $("#endorse").attr('disabled', true).text("Endorsed");
-                $("#return").attr('disabled', true);
-                $("#dismiss").attr('disabled', true);
-                $("#verdict").attr('disabled', true);
-
-                $("#alertModal").modal("show");
-            }
-        });
-      }
-
-      else if($('#endorse').text() == "Submit") {
-        $.ajax({
-            url: '../ajax/ido-close-case.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                verdict: $('#verdict').val()
-            },
-            success: function(msg) {
-                $('#message').text('Case closed.');
-                $("#endorse").attr('disabled', true).text("Submitted");
-                $("#return").attr('disabled', true);
-                $("#dismiss").attr('disabled', true);
-                $("#verdict").attr('disabled', true);
-
-                $("#alertModal").modal("show");
-            }
-        });
-      }
-    });
-
-    $('#return').click(function() {
-      $.ajax({
-          url: '../ajax/ido-return-forms.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>,
-              comment: $('#comment').val()
-          },
-          success: function(msg) {
-            $('#message').text('Returned to student successfully!');
-            $("#endorse").attr('disabled', true);
-            $("#return").attr('disabled', true);
-            $("#dismiss").attr('disabled', true);
-            $("#addcomment").hide();
-            $('#closecomment').hide();
-            $('#comment').attr('disabled', true);
-
-            $("#alertModal").modal("show");
-          }
-      });
-    });
-
-    $('#dismiss').click(function() {
-      $.ajax({
-          url: '../ajax/ido-dismiss-case.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>,
-              verdict: $('#verdict').val()
-          },
-          success: function(msg) {
-              $('#message').text('Case dismissed.');
-              $("#endorse").attr('disabled', true);
-              $("#return").attr('disabled', true);
-              $("#dismiss").attr('disabled', true).text("Dismissed");
-              $("#verdict").attr('disabled', true);
-
-              $("#alertModal").modal("show");
-          }
-      });
-    });
-
-    $('#addcomment').click(function() {
-      $("#addcomment").hide();
-      $("#commentarea").show();
-    });
-
-    $('#closecomment').click(function() {
-      $("#addcomment").show();
-      $("#comment").val('<?php echo $row['COMMENT']; ?>');
-      $("#commentarea").hide();
-    });
   });
 
-  <?php
-    if($row['TYPE'] != "Major"){ ?>
-      $("#endorse").text('Submit');
-  <?php }
-    if($row['REMARKS_ID'] < 3 or $row['REMARKS_ID'] == 4){ ?>
-      $("#addcomment").hide();
-      $('#closecomment').hide();
-      $('#comment').attr('disabled', true);
-      $("#endorse").attr('disabled', true);
-      $("#return").attr('disabled', true);
-      $("#dismiss").attr('disabled', true);
-  <?php }
-    if($row['REMARKS_ID'] > 3 and $row['REMARKS_ID'] != 4) { ?>
-      $("#addcomment").hide();
-      $('#closecomment').hide();
-      $('#comment').attr('disabled', true);
-      $("#return").attr('disabled', true);
-      $("#dismiss").attr('disabled', true);
-      $("#verdict").attr('disabled', true);
-      $("#endorse").attr('disabled', true);
-  <?php if($row['REMARKS_ID'] < 7) { ?>
-          $("#endorse").text("Endorsed");
-  <?php }
-        else if($row['REMARKS_ID'] == 8) { ?>
-          $("#endorse").text("Submitted");
-  <?php }
-        else if($row['REMARKS_ID'] == 9) { ?>
-          $("#dismiss").text("Dismissed");
-          $("#verdict").val("<?php echo $row['OULC_VERDICT']; ?>");
-  <?php }
-    }
-    if($row['COMMENT'] != null){ ?>
-      $("#addcomment").hide();
-      $("#commentarea").show();
-  <?php } ?>
+
   </script>
 
   <!-- Modal -->
