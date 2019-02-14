@@ -118,33 +118,33 @@ if (!isset($_GET['cn']))
               <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
             </div>
 
-          <div class="col-lg-6">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                  <b style = "font-size: 17px;">Submitted Forms</b>
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                      <b style = "font-size: 17px;">Updates</b>
+                  </div>
+                  <!-- .panel-heading -->
+                  <div class="panel-body">
+                    <table class="table">
+                      <tbody>
+                        <tr>
+                          <td>Form 1</td>
+                          <td><i>10/14/18</i></td>
+                        </tr>
+                        <tr>
+                          <td>Form 2</td>
+                          <td><i>10/10/18</i></td>
+                        </tr>
+                        <tr>
+                          <td>Form 3</td>
+                          <td><i>10/10/18</i></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- .panel-body -->
               </div>
-              <!-- .panel-heading -->
-              <div class="panel-body">
-                <table class="table">
-                  <tbody>
-                    <tr>
-                      <td>Form 1</td>
-                      <td><i>10/14/18</i></td>
-                    </tr>
-                    <tr>
-                      <td>Form 2</td>
-                      <td><i>10/10/18</i></td>
-                    </tr>
-                    <tr>
-                      <td>Form 3</td>
-                      <td><i>10/10/18</i></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- .panel-body -->
             </div>
-          </div>
         </div>
   			<br><br>
   			<!-- /.panel-heading -->
@@ -156,7 +156,7 @@ if (!isset($_GET['cn']))
           <label>Verdict</label>
           <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly><?php echo $row['OULC_VERDICT']; ?></textarea>
         </div>
-        <br><br>
+        <br>
         <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         <br><br><br><br><br>
       </div>

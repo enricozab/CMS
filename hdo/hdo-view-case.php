@@ -116,156 +116,46 @@ if (!isset($_GET['cn']))
                 </div>
 
                 <div class="col-lg-6">
-					          <div class="panel panel-default">
+                    <div class="panel panel-default">
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Updates</b>
                       </div>
                       <!-- .panel-heading -->
                       <div class="panel-body">
-                          <div class="panel-group" id="accordion">
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">History</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseOne" class="panel-collapse collapse in">
-                                      <div class="panel-body">
-                    										<div class="table-responsive">
-                    											<table class="table">
-                    												<tbody>
-                    													<tr>
-                    														<td>Reviewing Forms</td>
-                    														<td>Carlos Garcia</td>
-                    														<td><i>10/14/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Submitting Forms</td>
-                    														<td>Enrico Miguel M. Zabayle</td>
-                    														<td><i>10/13/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Passed Alleged Case</td>
-                    														<td>Debbie Simon</td>
-                    														<td><i>10/10/18</i></td>
-                    													</tr>
-                    												</tbody>
-                    											</table>
-                    										</div>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style = "font-size: 15px;">Submitted Forms</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseTwo" class="panel-collapse collapse">
-                                      <div class="panel-body">
-                                        <div class="table-responsive">
-                                          <table class="table">
-                                            <tbody>
-                                              <tr>
-                                                <td>Form 1</td>
-                                                <td><i>10/14/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 2</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 3</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" style = "font-size: 15px;">Submitted Evidence</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseThree" class="panel-collapse collapse">
-                                      <div class="panel-body">
-                                        <div class="table-responsive">
-                                          <table class="table">
-                                            <tbody>
-                                              <tr>
-                                                <td>Evidence 1</td>
-                                                <td><i>10/14/18</i></td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      </div>
-                                  </div>
-                              </div>
-
+                        <table class="table">
+                          <tbody>
+                            <tr>
+                              <td>Form 1</td>
+                              <td><i>10/14/18</i></td>
+                            </tr>
+                            <tr>
+                              <td>Form 2</td>
+                              <td><i>10/10/18</i></td>
+                            </tr>
+                            <tr>
+                              <td>Form 3</td>
+                              <td><i>10/10/18</i></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                       <!-- .panel-body -->
                   </div>
                 </div>
-              </div>
-            </div>
           </div>
-			<br><br>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-					<b>Summary of the Incident</b>
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<p><?php echo $row2['DETAILS']; ?></p>
-				</div>
-      </div>
-      <?php
-        $query3='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 5';
-        $result3=mysqli_query($dbc,$query3);
-        if(!$result3){
-          echo mysqli_error($dbc);
-        } ?>
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Evidence</b></h4>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                 <div class="col-sm-6">
-                    <b>Document/Photo:</b><input type="file">
-                 </div>
-                 <div class="col-sm-6">
-                    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-                 </div>
-              </div>
-              <div>
-                <span class="fa fa-plus" style="color: #5bc0de;">&nbsp; <a href="#" style="color: #5bc0de;">Add another file</a></span>
-              </div>
-              <br>
-              <button type="upload" id="upload" name="upload" class="btn btn-info btn-sm">Upload</button>
-            </div>
-          </div>
+  			<br><br>
+        <div class="form-group">
+          <label>Summary of the Incident</label>
+          <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row2['DETAILS']; ?></textarea>
         </div>
-        <!-- Verdict panel -->
-        <div id="verdictarea" class="col-lg-6" hidden>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Verdict</b>
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-              <textarea id="verdict" name="verdict" class="form-control" rows="1" disabled><?php echo $row2['OULC_VERDICT']; ?></textarea>
-            </div>
-          </div>
+        <div class="form-group" id="verdictarea" hidden>
+          <label>Verdict</label>
+          <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly><?php echo $row['OULC_VERDICT']; ?></textarea>
         </div>
+        <br>
+        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+        <br><br><br><br><br>
       </div>
-      <br><br><br>
 
       <?php
         //Removes 'new' badge and reduces notif's count

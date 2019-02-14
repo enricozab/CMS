@@ -75,11 +75,11 @@
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="location" name="location" class="form-control" placeholder="Enter Location"/>
                     </div>
-                    <div class="form-group" style = "width: 160px;">
+                    <div class="form-group" style = "width: 180px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="date" type="date" name="date" class="form-control"/>
                     </div>
-                    <div class="form-group" style = "width: 160px;">
+                    <div class="form-group" style = "width: 180px;">
                       <label>Time of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="time" type="time" name="time" class="form-control"/>
                     </div>
