@@ -105,7 +105,7 @@ if (!isset($_GET['cn']))
             <div class="col-lg-6">
     					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
     					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-              <b>Location:</b> <?php echo $row['LOCATION']; ?><br>
+              <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
     					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
               <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
     					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
