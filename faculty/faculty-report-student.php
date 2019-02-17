@@ -12,13 +12,16 @@
 
     <title>CMS - Report Student</title>
 
+	<!-- Webpage Icon -->
+	<link rel="icon" href="../images/favicon.ico">
+
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-	  <!-- DataTables CSS -->
+	<!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
@@ -65,7 +68,7 @@
                       </div>
                     </div>
                     <div id="appendstudent">
-                      <span class="fa fa-plus" style="color: #337ab7; font-family: "Arial;"">&nbsp; <a style="color: #337ab7;">Add another student</a></span>
+                      <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another student</a></span>
                     </div>
                     <br>
                     <div class="form-group" style = "width: 300px;">
@@ -94,7 +97,7 @@
                         </div>
                       </div>
                       <div id="appendevidence">
-                        <span class="fa fa-plus" style="color: #337ab7;" font-family: "Arial";>&nbsp; <a style="color: #337ab7;">Add another file</a></span>
+                        <span class="fa fa-plus" style="color: #337ab7;" font-family: "Arial";>&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
                       </div>
                     </div>
                     <br><br>
@@ -136,6 +139,12 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+
+    <!-- Form Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
 
     <script>
     $(document).ready(function() {
@@ -206,6 +215,7 @@
         if(isEmpty) {
           console.log($('#date').val());
           console.log($('#time').val());
+          generate();
           $.ajax({
               url: '../ajax/faculty-insert-incident-report.php',
               type: 'POST',
@@ -225,6 +235,67 @@
 
         $("#alertModal").modal("show");
       });
+
+      <?php include 'faculty-form-queries.php' ?>
+
+      function loadFile(url,callback){
+          JSZipUtils.getBinaryContent(url,callback);
+      }
+
+      function generate(){
+          loadFile("../templates/template-incident-report.docx",function(error,content){
+              if (error) { throw error };
+              var zip = new JSZip(content);
+              var doc=new window.docxtemplater().loadZip(zip);
+
+              // date
+
+              var today = new Date();
+              var dd = today.getDate();
+              var mm = today.getMonth() + 1; //January is 0!
+
+              var yyyy = today.getFullYear();
+              if (dd < 10) {
+                dd = '0' + dd;
+              }
+
+              if (mm < 10) {
+                mm = '0' + mm;
+              }
+              var today = dd + '/' + mm + '/' + yyyy;
+
+              doc.setData({
+                date: today,
+                first: "<?php echo $nameres['first_name'] ?>",
+                last: "<?php echo $nameres['last_name'] ?>",
+                details: "<?php echo $officerow['DESCRIPTION'] ?>",
+
+                loc: document.getElementById("location").value,
+                dateIncident: document.getElementById("date").value,
+                summary: document.getElementById("details").value
+              });
+              try {
+                  // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                  doc.render();
+              }
+              catch (error) {
+                  var e = {
+                      message: error.message,
+                      name: error.name,
+                      stack: error.stack,
+                      properties: error.properties,
+                  }
+                  console.log(JSON.stringify({error: e}));
+                  // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                  throw error;
+              }
+              var out=doc.getZip().generate({
+                  type:"blob",
+                  mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              }); //Output the document using Data-URI
+              saveAs(out,"output.docx");
+          });
+      }
     });
   	</script>
 
