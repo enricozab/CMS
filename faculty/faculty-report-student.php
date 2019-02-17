@@ -12,16 +12,13 @@
 
     <title>CMS - Report Student</title>
 
-	<!-- Webpage Icon -->
-	<link rel="icon" href="../images/favicon.ico">
-
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-	<!-- DataTables CSS -->
+	  <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->

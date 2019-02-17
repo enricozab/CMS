@@ -16,16 +16,13 @@ if (!isset($_GET['cn']))
 
     <title>CMS - View Case</title>
 
-	<!-- Webpage Icon -->
-	<link rel="icon" href="../images/favicon.ico">
-
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-	<!-- DataTables CSS -->
+    <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
@@ -105,7 +102,7 @@ if (!isset($_GET['cn']))
             <div class="col-lg-6">
     					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
     					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-              <b>Location:</b> <?php echo $row['LOCATION']; ?><br>
+              <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
     					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
               <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
     					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
@@ -121,7 +118,7 @@ if (!isset($_GET['cn']))
             <div class="col-lg-6">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                      <b style = "font-size: 17px;">Updates</b>
+                      <b style = "font-size: 17px;">Submitted Forms</b>
                   </div>
                   <!-- .panel-heading -->
                   <div class="panel-body">

@@ -16,9 +16,6 @@ if (!isset($_GET['cn']))
 
     <title>CMS - Case</title>
 
-    <!-- Webpage Icon -->
-	  <link rel="icon" href="../images/favicon.ico">
-
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -62,6 +59,7 @@ if (!isset($_GET['cn']))
                         RO.TYPE AS TYPE,
                         C.COMPLAINANT_ID AS COMPLAINANT_ID,
                         CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
+                        C.LOCATION AS LOCATION,
                         C.DETAILS AS DETAILS,
                         C.ADMISSION_TYPE_ID AS ADMISSION_TYPE_ID,
                         C.HANDLED_BY_ID AS HANDLED_BY_ID,
@@ -103,6 +101,7 @@ if (!isset($_GET['cn']))
                 <div class="col-lg-6">
           					<b>Offense:</b> <?php echo $row2['OFFENSE_DESCRIPTION']; ?><br>
           					<b>Type:</b> <?php echo 'Minor'; ?><br>
+                    <b>Location of the Incident:</b> <?php echo $row2['LOCATION']; ?><br>
           					<b>Date Filed:</b> <?php echo $row2['DATE_FILED']; ?><br>
                     <b>Last Update:</b> <?php echo $row2['LAST_UPDATE']; ?><br>
           					<b>Status:</b> <?php echo $row2['STATUS_DESCRIPTION']; ?><br>
@@ -118,7 +117,7 @@ if (!isset($_GET['cn']))
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                       <div class="panel-heading">
-                          <b style = "font-size: 17px;">Updates</b>
+                          <b style = "font-size: 17px;">Submitted Forms</b>
                       </div>
                       <!-- .panel-heading -->
                       <div class="panel-body">
