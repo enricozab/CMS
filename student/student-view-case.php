@@ -244,7 +244,6 @@ if (!isset($_GET['cn']))
       $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
       '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
       '<input type="file">'+
-
       '</div>');
     });
 
