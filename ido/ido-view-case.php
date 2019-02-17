@@ -108,7 +108,7 @@ if (!isset($_GET['cn']))
                 <div class="col-lg-6">
           					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
           					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location:</b> <?php echo $row['LOCATION']; ?><br>
+                    <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
           					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
                     <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
           					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
@@ -122,142 +122,62 @@ if (!isset($_GET['cn']))
                 </div>
 
                 <div class="col-lg-6">
-					          <div class="panel panel-default">
+                    <div class="panel panel-default">
                       <div class="panel-heading">
-                          <b style = "font-size: 17px;">Updates</b>
+                          <b style = "font-size: 17px;">Submitted Forms</b>
                       </div>
                       <!-- .panel-heading -->
                       <div class="panel-body">
-                          <div class="panel-group" id="accordion">
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">History</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseOne" class="panel-collapse collapse in">
-                                      <div class="panel-body">
-                    										<div class="table-responsive">
-                    											<table class="table">
-                    												<tbody>
-                    													<tr>
-                    														<td>Reviewing Forms</td>
-                    														<td>Carlos Garcia</td>
-                    														<td><i>10/14/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Submitting Forms</td>
-                    														<td>Enrico Miguel M. Zabayle</td>
-                    														<td><i>10/13/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Passed Alleged Case</td>
-                    														<td>Debbie Simon</td>
-                    														<td><i>10/10/18</i></td>
-                    													</tr>
-                    												</tbody>
-                    											</table>
-                    										</div>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style = "font-size: 15px;">Submitted Forms</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseTwo" class="panel-collapse collapse">
-                                      <div class="panel-body">
-                                        <div class="table-responsive">
-                                          <table class="table">
-                                            <tbody>
-                                              <tr>
-                                                <td>Form 1</td>
-                                                <td><i>10/14/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 2</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 3</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                  </div>
-                              </div>
-                          </div>
+                        <table class="table">
+                          <tbody>
+                            <tr>
+                              <td>Form 1</td>
+                              <td><i>10/14/18</i></td>
+                            </tr>
+                            <tr>
+                              <td>Form 2</td>
+                              <td><i>10/10/18</i></td>
+                            </tr>
+                            <tr>
+                              <td>Form 3</td>
+                              <td><i>10/10/18</i></td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                       <!-- .panel-body -->
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 			<br><br>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-					<b>Details</b>
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<p><?php echo $row['DETAILS']; ?></p>
-				</div>
+      <div class="form-group">
+        <label>Summary of the Incident</label>
+        <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
       </div>
+
       <button type="button" class="btn btn-outline btn-primary btn-sm" id="addcomment"><span class=" fa fa-plus"></span>&nbsp; Add comment</button>
+
       <div class="form-group" id="commentarea" hidden>
         <label>Comment <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span>
           <span id="closecomment" style="font-weight:normal; color:red; cursor: pointer;"><i class="fa fa-times"></i></span>
         </label>
-        <textarea id="comment" name="comment" class="form-control" rows="3"><?php echo $row['COMMENT']; ?></textarea>
-      </div>
-
-      <br><br>
-
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Evidence</b></h4>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                 <div class="col-sm-6">
-                    <b>Document/Photo:</b><input type="file">
-                 </div>
-                 <div class="col-sm-6">
-                    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-                 </div>
-              </div>
-              <div>
-                <span class="fa fa-plus" style="color: #5bc0de;">&nbsp; <a href="#" style="color: #5bc0de;">Add another file</a></span>
-              </div>
-              <br>
-              <button type="upload" id="upload" name="upload" class="btn btn-info btn-sm">Upload</button>
-            </div>
-          </div>
-        </div>
-        <!-- Verdict panel -->
-        <div class="col-lg-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Verdict</b>
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-              <textarea id="verdict" name="verdict" class="form-control" rows="1">1 month suspension</textarea>
-            </div>
-          </div>
-        </div>
+        <textarea id="comment" style="width:600px;" name="comment" class="form-control" rows="3"><?php echo $row['COMMENT']; ?></textarea>
       </div>
 
       <button type="button" class="btn btn-outline btn-primary btn-sm" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for interview</button>
-      <br><br>
+      
+      <div class="form-group" id="verdictarea">
+        <br>
+        <label>Verdict</label>
+        <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly>1 month suspension</textarea>
+      </div>
 
-      <br>
+      <div id="viewevidence">
+        <br>
+        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+      </div>
+
+      <br><br><br>
       <div class="row">
         <div class="col-sm-6">
           <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
@@ -374,6 +294,7 @@ if (!isset($_GET['cn']))
             $("#endorse").attr('disabled', true);
             $("#return").attr('disabled', true);
             $("#dismiss").attr('disabled', true);
+            $("#schedule").attr('disabled', true);
             $("#addcomment").hide();
             $('#closecomment').hide();
             $('#comment').attr('disabled', true);
@@ -410,7 +331,7 @@ if (!isset($_GET['cn']))
 
     $('#closecomment').click(function() {
       $("#addcomment").show();
-      $("#comment").val('<?php echo $row['COMMENT']; ?>');
+      $("#comment").val('');
       $("#commentarea").hide();
     });
   });
@@ -426,6 +347,7 @@ if (!isset($_GET['cn']))
       $("#endorse").attr('disabled', true);
       $("#return").attr('disabled', true);
       $("#dismiss").attr('disabled', true);
+      $("#schedule").attr('disabled', true);
   <?php }
     if($row['REMARKS_ID'] > 3 and $row['REMARKS_ID'] != 4) { ?>
       $("#addcomment").hide();
@@ -435,6 +357,7 @@ if (!isset($_GET['cn']))
       $("#dismiss").attr('disabled', true);
       $("#verdict").attr('disabled', true);
       $("#endorse").attr('disabled', true);
+      $("#schedule").attr('disabled', true);
   <?php
       if($row['REMARKS_ID'] > 4) { ?>
         $("#verdict").val("<?php echo $row['OULC_VERDICT']; ?>");

@@ -108,7 +108,7 @@ if (!isset($_GET['cn']))
                 <div class="col-lg-6">
           					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
           					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location:</b> <?php echo $row['LOCATION']; ?><br>
+                    <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
           					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
                     <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
           					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
@@ -122,162 +122,93 @@ if (!isset($_GET['cn']))
                 </div>
 
                 <div class="col-lg-6">
-					          <div class="panel panel-default">
+                    <div class="panel panel-default">
                       <div class="panel-heading">
-                          <b style = "font-size: 17px;">Updates</b>
+                          <b style = "font-size: 17px;">Submitted Forms</b>
                       </div>
                       <!-- .panel-heading -->
                       <div class="panel-body">
-                          <div class="panel-group" id="accordion">
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style = "font-size: 15px;">History</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseOne" class="panel-collapse collapse in">
-                                      <div class="panel-body">
-                    										<div class="table-responsive">
-                    											<table class="table">
-                    												<tbody>
-                    													<tr>
-                    														<td>Reviewing Forms</td>
-                    														<td>Carlos Garcia</td>
-                    														<td><i>10/14/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Submitting Forms</td>
-                    														<td>Enrico Miguel M. Zabayle</td>
-                    														<td><i>10/13/18</i></td>
-                    													</tr>
-                    													<tr>
-                    														<td>Passed Alleged Case</td>
-                    														<td>Debbie Simon</td>
-                    														<td><i>10/10/18</i></td>
-                    													</tr>
-                    												</tbody>
-                    											</table>
-                    										</div>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <div class="panel panel-default">
-                                  <div class="panel-heading">
-                                      <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style = "font-size: 15px;">Submitted Forms</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseTwo" class="panel-collapse collapse">
-                                      <div class="panel-body">
-                                        <div class="table-responsive">
-                                          <table class="table">
-                                            <tbody>
-                                              <tr>
-                                                <td>Form 1</td>
-                                                <td><i>10/14/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 2</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                              <tr>
-                                                <td>Form 3</td>
-                                                <td><i>10/10/18</i></td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                  </div>
-                              </div>
-                          </div>
+                        <table class="table">
+                          <tbody>
+                            <tr>
+                              <td>Form 1</td>
+                              <td><i>10/14/18</i></td>
+                            </tr>
+                            <tr>
+                              <td>Form 2</td>
+                              <td><i>10/10/18</i></td>
+                            </tr>
+                            <tr>
+                              <td>Form 3</td>
+                              <td><i>10/10/18</i></td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                       <!-- .panel-body -->
                   </div>
                 </div>
-              </div>
+            </div>
+  			<br><br>
+        <div class="form-group">
+          <label>Summary of the Incident</label>
+          <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+        </div>
+
+        <div class="form-group" id="commentarea" hidden>
+          <label>Comment</label>
+          <textarea id="comment" style="width:600px;" name="comment" class="form-control" rows="3" readonly><?php echo $row['COMMENT']; ?></textarea>
+        </div>
+
+        <div class="form-group" id="verdictarea" hidden>
+          <label>Verdict</label>
+          <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly><?php echo $row['OULC_VERDICT']; ?></textarea>
+        </div>
+
+        <div class="form-group" id="evidencediv">
+          <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
+          <br><br>
+          <div id="evidencelist">
+            <div class="form-group" style="width:300px;">
+              <input type="file">
             </div>
           </div>
-			<br><br>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-					<b>Details</b>
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<p><?php echo $row['DETAILS']; ?></p>
-				</div>
-      </div>
-
-      <div class="form-group" id="commentarea" hidden>
-        <label>Comment</label>
-        <textarea id="comment" name="comment" class="form-control" rows="3" disabled><?php echo $row['COMMENT']; ?></textarea>
-      </div>
-
-      <br><br>
-
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Evidence</b></h4>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                 <div class="col-sm-6">
-                    <b>Document/Photo:</b><input type="file">
-                 </div>
-                 <div class="col-sm-6">
-                    <b>Write Up:</b> &nbsp;<button type="button" class="btn btn-outline btn-info btn-xs">Google Docs</button><br>
-                 </div>
-              </div>
-              <div>
-                <span class="fa fa-plus" style="color: #5bc0de;">&nbsp; <a href="#" style="color: #5bc0de;">Add another file</a></span>
-              </div>
-              <br>
-              <button type="upload" id="upload" name="upload" class="btn btn-info btn-sm">Upload</button>
-            </div>
+          <div id="appendevidence">
+            <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another file</a></span>
           </div>
         </div>
-        <!-- Verdict panel -->
-        <div id="verdictarea" class="col-lg-6" hidden>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <b>Verdict</b>
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-              <textarea id="verdict" name="verdict" class="form-control" rows="1" disabled><?php echo $row['OULC_VERDICT']; ?></textarea>
-            </div>
-          </div>
+        <div id="viewevidence" hidden>
+          <br>
+          <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         </div>
-      </div>
-      <br><br>
-      <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
-      <br><br><br>
+        <br><br>
+        <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+        <br><br><br>
 
-      <?php
-        //Removes 'new' badge and reduces notif's count
-        $query2='SELECT 		SC.CASE_ID AS CASE_ID,
-                            SC.IF_NEW AS IF_NEW
-                FROM 		    STUDENT_CASES SC
-                WHERE   	  SC.USER_ID = "'.$_SESSION['user_id'].'" AND SC.CASE_ID = "'.$_GET['cn'].'"';
-        $result2=mysqli_query($dbc,$query2);
-        if(!$result2){
-          echo mysqli_error($dbc);
-        }
-        else{
-          $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
-          if($row2['IF_NEW']){
-            $query2='UPDATE STUDENT_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
-            $result2=mysqli_query($dbc,$query2);
-            if(!$result2){
-              echo mysqli_error($dbc);
+        <?php
+          //Removes 'new' badge and reduces notif's count
+          $query2='SELECT 		SC.CASE_ID AS CASE_ID,
+                              SC.IF_NEW AS IF_NEW
+                  FROM 		    STUDENT_CASES SC
+                  WHERE   	  SC.USER_ID = "'.$_SESSION['user_id'].'" AND SC.CASE_ID = "'.$_GET['cn'].'"';
+          $result2=mysqli_query($dbc,$query2);
+          if(!$result2){
+            echo mysqli_error($dbc);
+          }
+          else{
+            $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+            if($row2['IF_NEW']){
+              $query2='UPDATE STUDENT_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+              $result2=mysqli_query($dbc,$query2);
+              if(!$result2){
+                echo mysqli_error($dbc);
+              }
             }
           }
-        }
 
-        include 'student-notif-queries.php';
-      ?>
+          include 'student-notif-queries.php';
+        ?>
+      </div>
     </div>
     <!-- /#wrapper -->
 
@@ -308,6 +239,18 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
 
     <?php include 'student-notif-scripts.php' ?>
+
+    $("#appendevidence").click(function(){
+      $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
+      '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
+      '<input type="file">'+
+
+      '</div>');
+    });
+
+    $(document).on('click', '#removeevidence', function(){
+      $(this).closest("#newsevidence").remove();
+    });
 
     $('#submit').click(function() {
       $.ajax({

@@ -132,11 +132,10 @@
           else if($_SESSION['user_type_id']==4){
             header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ido/ido-home.php");
           }
-          else if($_SESSION['user_type_id']==7){
-            header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
+          else if($_SESSION['user_type_id']==6){
+            header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/aulc/aulc-home.php");
           }
         }
-
         else {
           ?>
             <div>

@@ -57,7 +57,7 @@
 				<li>
 					<a href="student-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
 				</li>
-				<!--<li>
+				<li>
 					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
 						<li>
@@ -67,7 +67,7 @@
 							<a href="closedcases.php">Closed</a>
 						</li>
 					</ul>
-				</li>-->
+				</li>
 				<li>
 					<a href="#"><i class="fa fa-file-text-o fa-fw"></i> Files<span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
