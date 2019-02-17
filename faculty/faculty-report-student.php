@@ -68,7 +68,7 @@
                       </div>
                     </div>
                     <div id="appendstudent">
-                      <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another student</a></span>
+                      <span class="fa fa-plus" style="color: #337ab7; font-family: "Arial;"">&nbsp; <a style="color: #337ab7;">Add another student</a></span>
                     </div>
                     <br>
                     <div class="form-group" style = "width: 300px;">
@@ -97,7 +97,7 @@
                         </div>
                       </div>
                       <div id="appendevidence">
-                        <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another file</a></span>
+                        <span class="fa fa-plus" style="color: #337ab7;" font-family: "Arial";>&nbsp; <a style="color: #337ab7;">Add another file</a></span>
                       </div>
                     </div>
                     <br><br>
