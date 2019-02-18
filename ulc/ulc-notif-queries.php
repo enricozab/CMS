@@ -1,5 +1,5 @@
 <?php
-  $cquery='SELECT COUNT(CASE_ID) AS "CASES" FROM AULC_CASES WHERE IF_NEW=1';
+  $cquery='SELECT COUNT(CASE_ID) AS "CASES" FROM ULC_CASES WHERE IF_NEW=1';
   $cresult=mysqli_query($dbc,$cquery);
   if(!$cresult){
     echo mysqli_error($dbc);

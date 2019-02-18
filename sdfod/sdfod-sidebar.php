@@ -11,7 +11,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="ulc-home.php">
+		<a class="navbar-brand" href="sdfod-home.php">
 			<div class="row">
 				&nbsp; <img src="../images/newlogo.png" style="width: 30px; height: 30px;">&nbsp; Case Management System
 			</div>
@@ -55,16 +55,22 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="ulc-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
+					<a href="sdfod-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
+				</li>
+				<li>
+					<a href="sdfod-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge"></span></a>
+				</li>
+				<li>
+					<a href="sdfod-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
 				</li>
 				<li>
 					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
 						<li>
-							<a href="ulc-active-cases.php">Active</a>
+							<a href="sdfod-active-cases.php">Active</a>
 						</li>
 						<li>
-							<a href="ulc-closed-cases.php">Closed</a>
+							<a href="sdfod-closed-cases.php">Closed</a>
 						</li>
 					</ul>
 				</li>
@@ -77,7 +83,18 @@
 					</ul>
 				</li>
 				<li>
-					<a href="ulc-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
+					<ul class="nav nav-second-level">
+						<li>
+							<a href="#">Report 1</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="../gmailAPI/index.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+				</li>
+				<li>
+					<a href="sdfod-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 			</ul>
 		</div>

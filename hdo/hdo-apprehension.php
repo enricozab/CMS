@@ -116,11 +116,11 @@
                       <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style='width: 300px;'>
-                      <label>Location</label>
+                      <label>Location of the Incident</label>
                       <input id="location" class="form-control">
                     </div>
                     <div class="form-group">
-                      <label>Details <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <label>Summary of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <textarea id="details" class="form-control" rows="3"></textarea>
   				          </div>
                     <?php
@@ -130,6 +130,19 @@
                         echo mysqli_error($dbc);
                       }
                     ?>
+                    <div class="form-group">
+                      <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
+                      <br><br>
+                      <div id="evidencelist">
+                        <div class="form-group" style="width:300px;">
+                          <input type="file">
+                        </div>
+                      </div>
+                      <div id="appendevidence">
+                        <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another file</a></span>
+                      </div>
+                    </div>
+                    <br>
                     <div class="form-group" style='width: 400px;'>
                       <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="ido" class="form-control">
@@ -177,6 +190,8 @@
     $(document).ready(function() {
       <?php include 'hdo-notif-scripts.php'?>
 
+      $('.chosen-select').chosen();
+      
       $('.studentID').keypress(validateNumber);
 
       function validateNumber(event) {
@@ -190,7 +205,17 @@
         }
       };
 
-      $('.chosen-select').chosen();
+      $("#appendevidence").click(function(){
+        $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
+        '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
+        '<input type="file">'+
+
+        '</div>');
+      });
+
+      $(document).on('click', '#removeevidence', function(){
+        $(this).closest("#newsevidence").remove();
+      });
 
       $('#offense').on('change',function() {
         var offense_id=$(this).val();

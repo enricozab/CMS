@@ -76,10 +76,13 @@ if (!isset($_GET['cn']))
                         C.REMARKS_ID AS REMARKS_ID,
                         C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.OULC_VERDICT AS OULC_VERDICT,
+                        C.PENALTY AS PENALTY,
+                        C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        C.IF_APPEAL AS IF_APPEAL,
                         C.DATE_CLOSED AS DATE_CLOSED,
-                        C.IF_NEW AS IF_NEW
+                        C.IF_NEW AS IF_NEW,
+                        DATEDIFF(CURRENT_TIMESTAMP(),C.DATE_CLOSED) AS CAN_APPEAL
             FROM 		    CASES C
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
@@ -160,9 +163,9 @@ if (!isset($_GET['cn']))
           <textarea id="comment" style="width:600px;" name="comment" class="form-control" rows="3" readonly><?php echo $row['COMMENT']; ?></textarea>
         </div>
 
-        <div class="form-group" id="verdictarea" hidden>
-          <label>Verdict</label>
-          <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly><?php echo $row['OULC_VERDICT']; ?></textarea>
+        <div class="form-group" id="penaltyarea" hidden>
+          <label>PENALTY</label>
+          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY']; ?></textarea>
         </div>
 
         <div class="form-group" id="evidencediv">
@@ -183,6 +186,8 @@ if (!isset($_GET['cn']))
         </div>
         <br><br>
         <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>
+        <button type="submit" id="sendpl" name="sendpl" class="btn btn-success">Send Parent Letter</button>
         <br><br><br>
 
         <?php
@@ -261,6 +266,26 @@ if (!isset($_GET['cn']))
           success: function(msg) {
               $('#message').text('Submitted successfully!');
               $("#submit").attr('disabled', true).text("Submitted");
+              $("#evidencediv").hide();
+              $("#viewevidence").show();
+
+              $("#alertModal").modal("show");
+          }
+      });
+    });
+
+    $('#appeal').click(function() {
+      $.ajax({
+          url: '../ajax/student-appeal.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+              $('#message').text('An appeal has been sent successfully!');
+              $("#submit").attr('disabled', true).text("Submitted");
+              $("#appeal").attr('disabled', true);
+              $("#sendpl").attr('disabled', true);
 
               $("#alertModal").modal("show");
           }
@@ -271,13 +296,30 @@ if (!isset($_GET['cn']))
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
       $("#submit").attr('disabled', true).text("Submitted");
+      $("#evidencediv").hide();
+      $("#viewevidence").show();
   <?php }
     if($row['COMMENT'] != null ){ ?>
       $("#commentarea").show();
   <?php }
-    if($row['OULC_VERDICT'] != null ){ ?>
-      $("#verdictarea").show();
-  <?php } ?>
+    if($row['PENALTY'] != null ){ ?>
+      $("#penaltyarea").show();
+  <?php }
+    if($row['REMARKS_ID'] > 9) { ?>
+      $("#submit").hide();
+    <?php
+      if(($row['REMARKS_ID'] != 10 and $row['TYPE'] != "Major") or $row['CAN_APPEAL'] > 5 or $row['IF_APPEAL']) { ?>
+        $("#appeal").hide();
+    <?php }
+      if($row['REMARKS_ID'] < 11) { ?>
+        $("#sendpl").hide();
+    <?php }
+      if($row['REMARKS_ID'] > 11) { ?>
+        $("#appeal").attr('disabled', true);
+        $("#sendpl").attr('disabled', true);
+  <?php }
+    }
+  ?>
   </script>
 
   <!-- Modal -->

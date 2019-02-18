@@ -76,7 +76,8 @@ if (!isset($_GET['cn']))
                         C.REMARKS_ID AS REMARKS_ID,
                         C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.OULC_VERDICT AS OULC_VERDICT,
+                        C.PENALTY AS PENALTY,
+                        C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
@@ -155,7 +156,7 @@ if (!isset($_GET['cn']))
         <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
       </div>
 
-      <button type="button" class="btn btn-outline btn-primary btn-sm" id="addcomment"><span class=" fa fa-plus"></span>&nbsp; Add comment</button>
+      <button type="button" class="btn btn-outline btn-primary" id="addcomment"><span class=" fa fa-plus"></span>&nbsp; Add comment</button>
 
       <div class="form-group" id="commentarea" hidden>
         <label>Comment <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span>
@@ -164,25 +165,44 @@ if (!isset($_GET['cn']))
         <textarea id="comment" style="width:600px;" name="comment" class="form-control" rows="3"><?php echo $row['COMMENT']; ?></textarea>
       </div>
 
-      <button type="button" class="btn btn-outline btn-primary btn-sm" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for interview</button>
-      
-      <div class="form-group" id="verdictarea">
-        <br>
-        <label>Verdict</label>
-        <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly>1 month suspension</textarea>
+      <button type="button" class="btn btn-outline btn-primary" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
+      <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+
+      <br><br>
+
+      <div class="form-group" id="admitarea" hidden>
+        <label>Student's Admission</label>
+        <div class="radio">
+            <label>
+                <input type="radio" name="admission" id="fullyadmit" value="1" checked>Full Admission
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="admission" id="partialadmit" value="2">Partial Admission
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="admission" id="fullydenied" value="3">Full Denial
+            </label>
+        </div>
       </div>
 
-      <div id="viewevidence">
+      <div class="form-group" id="penaltyarea">
         <br>
-        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+        <label>Penalty</label>
+        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3">1 month suspension</textarea>
       </div>
 
-      <br><br><br>
+      <br><br><br><br>
       <div class="row">
         <div class="col-sm-6">
           <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
           <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
-          <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button></div>
+          <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
+        </div>
       </div>
       <br><br><br>
 
@@ -239,46 +259,97 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
     <?php include 'ido-notif-scripts.php' ?>
 
-    $('#endorse').click(function() {
-      if($('#endorse').text() == "Endorse") {
-        $.ajax({
-            url: '../ajax/ido-endorse-case.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                verdict: $('#verdict').val()
-            },
-            success: function(msg) {
-                $('#message').text('Endorsed to OULC successfully!');
-                $("#endorse").attr('disabled', true).text("Endorsed");
-                $("#return").attr('disabled', true);
-                $("#dismiss").attr('disabled', true);
-                $("#verdict").attr('disabled', true);
+    $('input[type=radio][name=admission]').change(function() {
+        if (this.value == 1) {
+          $("#penaltyarea").show();
+        }
+        else {
+          $("#penaltyarea").hide();
+        }
+    });
 
-                $("#alertModal").modal("show");
-            }
-        });
-      }
+    $('#submit').click(function() {
+    <?php
+      if($row['TYPE'] == "Major") { ?>
+        var admission = $("input[name='admission']:checked").val();
+        if(admission == 1) {
+          $.ajax({
+              url: '../ajax/ido-close-case.php',
+              type: 'POST',
+              data: {
+                  caseID: <?php echo $_GET['cn']; ?>,
+                  penalty: $('#penalty').val(),
+                  admission: admission
+              },
+              success: function(msg) {
+                  $('#message').text('Case closed.');
+                  $("#submit").attr('disabled', true).text("Submitted");
+                  $("#return").attr('disabled', true);
+                  $("#dismiss").attr('disabled', true);
+                  $("#penalty").attr('readonly', true);
+                  $("#schedule").attr('disabled', true);
+                  $("#addcomment").hide();
+                  $('#closecomment').hide();
+                  $('#comment').attr('disabled', true);
+                  $("input[type=radio]").attr('disabled', true);
 
-      else if($('#endorse').text() == "Submit") {
+
+                  $("#alertModal").modal("show");
+              }
+          });
+        }
+
+        else {
+          $.ajax({
+              url: '../ajax/ido-forward-case.php',
+              type: 'POST',
+              data: {
+                  caseID: <?php echo $_GET['cn']; ?>,
+                  admission: admission
+              },
+              success: function(msg) {
+                  $('#message').text('Case forwarded to SDFO Director successfully!');
+                  $("#submit").attr('disabled', true).text("Submitted");
+                  $("#return").attr('disabled', true);
+                  $("#dismiss").attr('disabled', true);
+                  $("#penalty").attr('readonly', true);
+                  $("#schedule").attr('disabled', true);
+                  $("#addcomment").hide();
+                  $('#closecomment').hide();
+                  $('#comment').attr('disabled', true);
+                  $("input[type=radio]").attr('disabled', true);
+
+                  $("#alertModal").modal("show");
+              }
+          });
+        }
+
+    <?php }
+
+      else { ?>
         $.ajax({
             url: '../ajax/ido-close-case.php',
             type: 'POST',
             data: {
                 caseID: <?php echo $_GET['cn']; ?>,
-                verdict: $('#verdict').val()
+                penalty: $('#penalty').val()
             },
             success: function(msg) {
                 $('#message').text('Case closed.');
-                $("#endorse").attr('disabled', true).text("Submitted");
+                $("#submit").attr('disabled', true).text("Submitted");
                 $("#return").attr('disabled', true);
                 $("#dismiss").attr('disabled', true);
-                $("#verdict").attr('disabled', true);
+                $("#penalty").attr('readonly', true);
+                $("#schedule").attr('disabled', true);
+                $("#addcomment").hide();
+                $('#closecomment').hide();
+                $('#comment').attr('disabled', true);
+                $("input[type=radio]").attr('disabled', true);
 
                 $("#alertModal").modal("show");
             }
         });
-      }
+    <?php } ?>
     });
 
     $('#return').click(function() {
@@ -291,13 +362,15 @@ if (!isset($_GET['cn']))
           },
           success: function(msg) {
             $('#message').text('Returned to student successfully!');
-            $("#endorse").attr('disabled', true);
+            $("#submit").attr('disabled', true);
             $("#return").attr('disabled', true);
             $("#dismiss").attr('disabled', true);
             $("#schedule").attr('disabled', true);
+            $("#penalty").attr('readonly', true);
             $("#addcomment").hide();
             $('#closecomment').hide();
             $('#comment').attr('disabled', true);
+            $("input[type=radio]").attr('disabled', true);
 
             $("#alertModal").modal("show");
           }
@@ -310,14 +383,35 @@ if (!isset($_GET['cn']))
           type: 'POST',
           data: {
               caseID: <?php echo $_GET['cn']; ?>,
-              verdict: $('#verdict').val()
+              penalty: $('#penalty').val()
           },
           success: function(msg) {
               $('#message').text('Case dismissed.');
-              $("#endorse").attr('disabled', true);
+              $("#submit").attr('disabled', true);
               $("#return").attr('disabled', true);
               $("#dismiss").attr('disabled', true).text("Dismissed");
-              $("#verdict").attr('disabled', true);
+              $("#schedule").attr('disabled', true);
+              $("#penalty").attr('readonly', true);
+              $("#addcomment").hide();
+              $('#closecomment').hide();
+              $('#comment').attr('disabled', true);
+              $("input[type=radio]").attr('disabled', true);
+
+              $("#alertModal").modal("show");
+          }
+      });
+    });
+
+    $('#sendcl').click(function() {
+      $.ajax({
+          url: '../ajax/ido-send-closure-letter.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+              $('#message').text('Case dismissed.');
+              $("#sendcl").attr('disabled', true);
 
               $("#alertModal").modal("show");
           }
@@ -337,41 +431,38 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['TYPE'] != "Major"){ ?>
-      $("#endorse").text('Submit');
+    if($row['TYPE'] == "Major"){ ?>
+      $("#admitarea").show();
   <?php }
-    if($row['REMARKS_ID'] < 3 or $row['REMARKS_ID'] == 4){ ?>
+    if($row['PENALTY'] != null and $row['TYPE'] == "Major"){ ?>
+      $("#penaltyarea").show();
+  <?php }
+    if($row['REMARKS_ID'] != 3){ ?>
       $("#addcomment").hide();
       $('#closecomment').hide();
       $('#comment').attr('disabled', true);
-      $("#endorse").attr('disabled', true);
+      $("#submit").attr('disabled', true);
       $("#return").attr('disabled', true);
       $("#dismiss").attr('disabled', true);
       $("#schedule").attr('disabled', true);
-  <?php }
-    if($row['REMARKS_ID'] > 3 and $row['REMARKS_ID'] != 4) { ?>
-      $("#addcomment").hide();
-      $('#closecomment').hide();
-      $('#comment').attr('disabled', true);
-      $("#return").attr('disabled', true);
-      $("#dismiss").attr('disabled', true);
-      $("#verdict").attr('disabled', true);
-      $("#endorse").attr('disabled', true);
-      $("#schedule").attr('disabled', true);
-  <?php
-      if($row['REMARKS_ID'] > 4) { ?>
-        $("#verdict").val("<?php echo $row['OULC_VERDICT']; ?>");
-  <?php if($row['REMARKS_ID'] < 7) { ?>
-          $("#endorse").text("Endorsed");
-  <?php }
-        else if($row['REMARKS_ID'] == 8) { ?>
-          $("#endorse").text("Submitted");
-  <?php }
-        else if($row['REMARKS_ID'] == 9) { ?>
-          $("#dismiss").text("Dismissed");
-  <?php }
-      }
+      $("#penalty").attr('readonly', true);
+      $("input[type=radio]").attr('disabled', true);
+      <?php
+          if($row['REMARKS_ID'] > 4) { ?>
+            $("#penalty").val("<?php echo $row['PENALTY']; ?>");
+            $("input[name=admission][value='<?php echo $row['ADMISSION_TYPE_ID']; ?>']").prop('checked',true);
+            $("#schedule").hide();
+            $("#dismiss").hide();
+            $("#return").hide();
+            $("#submit").hide();
+        <?php if($row['PENALTY'] == null){ ?>
+                $("#penaltyarea").hide();
+        <?php }
+          }
     }
+  if($row['REMARKS_ID'] != 7) { ?>
+    $("#sendcl").hide();
+  <?php }
     if($row['COMMENT'] != null){ ?>
       $("#addcomment").hide();
       $("#commentarea").show();

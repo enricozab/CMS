@@ -1,7 +1,7 @@
-<?php include 'ulc.php' ?>
+<?php include 'sdfod.php' ?>
 <?php
 if (!isset($_GET['cn']))
-    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/ulc/ulc-home.php");
+    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/sdfod/sdfod-home.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,23 +44,17 @@ if (!isset($_GET['cn']))
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- FOR SEARCHABLE DROP -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-    <script src="../extra-css/chosen.jquery.min.js"></script>
-    <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
-
 </head>
 
 <body>
 
   <?php
-    $query='SELECT 		  C.CASE_ID AS CASE_ID,
+    $query2='SELECT 		C.CASE_ID AS CASE_ID,
                         C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                         C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                         CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
                         C.OFFENSE_ID AS OFFENSE_ID,
                         RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
-                        RO.TYPE AS TYPE,
                         C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
                         RO.TYPE AS TYPE,
                         C.COMPLAINANT_ID AS COMPLAINANT_ID,
@@ -74,7 +68,6 @@ if (!isset($_GET['cn']))
                         C.STATUS_ID AS STATUS_ID,
                         S.DESCRIPTION AS STATUS_DESCRIPTION,
                         C.REMARKS_ID AS REMARKS_ID,
-                        C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
                         C.PENALTY AS PENALTY,
                         C.VERDICT AS VERDICT,
@@ -90,25 +83,25 @@ if (!isset($_GET['cn']))
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
+    $result2=mysqli_query($dbc,$query2);
+    if(!$result2){
       echo mysqli_error($dbc);
     }
     else{
-      $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+      $row=mysqli_fetch_array($result2,MYSQLI_ASSOC);
     }
   ?>
 
     <div id="wrapper">
 
-    <?php include 'ulc-sidebar.php';?>
+    <?php include 'sdfod-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
                <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
                 <div class="col-lg-6">
           					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
+          					<b>Type:</b> <?php echo 'Minor'; ?><br>
                     <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
           					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
                     <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
@@ -149,54 +142,29 @@ if (!isset($_GET['cn']))
                       <!-- .panel-body -->
                   </div>
                 </div>
-              </div>
-			<br><br>
-      <div class="form-group">
-        <label>Summary of the Incident</label>
-        <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-      </div>
-
-      <div class="form-group" id="penaltyarea">
-        <label>Penalty</label>
-        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3"><?php echo $row['PENALTY']; ?></textarea>
-      </div>
-
-      <button type="button" class="btn btn-outline btn-primary" id="schedule" onclick="location.href='ulc-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule a hearing</button>
-      <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-
-      <div class="form-group" id="verdictarea" hidden>
-        <br><br>
-        <label>Verdict</label>
-        <div class="radio">
-            <label>
-                <input type="radio" name="verdict" id="guilty" value="Guilty" checked>Guilty
-            </label>
+          </div>
+  			<br><br>
+        <div class="form-group">
+          <label>Summary of the Incident</label>
+          <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
         </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="verdict" id="notguilty" value="Not Guilty">Not Guilty
-            </label>
+        <div class="form-group" id="penaltyarea" hidden>
+          <label>Penalty</label>
+          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY']; ?></textarea>
         </div>
+        <br>
+        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+        <br><br><br><br>
+        <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
+        <br><br><br><br><br>
       </div>
-
-      <br><br><br><br>
-
-      <div class="row">
-        <div class="col-sm-6">
-          <button type="submit" id="hearing" name="hearing" class="btn btn-success">For hearing</button>
-          <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
-          <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse to the President</button>
-        </div>
-      </div>
-
-      <br><br><br>
 
       <?php
       //Removes 'new' badge and reduces notif's count
-      $query2='SELECT 		ULC.CASE_ID AS CASE_ID,
-                          ULC.IF_NEW AS IF_NEW
-              FROM 		    ULC_CASES ULC
-              WHERE   	  ULC.CASE_ID = "'.$_GET['cn'].'"';
+      $query2='SELECT 		SDFOD.CASE_ID AS CASE_ID,
+                          SDFOD.IF_NEW AS IF_NEW
+              FROM 		    SDFOD_CASES SDFOD
+              WHERE   	  SDFOD.CASE_ID = "'.$_GET['cn'].'"';
       $result2=mysqli_query($dbc,$query2);
       if(!$result2){
         echo mysqli_error($dbc);
@@ -204,7 +172,7 @@ if (!isset($_GET['cn']))
       else{
         $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
         if($row2['IF_NEW']){
-          $query2='UPDATE ULC_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+          $query2='UPDATE SDFOD_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
           $result2=mysqli_query($dbc,$query2);
           if(!$result2){
             echo mysqli_error($dbc);
@@ -212,10 +180,11 @@ if (!isset($_GET['cn']))
         }
       }
 
-        include 'ulc-notif-queries.php';
+      include 'sdfod-notif-queries.php';
+
       ?>
     </div>
-    <!-- /#wrapper -->
+    <!-- #wrapper -->
 
     <!-- jQuery -->
     <script src="../vendor/jquery/jquery.min.js"></script>
@@ -242,115 +211,36 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-    <?php include 'ulc-notif-scripts.php' ?>
-
-    $('#hearing').click(function() {
-      $.ajax({
-          url: '../ajax/ulc-under-hearing.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>
-          },
-          success: function(msg) {
-            $('#message').text('Case is scheduled for hearing.');
-            $("#schedule").attr('disabled', true);
-            $("#hearing").attr('disabled', true);
-            $("#verdictarea").show();
-
-            $("#alertModal").modal("show");
-          }
-      });
-    });
-
-    $('#submit').click(function() {
-      var verdict = $("input[name='verdict']:checked").val();
-      if(verdict == "Not Guilty") {
-        $.ajax({
-            url: '../ajax/ulc-not-guilty.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                verdict: verdict
-            },
-            success: function(msg) {
-              $('#message').text('Case dismissed.');
-              $("#submit").attr('disabled', true).text("Submitted");
-              $("#penalty").attr('readonly', true);
-              $("input[type=radio]").attr('disabled', true);
-
-              $("#alertModal").modal("show");
-            }
-        });
-      }
-      else {
-        $.ajax({
-            url: '../ajax/ulc-guilty.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                penalty: $('#penalty').val(),
-                verdict: verdict
-            },
-            success: function(msg) {
-              $('#message').text('Case closed.');
-              $("#submit").attr('disabled', true).text("Submitted");
-              $("#penalty").attr('readonly', true);
-              $("input[type=radio]").attr('disabled', true);
-
-              $("#alertModal").modal("show");
-            }
-        });
-      }
-    });
+    <?php include 'sdfod-notif-scripts.php' ?>
 
     $('#endorse').click(function() {
       $.ajax({
-          url: '../ajax/ulc-endorse-to-president.php',
+          url: '../ajax/director-endorse-case.php',
           type: 'POST',
           data: {
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
-            $('#message').text('Case is endorsed to the President.');
-            $("#endorse").hide();
-            $("#submit").show();
-            $("#penalty").attr('readonly', false);
-            $("input[type=radio]").attr('disabled', false);
+            $('#message').text('Case endorsed to AULC successfully!');
+            $("#endorse").attr('disabled', true).text("Endorsed");
 
             $("#alertModal").modal("show");
           }
       });
     });
-
   });
 
   <?php
-    if($row['REMARKS_ID'] > 8){ ?>
-      $("#hearing").attr('disabled', true);
-      $("#schedule").attr('disabled', true);
-      $("#penalty").val("<?php echo $row['PENALTY']; ?>");
-      $("#verdictarea").show();
-    <?php
-      if($row['REMARKS_ID'] > 9){ ?>
-        $("input[name=verdict][value='<?php echo $row['VERDICT']; ?>']").prop('checked',true);
-        $("input[type=radio]").attr('disabled', true);
-        $("#penalty").attr('readonly', true);
-        $("#submit").hide();
-        $("#hearing").hide();
-        $("#schedule").hide();
-      <?php
-        if($row['REMARKS_ID'] != 12){ ?>
-          $("#endorse").hide();
-      <?php }
-        if($row['REMARKS_ID'] == 13){ ?>
-          $("#submit").show();
-          $("#penalty").attr('readonly', false);
-          $("input[type=radio]").attr('disabled', false);
+    if($row['PENALTY'] != null ){ ?>
+      $("#penaltyarea").show();
   <?php }
-      }
-    }
-  ?>
-
+    if($row['REMARKS_ID'] > 5){ ?>
+      $("#endorse").attr('disabled', true).text("Endorsed");
+    <?php
+      if($row['REMARKS_ID'] == 10 or $row['REMARKS_ID'] == 11){ ?>
+        $("#endorse").hide();
+  <?php }
+    } ?>
   </script>
 
   <!-- Modal -->
@@ -370,6 +260,7 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
 </body>
 
 </html>

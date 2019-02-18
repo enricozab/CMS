@@ -1,4 +1,4 @@
-<?php include 'ido.php' ?>
+<?php include 'hdo.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Calendar</title>
+    <title>CMS - Active Cases</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-    <!-- DataTables CSS -->
+	  <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
@@ -44,24 +44,51 @@
 
 <body>
 
-  <?php
-    include 'ido-notif-queries.php'
-  ?>
+  <?php include 'hdo-notif-queries.php' ?>
 
     <div id="wrapper">
 
-        <?php include 'ido-sidebar.php';?>
+        <?php include 'hdo-sidebar.php';?>
 
         <div id="page-wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header">Calendar</h3>
-                </div>
-                <div>
-                  <img src="../images/calendar.png" width="1500" height="700">
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
+			<br><br>
+            <div class="panel panel-default">
+				<div class="panel-heading">
+					<b>Active Cases</b>
+				</div>
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<table width="100%" class="table table-striped table-bordered table-hover" id="active-cases-table">
+						<thead>
+							<tr>
+								<th>Case No.</th>
+								<th>Offense</th>
+								<th>Type</th>
+								<th>Date Filed</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
+								<td>00000002</td>
+								<td>Left ID</td>
+								<td>Minor</td>
+								<td>10/13/2018</td>
+								<td>Pending</td>
+							</tr>
+							<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
+								<td>00000003</td>
+								<td>Cheating</td>
+								<td>Major</td>
+								<td>10/13/2018</td>
+								<td>For Review</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- /.table-responsive -->
+				</div>
+				<!-- /.panel-body -->
+			</div>
         </div>
         <!-- /#page-wrapper -->
 
@@ -91,11 +118,14 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
-  <script>
-  $(document).ready(function() {
-      <?php include 'ido-notif-scripts.php'?>
-  });
-  </script>
+    <script>
+    $(document).ready(function() {
+        $('#active-cases-table').DataTable({
+            "order": [[ 0, "desc" ]]
+        });
+        <?php include 'hdo-notif-scripts.php' ?>
+    });
+    </script>
 
 </body>
 
