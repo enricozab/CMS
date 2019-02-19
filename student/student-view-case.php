@@ -127,23 +127,15 @@ if (!isset($_GET['cn']))
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                       <div class="panel-heading">
-                          <b style = "font-size: 17px;">Submitted Forms</b>
+                          <b style = "font-size: 17px;">Submit Form</b>
                       </div>
                       <!-- .panel-heading -->
                       <div class="panel-body">
                         <table class="table">
                           <tbody>
                             <tr>
-                              <td>Form 1</td>
-                              <td><i>10/14/18</i></td>
-                            </tr>
-                            <tr>
-                              <td>Form 2</td>
-                              <td><i>10/10/18</i></td>
-                            </tr>
-                            <tr>
-                              <td>Form 3</td>
-                              <td><i>10/10/18</i></td>
+                              <td>Student Response Form</td>
+                              <td><button type="submit" id="form" name="form" class="btn btn-outline btn-primary">Fill Out</button></td>
                             </tr>
                           </tbody>
                         </table>
@@ -239,9 +231,88 @@ if (!isset($_GET['cn']))
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <!-- Form Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
+
+    //response form
+    $("#form").click(function(){
+      $("#formModal").modal("show");
+    });
+
+    <?php include "student-form-queries.php" ?>
+
+    function loadFile(url,callback){
+        JSZipUtils.getBinaryContent(url,callback);
+    }
+
+    $("#submitForm").click(function(){
+      loadFile("../templates/template-student-response-form.docx",function(error,content){
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+          doc.setData({
+            firstIDO: "<?php echo $idores['first_name'] ?>",
+            lastIDO: "<?php echo $idores['last_name'] ?>",
+            firstComplainant: "<?php echo $complainantres['last_name'] ?>",
+            lastComplainant: "<?php echo $complainantres['last_name'] ?>",
+            firstStudent: "<?php echo $nameres['first_name'] ?>",
+            lastStudent: "<?php echo $nameres['last_name'] ?>",
+            nature: "<?php echo $caseres['description'] ?>",
+            section: '2.1??',
+            date: today,
+            dateApp: "<?php echo $caseres['date_filed'] ?>",
+            term: document.getElementById("term").value,
+            year: document.getElementById("schoolyr").value,
+            admission: document.getElementById("admissionType").value,
+            letter: document.getElementById("letter").value,
+            first: "<?php echo $caseres['first_name'] ?>",
+            last: "<?php echo $caseres['last_name'] ?>",
+            yearLvl: "<?php echo $nameres['year_level'] ?>",
+            idn: "<?php echo $nameres['user_id'] ?>",
+            college: "<?php echo $nameres['description'] ?>",
+            degree: "<?php echo $nameres['student_degree'] ?>"
+          });
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+      });
+    });
 
     <?php include 'student-notif-scripts.php' ?>
 
@@ -339,6 +410,41 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
+  <!-- Form Modal -->
+  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Student Response</b></h4>
+        </div>
+        <div class="modal-body">
+          <b>Term Number:</b>
+          <input id="term" type = "number" minlength="1" maxlength="1" class="studentID form-control" placeholder="Enter Term No."/><br>
+
+          <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b>
+          <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" placeholder="Enter School Year."/><br>
+
+          <b>Type of Admission:</b>
+          <select id="admissionType" class="form-control">
+            <option value="" disabled selected>Select Type</option>
+            <option value="Full Admission">Full Admission</option>
+            <option value="Full Denial">Full Denial</option>
+            <option value="Partial Admission/Denial">Partial Admission/Denial</option>
+          </select>
+          <br>
+          <b>Letter:</b> <br>
+          <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "submitForm" class="btn btn-primary" data-dismiss="modal">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
