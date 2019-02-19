@@ -191,11 +191,6 @@
         e.preventDefault();
       });
 
-      $('#modalOK').click(function() {
-        $("#alertModal").modal("hide");
-        $('#form')[0].reset();
-      });
-
       var studentlist = [];
 
       $('#submit').click(function() {
@@ -301,11 +296,15 @@
                   });
                 }
             });
+            if(i == studentlist.length) {
+              $('#form')[0].reset();
+            }
           }
         }
 
         $("#alertModal").modal("show");
       });
+
     });
   	</script>
 
@@ -321,7 +320,7 @@
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
 					</div>
 					<div class="modal-footer">
-            <button type="submit" id="modalOK" class="btn btn-primary">Ok</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
 					</div>
 				</div>
 			</div>
