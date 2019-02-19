@@ -132,7 +132,7 @@
     <script src="../vendor/morrisjs/morris.min.js"></script>
     <script src="../data/morris-data.js"></script>
 
-	<!-- DataTables JavaScript -->
+	  <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
     <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
@@ -142,9 +142,9 @@
 
     <!-- Form Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
 
     <script>
     $(document).ready(function() {
@@ -194,10 +194,11 @@
         e.preventDefault();
       });
 
+      var studentlist = [];
+
       $('#submit').click(function() {
         var ids = ['#location','#date','#time','textarea'];
         var isEmpty = true;
-        var studentlist = [];
 
         $('.studentID').each(function(i, obj){
           if(obj.value.length == 0){
@@ -213,9 +214,6 @@
         }
 
         if(isEmpty) {
-          console.log($('#date').val());
-          console.log($('#time').val());
-          generate();
           $.ajax({
               url: '../ajax/faculty-insert-incident-report.php',
               type: 'POST',
@@ -227,11 +225,84 @@
                   details: $('#details').val()
               },
               success: function(msg) {
+                  generate();
                   $('#message').text('Submitted successfully!');
                   $('#form')[0].reset();
               }
           });
         }
+
+        <?php  include 'faculty-form-queries.php'  ?>
+
+        function loadFile(url,callback){
+            JSZipUtils.getBinaryContent(url,callback);
+        }
+        function generate(){
+          for(var i = 0; i < studentlist.length; ++i ) {
+            $.ajax({
+                url: '../ajax/get-student-info.php',
+                type: 'POST',
+                data: {
+                    studentID: studentlist[i]
+                },
+                success: function(response) {
+                  var stud = JSON.parse(response);
+                  loadFile("../templates/template-incident-report.docx",function(error,content){
+                      if (error) { throw error };
+                      var zip = new JSZip(content);
+                      var doc=new window.docxtemplater().loadZip(zip);
+                      // date
+                      var today = new Date();
+                      var dd = today.getDate();
+                      var mm = today.getMonth() + 1; //January is 0!
+                      var yyyy = today.getFullYear();
+                      if (dd < 10) {
+                        dd = '0' + dd;
+                      }
+                      if (mm < 10) {
+                        mm = '0' + mm;
+                      }
+                      var today = dd + '/' + mm + '/' + yyyy;
+                      doc.setData({
+                        date: today,
+                        first: "<?php echo $nameres['first_name'] ?>",
+                        last: "<?php echo $nameres['last_name'] ?>",
+                        details: "<?php echo $officerow['description'] ?>",
+                        college: stud.description,
+                        studentF: stud.first_name,
+                        studentL: stud.last_name,
+                        idn: stud.user_id,
+                        degree: stud.student_degree,
+                        loc: document.getElementById("location").value,
+                        dateIncident: document.getElementById("date").value,
+                        summary: document.getElementById("details").value
+                      });
+                      try {
+                          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                          doc.render();
+                      }
+                      catch (error) {
+                          var e = {
+                              message: error.message,
+                              name: error.name,
+                              stack: error.stack,
+                              properties: error.properties,
+                          }
+                          console.log(JSON.stringify({error: e}));
+                          // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                          throw error;
+                      }
+                      var out=doc.getZip().generate({
+                          type:"blob",
+                          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                      }); //Output the document using Data-URI
+                      saveAs(out,"output.docx");
+                  });
+                }
+            });
+          }
+        }
+
 
         $("#alertModal").modal("show");
       });

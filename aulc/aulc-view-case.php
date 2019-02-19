@@ -76,7 +76,8 @@ if (!isset($_GET['cn']))
                         C.REMARKS_ID AS REMARKS_ID,
                         C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.OULC_VERDICT AS OULC_VERDICT,
+                        C.PENALTY AS PENALTY,
+                        C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
@@ -155,9 +156,9 @@ if (!isset($_GET['cn']))
         <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
       </div>
 
-      <div class="form-group" id="verdictarea">
-        <label>Verdict</label>
-        <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly><?php echo $row['OULC_VERDICT']; ?></textarea>
+      <div class="form-group" id="penaltyarea">
+        <label>Penalty</label>
+        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3">1 month suspension</textarea>
       </div>
 
       <div id="viewevidence">
@@ -229,8 +230,61 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
     <?php include 'aulc-notif-scripts.php' ?>
 
+    $('#dismiss').click(function() {
+      $.ajax({
+          url: '../ajax/aulc-dismiss-case.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+            $('#message').text('Case returned to IDO successfully!');
+            $("#penalty").attr('readonly', true);
+            $("#submit").attr('disabled', true);
+            $("#dismiss").attr('disabled', true).text('Dismissed');
+
+            $("#alertModal").modal("show");
+          }
+      });
+    });
+
+    $('#submit').click(function() {
+      $.ajax({
+          url: '../ajax/aulc-forward-case.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              penalty: $('#penalty').val()
+          },
+          success: function(msg) {
+            $('#message').text('Case forwarded to ULC successfully!');
+            $("#penalty").attr('readonly', true);
+            $("#submit").attr('disabled', true).text('Submitted');
+            $("#dismiss").attr('disabled', true);
+
+            $("#alertModal").modal("show");
+          }
+      });
+    });
+
   });
 
+  <?php
+    if($row['REMARKS_ID'] == 7){ ?>
+      $("#penalty").attr('readonly', true);
+      $("#submit").attr('disabled', true);
+      $("#dismiss").attr('disabled', true).text('Dismissed');
+  <?php }
+    if($row['REMARKS_ID'] > 7){ ?>
+      $("#penalty").attr('readonly', true).val('<?php echo $row['PENALTY']; ?>');
+      $("#submit").attr('disabled', true).text('Submitted');
+      $("#dismiss").attr('disabled', true);
+  <?php }
+    if($row['REMARKS_ID'] == 10 or $row['REMARKS_ID'] == 11){ ?>
+      $("#penalty").attr('readonly', true);
+      $("#submit").hide();
+      $("#dismiss").hide();
+  <?php } ?>
 
   </script>
 

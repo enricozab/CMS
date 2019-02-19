@@ -1,4 +1,4 @@
-<?php include 'ido.php' ?>
+<?php include 'hdo.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,12 +45,12 @@
 <body>
 
   <?php
-    include 'ido-notif-queries.php'
+    include 'hdo-notif-queries.php'
   ?>
 
     <div id="wrapper">
 
-        <?php include 'ido-sidebar.php';?>
+        <?php include 'hdo-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
@@ -93,7 +93,7 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-      <?php include 'ido-notif-scripts.php'?>
+      <?php include 'hdo-notif-scripts.php'?>
   });
   </script>
 

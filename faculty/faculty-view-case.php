@@ -70,7 +70,8 @@ if (!isset($_GET['cn']))
                         S.DESCRIPTION AS STATUS_DESCRIPTION,
                         C.REMARKS_ID AS REMARKS_ID,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.OULC_VERDICT AS OULC_VERDICT,
+                        C.PENALTY AS PENALTY,
+                        C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
@@ -149,9 +150,9 @@ if (!isset($_GET['cn']))
           <label>Summary of the Incident</label>
           <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
         </div>
-        <div class="form-group" id="verdictarea" hidden>
-          <label>Verdict</label>
-          <textarea id="verdict" style="width:600px;" name="verdict" class="form-control" rows="3" readonly><?php echo $row['OULC_VERDICT']; ?></textarea>
+        <div class="form-group" id="penaltyarea" hidden>
+          <label>Penalty</label>
+          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY']; ?></textarea>
         </div>
         <br>
         <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
@@ -214,8 +215,8 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['OULC_VERDICT'] != null ){ ?>
-      $("#verdictarea").show();
+    if($row['PENALTY'] != null ){ ?>
+      $("#penaltyarea").show();
   <?php } ?>
   </script>
 
