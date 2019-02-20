@@ -296,11 +296,15 @@
                   });
                 }
             });
+            if(i == studentlist.length) {
+              $('#form')[0].reset();
+            }
           }
         }
 
         $("#alertModal").modal("show");
       });
+
     });
   	</script>
 
