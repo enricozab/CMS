@@ -57,7 +57,7 @@
                 <h3 class="page-header">Incident Report</h3>
 
                 <div class="col-lg-12">
-                  <form id="form">
+                  <form id="form" action="" method="post" enctype="multipart/form-data">
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
                         <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
@@ -98,7 +98,10 @@
                       </div>
                     </div>
                     <br><br>
-                    <i>*Insert HelloSign*</i>
+					
+                    <i>*Insert HelloSign*</i><br>
+					<input type="file" name="fileToUpload" id="fileToUpload" accept=".doc, .docx, .pdf" multiple>
+					
                     <br><br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
@@ -303,6 +306,28 @@
       });
     });
   	</script>
+	
+	<!-- HELLO SIGN API -->
+	<?php
+		if(isset($_POST['submit'])){
+			echo dirname(__FILE__);
+			
+			/*$uploads_dir = '/';
+			foreach ($_FILES["pictures"]["error"] as $key => $error) {
+				if ($error == UPLOAD_ERR_OK) {
+					$tmp_name = $_FILES["pictures"]["tmp_name"][$key];
+					// basename() may prevent filesystem traversal attacks;
+					// further validation/sanitation of the filename may be appropriate
+					$name = basename($_FILES["pictures"]["name"][$key]);
+					move_uploaded_file($tmp_name, "$uploads_dir/$name");
+				}
+			}*/
+			/*$command = escapeshellcmd('upload.py');
+			$output = shell_exec($command);
+			header("Location: http://127.0.0.1:5000");
+			exit;*/
+		}
+	?>
 
     <!-- Modal -->
 		<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
