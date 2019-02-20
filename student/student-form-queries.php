@@ -63,18 +63,18 @@ else{
 }
 
 // form
-// 
-// $form = 'SELECT STUDENT_RESPONSE_FORM_ID
-//            FROM STUDENT_RESPONSE_FORMS
-//        ORDER BY STUDENT_RESPONSE_FORM_ID DESC
-//           LIMIT 1';
-// $formq = mysqli_query($dbc,$form);
-//
-// if(!$formq){
-//   echo mysqli_error($dbc);
-// }
-// else{
-//   $formres = mysqli_fetch_row($formq);
-// }
+
+$form = 'SELECT *
+           FROM STUDENT_RESPONSE_FORMS
+       ORDER BY STUDENT_RESPONSE_FORM_ID DESC
+          LIMIT 1';
+$formq = mysqli_query($dbc,$form);
+
+if(!$formq){
+  echo mysqli_error($dbc);
+}
+else{
+  $formres = mysqli_fetch_array($formq);
+}
 
 ?>
