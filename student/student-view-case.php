@@ -124,25 +124,6 @@ if (!isset($_GET['cn']))
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
 
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Submit Form</b>
-                      </div>
-                      <!-- .panel-heading -->
-                      <div class="panel-body">
-                        <table class="table">
-                          <tbody>
-                            <tr>
-                              <td>Student Response Form</td>
-                              <td><button type="submit" id="form" name="form" class="btn btn-outline btn-primary">Fill Out</button></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- .panel-body -->
-                  </div>
-                </div>
             </div>
   			<br><br>
         <div class="form-group">
@@ -169,7 +150,7 @@ if (!isset($_GET['cn']))
             </div>
           </div>
           <div id="appendevidence">
-            <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another file</a></span>
+            <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
           </div>
         </div>
         <div id="viewevidence" hidden>
@@ -179,7 +160,7 @@ if (!isset($_GET['cn']))
         <br><br>
         <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
         <button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>
-        <button type="submit" id="sendpl" name="sendpl" class="btn btn-success">Send Parent Letter</button>
+        <button type="submit" id="form" name="sendpl" class="btn btn-success">Send Response Letter</button>
         <br><br><br>
 
         <?php
@@ -246,71 +227,54 @@ if (!isset($_GET['cn']))
       $("#formModal").modal("show");
     });
 
-    <?php include "student-form-queries.php" ?>
+    <?php include "student-form-queries.php"
+
+    ?>
 
     function loadFile(url,callback){
         JSZipUtils.getBinaryContent(url,callback);
     }
 
     $("#submitForm").click(function(){
-      loadFile("../templates/template-student-response-form.docx",function(error,content){
-          if (error) { throw error };
-          var zip = new JSZip(content);
-          var doc=new window.docxtemplater().loadZip(zip);
-          // date
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth() + 1; //January is 0!
-          var yyyy = today.getFullYear();
-          if (dd < 10) {
-            dd = '0' + dd;
+      loadFile("../template/template-student-response-form.docx",function(error,content){
+
+      if (error) { throw error };
+      var zip = new JSZip(content);
+      var doc=new window.docxtemplater().loadZip(zip);
+      // date
+      var today = new Date();
+      var dd = today.getDate();
+      var mm = today.getMonth() + 1; //January is 0!
+      var yyyy = today.getFullYear();
+      if (dd < 10) {
+        dd = '0' + dd;
+      }
+      if (mm < 10) {
+        mm = '0' + mm;
+      }
+      var today = dd + '/' + mm + '/' + yyyy;
+
+      doc.setData({
+        date: today
+      });
+
+      try {
+          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+          doc.render();
+      }
+
+      catch (error) {
+          var e = {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+              properties: error.properties,
           }
-          if (mm < 10) {
-            mm = '0' + mm;
-          }
-          var today = dd + '/' + mm + '/' + yyyy;
-          doc.setData({
-            firstIDO: "<?php echo $idores['first_name'] ?>",
-            lastIDO: "<?php echo $idores['last_name'] ?>",
-            firstComplainant: "<?php echo $complainantres['last_name'] ?>",
-            lastComplainant: "<?php echo $complainantres['last_name'] ?>",
-            firstStudent: "<?php echo $nameres['first_name'] ?>",
-            lastStudent: "<?php echo $nameres['last_name'] ?>",
-            nature: "<?php echo $caseres['description'] ?>",
-            section: '2.1??',
-            date: today,
-            dateApp: "<?php echo $caseres['date_filed'] ?>",
-            term: document.getElementById("term").value,
-            year: document.getElementById("schoolyr").value,
-            admission: document.getElementById("admissionType").value,
-            letter: document.getElementById("letter").value,
-            first: "<?php echo $caseres['first_name'] ?>",
-            last: "<?php echo $caseres['last_name'] ?>",
-            yearLvl: "<?php echo $nameres['year_level'] ?>",
-            idn: "<?php echo $nameres['user_id'] ?>",
-            college: "<?php echo $nameres['description'] ?>",
-            degree: "<?php echo $nameres['student_degree'] ?>"
-          });
-          try {
-              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-              doc.render();
-          }
-          catch (error) {
-              var e = {
-                  message: error.message,
-                  name: error.name,
-                  stack: error.stack,
-                  properties: error.properties,
-              }
-              console.log(JSON.stringify({error: e}));
-              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-              throw error;
-          }
-          var out=doc.getZip().generate({
-              type:"blob",
-              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          }); //Output the document using Data-URI
-          saveAs(out,"output.docx");
+          console.log(JSON.stringify({error: e}));
+          // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+          throw error;
+      }
+
       });
     });
 
@@ -421,7 +385,12 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-body">
           <b>Term Number:</b>
-          <input id="term" type = "number" minlength="1" maxlength="1" class="studentID form-control" placeholder="Enter Term No."/><br>
+          <select id="term" class="form-control">
+            <option value="" disabled selected>Select Term</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select><br>
 
           <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b>
           <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" placeholder="Enter School Year."/><br>

@@ -191,120 +191,126 @@
         e.preventDefault();
       });
 
+      $('#modalOK').click(function() {
+        $('#form')[0].reset();
+        $("#alertModal").modal("hide");
+      });
+
+      $('form').submit(function(e) {
+        e.preventDefault();
+      });
       var studentlist = [];
 
       $('#submit').click(function() {
-        var ids = ['#location','#date','#time','textarea'];
-        var isEmpty = true;
+          $("#alertModal").modal("show");
 
-        $('.studentID').each(function(i, obj){
-          if(obj.value.length == 0){
-            isEmpty = false;
-          }
-          studentlist.push(parseInt(obj.value));
-        });
+          var ids = ['#location','#date','#time','textarea'];
+          var isEmpty = true;
 
-        for(var i = 0; i < ids.length; ++i ) {
-          if($.trim($(ids[i]).val()).length == 0) {
-            isEmpty = false;
-          }
-        }
-
-        if(isEmpty) {
-          $.ajax({
-              url: '../ajax/faculty-insert-incident-report.php',
-              type: 'POST',
-              data: {
-                  studentID: studentlist,
-                  location: $('#location').val(),
-                  date: $('#date').val(),
-                  time: $('#time').val(),
-                  details: $('#details').val()
-              },
-              success: function(msg) {
-                  generate();
-                  $('#message').text('Submitted successfully!');
-              }
+          $('.studentID').each(function(i, obj){
+            if(obj.value.length == 0){
+              isEmpty = false;
+            }
+            studentlist.push(parseInt(obj.value));
           });
-        }
 
-        <?php  include 'faculty-form-queries.php'  ?>
-
-        function loadFile(url,callback){
-            JSZipUtils.getBinaryContent(url,callback);
-        }
-        function generate(){
-          for(var i = 0; i < studentlist.length; ++i ) {
-            $.ajax({
-                url: '../ajax/get-student-info.php',
-                type: 'POST',
-                data: {
-                    studentID: studentlist[i]
-                },
-                success: function(response) {
-                  var stud = JSON.parse(response);
-                  loadFile("../templates/template-incident-report.docx",function(error,content){
-                      if (error) { throw error };
-                      var zip = new JSZip(content);
-                      var doc=new window.docxtemplater().loadZip(zip);
-                      // date
-                      var today = new Date();
-                      var dd = today.getDate();
-                      var mm = today.getMonth() + 1; //January is 0!
-                      var yyyy = today.getFullYear();
-                      if (dd < 10) {
-                        dd = '0' + dd;
-                      }
-                      if (mm < 10) {
-                        mm = '0' + mm;
-                      }
-                      var today = dd + '/' + mm + '/' + yyyy;
-                      doc.setData({
-                        date: today,
-                        first: "<?php echo $nameres['first_name'] ?>",
-                        last: "<?php echo $nameres['last_name'] ?>",
-                        details: "<?php echo $officerow['description'] ?>",
-                        college: stud.description,
-                        studentF: stud.first_name,
-                        studentL: stud.last_name,
-                        idn: stud.user_id,
-                        degree: stud.student_degree,
-                        loc: document.getElementById("location").value,
-                        dateIncident: document.getElementById("date").value,
-                        summary: document.getElementById("details").value
-                      });
-                      try {
-                          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                          doc.render();
-                      }
-                      catch (error) {
-                          var e = {
-                              message: error.message,
-                              name: error.name,
-                              stack: error.stack,
-                              properties: error.properties,
-                          }
-                          console.log(JSON.stringify({error: e}));
-                          // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                          throw error;
-                      }
-                      var out=doc.getZip().generate({
-                          type:"blob",
-                          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                      }); //Output the document using Data-URI
-                      saveAs(out,"output.docx");
-                  });
-                }
-            });
-            if(i == studentlist.length) {
-              $('#form')[0].reset();
+          for(var i = 0; i < ids.length; ++i ) {
+            if($.trim($(ids[i]).val()).length == 0) {
+              isEmpty = false;
             }
           }
-        }
 
-        $("#alertModal").modal("show");
+          if(isEmpty) {
+            $.ajax({
+                url: '../ajax/faculty-insert-incident-report.php',
+                type: 'POST',
+                data: {
+                    studentID: studentlist,
+                    location: $('#location').val(),
+                    date: $('#date').val(),
+                    time: $('#time').val(),
+                    details: $('#details').val()
+                },
+                success: function(msg) {
+                    generate();
+                    $('#message').text('Submitted successfully!');
+                }
+            });
+          }
+
+          <?php  include 'faculty-form-queries.php'  ?>
+
+          function loadFile(url,callback){
+              JSZipUtils.getBinaryContent(url,callback);
+          }
+
+          function generate(){
+            for(var i = 0; i < studentlist.length; ++i ) {
+              $.ajax({
+                  url: '../ajax/get-student-info.php',
+                  type: 'POST',
+                  data: {
+                      studentID: studentlist[i]
+                  },
+                  success: function(response) {
+                    var stud = JSON.parse(response);
+                    loadFile("../templates/template-incident-report.docx",function(error,content){
+                        if (error) { throw error };
+                        var zip = new JSZip(content);
+                        var doc=new window.docxtemplater().loadZip(zip);
+                        // date
+                        var today = new Date();
+                        var dd = today.getDate();
+                        var mm = today.getMonth() + 1; //January is 0!
+                        var yyyy = today.getFullYear();
+                        if (dd < 10) {
+                          dd = '0' + dd;
+                        }
+                        if (mm < 10) {
+                          mm = '0' + mm;
+                        }
+                        var today = dd + '/' + mm + '/' + yyyy;
+                        doc.setData({
+                          formNum: "<?php echo $formres['incident_report_id'] ?>",
+                          date: today,
+                          first: "<?php echo $nameres['first_name'] ?>",
+                          last: "<?php echo $nameres['last_name'] ?>",
+                          details: "<?php echo $officerow['description'] ?>",
+                          college: stud.description,
+                          studentF: stud.first_name,
+                          studentL: stud.last_name,
+                          idn: stud.user_id,
+                          degree: stud.student_degree,
+                          loc: document.getElementById("location").value,
+                          dateIncident: document.getElementById("date").value,
+                          summary: document.getElementById("details").value
+                        });
+                        try {
+                            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                            doc.render();
+                        }
+                        catch (error) {
+                            var e = {
+                                message: error.message,
+                                name: error.name,
+                                stack: error.stack,
+                                properties: error.properties,
+                            }
+                            console.log(JSON.stringify({error: e}));
+                            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                            throw error;
+                        }
+                        var out=doc.getZip().generate({
+                            type:"blob",
+                            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        }); //Output the document using Data-URI
+                        saveAs(out,"output.docx");
+                    });
+                  }
+              });
+            }
+          }
       });
-
     });
   	</script>
 
@@ -320,7 +326,7 @@
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
 					</div>
 					<div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+            <button type="submit" id = "modalOK" class="btn btn-default">Ok</button>
 					</div>
 				</div>
 			</div>

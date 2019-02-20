@@ -266,7 +266,7 @@ if (!isset($_GET['irn']))
           $('#message').text('Submitted successfully!');
           $('#form').find('input, textarea, button, select').attr('disabled','disabled');
           $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
-          $('#submit').text("Submitted");
+          $('#submit').text("Submitted"); // copy for fill out form
         }
 
         $("#alertModal").modal("show");
