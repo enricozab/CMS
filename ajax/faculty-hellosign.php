@@ -1,12 +1,11 @@
 <!-- HELLOSIGN API -->
 	<?php
 		session_start(); 
+		$filename = 'output.docx';
 		
-		$sourcepath = 'C:\\Users\\debbiesimon11\\Downloads\\output.docx';
+		$sourcepath = realpath($filename);//'C:\\Users\\debbiesimon11\\Downloads\\output.docx';
 		$targetpath = getcwd().'\\output.docx';
 		rename($sourcepath,$targetpath);
-		
-		$filename = 'output.docx';
 		
 		$name = $_POST['fname'].' '.$_POST['lname'];
 		
