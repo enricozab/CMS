@@ -141,7 +141,7 @@ if (!isset($_GET['irn']))
                     </div>
                     <div class="form-group">
                       <label>Summary of the Incident </label>
-                      <textarea id="details" class="form-control" style="width:600px;" rows="5"><?php echo $row['DETAILS']; ?></textarea>
+                      <textarea id="details" class="form-control" style="width:600px;" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
   				          </div>
                     <br>
                     <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
