@@ -26,4 +26,6 @@
   else{
     $nameres=mysqli_fetch_array($nameq,MYSQLI_ASSOC);
   }
+
+  
 ?>

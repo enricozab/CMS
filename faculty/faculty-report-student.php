@@ -1,4 +1,5 @@
-<?php include 'faculty.php' ?>
+<?php include 'faculty.php';
+header("Access-Control-Allow-Origin: *");?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -54,6 +55,14 @@
 
         <div id="page-wrapper">
             <div class="row">
+			
+			  <!--Upload File-->
+			  <!--<form enctype="multipart/form-data" action="upload.php" method="POST">
+				<p>Upload your file</p>
+				<input type="file" name="uploaded_file"></input><br />
+				<input type="submit" value="Upload"></input>
+			  </form>-->
+			  
                 <h3 class="page-header">Incident Report</h3>
 
                 <div class="col-lg-12">
@@ -147,6 +156,7 @@
     $(document).ready(function() {
 
       <?php include 'faculty-notif-scripts.php' ?>
+	  <?php  include 'faculty-form-queries.php'  ?>
 
       $('.studentID').keypress(validateNumber);
 
@@ -186,7 +196,38 @@
       $(document).on('click', '#removeevidence', function(){
         $(this).closest("#newsevidence").remove();
       });
-
+	  
+	  $('#modalOK').click(function() {
+		  
+        //$('#form')[0].reset();
+        $("#alertModal").modal("hide");
+		
+		//document.getElementById('inputfile').innerHTML;
+		
+		//HELLOSIGN API
+		$.ajax({
+                url: '../ajax/faculty-hellosign.php',
+                type: 'POST',
+                data: {
+					title : "Incident Report",
+					subject : "Incident Report Document Signature",
+					message : "Please do sign this document.",
+                    fname : "<?php echo $nameres['first_name'] ?>",
+					lname : "<?php echo $nameres['last_name'] ?>",
+					email : "<?php echo $nameres['email'] ?>",
+					filename : $('#inputfile').val()
+				
+                },
+				
+                success: function(response) {
+					//$("#alertModal").modal("show");
+					alert("Incident Report sent to your email! Check to sign the form.");
+				}
+		})
+		//HELLOSIGN API
+		
+      });
+	  
       $('form').submit(function(e) {
         e.preventDefault();
       });
@@ -228,7 +269,6 @@
           });
         }
 
-        <?php  include 'faculty-form-queries.php'  ?>
 
         function loadFile(url,callback){
             JSZipUtils.getBinaryContent(url,callback);
@@ -258,11 +298,10 @@
                       if (mm < 10) {
                         mm = '0' + mm;
                       }
+					  
                       var today = dd + '/' + mm + '/' + yyyy;
                       doc.setData({
                         date: today,
-                        first: "<?php echo $nameres['first_name'] ?>",
-                        last: "<?php echo $nameres['last_name'] ?>",
                         details: "<?php echo $officerow['description'] ?>",
                         college: stud.description,
                         studentF: stud.first_name,
@@ -320,7 +359,15 @@
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
 					</div>
 					<div class="modal-footer">
-            <button type="submit" id = "modalOK" class="btn btn-default">Ok</button>
+
+			  <!--Upload File-->
+			  <!--<form enctype="multipart/form-data" action="uploadfile.php" method="POST">
+				<p>Upload your file</p>
+				<input type="file" name="uploaded_file"></input><br />
+				<input type="submit" value="Upload"></input>
+			  </form>-->
+
+			  <button type="submit" id = "modalOK" class="btn btn-default">Ok</button>
 					</div>
 				</div>
 			</div>
