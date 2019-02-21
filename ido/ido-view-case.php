@@ -97,6 +97,20 @@ if (!isset($_GET['cn']))
     else{
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
     }
+
+    $queryadmi = 'SELECT *
+                FROM CASES C
+                JOIN REF_ADMISSION_TYPE RAT ON RAT.ADMISSION_TYPE_ID = C.ADMISSION_TYPE_ID
+               WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+     $resultadmi=mysqli_query($dbc,$queryadmi);
+     if(!$resultadmi){
+       echo mysqli_error($dbc);
+     }
+     else{
+       $rowadmi=mysqli_fetch_array($resultadmi,MYSQLI_ASSOC);
+     }
+
   ?>
 
     <div id="wrapper">
@@ -121,35 +135,8 @@ if (!isset($_GET['cn']))
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
-
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Submitted Forms</b>
-                      </div>
-                      <!-- .panel-heading -->
-                      <div class="panel-body">
-                        <table class="table">
-                          <tbody>
-                            <tr>
-                              <td>Form 1</td>
-                              <td><i>10/14/18</i></td>
-                            </tr>
-                            <tr>
-                              <td>Form 2</td>
-                              <td><i>10/10/18</i></td>
-                            </tr>
-                            <tr>
-                              <td>Form 3</td>
-                              <td><i>10/10/18</i></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- .panel-body -->
-                  </div>
-                </div>
               </div>
+
 			<br><br>
       <div class="form-group">
         <label>Summary of the Incident</label>
@@ -167,33 +154,25 @@ if (!isset($_GET['cn']))
 
       <button type="button" class="btn btn-outline btn-primary" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
       <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+      <button type="submit" id="viewForm" name="viewForm" class="btn btn-outline btn-primary">Review Submitted Form</button>
 
       <br><br>
 
-      <div class="form-group" id="admitarea" hidden>
-        <label>Student's Admission</label>
-        <div class="radio">
-            <label>
-                <input type="radio" name="admission" id="fullyadmit" value="1" checked>Full Admission
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="admission" id="partialadmit" value="2">Partial Admission
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="admission" id="fullydenied" value="3">Full Denial
-            </label>
-        </div>
-      </div>
+      <?php
 
-      <div class="form-group" id="penaltyarea">
-        <br>
-        <label>Penalty</label>
-        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3">1 month suspension</textarea>
-      </div>
+      if ($rowadmi['description'] == "Full Admission") {
+        ?>
+
+        <div class="form-group" id="penaltyarea">
+          <br>
+          <label>Penalty</label>
+          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3">1 month suspension</textarea>
+        </div>
+
+        <?php
+      }
+
+      ?>
 
       <br><br><br><br>
       <div class="row">
@@ -259,19 +238,11 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
     <?php include 'ido-notif-scripts.php' ?>
 
-    $('input[type=radio][name=admission]').change(function() {
-        if (this.value == 1) {
-          $("#penaltyarea").show();
-        }
-        else {
-          $("#penaltyarea").hide();
-        }
-    });
-
     $('#submit').click(function() {
     <?php
       if($row['TYPE'] == "Major") { ?>
-        var admission = $("input[name='admission']:checked").val();
+        var admi = "<?php echo $rowadmi['description']; ?>";
+        var admission = "<?php echo $rowadmi['admission_type_id']; ?>";
         if(admission == 1) {
           $.ajax({
               url: '../ajax/ido-close-case.php',
@@ -279,7 +250,7 @@ if (!isset($_GET['cn']))
               data: {
                   caseID: <?php echo $_GET['cn']; ?>,
                   penalty: $('#penalty').val(),
-                  admission: admission
+                  admission: admi
               },
               success: function(msg) {
                   $('#message').text('Case closed.');

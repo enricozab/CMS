@@ -224,10 +224,81 @@ if (!isset($_GET['cn']))
 
     //response form
     $("#form").click(function(){
-      $("#formModal").modal("show");
+      var a = "<?php echo $row['STATUS_DESCRIPTION']; ?>";
+      if (a != "Closed") {
+        $("#formModal").modal("show");
+      }
+
+      else {
+        //$("#parentModal").modal("show");
+        parentLetter();
+        $("#alertModal").modal("show");
+        $('#message').text('Submitted successfully!');
+      }
     });
 
     <?php include "student-form-queries.php" ?>
+
+    function parentLetter() {
+      loadFile("../templates/template-parents-letter.docx",function(error,content){
+
+        if (error) { throw error };
+        var zip = new JSZip(content);
+        var doc=new window.docxtemplater().loadZip(zip);
+        // date
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+          dd = '0' + dd;
+        }
+        if (mm < 10) {
+          mm = '0' + mm;
+        }
+        var today = dd + '/' + mm + '/' + yyyy;
+
+        var name = "<?php echo $nameres['first_name'] ?>" + " " + "<?php echo $nameres['last_name'] ?>";
+
+        doc.setData({
+          date: today,
+          idn: "<?php echo $nameres['user_id'] ?>",
+          name: name,
+          course: "<?php echo $studentres['degree'] ?>",
+          college: "<?php echo $nameres['description'] ?>",
+          type: "<?php echo $caseres['type'] ?>",
+          nature: "<?php echo $caseres['description'] ?>",
+          guardian: "<?php echo $studentres['guardian_name'] ?>",
+          contact: "<?php echo $studentres['guardian_contact'] ?>",
+          address: "<?php echo $studentres['address'] ?>"
+
+        });
+
+        try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+        }
+
+        catch (error) {
+            var e = {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+                properties: error.properties,
+            }
+            console.log(JSON.stringify({error: e}));
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+            throw error;
+        }
+
+        var out=doc.getZip().generate({
+            type:"blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }); //Output the document using Data-URI
+        saveAs(out,"output.docx");
+
+      });
+    }
 
     function loadFile(url,callback){
         JSZipUtils.getBinaryContent(url,callback);
@@ -289,10 +360,10 @@ if (!isset($_GET['cn']))
         letter: document.getElementById("letter").value,
         firstStudent: "<?php echo $caseres['first_name'] ?>",
         lastStudent: "<?php echo $caseres['last_name'] ?>",
-        yearLvl: "<?php echo $nameres['year_level'] ?>",
+        yearLvl: "<?php echo $studentres['year_level'] ?>",
         idn: "<?php echo $nameres['user_id'] ?>",
         college: "<?php echo $nameres['description'] ?>",
-        degree: "<?php echo $nameres['student_degree'] ?>"
+        degree: "<?php echo $studentres['degree'] ?>"
 
       });
 
@@ -336,10 +407,6 @@ if (!isset($_GET['cn']))
     $(document).on('click', '#removeevidence', function(){
       $(this).closest("#newsevidence").remove();
     });
-
-    function submitToPHP() {
-
-    }
 
     });
 
@@ -409,7 +476,7 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
-  <!-- Form Modal -->
+  <!-- Form Modals -->
   <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -432,9 +499,9 @@ if (!isset($_GET['cn']))
           <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
           <select id="admissionType" class="form-control">
             <option value="" disabled selected>Select Type</option>
-            <option value="Full Admission">Full Admission</option>
-            <option value="Full Denial">Full Denial</option>
-            <option value="Partial Admission/Denial">Partial Admission/Denial</option>
+            <option value="Full Admission">Apology/Admission</option>
+            <option value="Full Denial">Explanation</option>
+            <option value="Partial Admission/Denial">Apology/Explanation</option>
           </select>
           <br>
           <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>

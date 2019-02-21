@@ -62,6 +62,21 @@ else{
   $nameres=mysqli_fetch_array($nameq,MYSQLI_ASSOC);
 }
 
+// college & year_level
+
+$student = 'SELECT *
+           FROM USERS U
+           JOIN REF_STUDENTS RS ON U.USER_ID = RS.STUDENT_ID
+          WHERE U.USER_ID = "'.$_SESSION['user_id'].'"';
+$studentq = mysqli_query($dbc,$student);
+
+if(!$studentq){
+  echo mysqli_error($dbc);
+}
+else{
+  $studentres=mysqli_fetch_array($studentq,MYSQLI_ASSOC);
+}
+
 // form
 
 $form = 'SELECT *
@@ -76,5 +91,4 @@ if(!$formq){
 else{
   $formres = mysqli_fetch_array($formq);
 }
-
 ?>

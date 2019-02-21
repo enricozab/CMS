@@ -5,6 +5,7 @@
   $student = "SELECT     *
               FROM 		   USERS U
               JOIN 		   REF_USER_OFFICE RUO ON U.OFFICE_ID = RUO.OFFICE_ID
+              JOIN       REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
               WHERE 		 USER_ID = {$_POST['studentID']}";
   $studentq = mysqli_query($dbc,$student);
 
