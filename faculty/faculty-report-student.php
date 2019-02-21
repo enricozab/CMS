@@ -97,8 +97,6 @@
                         <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
                       </div>
                     </div>
-                    <br><br>
-                    <i>*Insert HelloSign*</i>
                     <br><br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
@@ -147,6 +145,7 @@
     $(document).ready(function() {
 
       <?php include 'faculty-notif-scripts.php' ?>
+	  <?php  include 'faculty-form-queries.php'  ?>
 
       $('.studentID').keypress(validateNumber);
 
@@ -192,8 +191,31 @@
       });
 
       $('#modalOK').click(function() {
+          
         $('#form')[0].reset();
         $("#alertModal").modal("hide");
+		
+		//HELLOSIGN API
+		$.ajax({
+                url: '../ajax/faculty-hellosign.php',
+                type: 'POST',
+                data: {
+					title : "Incident Report",
+					subject : "Incident Report Document Signature",
+					message : "Please do sign this document.",
+                    fname : "<?php echo $nameres['first_name'] ?>",
+					lname : "<?php echo $nameres['last_name'] ?>",
+					email : "<?php echo $nameres['email'] ?>",
+					filename : $('#inputfile').val()
+				
+                },
+				
+                success: function(response) {
+					alert("Incident Report sent to your email! Check your email to sign the form.");
+				}
+		})
+		//HELLOSIGN API
+		
       });
 
       $('form').submit(function(e) {
@@ -237,8 +259,6 @@
                 }
             });
           }
-
-          <?php  include 'faculty-form-queries.php'  ?>
 
           function loadFile(url,callback){
               JSZipUtils.getBinaryContent(url,callback);
