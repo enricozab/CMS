@@ -191,10 +191,10 @@
       });
 
       $('#modalOK').click(function() {
-          
+
         $('#form')[0].reset();
         $("#alertModal").modal("hide");
-		
+
 		//HELLOSIGN API
 		$.ajax({
                 url: '../ajax/faculty-hellosign.php',
@@ -207,15 +207,15 @@
 					lname : "<?php echo $nameres['last_name'] ?>",
 					email : "<?php echo $nameres['email'] ?>",
 					filename : $('#inputfile').val()
-				
+
                 },
-				
+
                 success: function(response) {
 					alert("Incident Report sent to your email! Check your email to sign the form.");
 				}
 		})
 		//HELLOSIGN API
-		
+
       });
 
       $('form').submit(function(e) {
