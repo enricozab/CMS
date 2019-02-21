@@ -1,5 +1,4 @@
-<?php include 'faculty.php';
-header("Access-Control-Allow-Origin: *");?>
+<?php include 'faculty.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,14 +54,6 @@ header("Access-Control-Allow-Origin: *");?>
 
         <div id="page-wrapper">
             <div class="row">
-			
-			  <!--Upload File-->
-			  <!--<form enctype="multipart/form-data" action="upload.php" method="POST">
-				<p>Upload your file</p>
-				<input type="file" name="uploaded_file"></input><br />
-				<input type="submit" value="Upload"></input>
-			  </form>-->
-			  
                 <h3 class="page-header">Incident Report</h3>
 
                 <div class="col-lg-12">
@@ -106,8 +97,6 @@ header("Access-Control-Allow-Origin: *");?>
                         <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
                       </div>
                     </div>
-                    <br><br>
-                    <i>*Insert HelloSign*</i>
                     <br><br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
@@ -196,13 +185,15 @@ header("Access-Control-Allow-Origin: *");?>
       $(document).on('click', '#removeevidence', function(){
         $(this).closest("#newsevidence").remove();
       });
-	  
-	  $('#modalOK').click(function() {
-		  
-        //$('#form')[0].reset();
+
+      $('form').submit(function(e) {
+        e.preventDefault();
+      });
+
+      $('#modalOK').click(function() {
+          
+        $('#form')[0].reset();
         $("#alertModal").modal("hide");
-		
-		//document.getElementById('inputfile').innerHTML;
 		
 		//HELLOSIGN API
 		$.ajax({
@@ -220,21 +211,11 @@ header("Access-Control-Allow-Origin: *");?>
                 },
 				
                 success: function(response) {
-					//$("#alertModal").modal("show");
-					alert("Incident Report sent to your email! Check to sign the form.");
+					alert("Incident Report sent to your email! Check your email to sign the form.");
 				}
 		})
 		//HELLOSIGN API
 		
-      });
-	  
-      $('form').submit(function(e) {
-        e.preventDefault();
-      });
-
-      $('#modalOK').click(function() {
-        $('#form')[0].reset();
-        $("#alertModal").modal("hide");
       });
 
       $('form').submit(function(e) {
@@ -272,68 +253,12 @@ header("Access-Control-Allow-Origin: *");?>
                     time: $('#time').val(),
                     details: $('#details').val()
                 },
-
-                success: function(response) {
-                  var stud = JSON.parse(response);
-                  loadFile("../templates/template-incident-report.docx",function(error,content){
-                      if (error) { throw error };
-                      var zip = new JSZip(content);
-                      var doc=new window.docxtemplater().loadZip(zip);
-                      // date
-                      var today = new Date();
-                      var dd = today.getDate();
-                      var mm = today.getMonth() + 1; //January is 0!
-                      var yyyy = today.getFullYear();
-                      if (dd < 10) {
-                        dd = '0' + dd;
-                      }
-                      if (mm < 10) {
-                        mm = '0' + mm;
-                      }
-					  
-                      var today = dd + '/' + mm + '/' + yyyy;
-                      doc.setData({
-                        date: today,
-                        details: "<?php echo $officerow['description'] ?>",
-                        college: stud.description,
-                        studentF: stud.first_name,
-                        studentL: stud.last_name,
-                        idn: stud.user_id,
-                        degree: stud.student_degree,
-                        loc: document.getElementById("location").value,
-                        dateIncident: document.getElementById("date").value,
-                        summary: document.getElementById("details").value
-                      });
-                      try {
-                          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                          doc.render();
-                      }
-                      catch (error) {
-                          var e = {
-                              message: error.message,
-                              name: error.name,
-                              stack: error.stack,
-                              properties: error.properties,
-                          }
-                          console.log(JSON.stringify({error: e}));
-                          // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                          throw error;
-                      }
-                      var out=doc.getZip().generate({
-                          type:"blob",
-                          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                      }); //Output the document using Data-URI
-                      saveAs(out,"output.docx");
-                  });
-
                 success: function(msg) {
                     generate();
                     $('#message').text('Submitted successfully!');
                 }
             });
           }
-
-          <?php  include 'faculty-form-queries.php'  ?>
 
           function loadFile(url,callback){
               JSZipUtils.getBinaryContent(url,callback);
@@ -421,15 +346,7 @@ header("Access-Control-Allow-Origin: *");?>
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
 					</div>
 					<div class="modal-footer">
-
-			  <!--Upload File-->
-			  <!--<form enctype="multipart/form-data" action="uploadfile.php" method="POST">
-				<p>Upload your file</p>
-				<input type="file" name="uploaded_file"></input><br />
-				<input type="submit" value="Upload"></input>
-			  </form>-->
-
-			  <button type="submit" id = "modalOK" class="btn btn-default">Ok</button>
+            <button type="submit" id = "modalOK" class="btn btn-default">Ok</button>
 					</div>
 				</div>
 			</div>
