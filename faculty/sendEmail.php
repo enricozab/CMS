@@ -3,9 +3,9 @@
 	$url = "https://www.googleapis.com/gmail/v1/users/me/messages/send";
 	$header = array('Content-Type: application/json', "Authorization: Bearer $access_token");
 
-	$subject = 'Test'; //change
-	$to = 'aaicragsolrac@gmail.com'; //change
-	$message = 'Incident rerport'; //change
+	$subject = 'Test'; //sample subject should be 'Incident Report created for [student name]'
+	$to = 'aaicragsolrac@gmail.com'; //should be sent to all parties involved based on a query
+	$message = 'Incident rerport'; //message changes based on report. sample: "An incident report was created"
 
 	$line = "\n";
 	$raw = "to: $to".$line;
