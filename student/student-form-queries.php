@@ -62,4 +62,19 @@ else{
   $nameres=mysqli_fetch_array($nameq,MYSQLI_ASSOC);
 }
 
+// form
+
+$form = 'SELECT *
+           FROM STUDENT_RESPONSE_FORMS
+       ORDER BY STUDENT_RESPONSE_FORM_ID DESC
+          LIMIT 1';
+$formq = mysqli_query($dbc,$form);
+
+if(!$formq){
+  echo mysqli_error($dbc);
+}
+else{
+  $formres = mysqli_fetch_array($formq);
+}
+
 ?>
