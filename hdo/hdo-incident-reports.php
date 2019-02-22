@@ -68,27 +68,37 @@
                               <th>Incident Report No.</th>
                               <th>Complainant</th>
                               <th>Date Filed</th>
+                              <th>Remarks</th>
                           </tr>
                       </thead>
                       <tbody>
                         <?php
-                          $query='SELECT 	  IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
-                                            CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
-                                            DATE_FILED,
-                                            IR.IF_NEW AS IF_NEW
-                                  FROM 	    INCIDENT_REPORTS IR
-                                  JOIN	    USERS U ON IR.COMPLAINANT_ID = U.USER_ID
-                                  ORDER BY  IR.DATE_FILED, IR.INCIDENT_REPORT_ID DESC';
+                          $query='SELECT 	  		IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
+                                  				      CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
+                                  				      IR.DATE_FILED,
+                                  				      IR.IF_NEW AS IF_NEW,
+                                  				      C.CASE_ID AS CASE_ID
+                                  FROM 	    	  INCIDENT_REPORTS IR
+                                  LEFT JOIN	    USERS U ON IR.COMPLAINANT_ID = U.USER_ID
+                                  LEFT JOIN		  CASES C ON IR.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
+                                  ORDER BY  		IR.DATE_FILED, IR.INCIDENT_REPORT_ID DESC';
                           $result=mysqli_query($dbc,$query);
                           if(!$result){
                             echo mysqli_error($dbc);
                           }
                           else{
                             while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
+                              if($row['CASE_ID'] != null){
+                                $caseid='Submitted/Assigned to IDO';
+                              }
+                              else{
+                                $caseid=null;
+                              }
                               echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-incident-report.php?irn={$row['INCIDENT_REPORT_ID']}'\">
                                     <td>{$row['INCIDENT_REPORT_ID']} <span id=\"{$row['INCIDENT_REPORT_ID']}\" class=\"badge\"></span></td>
                                     <td>{$row['COMPLAINANT']}</td>
                                     <td>{$row['DATE_FILED']}</td>
+                                    <td>{$caseid}</td>
                                     </tr>";
                             }
                           }

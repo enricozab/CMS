@@ -87,10 +87,6 @@
                         ?>
                       </select>
                     </div>
-                    <div id="other" class="form-group" style="width: 300px;" hidden>
-                      <label>If other, please specify <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="other-offense" class="form-control"></input>
-                    </div>
                     <?php
                       //Gets list of cheat types
                       $query2='SELECT CHEATING_TYPE_ID, DESCRIPTION FROM REF_CHEATING_TYPE';
@@ -113,10 +109,10 @@
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No."/>
+                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style='width: 300px;'>
-                      <label>Location of the Incident</label>
+                      <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="location" class="form-control">
                     </div>
                     <div class="form-group">
@@ -191,8 +187,9 @@
       <?php include 'hdo-notif-scripts.php'?>
 
       $('.chosen-select').chosen();
-      
+
       $('.studentID').keypress(validateNumber);
+      $('.comID').keypress(validateNumber);
 
       function validateNumber(event) {
         var key = window.event ? event.keyCode : event.which;

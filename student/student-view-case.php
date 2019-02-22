@@ -60,7 +60,6 @@ if (!isset($_GET['cn']))
                         CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
                         C.OFFENSE_ID AS OFFENSE_ID,
                         RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
-                        RO.TYPE AS  TYPE,
                         C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
                         RO.TYPE AS TYPE,
                         C.COMPLAINANT_ID AS COMPLAINANT_ID,
@@ -186,9 +185,12 @@ if (!isset($_GET['cn']))
           <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         </div>
         <br><br>
-        <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
-        <button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>
-        <button type="submit" id="form" name="sendpl" class="btn btn-success">Send Response Letter</button>
+        <?php
+          if($row['TYPE'] == "Major") {
+            echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>';
+          }
+        ?>
+        <button type="submit" id="form" name="sendpl" class="btn btn-success">Send Student Response Letter</button>
         <br><br><br>
 
         <?php
@@ -241,10 +243,10 @@ if (!isset($_GET['cn']))
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <!-- Form Generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+    <script src="../form-generation/docxtemplater.js"></script>
+    <script src="../form-generation/jszip.js"></script>
+    <script src="../form-generation/FileSaver.js"></script>
+    <script src="../form-generation/jszip-utils.js"></script>
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
@@ -355,7 +357,6 @@ if (!isset($_GET['cn']))
           },
           success: function(msg) {
               $('#message').text('Submitted successfully!');
-              $("#submit").attr('disabled', true).text("Submitted");
               $("#form").attr('disabled', true);
               $("#evidencediv").hide();
               $("#viewevidence").show();
@@ -549,7 +550,6 @@ if (!isset($_GET['cn']))
           },
           success: function(msg) {
               $('#message').text('An appeal has been sent successfully!');
-              $("#submit").attr('disabled', true).text("Submitted");
               $("#appeal").attr('disabled', true);
               $("#sendpl").attr('disabled', true);
 
@@ -559,9 +559,10 @@ if (!isset($_GET['cn']))
     });
   });
 
+
+
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
-      $("#submit").attr('disabled', true).text("Submitted");
       $("#evidencediv").hide();
       $("#viewevidence").show();
   <?php }
@@ -571,21 +572,24 @@ if (!isset($_GET['cn']))
     if($row['PENALTY'] != null ){ ?>
       $("#penaltyarea").show();
   <?php }
-    if($row['REMARKS_ID'] > 9) { ?>
-      $("#submit").hide();
+    if(($row['REMARKS_ID'] != 10 and $row['TYPE'] != "Major") or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL']) { ?>
+      $("#appeal").hide();
+  <?php }
+    if($row['REMARKS_ID'] < 2 or $row['REMARKS_ID'] > 4) { ?>
+      $("#form").hide();
     <?php
-      if(($row['REMARKS_ID'] != 10 and $row['TYPE'] != "Major") or $row['CAN_APPEAL'] > 5 or $row['IF_APPEAL']) { ?>
-        $("#appeal").hide();
-    <?php }
-      if($row['REMARKS_ID'] < 11) { ?>
-        $("#sendpl").hide();
-    <?php }
-      if($row['REMARKS_ID'] > 11) { ?>
-        $("#appeal").attr('disabled', true);
-        $("#sendpl").attr('disabled', true);
+      if($row['REMARKS_ID'] == 3) { ?>
+        $("#form").attr('disabled', true);
   <?php }
     }
-  ?>
+    if($row['REMARKS_ID'] > 10 and $row['REMARKS_ID'] < 13) { ?>
+      $("#form").show();
+      $("#form").text("Send Parent Letter");
+  <?php }
+    if($row['REMARKS_ID'] > 11) { ?>
+      $("#appeal").attr('disabled', true);
+      $("#form").attr('disabled', true);
+  <?php } ?>
   </script>
 
   <!-- Modal -->
@@ -637,11 +641,10 @@ if (!isset($_GET['cn']))
           <select id="admissionType" class="form-control">
             <option value="" disabled selected>Select Type</option>
             <option value="Full Admission">Full Admission (Apology/Admission)</option>
+            <option value="Partial Admission/Denial">Partial Admission (Apology/Explanation)</option>
             <option value="Full Denial">Full Denial (Explanation)</option>
-            <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
           </select>
           <br>
-
           <div class="form-group">
             <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
             <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
@@ -703,7 +706,7 @@ if (!isset($_GET['cn']))
             <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
             <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"><?php echo $rowForm['response']; ?></textarea>
           </div>
-          
+
         </div>
         <div class="modal-footer">
           <button type="submit" id = "submitFormAgain" class="btn btn-primary" data-dismiss="modal">Submit</button>
