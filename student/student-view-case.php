@@ -99,6 +99,34 @@ if (!isset($_GET['cn']))
     else{
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
     }
+
+    $queryForm = 'SELECT 		*
+                    FROM		STUDENT_RESPONSE_FORMS S
+                    JOIN    CASES C ON C.CASE_ID = S.CASE_ID
+                    join    REF_ADMISSION_TYPE RA ON RA.ADMISSION_TYPE_ID = C.ADMISSION_TYPE_ID
+                   WHERE		C.CASE_ID = "'.$_GET['cn'].'"';
+    $resultForm = mysqli_query($dbc,$queryForm);
+
+    if(!$resultForm) {
+       echo mysqli_error($dbc);
+    }
+
+    else {
+       $rowForm = mysqli_fetch_array($resultForm,MYSQLI_ASSOC);
+    }
+
+    $case = 'SELECT 	*
+               FROM		CASES
+              WHERE		CASE_ID = "'.$_GET['cn'].'"';
+    $caseRes = mysqli_query($dbc,$case);
+
+    if(!$caseRes) {
+       echo mysqli_error($dbc);
+    }
+
+    else {
+       $caseResRow = mysqli_fetch_array($caseRes,MYSQLI_ASSOC);
+    }
   ?>
 
     <div id="wrapper">
@@ -224,17 +252,27 @@ if (!isset($_GET['cn']))
 
     //response form
     $("#form").click(function(){
-      var a = "<?php echo $row['STATUS_DESCRIPTION']; ?>";
-      if (a != "Closed") {
-        $("#formModal").modal("show");
+
+      var remark = "<?php echo $row['REMARKS_ID']; ?>";
+      var stat = "<?php echo $row['STATUS_DESCRIPTION']; ?>";
+
+      if (remark == 4) {
+        $("#formModalDetails").modal("show");
       }
 
       else {
-        //$("#parentModal").modal("show");
-        parentLetter();
-        $("#alertModal").modal("show");
-        $('#message').text('Submitted successfully!');
+        if (stat != "Closed") {
+          $("#formModal").modal("show");
+        }
+
+        else {
+          //$("#parentModal").modal("show");
+          parentLetter();
+          $("#alertModal").modal("show");
+          $('#message').text('Submitted successfully!');
+        }
       }
+
     });
 
     <?php include "student-form-queries.php" ?>
@@ -310,6 +348,98 @@ if (!isset($_GET['cn']))
           type: 'POST',
           data: {
               caseID: <?php echo $_GET['cn']; ?>,
+              admission: document.getElementById("admissionType").value,
+              term: document.getElementById("term").value,
+              schoolyr: document.getElementById("schoolyr").value,
+              response: document.getElementById("letter").value
+          },
+          success: function(msg) {
+              $('#message').text('Submitted successfully!');
+              $("#submit").attr('disabled', true).text("Submitted");
+              $("#form").attr('disabled', true);
+              $("#evidencediv").hide();
+              $("#viewevidence").show();
+
+              $("#alertModal").modal("show");
+          }
+      });
+
+      loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+
+      if (error) { throw error };
+      var zip = new JSZip(content);
+      var doc=new window.docxtemplater().loadZip(zip);
+      // date
+      var today = new Date();
+      var dd = today.getDate();
+      var mm = today.getMonth() + 1; //January is 0!
+      var yyyy = today.getFullYear();
+      if (dd < 10) {
+        dd = '0' + dd;
+      }
+      if (mm < 10) {
+        mm = '0' + mm;
+      }
+      var today = dd + '/' + mm + '/' + yyyy;
+
+      doc.setData({
+        formNum: "<?php echo $formres['student_response_form_id'] ?>",
+        firstIDO: "<?php echo $idores['first_name'] ?>",
+        lastIDO: "<?php echo $idores['last_name'] ?>",
+        firstComplainant: "<?php echo $nameres['first_name'] ?>",
+        lastComplainant: "<?php echo $nameres['last_name'] ?>",
+        nature: "<?php echo $caseres['description'] ?>",
+        section: '2.1??',
+        date: today,
+        dateApp: "<?php echo $caseres['date_filed'] ?>",
+        term: document.getElementById("term").value,
+        year: document.getElementById("schoolyr").value,
+        admission: document.getElementById("admissionType").value,
+        letter: document.getElementById("letter").value,
+        firstStudent: "<?php echo $caseres['first_name'] ?>",
+        lastStudent: "<?php echo $caseres['last_name'] ?>",
+        yearLvl: "<?php echo $studentres['year_level'] ?>",
+        idn: "<?php echo $nameres['user_id'] ?>",
+        college: "<?php echo $nameres['description'] ?>",
+        degree: "<?php echo $studentres['degree'] ?>"
+
+      });
+
+      try {
+          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+          doc.render();
+      }
+
+      catch (error) {
+          var e = {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+              properties: error.properties,
+          }
+          console.log(JSON.stringify({error: e}));
+          // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+          throw error;
+      }
+
+      var out=doc.getZip().generate({
+          type:"blob",
+          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      }); //Output the document using Data-URI
+      saveAs(out,"output.docx");
+
+      });
+
+
+    });
+
+    $("#submitFormAgain").click(function(){
+      $.ajax({
+          url: '../ajax/student-submit-forms.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              remarks: <?php echo $caseResRow['remarks_id']; ?>,
               admission: document.getElementById("admissionType").value,
               term: document.getElementById("term").value,
               schoolyr: document.getElementById("schoolyr").value,
@@ -485,31 +615,98 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Student Response</b></h4>
         </div>
         <div class="modal-body">
-          <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
-          <select id="term" class="form-control">
-            <option value="" disabled selected>Select Term</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-          </select><br>
 
-          <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b><span style="font-weight:normal; color:red;"> *</span>
-          <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" placeholder="Enter School Year."/><br>
+          <div class="row">
+            <div class="col-sm-6">
+              <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b><span style="font-weight:normal; color:red;"> *</span>
+              <input id="schoolyr" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control" placeholder="Enter School Year."/><br>
+            </div>
+
+            <div class="col-sm-6">
+              <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
+              <select id="term" class="form-control">
+                <option value="" disabled selected>Select Term</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select><br>
+            </div>
+          </div>
 
           <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
           <select id="admissionType" class="form-control">
             <option value="" disabled selected>Select Type</option>
-            <option value="Full Admission">Apology/Admission</option>
-            <option value="Full Denial">Explanation</option>
-            <option value="Partial Admission/Denial">Apology/Explanation</option>
+            <option value="Full Admission">Full Admission (Apology/Admission)</option>
+            <option value="Full Denial">Full Denial (Explanation)</option>
+            <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
           </select>
           <br>
-          <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
-          <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
+
+          <div class="form-group">
+            <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
+          </div>
 
         </div>
         <div class="modal-footer">
           <button type="submit" id = "submitForm" class="btn btn-primary" data-dismiss="modal">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Modals w Details -->
+
+  <div class="modal fade" id="formModalDetails" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Student Response</b></h4>
+        </div>
+        <div class="modal-body">
+
+          <div class="row">
+            <div class="col-sm-6">
+              <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b><span style="font-weight:normal; color:red;"> *</span>
+              <input id="schoolyr" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control" placeholder="<?php echo $rowForm['school_year']; ?>"readonly/><br>
+            </div>
+
+            <div class="col-sm-6">
+              <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
+              <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" placeholder="<?php echo $rowForm['term']; ?>" readonly><br>
+            </div>
+          </div>
+
+          <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
+          <select id="admissionType" class="form-control">
+            <option value="<?php echo $rowForm['description']; ?>"><?php echo $rowForm['description']; ?></option>
+            <?php
+              if ($rowForm['admission_type_id'] == 1) { ?>
+                <option value="Full Denial">Full Denial (Explanation)</option>
+                <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
+        <?php }
+
+              else if ($rowForm['admission_type_id'] == 2) {?>
+                <option value="Full Admission">Full Admission (Apology/Admission)</option>
+                <option value="Full Denial">Full Denial (Explanation)</option>
+      <?php   }
+
+              else {?>
+                <option value="Full Admission">Full Admission (Apology/Admission)</option>
+                <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
+      <?php   }
+            ?>
+          </select>
+          <br>
+          <div class="form-group">
+            <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"><?php echo $rowForm['response']; ?></textarea>
+          </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "submitFormAgain" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>
