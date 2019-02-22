@@ -654,7 +654,7 @@ if (!isset($_GET['cn']))
           <br>
           <div id="letterarea" class="form-group" hidden>
             <b id="letterlabel"></b> <span style="font-weight:normal; color:red;"> *</span><br>
-            <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
+            <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="3"></textarea>
           </div>
 
         </div>
@@ -679,12 +679,12 @@ if (!isset($_GET['cn']))
           <div class="row">
             <div class="col-sm-6">
               <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b><span style="font-weight:normal; color:red;"> *</span>
-              <input id="schoolyr" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control" placeholder="<?php echo $rowForm['school_year']; ?>"readonly/><br>
+              <input id="schoolyr" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control"/><?php echo $rowForm['school_year']; ?><br>
             </div>
 
             <div class="col-sm-6">
               <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
-              <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" placeholder="<?php echo $rowForm['term']; ?>" readonly><br>
+              <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control"><?php echo $rowForm['term']; ?><br>
             </div>
           </div>
 
