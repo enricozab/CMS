@@ -197,35 +197,31 @@
         $('#form')[0].reset();
         $("#alertModal").modal("hide");
 
-		//GMAIL API
-		location.href= '<?php echo $login_url; ?>';
-        <?php
-          if( isset($_SESSION['access_token']) ) {
-            include '../gmail/sendEmail.php';
-          }
-        ?>
+    		//GMAIL API
+    		location.href= '<?php echo $login_url; ?>';
+            <?php
+              if( isset($_SESSION['access_token']) ) { ?>
+                sendEmail();
+              <?php }
+            ?>
 
-		//HELLOSIGN API
-		$.ajax({
-                url: '../ajax/faculty-hellosign.php',
-                type: 'POST',
-                data: {
-					title : "Incident Report",
-					subject : "Incident Report Document Signature",
-					message : "Please do sign this document.",
-                    fname : "<?php echo $nameres['first_name'] ?>",
-					lname : "<?php echo $nameres['last_name'] ?>",
-					email : "<?php echo $nameres['email'] ?>",
-					filename : $('#inputfile').val()
-
-                },
-
-                success: function(response) {
-					alert("Incident Report sent to your email! Check your email to sign the form.");
-				}
-		})
-		//HELLOSIGN API
-
+    		//HELLOSIGN API
+    		$.ajax({
+              url: '../ajax/faculty-hellosign.php',
+              type: 'POST',
+              data: {
+    					title : "Incident Report",
+    					subject : "Incident Report Document Signature",
+    					message : "Please do sign this document.",
+                        fname : "<?php echo $nameres['first_name'] ?>",
+    					lname : "<?php echo $nameres['last_name'] ?>",
+    					email : "<?php echo $nameres['email'] ?>",
+    					filename : $('#inputfile').val()
+                    },
+                    success: function(response) {
+    					alert("Incident Report sent to your email! Check your email to sign the form.");
+    				}
+    		})
       });
 
       $('form').submit(function(e) {
@@ -270,10 +266,10 @@
             });
           }
 
+          //generate incident report form (doc file)
           function loadFile(url,callback){
               JSZipUtils.getBinaryContent(url,callback);
           }
-
           function generate(){
             for(var i = 0; i < studentlist.length; ++i ) {
               $.ajax({
@@ -341,6 +337,23 @@
             }
           }
       });
+
+      //GMAIL API function
+
+      function sendEmail(){
+        $.ajax({
+            url: '../ajax/users-send-email.php',
+            type: 'POST',
+            data: {
+                messageSubject: "[CMS] Incident Report",
+                toID: "hdo.cms@gmail.com",
+                messageContent:"I filed a new incident report.",
+            },
+            success: function(msg) {
+
+            }
+        });
+      }
     });
   	</script>
 

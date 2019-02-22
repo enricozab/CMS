@@ -1,12 +1,15 @@
 <?php
+	include '../gmail/Qassim_HTTP.php';
+	include '../gmail/config.php';
 	session_start();
+	
 	$access_token = $_SESSION["access_token"];
 	$url = "https://www.googleapis.com/gmail/v1/users/me/messages/send";
 	$header = array('Content-Type: application/json', "Authorization: Bearer $access_token");
 
-	$subject = 'Test'; //sample subject should be 'Incident Report created for [student name]'
-	$to = 'aaicragsolrac@gmail.com'; //should be sent to all parties involved based on a query
-	$message = 'Incident rerport'; //message changes based on report. sample: "An incident report was created"
+	$subject = $_POST['messageSubject']; //sample subject should be 'Incident Report created for [student name]'
+	$to = $_POST['toID']; //should be sent to all parties involved based on a query
+	$message = $_POST['messageContent']; //message changes based on report. sample: "An incident report was created"
 
 	$line = "\n";
 	$raw = "to: $to".$line;
@@ -21,9 +24,9 @@
 		//header("faculty-report-student.php");
 	}else{ // if access token is expired or has some problems, will be logout!
 		if( !empty($send['error']['errors'][0]['reason']) ){
-			header("location: logout.php");
+			header("location: ../gmail/logout.php");
 		}else{
-			header("location: logout.php");
+			header("location: ../gmail/logout.php");
 		}
 	}
 ?>
