@@ -297,6 +297,20 @@ if (!isset($_GET['irn']))
       <?php }
       } ?>
 
+      function sendEmail(subject, to, message){
+        $.ajax({
+            url: '../ajax/users-send-email.php',
+            type: 'POST',
+            data: {
+                messageSubject: subject,
+                toID: to,
+                messageContent: message
+            },
+            success: function(msg) {
+            }
+        });
+      }
+    });
     </script>
 
     <!-- Modal -->
