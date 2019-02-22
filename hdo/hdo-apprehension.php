@@ -109,7 +109,7 @@
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Enter ID No."/>
+                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
@@ -189,6 +189,7 @@
       $('.chosen-select').chosen();
 
       $('.studentID').keypress(validateNumber);
+      $('.comID').keypress(validateNumber);
 
       function validateNumber(event) {
         var key = window.event ? event.keyCode : event.which;

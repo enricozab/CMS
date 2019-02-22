@@ -445,9 +445,13 @@ if (!isset($_GET['cn']))
     if(($row['REMARKS_ID'] != 10 and $row['TYPE'] != "Major") or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL']) { ?>
       $("#appeal").hide();
   <?php }
-    if($row['REMARKS_ID'] != 2 and $row['REMARKS_ID'] != 4) { ?>
+    if($row['REMARKS_ID'] < 2 or $row['REMARKS_ID'] > 4) { ?>
       $("#form").hide();
+    <?php
+      if($row['REMARKS_ID'] == 3) { ?>
+        $("#form").attr('disabled', true);
   <?php }
+    }
     if($row['REMARKS_ID'] > 10 and $row['REMARKS_ID'] < 13) { ?>
       $("#form").show();
       $("#form").text("Send Parent Letter");
@@ -476,7 +480,7 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
-  <!-- Form Modals --> 
+  <!-- Form Modals -->
   <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -485,27 +489,36 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Student Response</b></h4>
         </div>
         <div class="modal-body">
-          <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
-          <select id="term" class="form-control">
-            <option value="" disabled selected>Select Term</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-          </select><br>
 
-          <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b><span style="font-weight:normal; color:red;"> *</span>
-          <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" placeholder="Enter School Year."/><br>
+          <div class="row">
+            <div class="col-sm-6">
+              <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b><span style="font-weight:normal; color:red;"> *</span>
+              <input id="schoolyr" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control" placeholder="Enter School Year."/><br>
+            </div>
+
+            <div class="col-sm-6">
+              <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
+              <select id="term" class="form-control">
+                <option value="" disabled selected>Select Term</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select><br>
+            </div>
+          </div>
 
           <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
           <select id="admissionType" class="form-control">
             <option value="" disabled selected>Select Type</option>
-            <option value="Full Admission">Apology/Admission</option>
-            <option value="Full Denial">Explanation</option>
-            <option value="Partial Admission/Denial">Apology/Explanation</option>
+            <option value="Full Admission">Full Admission (Apology/Admission)</option>
+            <option value="Partial Admission/Denial">Partial Admission (Apology/Explanation)</option>
+            <option value="Full Denial">Full Denial (Explanation)</option>
           </select>
           <br>
-          <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
-          <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
+          <div class="form-group">
+            <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
+          </div>
 
         </div>
         <div class="modal-footer">
