@@ -471,7 +471,7 @@ if (!isset($_GET['cn']))
           }
       });
 
-      loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+      loadFile("../templates/template-student-response-form.docx",function(error,content){
 
       if (error) { throw error };
       var zip = new JSZip(content);

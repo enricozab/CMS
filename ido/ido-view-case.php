@@ -49,6 +49,13 @@ if (!isset($_GET['cn']))
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
+    <!-- Form Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+
+
 </head>
 
 <body>
@@ -98,6 +105,7 @@ if (!isset($_GET['cn']))
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
     }
 
+    // ADMISSIONS
     $queryadmi = 'SELECT *
                 FROM CASES C
                 JOIN REF_ADMISSION_TYPE RAT ON RAT.ADMISSION_TYPE_ID = C.ADMISSION_TYPE_ID
@@ -111,6 +119,36 @@ if (!isset($_GET['cn']))
        $rowadmi=mysqli_fetch_array($resultadmi,MYSQLI_ASSOC);
      }
 
+     // FOR CLOSURE LETTER
+
+     $qClosure = 'SELECT *
+                    FROM CASES C
+                    JOIN STUDENT_RESPONSE_FORMS S ON S.CASE_ID = C.CASE_ID
+                    JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                    JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
+                    JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
+                   WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+      $qClosureRes=mysqli_query($dbc,$qClosure);
+      if(!$qClosureRes){
+        echo mysqli_error($dbc);
+      }
+      else{
+        $rowClosure=mysqli_fetch_array($qClosureRes,MYSQLI_ASSOC);
+      }
+
+      $qComplainant = 'SELECT *
+                     FROM CASES C
+                     JOIN USERS U ON C.COMPLAINANT_ID = U.USER_ID
+                    WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+       $qComplainantRes=mysqli_query($dbc,$qComplainant);
+       if(!$qComplainantRes){
+         echo mysqli_error($dbc);
+       }
+       else{
+         $qComplainantRow=mysqli_fetch_array($qComplainantRes,MYSQLI_ASSOC);
+       }
   ?>
 
     <div id="wrapper">
@@ -368,6 +406,11 @@ if (!isset($_GET['cn']))
       });
     });
 
+    // GENERATING FORMS
+    function loadFile(url,callback){
+        JSZipUtils.getBinaryContent(url,callback);
+    }
+
     $('#sendcl').click(function() {
       $.ajax({
           url: '../ajax/ido-send-closure-letter.php',
@@ -381,6 +424,71 @@ if (!isset($_GET['cn']))
 
               $("#alertModal").modal("show");
           }
+      });
+
+      loadFile("../templates/template-closure-letter.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            year: "<?php echo $rowClosure['year_level'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            college: "<?php echo $rowClosure['description'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            offense: "<?php echo $rowClosure['description'] ?>",
+            dateApp: "<?php echo $rowClosure['date_filed'] ?>",
+            comFirst: "<?php echo $rowClosure['first_name'] ?>",
+            comLast: "<?php echo $rowClosure['last_name'] ?>",
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            term: "<?php echo $rowClosure['term'] ?>",
+            schoolYr: "<?php echo $rowClosure['school_year'] ?>",
+            verdict: "<?php echo $rowClosure['verdict'] ?>",
+            actions: "<?php echo $rowClosure['penalty'] ?>",
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+
       });
     });
 
