@@ -455,10 +455,10 @@ if (!isset($_GET['cn']))
           data: {
               caseID: <?php echo $_GET['cn']; ?>,
               remarks: <?php echo $caseResRow['remarks_id']; ?>,
-              admission: document.getElementById("admissionType").value,
-              term: document.getElementById("term").value,
-              schoolyr: document.getElementById("schoolyr").value,
-              response: document.getElementById("letter").value
+              admission: document.getElementById("admissionType2").value,
+              term: document.getElementById("term2").value,
+              schoolyr: document.getElementById("schoolyr2").value,
+              response: document.getElementById("letter2").value
           },
           success: function(msg) {
               $('#message').text('Submitted successfully!');
@@ -679,17 +679,17 @@ if (!isset($_GET['cn']))
           <div class="row">
             <div class="col-sm-6">
               <b>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span>:</b><span style="font-weight:normal; color:red;"> *</span>
-              <input id="schoolyr" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control"/><?php echo $rowForm['school_year']; ?><br>
+              <input id="schoolyr2" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control" value="<?php echo $rowForm['school_year']; ?>"/><br>
             </div>
 
             <div class="col-sm-6">
               <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
-              <input id="schoolyr" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control"><?php echo $rowForm['term']; ?><br>
+              <input id="term2" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" value="<?php echo $rowForm['term']; ?>"><br>
             </div>
           </div>
 
           <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
-          <select id="admissionType" class="form-control">
+          <select id="admissionType2" class="form-control">
             <option value="<?php echo $rowForm['description']; ?>"><?php echo $rowForm['description']; ?></option>
             <?php
               if ($rowForm['admission_type_id'] == 1) { ?>
@@ -711,7 +711,7 @@ if (!isset($_GET['cn']))
           <br>
           <div class="form-group">
             <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
-            <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"><?php echo $rowForm['response']; ?></textarea>
+            <textarea id="letter2" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"><?php echo $rowForm['response']; ?></textarea>
           </div>
 
         </div>

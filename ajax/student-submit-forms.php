@@ -15,7 +15,6 @@
       echo mysqli_error($dbc);
     }
   }
-
   else if ($_POST['admission'] == "Full Denial") {
     $query="UPDATE CASES SET ADMISSION_TYPE_ID=3 WHERE CASE_ID = {$_POST['caseID']}";
     $result=mysqli_query($dbc,$query);
@@ -34,7 +33,7 @@
 
   if ($_POST['remarks'] == 4) { // IF FOR REVIEWW
 
-    $query="UPDATE STUDENT_RESPONSE_FORMS SET RESPONSE = {$_POST['response']} WHERE CASE_ID = {$_POST['caseID']}";
+    $query="UPDATE STUDENT_RESPONSE_FORMS SET SCHOOL_YEAR = '{$_POST['schoolyr']}', TERM = {$_POST['term']}, RESPONSE = '{$_POST['response']}' WHERE CASE_ID = {$_POST['caseID']}";
     $result=mysqli_query($dbc,$query);
     if(!$result){
       echo mysqli_error($dbc);
