@@ -30,8 +30,8 @@
   // form $query
 
   $form = 'SELECT *
-             FROM INCIDENT_REPORTS
-         ORDER BY INCIDENT_REPORT_ID DESC
+            FROM INCIDENT_REPORTS
+            ORDER BY INCIDENT_REPORT_ID DESC
             LIMIT 1';
   $formq = mysqli_query($dbc,$form);
 

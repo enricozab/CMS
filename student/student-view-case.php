@@ -557,6 +557,10 @@ if (!isset($_GET['cn']))
           }
 
     });
+
+    $("#admissionType").on('change', function(){
+
+    });
   });
 
 
@@ -646,7 +650,7 @@ if (!isset($_GET['cn']))
           </select>
           <br>
           <div class="form-group">
-            <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <b id="letterLabel">Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
             <textarea id="letter" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"></textarea>
           </div>
 
