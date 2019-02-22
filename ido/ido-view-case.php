@@ -143,15 +143,6 @@ if (!isset($_GET['cn']))
         <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
       </div>
 
-      <button type="button" class="btn btn-outline btn-primary" id="addcomment"><span class=" fa fa-plus"></span>&nbsp; Add comment</button>
-
-      <div class="form-group" id="commentarea" hidden>
-        <label>Comment <span style="font-weight:normal; font-style:italic; font-size:12px;">(Please be specific)</span>
-          <span id="closecomment" style="font-weight:normal; color:red; cursor: pointer;"><i class="fa fa-times"></i></span>
-        </label>
-        <textarea id="comment" style="width:600px;" name="comment" class="form-control" rows="3"><?php echo $row['COMMENT']; ?></textarea>
-      </div>
-
       <button type="button" class="btn btn-outline btn-primary" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
       <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
       <button type="submit" id="viewForm" name="viewForm" class="btn btn-outline btn-primary">Review Submitted Form</button>
@@ -323,7 +314,7 @@ if (!isset($_GET['cn']))
     <?php } ?>
     });
 
-    $('#return').click(function() {
+    $('#submitComment').click(function() {
       $.ajax({
           url: '../ajax/ido-return-forms.php',
           type: 'POST',
@@ -346,6 +337,10 @@ if (!isset($_GET['cn']))
             $("#alertModal").modal("show");
           }
       });
+    });
+
+    $('#return').click(function() {
+      $("#commentModal").modal("show");
     });
 
     $('#dismiss').click(function() {
@@ -457,6 +452,26 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
+  <!-- Add Comment Modal -->
+  <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Add Comment</b></h4>
+        </div>
+        <div class="modal-body">
+          <span style="font-weight:normal; font-style:italic; font-size:12px;">Please be specific.</span>
+          <textarea id="comment" style="width:570px;" name="comment" class="form-control" rows="3"><?php echo $row['COMMENT']; ?></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "submitComment" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>

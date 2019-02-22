@@ -310,7 +310,7 @@
                           studentF: stud.first_name,
                           studentL: stud.last_name,
                           idn: stud.user_id,
-                          degree: stud.student_degree,
+                          degree: stud.degree,
                           loc: document.getElementById("location").value,
                           dateIncident: document.getElementById("date").value,
                           summary: document.getElementById("details").value
@@ -334,7 +334,9 @@
                             type:"blob",
                             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         }); //Output the document using Data-URI
-                        saveAs(out,"output.docx");
+                        saveAs(out,"output.docx",  {
+                          locURL: "/localhost/CMS/ajax"
+                        });
                     });
                   }
               });
