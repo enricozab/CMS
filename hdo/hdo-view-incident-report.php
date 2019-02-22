@@ -248,7 +248,6 @@ if (!isset($_GET['irn']))
         }
 
         if(isEmpty) {
-          console.log($('#details').val());
           $.ajax({
               url: '../ajax/hdo-insert-case.php',
               type: 'POST',
