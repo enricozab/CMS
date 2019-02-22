@@ -7,9 +7,9 @@ session_start();
 if( isset($_SESSION["access_token"]) or isset($_SESSION["emailAddress"]) ){
 	unset($_SESSION["access_token"]);
 	unset($_SESSION["emailAddress"]);
-	header("location: faculty-report-student.php");
+	header("location: localhost/cms/faculty/faculty-report-student.php");
 }else{
-	header("location: faculty-report-student.php");
+	header("location: localhost/cms/faculty/faculty-report-student.php");
 }
 
 ?>

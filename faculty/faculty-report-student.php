@@ -1,6 +1,6 @@
 <?php include 'faculty.php' ?>
-<?php include 'Qassim_HTTP.php' ?>
-<?php include 'config.php' ?>
+<?php include '../gmail/Qassim_HTTP.php' ?>
+<?php include '../gmail/config.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -196,12 +196,12 @@
 
         $('#form')[0].reset();
         $("#alertModal").modal("hide");
-		
+
 		//GMAIL API
 		location.href= '<?php echo $login_url; ?>';
         <?php
           if( isset($_SESSION['access_token']) ) {
-            include 'sendEmail.php';
+            include '../gmail/sendEmail.php';
           }
         ?>
 

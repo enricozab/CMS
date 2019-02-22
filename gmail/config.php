@@ -4,7 +4,7 @@
 
 $scope = "https://mail.google.com/"; // Do not change it!
 
-$redirect_uri = "http://localhost/CMS/faculty/sign-in.php"; // Enter your redirect_uri WHERE THE CODE GOES AFTER LOGGING IN
+$redirect_uri = "http://localhost/CMS/gmail/sign-in.php"; // Enter your redirect_uri WHERE THE CODE GOES AFTER LOGGING IN
 
 $client_id = "847418612593-r3mdvmf7mes078aghrojkkb7gnkvlrqp.apps.googleusercontent.com"; // Enter your client_id
 

@@ -1,4 +1,5 @@
 <?php
+	session_start();
 	$access_token = $_SESSION["access_token"];
 	$url = "https://www.googleapis.com/gmail/v1/users/me/messages/send";
 	$header = array('Content-Type: application/json', "Authorization: Bearer $access_token");
