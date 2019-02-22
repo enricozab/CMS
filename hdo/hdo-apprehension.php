@@ -117,7 +117,7 @@
                     </div>
                     <div class="form-group">
                       <label>Summary of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <textarea id="details" class="form-control" rows="3"></textarea>
+                      <textarea id="details" style="width:600px;" class="form-control" rows="3"></textarea>
   				          </div>
                     <?php
                       $query2='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 4';
@@ -246,7 +246,6 @@
             isEmpty = false;
           }
         }
-
         if(isEmpty) {
           $.ajax({
               url: '../ajax/hdo-insert-case.php',

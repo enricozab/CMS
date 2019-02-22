@@ -248,7 +248,6 @@ if (!isset($_GET['irn']))
         }
 
         if(isEmpty) {
-          console.log($('#details').val());
           $.ajax({
               url: '../ajax/hdo-insert-case.php',
               type: 'POST',
@@ -271,6 +270,20 @@ if (!isset($_GET['irn']))
 
         $("#alertModal").modal("show");
       });
+
+      function sendEmail(subject, to, message){
+        $.ajax({
+            url: '../ajax/users-send-email.php',
+            type: 'POST',
+            data: {
+                messageSubject: subject,
+                toID: to,
+                messageContent: message
+            },
+            success: function(msg) {
+            }
+        });
+      }
     });
 
     //Changes button text and disabled

@@ -3,7 +3,7 @@
 		session_start(); 
 		$filename = 'output.docx';
 		
-		$sourcepath = realpath($filename);//'C:\\Users\\debbiesimon11\\Downloads\\output.docx';
+		$sourcepath = 'C:\\Users\\debbiesimon11\\Downloads\\output.docx';
 		$targetpath = getcwd().'\\output.docx';
 		rename($sourcepath,$targetpath);
 		
