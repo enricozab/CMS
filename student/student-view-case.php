@@ -370,13 +370,10 @@ if (!isset($_GET['cn']))
                 $("#form").attr('disabled', true);
                 $("#evidencediv").hide();
                 $("#viewevidence").show();
-
-                $("#formModal").modal("hide");
-                $("#alertModal").modal("show");
             }
         });
 
-        loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+        loadFile("../templates/template-student-response-form.docx",function(error,content){
 
         if (error) { throw error };
         var zip = new JSZip(content);
@@ -442,36 +439,43 @@ if (!isset($_GET['cn']))
 
         });
       }
-
-      else {
-        $("#alertModal").modal("show");
-      }
+      $("#alertModal").modal("show");
     });
 
     $("#submitFormAgain").click(function(){
-      $.ajax({
-          url: '../ajax/student-submit-forms.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>,
-              remarks: <?php echo $caseResRow['remarks_id']; ?>,
-              admission: document.getElementById("admissionType2").value,
-              term: document.getElementById("term2").value,
-              schoolyr: document.getElementById("schoolyr2").value,
-              response: document.getElementById("letter2").value
-          },
-          success: function(msg) {
-              $('#message').text('Submitted successfully!');
-              $("#submit").attr('disabled', true).text("Submitted");
-              $("#form").attr('disabled', true);
-              $("#evidencediv").hide();
-              $("#viewevidence").show();
+      var ids = ['#schoolyr2','#term2','#letter2','#admissionType2'];
+      var isEmpty = true;
 
-              $("#alertModal").modal("show");
-          }
-      });
+      for(var i = 0; i < ids.length; ++i ) {
+        if($.trim($(ids[i]).val()).length == 0) {
+          isEmpty = false;
+        }
+      }
 
-      loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+      if(isEmpty) {
+        $.ajax({
+            url: '../ajax/student-submit-forms.php',
+            type: 'POST',
+            data: {
+                caseID: <?php echo $_GET['cn']; ?>,
+                remarks: <?php echo $caseResRow['remarks_id']; ?>,
+                admission: document.getElementById("admissionType2").value,
+                term: document.getElementById("term2").value,
+                schoolyr: document.getElementById("schoolyr2").value,
+                response: document.getElementById("letter2").value
+            },
+            success: function(msg) {
+                $('#message').text('Submitted successfully!');
+                $("#submit").attr('disabled', true).text("Submitted");
+                $("#form").attr('disabled', true);
+                $("#evidencediv").hide();
+                $("#viewevidence").show();
+            }
+        });
+      }
+
+
+      loadFile("../templates/template-student-response-form.docx",function(error,content){
 
       if (error) { throw error };
       var zip = new JSZip(content);
@@ -537,7 +541,7 @@ if (!isset($_GET['cn']))
 
       });
 
-
+      $("#alertModal").modal("show");
     });
 
     <?php include 'student-notif-scripts.php' ?>
@@ -582,7 +586,19 @@ if (!isset($_GET['cn']))
         $('#letterlabel').text("Please write an explanation");
       }
       $('#letterarea').show();
+    });
 
+    $('#admissionType2').on('change', function() {
+      var option = $("option:selected", this);
+      if(this.value == "Full Admission") {
+        $('#letterlabel2').text("Please write an apology and admission letter");
+      }
+      else if(this.value == "Partial Admission/Denial") {
+        $('#letterlabel2').text("Please write an apology and explanation letter");
+      }
+      else if(this.value == "Full Denial") {
+        $('#letterlabel2').text("Please write an explanation");
+      }
     });
 
   });
@@ -684,7 +700,24 @@ if (!isset($_GET['cn']))
 
             <div class="col-sm-6">
               <b>Term Number:</b><span style="font-weight:normal; color:red;"> *</span>
-              <input id="term2" pattern="[0-9]{8}" minlength="9" maxlength="9" class="studentID form-control" value="<?php echo $rowForm['term']; ?>"><br>
+              <select id="term2" class="form-control">
+                <option value="<?php echo $rowForm['term']; ?>"><?php echo $rowForm['term']; ?></option>
+                <?php
+                  if ($rowForm['term'] == 1) { ?>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  <?php }
+
+                  else if ($rowForm['term'] == 2) { ?>
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                  <?php }
+
+                  else { ?>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  <?php } ?>
+              </select><br>
             </div>
           </div>
 
@@ -693,24 +726,32 @@ if (!isset($_GET['cn']))
             <option value="<?php echo $rowForm['description']; ?>"><?php echo $rowForm['description']; ?></option>
             <?php
               if ($rowForm['admission_type_id'] == 1) { ?>
-                <option value="Full Denial">Full Denial (Explanation)</option>
                 <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
-        <?php }
+                <option value="Full Denial">Full Denial (Explanation)</option>
+              <?php }
 
               else if ($rowForm['admission_type_id'] == 2) {?>
                 <option value="Full Admission">Full Admission (Apology/Admission)</option>
                 <option value="Full Denial">Full Denial (Explanation)</option>
-      <?php   }
+              <?php }
 
-              else {?>
+              else { ?>
                 <option value="Full Admission">Full Admission (Apology/Admission)</option>
                 <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
-      <?php   }
-            ?>
+              <?php } ?>
           </select>
           <br>
           <div class="form-group">
-            <b>Letter:</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <?php
+              if($rowForm['admission_type_id'] == 1) { ?>
+                <b id="letterlabel2">Please write an apology and admission letter</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <?php }
+              else if($rowForm['admission_type_id'] == 2) { ?>
+                <b id="letterlabel2">Please write an apology and explanation letter</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <?php }
+              else { ?>
+                <b id="letterlabel2">Please write an explanation</b> <span style="font-weight:normal; color:red;"> *</span><br>
+            <?php } ?>
             <textarea id="letter2" style="width:550px; height: 400px;" name="details" class="form-control" rows="5"><?php echo $rowForm['response']; ?></textarea>
           </div>
 
@@ -734,7 +775,7 @@ if (!isset($_GET['cn']))
           <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
