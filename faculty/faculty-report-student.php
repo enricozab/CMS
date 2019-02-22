@@ -347,10 +347,9 @@
             data: {
                 messageSubject: "[CMS] Incident Report",
                 toID: "hdo.cms@gmail.com",
-                messageContent:"I filed a new incident report.",
+                messageContent:"I filed a new incident report."
             },
             success: function(msg) {
-
             }
         });
       }
