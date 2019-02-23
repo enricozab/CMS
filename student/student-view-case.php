@@ -255,15 +255,16 @@ if (!isset($_GET['cn']))
     //response form
     $("#form").click(function(){
 
-      var remark = "<?php echo $row['REMARKS_ID']; ?>";
-      var stat = "<?php echo $row['STATUS_DESCRIPTION']; ?>";
+      var remark = <?php echo $row['REMARKS_ID']; ?>;
+      var stat = <?php echo $row['STATUS_ID']; ?>;
 
       if (remark == 4) {
+
         $("#formModalDetails").modal("show");
       }
 
       else {
-        if (stat != "Closed") {
+        if (stat != 3) {
           $("#formModal").modal("show");
         }
 
@@ -674,7 +675,7 @@ if (!isset($_GET['cn']))
 
         </div>
         <div class="modal-footer">
-          <button type="submit" id = "submitForm" class="btn btn-primary">Submit</button>
+          <button type="submit" id = "submitForm" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>

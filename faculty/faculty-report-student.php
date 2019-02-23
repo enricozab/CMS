@@ -147,7 +147,6 @@
     $(document).ready(function() {
 
       <?php include 'faculty-notif-scripts.php' ?>
-	  <?php  include 'faculty-form-queries.php'  ?>
 
       $('.studentID').keypress(validateNumber);
 
@@ -192,38 +191,6 @@
         e.preventDefault();
       });
 
-      $('#modalOK').click(function() {
-
-        $('#form')[0].reset();
-        $("#alertModal").modal("hide");
-
-    		//GMAIL API
-    		location.href= '<?php echo $login_url; ?>';
-            <?php
-              if( isset($_SESSION['access_token']) ) { ?>
-                sendEmail();
-              <?php }
-            ?>
-
-    		//HELLOSIGN API
-    		$.ajax({
-              url: '../ajax/faculty-hellosign.php',
-              type: 'POST',
-              data: {
-    					title : "Incident Report",
-    					subject : "Incident Report Document Signature",
-    					message : "Please do sign this document.",
-                        fname : "<?php echo $nameres['first_name'] ?>",
-    					lname : "<?php echo $nameres['last_name'] ?>",
-    					email : "<?php echo $nameres['email'] ?>",
-    					filename : $('#inputfile').val()
-                    },
-                    success: function(response) {
-    					alert("Incident Report sent to your email! Check your email to sign the form.");
-    				}
-    		})
-      });
-
       $('form').submit(function(e) {
         e.preventDefault();
       });
@@ -266,6 +233,8 @@
             });
           }
 
+          <?php  include 'faculty-form-queries.php'  ?>
+
           //generate incident report form (doc file)
           function loadFile(url,callback){
               JSZipUtils.getBinaryContent(url,callback);
@@ -297,7 +266,7 @@
                         }
                         var today = dd + '/' + mm + '/' + yyyy;
                         doc.setData({
-                          formNum: "<?php echo $formres['incident_report_id'] ?>",
+                          formNum: "<?php echo $formres['MAX'] ?>",
                           date: today,
                           first: "<?php echo $nameres['first_name'] ?>",
                           last: "<?php echo $nameres['last_name'] ?>",
@@ -338,6 +307,39 @@
               });
             }
           }
+
+      });
+
+      $('#modalOK').click(function() {
+
+        $('#form')[0].reset();
+        $("#alertModal").modal("hide");
+
+    		//GMAIL API
+    		location.href= '<?php echo $login_url; ?>';
+            <?php
+              if( isset($_SESSION['access_token']) ) { ?>
+                sendEmail();
+              <?php }
+            ?>
+
+    		//HELLOSIGN API
+    		$.ajax({
+              url: '../ajax/faculty-hellosign.php',
+              type: 'POST',
+              data: {
+    					title : "Incident Report",
+    					subject : "Incident Report Document Signature",
+    					message : "Please do sign this document.",
+                        fname : "<?php echo $nameres['first_name'] ?>",
+    					lname : "<?php echo $nameres['last_name'] ?>",
+    					email : "<?php echo $nameres['email'] ?>",
+    					filename : $('#inputfile').val()
+                    },
+                    success: function(response) {
+    					alert("Incident Report sent to your email! Check your email to sign the form.");
+    				}
+    		})
       });
 
       //GMAIL API function
