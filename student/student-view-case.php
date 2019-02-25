@@ -164,7 +164,7 @@ if (!isset($_GET['cn']))
         </div>
 
         <div class="form-group" id="penaltyarea" hidden>
-          <label>PENALTY</label>
+          <label>Penalty</label>
           <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY']; ?></textarea>
         </div>
 
@@ -622,6 +622,9 @@ if (!isset($_GET['cn']))
   <?php }
     if($row['REMARKS_ID'] == 3) { ?>
       $("#form").attr('disabled', true);
+  <?php }
+    if($row['REMARKS_ID'] > 4) { ?>
+      $("#commentarea").hide();
   <?php }
     if($row['REMARKS_ID'] > 10 and $row['REMARKS_ID'] < 13) { ?>
       $("#form").show();
