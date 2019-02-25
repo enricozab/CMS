@@ -339,6 +339,24 @@ if (!isset($_GET['cn']))
         saveAs(out,"output.docx");
 
       });
+	  
+	  //HELLOSIGN API
+	  $.ajax({
+              url: '../ajax/student-hellosign.php',
+              type: 'POST',
+              data: {
+    					title : "Parent's Letter",
+    					subject : "Parent's Letter Document Signature",
+    					message : "Please do sign this document.",
+                        name : "<?php echo $studentres['guardian_name'] ?>"
+    					email : "<?php echo $studentres['guardian_email'] ?>",
+    					filename : $('#inputfile').val()
+                    },
+                    success: function(response) {
+    					alert("Student Response Form sent to your email! Check your email to sign the form.");
+    				}
+    		})
+	  //HELLOSIGN API
     }
 
     function loadFile(url,callback){
@@ -607,7 +625,7 @@ if (!isset($_GET['cn']))
 		
     		//HELLOSIGN API
     		$.ajax({
-              url: '../ajax/faculty-hellosign.php',
+              url: '../ajax/student-hellosign.php',
               type: 'POST',
               data: {
     					title : "Student Response Form",
@@ -619,7 +637,7 @@ if (!isset($_GET['cn']))
     					filename : $('#inputfile').val()
                     },
                     success: function(response) {
-    					alert("Incident Report sent to your email! Check your email to sign the form.");
+    					alert("Student Response Form sent to your email! Check your email to sign the form.");
     				}
     		})
       });

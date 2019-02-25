@@ -8,6 +8,12 @@
 		
 		rename($sourcepath,$targetpath);
 		
+		if($_POST['title'] == "Parent's Letter"){
+			$name = $_POST['name'];
+		}
+		else{
+			$name = $_POST['fname'].' '.$_POST['lname'];
+		}
 		$name = $_POST['fname'].' '.$_POST['lname'];
 		
 		$output=shell_exec('upload.py "'.$_POST['title'] .'" "'
