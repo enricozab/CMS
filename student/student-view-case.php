@@ -339,24 +339,24 @@ if (!isset($_GET['cn']))
         saveAs(out,"output.docx");
 
       });
-	  
-	  //HELLOSIGN API
-	  $.ajax({
-              url: '../ajax/student-hellosign.php',
-              type: 'POST',
-              data: {
-    					title : "Parent's Letter",
-    					subject : "Parent's Letter Document Signature",
-    					message : "Please do sign this document.",
-                        name : "<?php echo $studentres['guardian_name'] ?>"
-    					email : "<?php echo $studentres['guardian_email'] ?>",
-    					filename : $('#inputfile').val()
-                    },
-                    success: function(response) {
-    					alert("Student Response Form sent to your email! Check your email to sign the form.");
-    				}
-    		})
-	  //HELLOSIGN API
+
+  	  //HELLOSIGN API - Parent Letter
+  	  $.ajax({
+        url: '../ajax/student-hellosign.php',
+        type: 'POST',
+        data: {
+  					title : "Parent's Letter",
+  					subject : "Parent's Letter Document Signature",
+  					message : "Please do sign this document.",
+            name : "<?php echo $studentres['guardian_name'] ?>",
+  					email : "<?php echo $studentres['guardian_email'] ?>",
+  					filename : $('#inputfile').val()
+        },
+        success: function(response) {
+					  alert("Parent's Letter sent to your email! Check your email to sign the form.");
+				}
+  		});
+  	  //HELLOSIGN API
     }
 
     function loadFile(url,callback){
@@ -411,7 +411,7 @@ if (!isset($_GET['cn']))
         var today = dd + '/' + mm + '/' + yyyy;
 
         doc.setData({
-          formNum: "<?php echo $formres['student_response_form_id'] ?>",
+          formNum: <?php echo $formres['MAX'] ?>,
           firstIDO: "<?php echo $idores['first_name'] ?>",
           lastIDO: "<?php echo $idores['last_name'] ?>",
           firstComplainant: "<?php echo $nameres['first_name'] ?>",
@@ -512,7 +512,7 @@ if (!isset($_GET['cn']))
         var today = dd + '/' + mm + '/' + yyyy;
 
         doc.setData({
-          formNum: "<?php echo $formres['student_response_form_id'] ?>",
+          formNum: <?php echo $formres['MAX'] ?>,
           firstIDO: "<?php echo $idores['first_name'] ?>",
           lastIDO: "<?php echo $idores['last_name'] ?>",
           firstComplainant: "<?php echo $nameres['first_name'] ?>",
@@ -618,12 +618,12 @@ if (!isset($_GET['cn']))
         $('#letterlabel2').text("Please write an explanation");
       }
     });
-	  
-	$('#modalOK').click(function() {
+
+	  $('#modalOK').click(function() {
 
         $("#alertModal").modal("hide");
-		
-    		//HELLOSIGN API
+
+    		//HELLOSIGN API - Student Response Form
     		$.ajax({
               url: '../ajax/student-hellosign.php',
               type: 'POST',
@@ -642,8 +642,8 @@ if (!isset($_GET['cn']))
     		})
       });
   });
-  
-  
+
+
 
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>

@@ -79,10 +79,9 @@ else{
 
 // form
 
-$form = 'SELECT *
-           FROM STUDENT_RESPONSE_FORMS
-           ORDER BY STUDENT_RESPONSE_FORM_ID DESC
-          LIMIT 1';
+$form = 'SELECT MAX(STUDENT_RESPONSE_FORM_ID)+1 AS MAX
+          FROM STUDENT_RESPONSE_FORMS
+          ORDER BY STUDENT_RESPONSE_FORM_ID';
 $formq = mysqli_query($dbc,$form);
 
 if(!$formq){
