@@ -374,7 +374,7 @@ if (!isset($_GET['cn']))
             }
         });
 
-        loadFile("../templates/template-student-response-form.docx",function(error,content){
+        loadFile("../templates/template-student-reponse-form.docx",function(error,content){
 
         if (error) { throw error };
         var zip = new JSZip(content);
@@ -444,104 +444,104 @@ if (!isset($_GET['cn']))
     });
 
     $("#submitFormAgain").click(function(){
-      var ids = ['#schoolyr2','#term2','#letter2','#admissionType2'];
-      var isEmpty = true;
+        var ids = ['#schoolyr2','#term2','#letter2','#admissionType2'];
+        var isEmpty = true;
 
-      for(var i = 0; i < ids.length; ++i ) {
-        if($.trim($(ids[i]).val()).length == 0) {
-          isEmpty = false;
-        }
-      }
-
-      if(isEmpty) {
-        $.ajax({
-            url: '../ajax/student-submit-forms.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                remarks: <?php echo $caseResRow['remarks_id']; ?>,
-                admission: document.getElementById("admissionType2").value,
-                term: document.getElementById("term2").value,
-                schoolyr: document.getElementById("schoolyr2").value,
-                response: document.getElementById("letter2").value
-            },
-            success: function(msg) {
-                $('#message').text('Submitted successfully!');
-                $("#submit").attr('disabled', true).text("Submitted");
-                $("#form").attr('disabled', true);
-                $("#evidencediv").hide();
-                $("#viewevidence").show();
-            }
-        });
-      }
-
-      loadFile("../templates/template-student-response-form.docx",function(error,content){
-
-      if (error) { throw error };
-      var zip = new JSZip(content);
-      var doc=new window.docxtemplater().loadZip(zip);
-      // date
-      var today = new Date();
-      var dd = today.getDate();
-      var mm = today.getMonth() + 1; //January is 0!
-      var yyyy = today.getFullYear();
-      if (dd < 10) {
-        dd = '0' + dd;
-      }
-      if (mm < 10) {
-        mm = '0' + mm;
-      }
-      var today = dd + '/' + mm + '/' + yyyy;
-
-      doc.setData({
-        formNum: "<?php echo $formres['student_response_form_id'] ?>",
-        firstIDO: "<?php echo $idores['first_name'] ?>",
-        lastIDO: "<?php echo $idores['last_name'] ?>",
-        firstComplainant: "<?php echo $nameres['first_name'] ?>",
-        lastComplainant: "<?php echo $nameres['last_name'] ?>",
-        nature: "<?php echo $caseres['description'] ?>",
-        section: '2.1??',
-        date: today,
-        dateApp: "<?php echo $caseres['date_filed'] ?>",
-        term: document.getElementById("term").value,
-        year: document.getElementById("schoolyr").value,
-        admission: document.getElementById("admissionType").value,
-        letter: document.getElementById("letter").value,
-        firstStudent: "<?php echo $caseres['first_name'] ?>",
-        lastStudent: "<?php echo $caseres['last_name'] ?>",
-        yearLvl: "<?php echo $studentres['year_level'] ?>",
-        idn: "<?php echo $nameres['user_id'] ?>",
-        college: "<?php echo $nameres['description'] ?>",
-        degree: "<?php echo $studentres['degree'] ?>"
-
-      });
-
-      try {
-          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-          doc.render();
-      }
-
-      catch (error) {
-          var e = {
-              message: error.message,
-              name: error.name,
-              stack: error.stack,
-              properties: error.properties,
+        for(var i = 0; i < ids.length; ++i ) {
+          if($.trim($(ids[i]).val()).length == 0) {
+            isEmpty = false;
           }
-          console.log(JSON.stringify({error: e}));
-          // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-          throw error;
-      }
+        }
 
-      var out=doc.getZip().generate({
-          type:"blob",
-          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      }); //Output the document using Data-URI
-      saveAs(out,"output.docx");
+        if(isEmpty) {
+          $.ajax({
+              url: '../ajax/student-submit-forms.php',
+              type: 'POST',
+              data: {
+                  caseID: <?php echo $_GET['cn']; ?>,
+                  remarks: <?php echo $caseResRow['remarks_id']; ?>,
+                  admission: document.getElementById("admissionType2").value,
+                  term: document.getElementById("term2").value,
+                  schoolyr: document.getElementById("schoolyr2").value,
+                  response: document.getElementById("letter2").value
+              },
+              success: function(msg) {
+                  $('#message').text('Submitted successfully!');
+                  $("#submit").attr('disabled', true).text("Submitted");
+                  $("#form").attr('disabled', true);
+                  $("#evidencediv").hide();
+                  $("#viewevidence").show();
+              }
+          });
+        }
 
-      });
+        loadFile("../templates/template-student-reponse-form.docx",function(error,content){
 
-      $("#alertModal").modal("show");
+        if (error) { throw error };
+        var zip = new JSZip(content);
+        var doc=new window.docxtemplater().loadZip(zip);
+        // date
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+          dd = '0' + dd;
+        }
+        if (mm < 10) {
+          mm = '0' + mm;
+        }
+        var today = dd + '/' + mm + '/' + yyyy;
+
+        doc.setData({
+          formNum: "<?php echo $formres['student_response_form_id'] ?>",
+          firstIDO: "<?php echo $idores['first_name'] ?>",
+          lastIDO: "<?php echo $idores['last_name'] ?>",
+          firstComplainant: "<?php echo $nameres['first_name'] ?>",
+          lastComplainant: "<?php echo $nameres['last_name'] ?>",
+          nature: "<?php echo $caseres['description'] ?>",
+          section: '2.1??',
+          date: today,
+          dateApp: "<?php echo $caseres['date_filed'] ?>",
+          term: document.getElementById("term2").value,
+          year: document.getElementById("schoolyr2").value,
+          admission: document.getElementById("admissionType2").value,
+          letter: document.getElementById("letter2").value,
+          firstStudent: "<?php echo $caseres['first_name'] ?>",
+          lastStudent: "<?php echo $caseres['last_name'] ?>",
+          yearLvl: "<?php echo $studentres['year_level'] ?>",
+          idn: "<?php echo $nameres['user_id'] ?>",
+          college: "<?php echo $nameres['description'] ?>",
+          degree: "<?php echo $studentres['degree'] ?>"
+
+        });
+
+        try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+        }
+
+        catch (error) {
+            var e = {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+                properties: error.properties,
+            }
+            console.log(JSON.stringify({error: e}));
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+            throw error;
+        }
+
+        var out=doc.getZip().generate({
+            type:"blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }); //Output the document using Data-URI
+        saveAs(out,"output.docx");
+
+        });
+
+        $("#alertModal").modal("show");
     });
 
     <?php include 'student-notif-scripts.php' ?>

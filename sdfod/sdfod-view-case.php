@@ -48,13 +48,6 @@ if (!isset($_GET['cn']))
 
 <body>
 
-  <!-- Form Generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
-
-
   <?php
     $query2='SELECT 		C.CASE_ID AS CASE_ID,
                         C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
@@ -97,32 +90,6 @@ if (!isset($_GET['cn']))
     else{
       $row=mysqli_fetch_array($result2,MYSQLI_ASSOC);
     }
-
-    //Gets list of offenses
-    $query2='SELECT OFFENSE_ID, DESCRIPTION FROM REF_OFFENSES';
-    $resultOffences=mysqli_query($dbc,$query2);
-    if(!$resultOffences){
-      echo mysqli_error($dbc);
-    }
-    else{
-      $rowOffenses=mysqli_fetch_array($resultOffences,MYSQLI_ASSOC);
-    }
-
-    // gets other user information
-    $queryStud='SELECT *
-                  FROM USERS U
-             LEFT JOIN REF_STUDENTS R ON U.USER_ID = R.STUDENT_ID
-             LEFT JOIN CASES C ON C.REPORTED_STUDENT_ID = U.USER_ID
-             LEFT JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
-                 WHERE C.CASE_ID = "'.$_GET['cn'].'"';
-    $resStud=mysqli_query($dbc,$queryStud);
-    if(!$resStud){
-      echo mysqli_error($dbc);
-    }
-    else{
-      $rowStud=mysqli_fetch_array($resStud,MYSQLI_ASSOC);
-    }
-
   ?>
 
     <div id="wrapper">
@@ -248,104 +215,8 @@ if (!isset($_GET['cn']))
 
     <?php include 'sdfod-notif-scripts.php' ?>
 
-    // MODAL CHANGES
 
     $('#endorse').click(function() {
-      $("#formModal").modal("show");
-    });
-
-    // FORM GENERATOR
-
-    function loadFile(url,callback){
-        JSZipUtils.getBinaryContent(url,callback);
-    }
-
-    $('#forward').click(function() {
-
-      // REFERRAL FORM
-
-      loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
-
-        if (error) { throw error };
-        var zip = new JSZip(content);
-        var doc=new window.docxtemplater().loadZip(zip);
-        // date
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-        var yyyy = today.getFullYear();
-        if (dd < 10) {
-          dd = '0' + dd;
-        }
-        if (mm < 10) {
-          mm = '0' + mm;
-        }
-        var today = dd + '/' + mm + '/' + yyyy;
-        var change;
-
-        if (document.getElementById("caseDecision").value == "File Case") {
-
-          if (document.getElementById("violationDes").value == "Yes"){
-
-            change = document.getElementById("offenseSelect").value;
-          }
-
-          else {
-            change = "None";
-          }
-        }
-
-        if (document.getElementById("remark").value) {
-          remarks = "None";
-        }
-
-        doc.setData({
-
-          date: today,
-          casenum: <?php echo $_GET['cn']; ?>,
-          studentFirst: "<?php echo $rowStud['first_name']; ?>",
-          studentLast: "<?php echo $rowStud['last_name']; ?>",
-          idn: "<?php echo $row['REPORTED_STUDENT_ID']; ?>",
-          degree: "<?php echo $rowStud['degree']; ?>",
-          college: "<?php echo $rowStud['description']; ?>",
-          complainant: "<?php echo $row['COMPLAINANT']; ?>",
-          violation: "<?php echo $row["OFFENSE_DESCRIPTION"]; ?>",
-          section: "2.1",
-          changes: change,
-          nature: document.getElementById("proceedingType").value,
-          remark: remarks,
-          decision: document.getElementById("caseDecision").value,
-          reason: document.getElementById("reasonCase").value
-
-        });
-
-        try {
-            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render();
-        }
-
-        catch (error) {
-            var e = {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties,
-            }
-            console.log(JSON.stringify({error: e}));
-            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-            throw error;
-        }
-
-        var out=doc.getZip().generate({
-            type:"blob",
-            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        }); //Output the document using Data-URI
-        saveAs(out,"output.docx");
-
-      });
-
-      // add insert to db
-      // make the php file that inserts to db
 
       $.ajax({
           url: '../ajax/director-endorse-case.php',
@@ -364,22 +235,6 @@ if (!isset($_GET['cn']))
             $("#alertModal").modal("show");
           }
       });
-
-    });
-
-    $("#caseDecision").click(function() {
-
-      if (document.getElementById('caseDecision').value == "File Case") {
-        document.getElementById('dispOffense').style.display= 'inline';
-      }
-
-    });
-
-    $("#violationDes").click(function() {
-
-      if (document.getElementById('violationDes').value == "Yes") {
-        document.getElementById('changeViolation').style.display= 'inline';
-      }
 
     });
 
@@ -416,69 +271,7 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
-  <!-- Form Modal -->
-  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
 
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Remarks</b></h4>
-        </div>
-
-        <div class="modal-body">
-
-          <b>Decision:<span style="font-weight:normal; color:red;"> *</span></b>
-          <input type = "radio" name="action" id = "caseDecision" value = "File Case">  File Case</input>
-          <input type = "radio" name="action" id = "caseDecision" value = "Dismiss Case">  Dismiss Case</input><br><br>
-
-          <b>Reasons: <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span><span style="font-weight:normal; color:red;"> *</span></b>
-          <textarea id="reasonCase" style="height: 100px;" class="studentID form-control" placeholder="Enter Reason"></textarea><br>
-
-          <div id = "dispOffense" style = "display: none;">
-            <b>Offense:</b><?php echo "  " . $row['OFFENSE_DESCRIPTION']; ?><br>
-            Change offense?<span style="font-weight:normal; color:red;"> *</span>
-            <input type = "radio" name="action" id = "violationDes" value = "Yes">  Yes</input>
-            <input type = "radio" name="action" id = "violationDes" value = "No">  No</input><br><br>
-          </div>
-
-          <div id = "changeViolation" style ="display: none;">
-            <div class="form-group" style='width: 300px;'>
-              <label>Select New Offense: <span style="font-weight:normal; color:red;">*</span></label>
-              <select id="offenseSelect" class="form-control">
-                <option value="" disabled selected>Select Offense</option>
-                <?php
-                while($rowOffenses=mysqli_fetch_array($resultOffences,MYSQLI_ASSOC)){
-                  echo
-                    "<option value=\"{$rowOffenses['DESCRIPTION']}\">{$rowOffenses['DESCRIPTION']}</option>";
-                }
-                ?>
-              </select>
-            </div>
-          </div>
-
-          <b>Nature of Proceedings:<span style="font-weight:normal; color:red;"> *</span></b>
-          <select id="proceedingType" class="form-control">
-            <option value="" disabled selected>Select Type</option>
-            <option value="Formal Hearing">Formal Hearing</option>
-            <option value="Summary Proceedings">Summary Proceedings</option>
-            <option value="University Panel for Case Conference">University Panel for Case Conference</option>
-            <option value="Case Conference with DO Director">Case Conference with DO Director</option>
-          </select>
-          <br>
-
-          <b>Remarks: </b>
-          <textarea id="remark" style="height: 100px;" class="studentID form-control" placeholder="Enter Remarks"></textarea><br>
-
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" id = "forward" class="btn btn-primary" data-dismiss="modal">Submit</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
 
 </body>
 

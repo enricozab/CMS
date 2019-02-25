@@ -149,6 +149,29 @@ if (!isset($_GET['cn']))
        else{
          $qComplainantRow=mysqli_fetch_array($qComplainantRes,MYSQLI_ASSOC);
        }
+
+       // calculating left/lost idea
+
+       $fiveplus = 'SELECT COUNT(C.OFFENSE_ID) AS TOTAL
+                      FROM CASES C
+                      JOIN REF_OFFENSES R ON C.OFFENSE_ID = R.OFFENSE_ID
+                     WHERE C.OFFENSE_ID = 57 AND C.REPORTED_STUDENT_ID = "'.$rowClosure['user_id'].'"';
+
+        $fiveplusRes=mysqli_query($dbc,$fiveplus);
+        $fiveplusRow = mysqli_fetch_assoc($fiveplusRes);
+
+        $qleft = 'SELECT COUNT(C.OFFENSE_ID)
+                       FROM CASES C
+                       JOIN REF_OFFENSES R ON C.OFFENSE_ID = R.OFFENSE_ID
+                      WHERE C.REPORTED_STUDENT_ID = "'.$rowClosure['user_id'].'" AND C.OFFENSE_ID = 62';
+
+         $qleftRes=mysqli_query($dbc,$qleft);
+         if(!$qleftRes){
+           echo mysqli_error($dbc);
+         }
+         else{
+           $qleftRow=mysqli_fetch_array($qleftRes,MYSQLI_ASSOC);
+         }
   ?>
 
     <div id="wrapper">
@@ -210,6 +233,7 @@ if (!isset($_GET['cn']))
           <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
           <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
+          <button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>
         </div>
       </div>
       <br><br><br>
@@ -265,6 +289,8 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
+
+    var totalID;
     <?php include 'ido-notif-scripts.php' ?>
 
     $('#submit').click(function() {
@@ -292,8 +318,6 @@ if (!isset($_GET['cn']))
                   $('#closecomment').hide();
                   $('#comment').attr('disabled', true);
                   $("input[type=radio]").attr('disabled', true);
-
-
                   $("#alertModal").modal("show");
               }
           });
@@ -379,6 +403,79 @@ if (!isset($_GET['cn']))
 
     $('#return').click(function() {
       $("#commentModal").modal("show");
+    });
+
+    function calculateID() {
+      totalID = <?php echo intval($fiveplusRow)?> * 5;
+    }
+
+    $('#endorsement').click(function() {
+      calculateID();
+      $('#hourz').text('Student entered campus with lost or left ID for ' + totalID + ' times.');
+      $("#acadService").modal("show");
+    });
+
+    $('#submitHours').click(function() { // create referral form
+
+      loadFile("../templates/template-academic-service-endorsement-form.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            numHrs: document.getElementById("hours").value,
+            typeofidlost: totalID
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+
+      });
+
+      $("#endorsement").attr('disabled', true).text("Sent");
+
     });
 
     $('#dismiss').click(function() {
@@ -540,7 +637,11 @@ if (!isset($_GET['cn']))
     if($row['COMMENT'] != null){ ?>
       $("#addcomment").hide();
       $("#commentarea").show();
-  <?php } ?>
+  <?php }
+  if($row['REMARKS_ID'] == 11) { ?>
+      $("#endorsement").show(); <?php
+  } ?>
+
   </script>
 
   <!-- Modal -->
@@ -575,6 +676,28 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <button type="submit" id = "submitComment" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acad Service Modal -->
+  <div class="modal fade" id="acadService" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Academic Service Endorsement Form</b></h4>
+        </div>
+        <div class="modal-body">
+
+          <div id="hourz"></div> <br>
+
+          <b>Number of Service Hours <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 10)</span>:</b>
+          <input id="hours" class="schoolyear form-control"/><br>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "submitHours" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>
