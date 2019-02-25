@@ -474,6 +474,63 @@ if (!isset($_GET['cn']))
 
       });
 
+      loadFile("../templates/template-academic-service-printable.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            numHrs: document.getElementById("hours").value,
+            typeofidlost: totalID
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+
+      });
+
       $("#endorsement").attr('disabled', true).text("Sent");
 
     });
