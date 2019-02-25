@@ -27,12 +27,9 @@
     $nameres=mysqli_fetch_array($nameq,MYSQLI_ASSOC);
   }
 
-  // form $query
-
-  $form = 'SELECT *
+  $form = 'SELECT MAX(INCIDENT_REPORT_ID)+1 AS MAX
             FROM INCIDENT_REPORTS
-            ORDER BY INCIDENT_REPORT_ID DESC
-            LIMIT 1';
+            ORDER BY INCIDENT_REPORT_ID';
   $formq = mysqli_query($dbc,$form);
 
   if(!$formq){
@@ -41,5 +38,4 @@
   else{
     $formres = mysqli_fetch_array($formq,MYSQLI_ASSOC);
   }
-
 ?>

@@ -135,7 +135,7 @@
                         </div>
                       </div>
                       <div id="appendevidence">
-                        <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7;">Add another file</a></span>
+                        <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
                       </div>
                     </div>
                     <br>

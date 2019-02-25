@@ -49,6 +49,13 @@ if (!isset($_GET['cn']))
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
+    <!-- Form Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+
+
 </head>
 
 <body>
@@ -98,6 +105,7 @@ if (!isset($_GET['cn']))
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
     }
 
+    // ADMISSIONS
     $queryadmi = 'SELECT *
                 FROM CASES C
                 JOIN REF_ADMISSION_TYPE RAT ON RAT.ADMISSION_TYPE_ID = C.ADMISSION_TYPE_ID
@@ -111,6 +119,59 @@ if (!isset($_GET['cn']))
        $rowadmi=mysqli_fetch_array($resultadmi,MYSQLI_ASSOC);
      }
 
+     // FOR CLOSURE LETTER
+
+     $qClosure = 'SELECT *
+                    FROM CASES C
+                    JOIN STUDENT_RESPONSE_FORMS S ON S.CASE_ID = C.CASE_ID
+                    JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                    JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
+                    JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
+                   WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+      $qClosureRes=mysqli_query($dbc,$qClosure);
+      if(!$qClosureRes){
+        echo mysqli_error($dbc);
+      }
+      else{
+        $rowClosure=mysqli_fetch_array($qClosureRes,MYSQLI_ASSOC);
+      }
+
+      $qComplainant = 'SELECT *
+                     FROM CASES C
+                     JOIN USERS U ON C.COMPLAINANT_ID = U.USER_ID
+                    WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+       $qComplainantRes=mysqli_query($dbc,$qComplainant);
+       if(!$qComplainantRes){
+         echo mysqli_error($dbc);
+       }
+       else{
+         $qComplainantRow=mysqli_fetch_array($qComplainantRes,MYSQLI_ASSOC);
+       }
+
+       // calculating left/lost idea
+
+       $fiveplus = 'SELECT COUNT(C.OFFENSE_ID) AS TOTAL
+                      FROM CASES C
+                      JOIN REF_OFFENSES R ON C.OFFENSE_ID = R.OFFENSE_ID
+                     WHERE C.OFFENSE_ID = 57 AND C.REPORTED_STUDENT_ID = "'.$rowClosure['user_id'].'"';
+
+        $fiveplusRes=mysqli_query($dbc,$fiveplus);
+        $fiveplusRow = mysqli_fetch_assoc($fiveplusRes);
+
+        $qleft = 'SELECT COUNT(C.OFFENSE_ID)
+                       FROM CASES C
+                       JOIN REF_OFFENSES R ON C.OFFENSE_ID = R.OFFENSE_ID
+                      WHERE C.REPORTED_STUDENT_ID = "'.$rowClosure['user_id'].'" AND C.OFFENSE_ID = 62';
+
+         $qleftRes=mysqli_query($dbc,$qleft);
+         if(!$qleftRes){
+           echo mysqli_error($dbc);
+         }
+         else{
+           $qleftRow=mysqli_fetch_array($qleftRes,MYSQLI_ASSOC);
+         }
   ?>
 
     <div id="wrapper">
@@ -172,6 +233,7 @@ if (!isset($_GET['cn']))
           <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
           <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
+          <button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>
         </div>
       </div>
       <br><br><br>
@@ -227,6 +289,8 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
+
+    var totalID;
     <?php include 'ido-notif-scripts.php' ?>
 
     $('#submit').click(function() {
@@ -254,8 +318,6 @@ if (!isset($_GET['cn']))
                   $('#closecomment').hide();
                   $('#comment').attr('disabled', true);
                   $("input[type=radio]").attr('disabled', true);
-
-
                   $("#alertModal").modal("show");
               }
           });
@@ -343,6 +405,136 @@ if (!isset($_GET['cn']))
       $("#commentModal").modal("show");
     });
 
+    function calculateID() {
+      totalID = <?php echo intval($fiveplusRow)?> * 5;
+    }
+
+    $('#endorsement').click(function() {
+      calculateID();
+      $('#hourz').text('Student entered campus with lost or left ID for ' + totalID + ' times.');
+      $("#acadService").modal("show");
+    });
+
+    $('#submitHours').click(function() { // create referral form
+
+      loadFile("../templates/template-academic-service-endorsement-form.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            numHrs: document.getElementById("hours").value,
+            typeofidlost: totalID
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+
+      });
+
+      loadFile("../templates/template-academic-service-printable.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            numHrs: document.getElementById("hours").value,
+            typeofidlost: totalID
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+
+      });
+
+      $("#endorsement").attr('disabled', true).text("Sent");
+
+    });
+
     $('#dismiss').click(function() {
       $.ajax({
           url: '../ajax/ido-dismiss-case.php',
@@ -368,6 +560,11 @@ if (!isset($_GET['cn']))
       });
     });
 
+    // GENERATING FORMS
+    function loadFile(url,callback){
+        JSZipUtils.getBinaryContent(url,callback);
+    }
+
     $('#sendcl').click(function() {
       $.ajax({
           url: '../ajax/ido-send-closure-letter.php',
@@ -381,6 +578,71 @@ if (!isset($_GET['cn']))
 
               $("#alertModal").modal("show");
           }
+      });
+
+      loadFile("../templates/template-closure-letter.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            year: "<?php echo $rowClosure['year_level'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            college: "<?php echo $rowClosure['description'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            offense: "<?php echo $rowClosure['description'] ?>",
+            dateApp: "<?php echo $rowClosure['date_filed'] ?>",
+            comFirst: "<?php echo $rowClosure['first_name'] ?>",
+            comLast: "<?php echo $rowClosure['last_name'] ?>",
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            term: "<?php echo $rowClosure['term'] ?>",
+            schoolYr: "<?php echo $rowClosure['school_year'] ?>",
+            verdict: "<?php echo $rowClosure['verdict'] ?>",
+            actions: "<?php echo $rowClosure['penalty'] ?>",
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+
       });
     });
 
@@ -432,7 +694,11 @@ if (!isset($_GET['cn']))
     if($row['COMMENT'] != null){ ?>
       $("#addcomment").hide();
       $("#commentarea").show();
-  <?php } ?>
+  <?php }
+  if($row['REMARKS_ID'] == 11) { ?>
+      $("#endorsement").show(); <?php
+  } ?>
+
   </script>
 
   <!-- Modal -->
@@ -467,6 +733,28 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <button type="submit" id = "submitComment" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acad Service Modal -->
+  <div class="modal fade" id="acadService" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Academic Service Endorsement Form</b></h4>
+        </div>
+        <div class="modal-body">
+
+          <div id="hourz"></div> <br>
+
+          <b>Number of Service Hours <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 10)</span>:</b>
+          <input id="hours" class="schoolyear form-control"/><br>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "submitHours" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>
