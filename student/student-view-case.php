@@ -600,8 +600,32 @@ if (!isset($_GET['cn']))
         $('#letterlabel2').text("Please write an explanation");
       }
     });
+	  
+	$('#modalOK').click(function() {
 
+        $("#alertModal").modal("hide");
+		
+    		//HELLOSIGN API
+    		$.ajax({
+              url: '../ajax/faculty-hellosign.php',
+              type: 'POST',
+              data: {
+    					title : "Student Response Form",
+    					subject : "Student Response Form Document Signature",
+    					message : "Please do sign this document.",
+                        fname : "<?php echo $nameres['first_name'] ?>",
+    					lname : "<?php echo $nameres['last_name'] ?>",
+    					email : "<?php echo $nameres['email'] ?>",
+    					filename : $('#inputfile').val()
+                    },
+                    success: function(response) {
+    					alert("Incident Report sent to your email! Check your email to sign the form.");
+    				}
+    		})
+      });
   });
+  
+  
 
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
@@ -775,7 +799,7 @@ if (!isset($_GET['cn']))
           <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="modalOK" class="btn btn-default">Ok</button>
         </div>
       </div>
     </div>
