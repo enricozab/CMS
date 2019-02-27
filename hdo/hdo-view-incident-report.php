@@ -300,7 +300,6 @@ if (!isset($_GET['irn']))
         //not working
         var idoemail;
         <?php
-        echo "console.log( 'test' );";
         $idoquery='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO, EMAIL AS IDO_EMAIL FROM USERS WHERE USER_TYPE_ID = 4';
         $idoresult=mysqli_query($dbc,$idoquery);
         if(!$idoresult){
