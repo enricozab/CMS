@@ -525,7 +525,13 @@ if (!isset($_GET['cn']))
         var today = dd + '/' + mm + '/' + yyyy;
 
         doc.setData({
-          formNum: <?php echo $formres2['student_response_form_id'] ?>,
+          <?php
+          if ($formres2['student_response_form_id'] != null) { ?>
+            formNum: <?php echo $formres2['student_response_form_id'] ?>,
+          <?php }
+          else { ?>
+            formNum: 1,
+          <?php } ?>
           firstIDO: "<?php echo $idores['first_name'] ?>",
           lastIDO: "<?php echo $idores['last_name'] ?>",
           firstComplainant: "<?php echo $nameres['first_name'] ?>",
