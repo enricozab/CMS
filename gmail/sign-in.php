@@ -5,7 +5,13 @@ session_start();
 /* By Qassim Hassan, http://wp-time.com/send-email-via-gmail-api-using-php/ */
 
 if( !isset($_GET['code']) or isset($_SESSION["access_token"]) ){
-	header("location: ../faculty/faculty-report-student.php");
+	if ($_SESSION['user_type_id']==2){
+		header("location: ../faculty/faculty-report-student.php");
+	}
+	if ($_SESSION['user_type_id']==3){
+		header("location: ../hdo/hdo-incident-reports.php");
+	}
+
 	exit();
 }
 
@@ -41,7 +47,12 @@ if( !empty($result['error']) ){ // if have some problems, will be logout
 }
 else{ // if get access token, will be redirect to index.php
 	$_SESSION["access_token"] = $access_token;
-	header("location: ../faculty/faculty-report-student.php");
+	if ($_SESSION['user_type_id']==2){
+		header("location: ../faculty/faculty-report-student.php");
+	}
+	if ($_SESSION['user_type_id']==3){
+		header("location: ../hdo/hdo-incident-reports.php");
+	}
 }
 
 ?>
