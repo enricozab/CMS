@@ -157,6 +157,7 @@ if (!isset($_GET['cn']))
         <br>
         <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         <br><br><br><br>
+        <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
         <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
         <br><br><br><br><br>
       </div>
@@ -245,6 +246,7 @@ if (!isset($_GET['cn']))
   <?php
     if($row['TYPE'] == "Minor" ){ ?>
       $("#endorse").text("Submit");
+      $("#dismiss").hide();
   <?php }
     if($row['PENALTY_DESC'] != null ){ ?>
       $("#penaltyarea").show();
