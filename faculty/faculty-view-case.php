@@ -70,7 +70,8 @@ if (!isset($_GET['cn']))
                         S.DESCRIPTION AS STATUS_DESCRIPTION,
                         C.REMARKS_ID AS REMARKS_ID,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.PENALTY AS PENALTY,
+                        C.PENALTY_ID AS PENALTY_ID,
+                        RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
@@ -82,6 +83,7 @@ if (!isset($_GET['cn']))
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
+            LEFT_JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';
     $result=mysqli_query($dbc,$query);
@@ -152,7 +154,7 @@ if (!isset($_GET['cn']))
         </div>
         <div class="form-group" id="penaltyarea" hidden>
           <label>Penalty</label>
-          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY']; ?></textarea>
+          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
         </div>
         <br>
         <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
@@ -215,7 +217,7 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['PENALTY'] != null ){ ?>
+    if($row['PENALTY_DESC'] != null ){ ?>
       $("#penaltyarea").show();
   <?php } ?>
   </script>

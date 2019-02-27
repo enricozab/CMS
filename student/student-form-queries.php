@@ -80,8 +80,7 @@ else{
 // form
 
 $form = 'SELECT MAX(STUDENT_RESPONSE_FORM_ID)+1 AS MAX
-          FROM STUDENT_RESPONSE_FORMS
-          ORDER BY STUDENT_RESPONSE_FORM_ID';
+          FROM STUDENT_RESPONSE_FORMS';
 $formq = mysqli_query($dbc,$form);
 
 if(!$formq){
@@ -89,5 +88,18 @@ if(!$formq){
 }
 else{
   $formres = mysqli_fetch_array($formq);
+}
+
+
+$form2 = 'SELECT *
+          FROM STUDENT_RESPONSE_FORMS SRF
+          WHERE SRF.CASE_ID = "'.$_GET['cn'].'"';
+$formq2 = mysqli_query($dbc,$form2);
+
+if(!$formq2){
+  echo mysqli_error($dbc);
+}
+else{
+  $formres2 = mysqli_fetch_array($formq2);
 }
 ?>

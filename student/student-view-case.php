@@ -75,7 +75,8 @@ if (!isset($_GET['cn']))
                         C.REMARKS_ID AS REMARKS_ID,
                         C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.PENALTY AS PENALTY,
+                        C.PENALTY_ID AS PENALTY_ID,
+                        RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.IF_APPEAL AS IF_APPEAL,
@@ -89,6 +90,7 @@ if (!isset($_GET['cn']))
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
+            LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';
     $result=mysqli_query($dbc,$query);
@@ -165,7 +167,7 @@ if (!isset($_GET['cn']))
 
         <div class="form-group" id="penaltyarea" hidden>
           <label>Penalty</label>
-          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY']; ?></textarea>
+          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
         </div>
 
         <div class="form-group" id="evidencediv">
@@ -190,7 +192,7 @@ if (!isset($_GET['cn']))
             echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>';
           }
         ?>
-        <button type="submit" id="form" name="sendpl" class="btn btn-success">Send Student Response Letter</button>
+        <button type="submit" id="form" name="form" class="btn btn-success">Send Student Response Letter</button>
         <br><br><br>
 
         <?php
@@ -271,8 +273,6 @@ if (!isset($_GET['cn']))
         else {
           //$("#parentModal").modal("show");
           parentLetter();
-          $("#alertModal").modal("show");
-          $('#message').text('Submitted successfully!');
         }
       }
 
@@ -281,7 +281,7 @@ if (!isset($_GET['cn']))
     <?php include "student-form-queries.php" ?>
 
     function parentLetter() {
-      loadFile("../templates/template-parents-letter.docx",function(error,content){
+      loadFile("../templates/template-parent-letter.docx",function(error,content){
 
         if (error) { throw error };
         var zip = new JSZip(content);
@@ -299,14 +299,14 @@ if (!isset($_GET['cn']))
         }
         var today = dd + '/' + mm + '/' + yyyy;
 
-        var name = "<?php echo $nameres['first_name'] ?>" + " " + "<?php echo $nameres['last_name'] ?>";
-
         doc.setData({
           date: today,
           idn: "<?php echo $nameres['user_id'] ?>",
-          name: name,
+          firstName: "<?php echo $nameres['first_name'] ?>",
+          lastName: "<?php echo $nameres['last_name'] ?>",
           course: "<?php echo $studentres['degree'] ?>",
           college: "<?php echo $nameres['description'] ?>",
+          frequency: 1,
           type: "<?php echo $caseres['type'] ?>",
           nature: "<?php echo $caseres['description'] ?>",
           guardian: "<?php echo $studentres['guardian_name'] ?>",
@@ -345,15 +345,19 @@ if (!isset($_GET['cn']))
         url: '../ajax/student-hellosign.php',
         type: 'POST',
         data: {
-  					title : "Parent's Letter",
-  					subject : "Parent's Letter Document Signature",
+  					title : "Parent Letter",
+  					subject : "Parent Letter Document Signature",
   					message : "Please do sign this document.",
             name : "<?php echo $studentres['guardian_name'] ?>",
   					email : "<?php echo $studentres['guardian_email'] ?>",
-  					filename : $('#inputfile').val()
+  					filename : $('#inputfile').val(),
+            caseID : <?php echo $_GET['cn']; ?>
         },
         success: function(response) {
-					  alert("Parent's Letter sent to your email! Check your email to sign the form.");
+          $('#message').text('Parent Letter has been submitted and sent to your email successfully! Check your email to sign the form.');
+          $("#alertModal").modal("show");
+          $("#form").attr('disabled',true);
+					  //alert("Parent Letter sent to your email! Check your email to sign the form.");
 				}
   		});
   	  //HELLOSIGN API
@@ -385,7 +389,6 @@ if (!isset($_GET['cn']))
                 response: document.getElementById("letter").value
             },
             success: function(msg) {
-                $('#message').text('Submitted successfully!');
                 $("#form").attr('disabled', true);
                 $("#evidencediv").hide();
                 $("#viewevidence").show();
@@ -411,7 +414,19 @@ if (!isset($_GET['cn']))
         var today = dd + '/' + mm + '/' + yyyy;
 
         doc.setData({
-          formNum: <?php echo $formres['MAX'] ?>,
+          <?php
+          if ($formres2['student_response_form_id'] != null) { ?>
+            formNum: <?php echo $formres2['student_response_form_id'] ?>,
+          <?php }
+          else {
+            if ($formres['MAX'] != null) { ?>
+              formNum: <?php echo $formres['MAX'] ?>,
+            <?php }
+            else { ?>
+              formNum: 1,
+            <?php }
+          }
+          ?>
           firstIDO: "<?php echo $idores['first_name'] ?>",
           lastIDO: "<?php echo $idores['last_name'] ?>",
           firstComplainant: "<?php echo $nameres['first_name'] ?>",
@@ -458,7 +473,7 @@ if (!isset($_GET['cn']))
 
         });
       }
-      $("#alertModal").modal("show");
+      studResponse();
     });
 
     $("#submitFormAgain").click(function(){
@@ -484,8 +499,6 @@ if (!isset($_GET['cn']))
                   response: document.getElementById("letter2").value
               },
               success: function(msg) {
-                  $('#message').text('Submitted successfully!');
-                  $("#submit").attr('disabled', true).text("Submitted");
                   $("#form").attr('disabled', true);
                   $("#evidencediv").hide();
                   $("#viewevidence").show();
@@ -512,7 +525,13 @@ if (!isset($_GET['cn']))
         var today = dd + '/' + mm + '/' + yyyy;
 
         doc.setData({
-          formNum: <?php echo $formres['MAX'] ?>,
+          <?php
+          if ($formres2['student_response_form_id'] != null) { ?>
+            formNum: <?php echo $formres2['student_response_form_id'] ?>,
+          <?php }
+          else { ?>
+            formNum: 1,
+          <?php } ?>
           firstIDO: "<?php echo $idores['first_name'] ?>",
           lastIDO: "<?php echo $idores['last_name'] ?>",
           firstComplainant: "<?php echo $nameres['first_name'] ?>",
@@ -558,8 +577,7 @@ if (!isset($_GET['cn']))
         saveAs(out,"output.docx");
 
         });
-
-        $("#alertModal").modal("show");
+        studResponse();
     });
 
     <?php include 'student-notif-scripts.php' ?>
@@ -585,7 +603,7 @@ if (!isset($_GET['cn']))
           success: function(msg) {
               $('#message').text('An appeal has been sent successfully!');
               $("#appeal").attr('disabled', true);
-              $("#sendpl").attr('disabled', true);
+              $("#form").attr('disabled', true);
 
               $("#alertModal").modal("show");
           }
@@ -619,28 +637,26 @@ if (!isset($_GET['cn']))
       }
     });
 
-	  $('#modalOK').click(function() {
-
-        $("#alertModal").modal("hide");
-
-    		//HELLOSIGN API - Student Response Form
-    		$.ajax({
-              url: '../ajax/student-hellosign.php',
-              type: 'POST',
-              data: {
-    					title : "Student Response Form",
-    					subject : "Student Response Form Document Signature",
-    					message : "Please do sign this document.",
+    function studResponse() {
+      $.ajax({
+          url: '../ajax/student-hellosign.php',
+          type: 'POST',
+          data: {
+              title : "Student Response Form",
+              subject : "Student Response Form Document Signature",
+              message : "Please do sign this document.",
                         fname : "<?php echo $nameres['first_name'] ?>",
-    					lname : "<?php echo $nameres['last_name'] ?>",
-    					email : "<?php echo $nameres['email'] ?>",
-    					filename : $('#inputfile').val()
-                    },
-                    success: function(response) {
-    					alert("Student Response Form sent to your email! Check your email to sign the form.");
-    				}
-    		})
+              lname : "<?php echo $nameres['last_name'] ?>",
+              email : "<?php echo $nameres['email'] ?>",
+              filename : $('#inputfile').val()
+          },
+          success: function(response) {
+            $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+            $("#alertModal").modal("show");
+          //alert("Student Response Form sent to your email! Check your email to sign the form.");
+          }
       });
+    }
   });
 
 
@@ -653,7 +669,7 @@ if (!isset($_GET['cn']))
     if($row['COMMENT'] != null ){ ?>
       $("#commentarea").show();
   <?php }
-    if($row['PENALTY'] != null ){ ?>
+    if($row['PENALTY_DESC'] != null ){ ?>
       $("#penaltyarea").show();
   <?php }
     if(($row['REMARKS_ID'] != 10 and $row['TYPE'] != "Major") or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL']) { ?>
@@ -668,13 +684,17 @@ if (!isset($_GET['cn']))
     if($row['REMARKS_ID'] > 4) { ?>
       $("#commentarea").hide();
   <?php }
-    if($row['REMARKS_ID'] > 10 and $row['REMARKS_ID'] < 13) { ?>
-      $("#form").show();
-      $("#form").text("Send Parent Letter");
-  <?php }
     if($row['REMARKS_ID'] > 11) { ?>
       $("#appeal").attr('disabled', true);
       $("#form").attr('disabled', true);
+  <?php }
+    if($row['REMARKS_ID'] == 12) { ?>
+      $("#form").show();
+      $("#form").text("Send Parent Letter");
+  <?php }
+    if($row['REMARKS_ID'] == 14) { ?>
+      $("#appeal").hide();
+      $("#form").hide();
   <?php } ?>
   </script>
 
@@ -820,7 +840,7 @@ if (!isset($_GET['cn']))
           <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default">Ok</button>
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

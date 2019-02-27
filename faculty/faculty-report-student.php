@@ -266,7 +266,14 @@
                         }
                         var today = dd + '/' + mm + '/' + yyyy;
                         doc.setData({
-                          formNum: "<?php echo $formres['MAX'] ?>",
+                          <?php
+                          if ($formres['MAX'] != null) { ?>
+                            formNum: <?php echo $formres['MAX'] ?>,
+                          <?php }
+                          else { ?>
+                            formNum: 1,
+                          <?php }
+                          ?>
                           date: today,
                           first: "<?php echo $nameres['first_name'] ?>",
                           last: "<?php echo $nameres['last_name'] ?>",
