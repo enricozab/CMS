@@ -285,44 +285,54 @@ if (!isset($_GET['irn']))
                 messageContent: "A new case has been opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + "on " + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>"
             },
             success: function(msg) {
+              //resets the pages content - takes out all inserted values
               $('#form')[0].reset();
             }
         });
       }
 
       $('#modalOK').click(function() {
-        //put an if statement checking that message which should ube submitted to send
-        $("#alertModal").modal("hide");
+        //checks if all necessary values are filled out
+        if ($('#message').text() == "Submitted successfully!"){
+          //hides modal
+          $("#alertModal").modal("hide");
 
-        //GMAIL API
-        location.href= '<?php echo $login_url; ?>';
+          //GMAIL API
+          location.href= '<?php echo $login_url; ?>';
 
-        //not working
-        var idoemail;
-        <?php
-        $idoquery='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO, EMAIL AS IDO_EMAIL FROM USERS WHERE USER_TYPE_ID = 4';
-        $idoresult=mysqli_query($dbc,$idoquery);
-        if(!$idoresult){
-          echo mysqli_error($dbc);
+          //gets IDOs email address
+          var idoemail;
+          <?php
+          $idoquery='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO, EMAIL AS IDO_EMAIL FROM USERS WHERE USER_TYPE_ID = 4';
+          $idoresult=mysqli_query($dbc,$idoquery);
+          if(!$idoresult){
+            echo mysqli_error($dbc);
+          }
+          else{
+            while($idorow=mysqli_fetch_array($idoresult,MYSQLI_ASSOC)){ ?>
+              var idorow = "<?php echo $idorow['USER_ID']; ?>";
+              if (idorow == $('#ido').val()){
+                idoemail = "<?php echo $idorow['IDO_EMAIL']; ?>";
+              }
+          <?php
+            }
+          }?>
+
+          //sends email
+          <?php
+          if( isset($_SESSION['access_token']) ) { ?>
+            var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
+            var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
+            var emails = [complainantemail, studentemail, idoemail];
+            sendEmail(emails);
+          <?php }
+          ?>
         }
         else{
-          while($idorow=mysqli_fetch_array($idoresult,MYSQLI_ASSOC)){ ?>
-            var idorow = "<?php echo $idorow['USER_ID']; ?>";
-            if (idorow == $('#ido').val()){
-              idoemail = "<?php echo $idorow['IDO_EMAIL']; ?>";
-            }
-        <?php
-          }
+          //hides modal
+          $("#alertModal").modal("hide");
         }
-        //not working
 
-        if( isset($_SESSION['access_token']) ) { ?>
-          var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
-          var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
-          var emails = [complainantemail, studentemail, idoemail];
-          sendEmail(emails);
-        <?php }
-        ?>
 
       });
 
