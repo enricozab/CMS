@@ -184,7 +184,7 @@ if (!isset($_GET['cn']))
             echo mysqli_error($dbc);
           }
         ?>
-        <div class="form-group" style='width: 400px;'>
+        <div id="penaltyarea" class="form-group" style='width: 400px;'>
           <label>Penalty <span style="font-weight:normal; color:red;">*</span></label>
           <select id="penalty" class="form-control">
             <option value="" disabled selected>Select the corresponding penalty</option>
@@ -195,10 +195,10 @@ if (!isset($_GET['cn']))
             }
             ?>
           </select>
+          <textarea id="finpenalty" style="width:600px;" name="finpenalty" class="form-control" rows="3" hidden readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
         </div>
         <br><br><br>
-        <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
-        <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
+        <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
         <br><br><br><br><br>
       </div>
 
@@ -258,159 +258,202 @@ if (!isset($_GET['cn']))
 
     <?php include 'sdfod-notif-scripts.php' ?>
 
-    $('#feedbackForm').click(function() {
-
-      $("#feedbackModal").modal("show");
-
-    });
-
     $('#endorse').click(function() {
-      var ids = ['#offense','#details','#ido'];
+      var ids = ['#penalty'];
       var isEmpty = true;
 
-      if($('#cheat').is(":visible")){
-        ids.push('#cheat-type');
-      }
-      else{
-        if($.inArray('#cheat-type', ids) !== -1){
-          ids.splice(ids.indexOf('#cheat-type'),1);
-        }
-      }
-
-      for(var i = 0; i < ids.length; ++i ){
-        if($.trim($(ids[i]).val()).length == 0){
-          isEmpty = false;
-        }
-      }
-
-      $.ajax({
-          url: '../ajax/director-endorse-case.php',
-          type: 'POST',
-          data: {
-              caseID: "<?php echo $_GET['cn']; ?>",
-              decision: $('#caseDecision').val(),
-              reason: $('#reasonCase').val(),
-              nature: $('#proceedingType').val(),
-              remark: remarks
-          },
-          success: function(msg) {
-            $('#message').text('Case endorsed to AULC successfully!');
-            $("#endorse").attr('disabled', true).text("Endorsed");
-
-            $("#alertModal").modal("show");
+      if($('#penalty').is(":visible")){
+        for(var i = 0; i < ids.length; ++i ){
+          if($.trim($(ids[i]).val()).length == 0){
+            isEmpty = false;
           }
-      });
+        }
+      }
 
+      if(isEmpty) {
+        if($('#penalty').val() != 3 && $('#penalty').is(":visible")) {
+          $.ajax({
+            //../ajax/director-close-case.php
+              url: '../ajax/director-close-case.php',
+              type: 'POST',
+              data: {
+                  caseID: "<?php echo $_GET['cn']; ?>",
+                  penalty: $('#penalty').val()
+              },
+              success: function(response) {
+                var pen = response;
+                feedbackFile(pen);
+              }
+          });
+        }
+        else {
+          $.ajax({
+            //../ajax/director-endorse-case.php
+              url: '../ajax/director-endorse-case.php',
+              type: 'POST',
+              data: {
+                  caseID: "<?php echo $_GET['cn']; ?>",
+                  penalty: $('#penalty').val()
+              },
+              success: function(msg) {
+                $("#endorse").attr('disabled', true).text("Endorsed");
+                $('#message').text('Case is endorsed to AULC.');
+                $("#alertModal").modal("show");
+                //referralFile(pen);
+                //$("#alertEndorse").modal("show");
+              }
+          });
+          /*$.ajax({
+              url: '../ajax/director-endorse-case.php',
+              type: 'POST',
+              data: {
+                  caseID: "<?php echo $_GET['cn']; ?>",
+                  decision: $('#caseDecision').val(),
+                  reason: $('#reasonCase').val(),
+                  nature: $('#proceedingType').val(),
+                  remark: remarks
+              },
+              success: function(msg) {
+                $('#message').text('Case closed.');
+                $('#submitFeedback').text("Send Discipline Case Feedback Form");
+
+                $("#alertModal").modal("show");
+              }
+          });*/
+        }
+      }
+      else {
+        $("#alertModal").modal("show");
+      }
     });
 
     function loadFile(url,callback){
         JSZipUtils.getBinaryContent(url,callback);
     }
 
-    $('#submitFeedback').click(function() {
-
+    function feedbackFile(pen) {
       loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
+        if (error) { throw error };
+        var zip = new JSZip(content);
+        var doc=new window.docxtemplater().loadZip(zip);
+        // date
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+          dd = '0' + dd;
+        }
+        if (mm < 10) {
+          mm = '0' + mm;
+        }
+        var today = dd + '/' + mm + '/' + yyyy;
 
-          if (error) { throw error };
-          var zip = new JSZip(content);
-          var doc=new window.docxtemplater().loadZip(zip);
-          // date
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth() + 1; //January is 0!
-          var yyyy = today.getFullYear();
-          if (dd < 10) {
-            dd = '0' + dd;
-          }
-          if (mm < 10) {
-            mm = '0' + mm;
-          }
-          var today = dd + '/' + mm + '/' + yyyy;
+        doc.setData({
 
-          doc.setData({
+          date: today,
+          name: "<?php echo $row['STUDENT']; ?>",
+          idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+          degree: "<?php echo $CollegeQRow['degree']; ?>",
+          college: "<?php echo $CollegeQRow['description']; ?>",
+          nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+          ido: "<?php echo $row['HANDLED_BY']; ?>",
+          dRemark: pen
 
-            date: today,
-            name: "<?php echo $row['STUDENT']; ?>",
-            idn: "<?php echo $row['REPORTED_STUDENT_ID']; ?>",
-            degree: "<?php echo $CollegeQRow['degree']; ?>",
-            college: "<?php echo $CollegeQRow['description']; ?>",
-            nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
-            ido: "<?php echo $row['HANDLED_BY']; ?>",
-            dRemark: document.getElementById("dRemarks").value
+        });
 
-          });
+        try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+        }
 
-          try {
-              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-              doc.render();
-          }
+        catch (error) {
+            var e = {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+                properties: error.properties,
+            }
+            console.log(JSON.stringify({error: e}));
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+            throw error;
+        }
 
-          catch (error) {
-              var e = {
-                  message: error.message,
-                  name: error.name,
-                  stack: error.stack,
-                  properties: error.properties,
-              }
-              console.log(JSON.stringify({error: e}));
-              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-              throw error;
-          }
-
-          var out=doc.getZip().generate({
-              type:"blob",
-              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          }); //Output the document using Data-URI
-          saveAs(out,"output.docx");
-
+        var out=doc.getZip().generate({
+            type:"blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }); //Output the document using Data-URI
+        saveAs(out,"output.docx");
       });
+      $('#penalty').attr("disabled", true);
+      $("#endorse").attr('disabled', true).text("Submitted");
+      $('#message').text('Case closed. Discipline Case Feedback Form has been sent to the student.');
+      $("#alertModal").modal("show");
+    }
 
+    $('#penalty').on('change', function() {
+      var option = $("option:selected", this);
+      if(this.value == 3) {
+        $("#endorse").text("Endorse");
+      }
+      else {
+        $("#endorse").text("Submit");
+      }
     });
 
   });
 
   <?php
-    if($row['TYPE'] == "Minor" ){ ?>
-      $("#endorse").text("Submit");
-      $("#dismiss").hide();
+    if($row['TYPE'] == "Major" ){ ?>
+      $("#endorse").text("Endorse");
+      $("#penaltyarea").hide();
+  <?php }
+    if($row['REMARKS_ID'] < 6){ ?>
+      $("#finpenalty").hide();
   <?php }
     if($row['REMARKS_ID'] > 5){ ?>
-      $("#endorse").attr('disabled', true).text("Endorsed");
-    <?php
-    if($row['REMARKS_ID'] == 10 or $row['REMARKS_ID'] == 11){ ?>
-        $("#endorse").hide();
+      $("#endorse").hide();
+      $("#penalty").hide();
   <?php }
-    }
-
-    if($row['REMARKS_ID'] == 5 AND $row['TYPE'] == 'Minor'){ ?>
-
-      $("#feedbackForm").show();
-      <?php
-    }
-
-    ?>
+  ?>
   </script>
+
+  <!-- Endorsement Form -->
+  <div class="modal fade" id="alertEndorse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="submitFeedback" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
         </div>
         <div class="modal-body">
-          <p id="message"></message>
+          <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="submitFeedback" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Feedback Form Modal -->
-  <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!--<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -468,7 +511,7 @@ if (!isset($_GET['cn']))
         </div>
       </div>
     </div>
-  </div>
+  </div>-->
 
 
 

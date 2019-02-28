@@ -333,10 +333,10 @@
             }
         });
       }
-      
+
       $('#modalOK').click(function() {
         //checks if all necessary values are filled out
-        if ($('#message').text() == "Submitted successfully!"){
+        if ($('#message').text()=="Submitted successfully!"){
           //hides modal
           $("#alertModal").modal("hide");
 
