@@ -1,4 +1,6 @@
 <?php include 'hdo.php' ?>
+<?php include '../gmail/Qassim_HTTP.php' ?>
+<?php include '../gmail/config.php' ?>
 <?php
 if (!isset($_GET['irn']))
     header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/hdo/hdo-home.php");
@@ -67,6 +69,8 @@ if (!isset($_GET['irn']))
                     $query='SELECT 	   IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                                        IR.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                                        CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS STUDENT,
+                                       U.EMAIL AS COMPLAINANT_EMAIL,
+                                       U2.EMAIL AS STUDENT_EMAIL,
                                        IR.LOCATION AS LOCATION,
                                        IR.DETAILS AS DETAILS,
                                        IR.DATE_INCIDENT AS DATE_INCIDENT,
@@ -271,44 +275,92 @@ if (!isset($_GET['irn']))
         $("#alertModal").modal("show");
       });
 
-      function sendEmail(subject, to, message){
+      function sendEmail(to){
         $.ajax({
             url: '../ajax/users-send-email.php',
             type: 'POST',
             data: {
-                messageSubject: subject,
+                messageSubject: "[CMS] Case opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?> " + "on" + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>",
                 toID: to,
-                messageContent: message
+                messageContent: "A new case has been opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + "on " + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>"
             },
             success: function(msg) {
+              //resets the pages content - takes out all inserted values
+              $('#form')[0].reset();
             }
         });
       }
-    });
 
-    //Changes button text and disabled
-    <?php
-      $query2='SELECT   RO.DESCRIPTION AS DESCRIPTION,
-                        CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS IDO
-              FROM 		  CASES C
-              JOIN      REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
-              JOIN      USERS U ON C.HANDLED_BY_ID = U.USER_ID
-              WHERE     C.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"';
-      $result2=mysqli_query($dbc,$query2);
-      if(!$result2){
-        echo mysqli_error($dbc);
-      }
-      else{
-        if($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){ ?>
-          $('#form').find('button, select').attr('disabled',true);
-          $('#details').attr('readonly',true);
-          $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
-          $('#submit').text("Submitted");
-          $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>');
-          $('select[id=ido] > option:first-child').text('<?php echo $row2['IDO']; ?>');
-          $('#details').val('<?php echo $row['DETAILS']; ?>');
-      <?php }
-      } ?>
+      $('#modalOK').click(function() {
+        //checks if all necessary values are filled out
+        if ($('#message').text() == "Submitted successfully!"){
+          //hides modal
+          $("#alertModal").modal("hide");
+
+          //GMAIL API
+          location.href= '<?php echo $login_url; ?>';
+
+          //gets IDOs email address
+          var idoemail;
+          <?php
+          $idoquery='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO, EMAIL AS IDO_EMAIL FROM USERS WHERE USER_TYPE_ID = 4';
+          $idoresult=mysqli_query($dbc,$idoquery);
+          if(!$idoresult){
+            echo mysqli_error($dbc);
+          }
+          else{
+            while($idorow=mysqli_fetch_array($idoresult,MYSQLI_ASSOC)){ ?>
+              var idorow = "<?php echo $idorow['USER_ID']; ?>";
+              if (idorow == $('#ido').val()){
+                idoemail = "<?php echo $idorow['IDO_EMAIL']; ?>";
+              }
+          <?php
+            }
+          }?>
+
+          //sends email
+          <?php
+          if( isset($_SESSION['access_token']) ) { ?>
+            var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
+            var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
+            var emails = [complainantemail, studentemail, idoemail];
+            sendEmail(emails);
+          <?php }
+          ?>
+        }
+        else{
+          //hides modal
+          $("#alertModal").modal("hide");
+        }
+
+
+      });
+
+      //Changes button text and disabled
+      <?php
+        $query2='SELECT   RO.DESCRIPTION AS DESCRIPTION,
+                          CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS IDO
+                FROM 		  CASES C
+                JOIN      REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+                JOIN      USERS U ON C.HANDLED_BY_ID = U.USER_ID
+                WHERE     C.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"';
+        $result2=mysqli_query($dbc,$query2);
+        if(!$result2){
+          echo mysqli_error($dbc);
+        }
+        else{
+          if($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){ ?>
+            $('#form').find('button, select').attr('disabled',true);
+            $('#details').attr('readonly',true);
+            $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
+            $('#submit').text("Submitted");
+            $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>');
+            $('select[id=ido] > option:first-child').text('<?php echo $row2['IDO']; ?>');
+            $('#details').val('<?php echo $row['DETAILS']; ?>');
+        <?php }
+        } ?>
+
+    });
 
     </script>
 
@@ -324,7 +376,7 @@ if (!isset($_GET['irn']))
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+						<button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
 					</div>
 				</div>
 			</div>

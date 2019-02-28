@@ -83,7 +83,8 @@ if (!isset($_GET['cn']))
                         C.REMARKS_ID AS REMARKS_ID,
                         C.COMMENT AS COMMENT,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.PENALTY AS PENALTY,
+                        C.PENALTY_ID AS PENALTY_ID,
+                        RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
@@ -95,6 +96,7 @@ if (!isset($_GET['cn']))
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
+            LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';
     $result=mysqli_query($dbc,$query);
@@ -127,6 +129,7 @@ if (!isset($_GET['cn']))
                     JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
                     JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
                     JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
+                    JOIN REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
                    WHERE C.CASE_ID = "'.$_GET['cn'].'"';
 
       $qClosureRes=mysqli_query($dbc,$qClosure);
@@ -210,26 +213,14 @@ if (!isset($_GET['cn']))
 
       <br><br>
 
-      <?php
-
-      if ($rowadmi['description'] == "Full Admission") {
-        ?>
-
-        <div class="form-group" id="penaltyarea">
-          <br>
-          <label>Penalty</label>
-          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3">1 month suspension</textarea>
-        </div>
-
-        <?php
-      }
-
-      ?>
+      <div class="form-group" id="penaltyarea" hidden>
+        <label>Penalty</label>
+        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+      </div>
 
       <br><br><br><br>
       <div class="row">
         <div class="col-sm-6">
-          <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
           <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
           <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
@@ -294,86 +285,22 @@ if (!isset($_GET['cn']))
     <?php include 'ido-notif-scripts.php' ?>
 
     $('#submit').click(function() {
-    <?php
-      if($row['TYPE'] == "Major") { ?>
-        var admi = "<?php echo $rowadmi['description']; ?>";
-        var admission = "<?php echo $rowadmi['admission_type_id']; ?>";
-        if(admission == 1) {
-          $.ajax({
-              url: '../ajax/ido-close-case.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  penalty: $('#penalty').val(),
-                  admission: admi
-              },
-              success: function(msg) {
-                  $('#message').text('Case closed.');
-                  $("#submit").attr('disabled', true).text("Submitted");
-                  $("#return").attr('disabled', true);
-                  $("#dismiss").attr('disabled', true);
-                  $("#penalty").attr('readonly', true);
-                  $("#schedule").attr('disabled', true);
-                  $("#addcomment").hide();
-                  $('#closecomment').hide();
-                  $('#comment').attr('disabled', true);
-                  $("input[type=radio]").attr('disabled', true);
-                  $("#alertModal").modal("show");
-              }
-          });
-        }
+      $.ajax({
+          url: '../ajax/ido-forward-case.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+              $('#message').text('Case forwarded to SDFO Director successfully!');
+              $("#submit").attr('disabled', true).text("Submitted");
+              $("#return").attr('disabled', true);
+              $("#penalty").attr('readonly', true);
+              $("#schedule").attr('disabled', true);
 
-        else {
-          $.ajax({
-              url: '../ajax/ido-forward-case.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  admission: admission
-              },
-              success: function(msg) {
-                  $('#message').text('Case forwarded to SDFO Director successfully!');
-                  $("#submit").attr('disabled', true).text("Submitted");
-                  $("#return").attr('disabled', true);
-                  $("#dismiss").attr('disabled', true);
-                  $("#penalty").attr('readonly', true);
-                  $("#schedule").attr('disabled', true);
-                  $("#addcomment").hide();
-                  $('#closecomment').hide();
-                  $('#comment').attr('disabled', true);
-                  $("input[type=radio]").attr('disabled', true);
-
-                  $("#alertModal").modal("show");
-              }
-          });
-        }
-
-    <?php }
-
-      else { ?>
-        $.ajax({
-            url: '../ajax/ido-close-case.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                penalty: $('#penalty').val()
-            },
-            success: function(msg) {
-                $('#message').text('Case closed.');
-                $("#submit").attr('disabled', true).text("Submitted");
-                $("#return").attr('disabled', true);
-                $("#dismiss").attr('disabled', true);
-                $("#penalty").attr('readonly', true);
-                $("#schedule").attr('disabled', true);
-                $("#addcomment").hide();
-                $('#closecomment').hide();
-                $('#comment').attr('disabled', true);
-                $("input[type=radio]").attr('disabled', true);
-
-                $("#alertModal").modal("show");
-            }
-        });
-    <?php } ?>
+              $("#alertModal").modal("show");
+          }
+      });
     });
 
     $('#submitComment').click(function() {
@@ -388,13 +315,8 @@ if (!isset($_GET['cn']))
             $('#message').text('Returned to student successfully!');
             $("#submit").attr('disabled', true);
             $("#return").attr('disabled', true);
-            $("#dismiss").attr('disabled', true);
             $("#schedule").attr('disabled', true);
             $("#penalty").attr('readonly', true);
-            $("#addcomment").hide();
-            $('#closecomment').hide();
-            $('#comment').attr('disabled', true);
-            $("input[type=radio]").attr('disabled', true);
 
             $("#alertModal").modal("show");
           }
@@ -554,7 +476,7 @@ if (!isset($_GET['cn']))
 		//HELLOSIGN API
     });
 
-    $('#dismiss').click(function() {
+    /*$('#dismiss').click(function() {
       $.ajax({
           url: '../ajax/ido-dismiss-case.php',
           type: 'POST',
@@ -569,15 +491,11 @@ if (!isset($_GET['cn']))
               $("#dismiss").attr('disabled', true).text("Dismissed");
               $("#schedule").attr('disabled', true);
               $("#penalty").attr('readonly', true);
-              $("#addcomment").hide();
-              $('#closecomment').hide();
-              $('#comment').attr('disabled', true);
-              $("input[type=radio]").attr('disabled', true);
 
               $("#alertModal").modal("show");
           }
       });
-    });
+    });*/
 
     // GENERATING FORMS
     function loadFile(url,callback){
@@ -635,7 +553,7 @@ if (!isset($_GET['cn']))
             term: "<?php echo $rowClosure['term'] ?>",
             schoolYr: "<?php echo $rowClosure['school_year'] ?>",
             verdict: "<?php echo $rowClosure['verdict'] ?>",
-            actions: "<?php echo $rowClosure['penalty'] ?>",
+            actions: "<?php echo $rowClosure['penalty_desc'] ?>",
 
           });
 
@@ -664,45 +582,27 @@ if (!isset($_GET['cn']))
 
       });
     });
-
-    $('#addcomment').click(function() {
-      $("#addcomment").hide();
-      $("#commentarea").show();
-    });
-
-    $('#closecomment').click(function() {
-      $("#addcomment").show();
-      $("#comment").val('');
-      $("#commentarea").hide();
-    });
   });
 
   <?php
     if($row['TYPE'] == "Major"){ ?>
       $("#admitarea").show();
   <?php }
-    if($row['PENALTY'] != null and $row['TYPE'] == "Major"){ ?>
+    if($row['PENALTY_DESC'] != null){ ?>
       $("#penaltyarea").show();
   <?php }
     if($row['REMARKS_ID'] != 3){ ?>
-      $("#addcomment").hide();
-      $('#closecomment').hide();
-      $('#comment').attr('disabled', true);
       $("#submit").attr('disabled', true);
       $("#return").attr('disabled', true);
-      $("#dismiss").attr('disabled', true);
       $("#schedule").attr('disabled', true);
       $("#penalty").attr('readonly', true);
-      $("input[type=radio]").attr('disabled', true);
       <?php
           if($row['REMARKS_ID'] > 4) { ?>
-            $("#penalty").val("<?php echo $row['PENALTY']; ?>");
-            $("input[name=admission][value='<?php echo $row['ADMISSION_TYPE_ID']; ?>']").prop('checked',true);
+            $("#penalty").val("<?php echo $row['PENALTY_DESC']; ?>");
             $("#schedule").hide();
-            $("#dismiss").hide();
             $("#return").hide();
             $("#submit").hide();
-        <?php if($row['PENALTY'] == null){ ?>
+        <?php if($row['PENALTY_DESC'] == null){ ?>
                 $("#penaltyarea").hide();
         <?php }
           }
@@ -710,12 +610,9 @@ if (!isset($_GET['cn']))
   if($row['REMARKS_ID'] != 7) { ?>
     $("#sendcl").hide();
   <?php }
-    if($row['COMMENT'] != null){ ?>
-      $("#addcomment").hide();
-      $("#commentarea").show();
-  <?php }
-  if($row['REMARKS_ID'] == 11) { ?>
-      $("#endorsement").show(); <?php
+  if($row['TYPE'] != "Major" or $row['REMARKS_ID'] != 11) { ?>
+      $("#endorsement").hide();
+  <?php
   } ?>
 
   </script>

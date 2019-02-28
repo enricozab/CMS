@@ -44,6 +44,12 @@ if (!isset($_GET['cn']))
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- Form Generation -->
+    <script src="../form-generation/docxtemplater.js"></script>
+    <script src="../form-generation/jszip.js"></script>
+    <script src="../form-generation/FileSaver.js"></script>
+    <script src="../form-generation/jszip-utils.js"></script>
+
 </head>
 
 <body>
@@ -69,7 +75,8 @@ if (!isset($_GET['cn']))
                         S.DESCRIPTION AS STATUS_DESCRIPTION,
                         C.REMARKS_ID AS REMARKS_ID,
                         C.LAST_UPDATE AS LAST_UPDATE,
-                        C.PENALTY AS PENALTY,
+                        C.PENALTY_ID AS PENALTY_ID,
+                        RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
@@ -81,6 +88,7 @@ if (!isset($_GET['cn']))
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
+            LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';
     $result2=mysqli_query($dbc,$query2);
@@ -89,6 +97,20 @@ if (!isset($_GET['cn']))
     }
     else{
       $row=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+    }
+
+    $CollegeQ = 'SELECT *
+                   FROM CASES C
+              LEFT JOIN USERS U ON U.USER_ID = C.REPORTED_STUDENT_ID
+              LEFT JOIN REF_USER_OFFICE R ON R.OFFICE_ID = U.OFFICE_ID
+              LEFT JOIN REF_STUDENTS RS ON RS.STUDENT_ID = C.REPORTED_STUDENT_ID
+                  WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+    $CollegeQRes=mysqli_query($dbc,$CollegeQ);
+    if(!$CollegeQRes){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $CollegeQRow=mysqli_fetch_array($CollegeQRes,MYSQLI_ASSOC);
     }
   ?>
 
@@ -101,7 +123,7 @@ if (!isset($_GET['cn']))
                <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
                 <div class="col-lg-6">
           					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo 'Minor'; ?><br>
+          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
                     <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
           					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
                     <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
@@ -148,13 +170,14 @@ if (!isset($_GET['cn']))
           <label>Summary of the Incident</label>
           <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
         </div>
-        <div class="form-group" id="penaltyarea" hidden>
+        <!--<div class="form-group" id="penaltyarea" hidden>
           <label>Penalty</label>
-          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY']; ?></textarea>
-        </div>
+          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+        </div>-->
         <br>
         <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         <br><br><br><br>
+        <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
         <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
         <br><br><br><br><br>
       </div>
@@ -215,6 +238,11 @@ if (!isset($_GET['cn']))
 
     <?php include 'sdfod-notif-scripts.php' ?>
 
+    $('#feedbackForm').click(function() {
+
+      $("#feedbackModal").modal("show");
+
+    });
 
     $('#endorse').click(function() {
 
@@ -238,19 +266,95 @@ if (!isset($_GET['cn']))
 
     });
 
+    function loadFile(url,callback){
+        JSZipUtils.getBinaryContent(url,callback);
+    }
+
+    $('#submitFeedback').click(function() {
+
+      loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            name: "<?php echo $row['STUDENT']; ?>",
+            idn: "<?php echo $row['REPORTED_STUDENT_ID']; ?>",
+            degree: "<?php echo $CollegeQRow['degree']; ?>",
+            college: "<?php echo $CollegeQRow['description']; ?>",
+            nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+            ido: "<?php echo $row['HANDLED_BY']; ?>",
+            dRemark: document.getElementById("dRemarks").value
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out,"output.docx");
+
+      });
+
+    });
+
   });
 
   <?php
-    if($row['PENALTY'] != null ){ ?>
+    if($row['TYPE'] == "Minor" ){ ?>
+      $("#endorse").text("Submit");
+      $("#dismiss").hide();
+  <?php }
+    if($row['PENALTY_DESC'] != null ){ ?>
       $("#penaltyarea").show();
   <?php }
     if($row['REMARKS_ID'] > 5){ ?>
       $("#endorse").attr('disabled', true).text("Endorsed");
     <?php
-      if($row['REMARKS_ID'] == 10 or $row['REMARKS_ID'] == 11){ ?>
+    if($row['REMARKS_ID'] == 10 or $row['REMARKS_ID'] == 11){ ?>
         $("#endorse").hide();
   <?php }
-    } ?>
+    }
+
+    if($row['REMARKS_ID'] == 5 AND $row['TYPE'] == 'Minor'){ ?>
+
+      $("#feedbackForm").show();
+      <?php
+    }
+
+    ?>
   </script>
 
   <!-- Modal -->
@@ -266,6 +370,67 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Form Modal -->
+  <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Discipline Case Feedback Form Remarks</b></h4>
+        </div>
+          <div class="modal-body">
+
+            <div class="col-sm-6">
+              <b>Student Name:</b><input id="studName" class="schoolyear form-control" value="<?php echo $row['STUDENT']; ?>" readonly/><br>
+            </div>
+
+            <div class="col-sm-6">
+              <b>ID Number: </b>
+              <input id="IDN" class="schoolyear form-control" value="<?php echo $row['REPORTED_STUDENT_ID']; ?>" readonly/><br>
+            </div>
+
+            <br>
+
+            <div class="col-sm-6">
+              <b>College:</b>
+              <input id="degCol" class="schoolyear form-control" value="<?php echo $CollegeQRow['description']; ?>" readonly/><br>
+            </div>
+
+            <div class="col-sm-6">
+              <b>Degree:</b>
+              <input id="degCol" class="schoolyear form-control" value="<?php echo $CollegeQRow['degree']; ?>" readonly/><br>
+            </div>
+
+            <b>Nature of Violation: </b>
+            <textarea id="nViolation" class="schoolyear form-control" readonly><?php echo $row['OFFENSE_DESCRIPTION']; ?></textarea><br>
+
+            <b>Case Handled By:</b>
+            <input id="cHandle" class="schoolyear form-control" value="<?php echo $row['HANDLED_BY']; ?>" readonly/></b><br>
+
+            <b>Remarks:</b>
+            <select id="dRemarks" class="form-control">
+              <option value="">Select Remark</option>
+              <option value="Incident/Violation is recorded but without any offense">Incident/Violation is recorded but without any offense</option>
+              <option value="Incident/Violation is recorded as first minor offense">Incident/Violation is recorded as first minor offense</option>
+              <option value="Will be processed as a major discipline offense">Will be processed as a major discipline offense</option>
+              <option value="Student is referred to University Councelor">Student is referred to University Councelor</option>
+              <option value="Warning is given">Warning is given</option>
+              <option value="Reprimand is given">Reprimand is given</option>
+              <option value="Presented a letter from the parent/guardian">Presented a letter from the parent/guardian</option>
+              <option value="Incident/Violation is recorded as minor offense of same nature<">Incident/Violation is recorded as minor offense of same nature</option>
+              <option value="Incident/Violation is recorded as minor offense of different nature">Incident/Violation is recorded as minor offense of different nature</option>
+            </select><br>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" id="submitFeedback" class="btn btn-primary" data-dismiss="modal">Submit</button>
+          </div>
         </div>
       </div>
     </div>

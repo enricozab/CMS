@@ -266,7 +266,14 @@
                         }
                         var today = dd + '/' + mm + '/' + yyyy;
                         doc.setData({
-                          formNum: "<?php echo $formres['MAX'] ?>",
+                          <?php
+                          if ($formres['MAX'] != null) { ?>
+                            formNum: <?php echo $formres['MAX'] ?>,
+                          <?php }
+                          else { ?>
+                            formNum: 1,
+                          <?php }
+                          ?>
                           date: today,
                           first: "<?php echo $nameres['first_name'] ?>",
                           last: "<?php echo $nameres['last_name'] ?>",
@@ -310,53 +317,62 @@
 
       });
 
-      $('#modalOK').click(function() {
-
-        $('#form')[0].reset();
-        $("#alertModal").modal("hide");
-
-    		//GMAIL API
-    		location.href= '<?php echo $login_url; ?>';
-            <?php
-              if( isset($_SESSION['access_token']) ) { ?>
-                sendEmail();
-              <?php }
-            ?>
-
-    		//HELLOSIGN API
-    		$.ajax({
-              url: '../ajax/faculty-hellosign.php',
-              type: 'POST',
-              data: {
-    					title : "Incident Report",
-    					subject : "Incident Report Document Signature",
-    					message : "Please do sign this document.",
-                        fname : "<?php echo $nameres['first_name'] ?>",
-    					lname : "<?php echo $nameres['last_name'] ?>",
-    					email : "<?php echo $nameres['email'] ?>",
-    					filename : $('#inputfile').val()
-                    },
-                    success: function(response) {
-    					alert("Incident Report sent to your email! Check your email to sign the form.");
-    				}
-    		})
-      });
-
       //GMAIL API function
-
-      function sendEmail(){
+      function sendEmail(to){
         $.ajax({
             url: '../ajax/users-send-email.php',
             type: 'POST',
             data: {
-                messageSubject: "[CMS] Incident Report",
-                toID: "hdo.cms@gmail.com",
-                messageContent:"I filed a new incident report."
+                messageSubject: "[CMS] Incident Report created on " + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>",
+                toID: to,
+                messageContent:"I filed a new incident report on " + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>"
             },
             success: function(msg) {
+              //resets the pages content - takes out all inserted values
+              $('#form')[0].reset();
             }
         });
       }
+      
+      $('#modalOK').click(function() {
+        //checks if all necessary values are filled out
+        if ($('#message').text() == "Submitted successfully!"){
+          //hides modal
+          $("#alertModal").modal("hide");
+
+      		//GMAIL API - sends email
+      		location.href= '<?php echo $login_url; ?>';
+          <?php
+            if( isset($_SESSION['access_token']) ) { ?>
+              var emails = ['hdo.cms@gmail.com'];
+              sendEmail(emails);
+            <?php }
+          ?>
+
+      		//HELLOSIGN API
+      		$.ajax({
+                url: '../ajax/faculty-hellosign.php',
+                type: 'POST',
+                data: {
+      					title : "Incident Report",
+      					subject : "Incident Report Document Signature",
+      					message : "Please do sign this document.",
+                fname : "<?php echo $nameres['first_name'] ?>",
+      					lname : "<?php echo $nameres['last_name'] ?>",
+      					email : "<?php echo $nameres['email'] ?>",
+      					filename : $('#inputfile').val()
+                      },
+                      success: function(response) {
+      					alert("Incident Report sent to your email! Check your email to sign the form.");
+      				}
+      		})
+        }
+        //else hides the modal
+        else{
+          //hides modal
+          $("#alertModal").modal("hide");
+        }
+      });
     });
   	</script>
 
