@@ -339,24 +339,6 @@ if (!isset($_GET['cn']))
         saveAs(out,"output.docx");
 
       });
-	  
-	  //HELLOSIGN API
-	  $.ajax({
-              url: '../ajax/student-hellosign.php',
-              type: 'POST',
-              data: {
-    					title : "Parent's Letter",
-    					subject : "Parent's Letter Document Signature",
-    					message : "Please do sign this document.",
-                        name : "<?php echo $studentres['guardian_name'] ?>",
-    					email : "<?php echo $studentres['guardian_email'] ?>",
-    					filename : $('#inputfile').val()
-                    },
-                    success: function(response) {
-    					alert("Parent's Letter sent to your parent's email!");
-    				}
-    		})
-	  //HELLOSIGN API
 
   	  //HELLOSIGN API - Parent Letter
   	  $.ajax({
@@ -366,13 +348,13 @@ if (!isset($_GET['cn']))
   					title : "Parent Letter",
   					subject : "Parent Letter Document Signature",
   					message : "Please do sign this document.",
-            name : "<?php echo $studentres['guardian_name'] ?>",
+					name : "<?php echo $studentres['guardian_name'] ?>",
   					email : "<?php echo $studentres['guardian_email'] ?>",
   					filename : $('#inputfile').val(),
             caseID : <?php echo $_GET['cn']; ?>
         },
         success: function(response) {
-          $('#message').text('Parent Letter has been submitted and sent to your email successfully! Check your email to sign the form.');
+          $("#message").text('Parent Letter has been submitted and sent to your email successfully! Check your email to sign the form.');
           $("#alertModal").modal("show");
           $("#form").attr('disabled',true);
 					  //alert("Parent Letter sent to your email! Check your email to sign the form.");
@@ -680,6 +662,7 @@ if (!isset($_GET['cn']))
           }
       });
     }
+  });
   });
 
 
