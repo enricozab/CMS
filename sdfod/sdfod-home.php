@@ -170,6 +170,10 @@
       <?php include 'sdfod-notif-scripts.php'?>
 
       <?php
+      //Removes 'new' badge and reduces notif's count
+      $query2='SELECT 		SDFOD.CASE_ID AS CASE_ID,
+                          SDFOD.IF_NEW AS IF_NEW
+              FROM 		    SDFOD_CASES SDFOD';
       $result2=mysqli_query($dbc,$query2);
       if(!$result2){
         echo mysqli_error($dbc);

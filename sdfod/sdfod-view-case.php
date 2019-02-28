@@ -176,7 +176,27 @@ if (!isset($_GET['cn']))
         </div>-->
         <br>
         <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-        <br><br><br><br>
+        <br><br><br>
+        <?php
+          $query2='SELECT PENALTY_ID, PENALTY_DESC FROM REF_PENALTIES';
+          $result2=mysqli_query($dbc,$query2);
+          if(!$result2){
+            echo mysqli_error($dbc);
+          }
+        ?>
+        <div class="form-group" style='width: 400px;'>
+          <label>Penalty <span style="font-weight:normal; color:red;">*</span></label>
+          <select id="penalty" class="form-control">
+            <option value="" disabled selected>Select the corresponding penalty</option>
+            <?php
+            while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+              echo
+                "<option value=\"{$row2['PENALTY_ID']}\">{$row2['PENALTY_DESC']}</option>";
+            }
+            ?>
+          </select>
+        </div>
+        <br><br><br>
         <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
         <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
         <br><br><br><br><br>
@@ -245,6 +265,23 @@ if (!isset($_GET['cn']))
     });
 
     $('#endorse').click(function() {
+      var ids = ['#offense','#details','#ido'];
+      var isEmpty = true;
+
+      if($('#cheat').is(":visible")){
+        ids.push('#cheat-type');
+      }
+      else{
+        if($.inArray('#cheat-type', ids) !== -1){
+          ids.splice(ids.indexOf('#cheat-type'),1);
+        }
+      }
+
+      for(var i = 0; i < ids.length; ++i ){
+        if($.trim($(ids[i]).val()).length == 0){
+          isEmpty = false;
+        }
+      }
 
       $.ajax({
           url: '../ajax/director-endorse-case.php',
@@ -336,9 +373,6 @@ if (!isset($_GET['cn']))
     if($row['TYPE'] == "Minor" ){ ?>
       $("#endorse").text("Submit");
       $("#dismiss").hide();
-  <?php }
-    if($row['PENALTY_DESC'] != null ){ ?>
-      $("#penaltyarea").show();
   <?php }
     if($row['REMARKS_ID'] > 5){ ?>
       $("#endorse").attr('disabled', true).text("Endorsed");
