@@ -1,4 +1,4 @@
-6<?php include 'hdo.php' ?>
+<?php include 'hdo.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
