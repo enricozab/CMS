@@ -348,12 +348,12 @@ if (!isset($_GET['cn']))
     					title : "Parent's Letter",
     					subject : "Parent's Letter Document Signature",
     					message : "Please do sign this document.",
-                        name : "<?php echo $studentres['guardian_name'] ?>"
+                        name : "<?php echo $studentres['guardian_name'] ?>",
     					email : "<?php echo $studentres['guardian_email'] ?>",
     					filename : $('#inputfile').val()
                     },
                     success: function(response) {
-    					alert("Student Response Form sent to your email! Check your email to sign the form.");
+    					alert("Parent's Letter sent to your parent's email!");
     				}
     		})
 	  //HELLOSIGN API
@@ -623,23 +623,6 @@ if (!isset($_GET['cn']))
 
         $("#alertModal").modal("hide");
 		
-    		//HELLOSIGN API
-    		$.ajax({
-              url: '../ajax/student-hellosign.php',
-              type: 'POST',
-              data: {
-    					title : "Student Response Form",
-    					subject : "Student Response Form Document Signature",
-    					message : "Please do sign this document.",
-                        fname : "<?php echo $nameres['first_name'] ?>",
-    					lname : "<?php echo $nameres['last_name'] ?>",
-    					email : "<?php echo $nameres['email'] ?>",
-    					filename : $('#inputfile').val()
-                    },
-                    success: function(response) {
-    					alert("Student Response Form sent to your email! Check your email to sign the form.");
-    				}
-    		})
       });
   });
   

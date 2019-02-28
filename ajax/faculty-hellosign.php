@@ -15,7 +15,9 @@
 							.$_POST['message'] .'" "'
 							.$_POST['email'] .'" "'
 							.$name .'" "'
-							.$filename .'"');
+							.$filename .'" "'
+							.$sourcepath .'" "'
+							.$targetpath .'"');
 		
 		exit;
 	?>
