@@ -233,6 +233,7 @@ if (!isset($_GET['cn']))
       }
 
         include 'aulc-notif-queries.php';
+		include 'aulc-form-queries.php';
       ?>
     </div>
     <!-- /#wrapper -->
@@ -373,9 +374,8 @@ if (!isset($_GET['cn']))
             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         }); //Output the document using Data-URI
         saveAs(out,"output.docx");
-
       });
-
+		
       $.ajax({
           url: '../ajax/aulc-forward-case.php',
           type: 'POST',
@@ -391,7 +391,7 @@ if (!isset($_GET['cn']))
             $("#alertModal").modal("show");
           }
       });
-
+		
     });
 
     $("#caseDecision").click(function() {
@@ -409,7 +409,29 @@ if (!isset($_GET['cn']))
       }
 
     });
-
+	
+	$('#modalOK').click(function() {
+		$("#alertModal").modal("hide");
+		
+		//HELLOSIGN API
+		$.ajax({
+		  url: '../ajax/faculty-hellosign.php',
+		  type: 'POST',
+		  data: {
+					title : "Discipline Case Referral Form",
+					subject : "Discipline Case Referral Form Document Signature",
+					message : "Please do sign this document.",
+					fname : "<?php echo $directorres['first_name'] ?>",
+					lname : "<?php echo $directorres['last_name'] ?>",
+					email : "<?php echo $directorres['email'] ?>",
+					filename : $('#inputfile').val()
+				},
+				success: function(response) {
+					alert("Discipline Case Referral Form sent to SDFO Director!");
+				}
+		});
+		//HELLOSIGN API
+	});
   });
 
   <?php
@@ -443,7 +465,7 @@ if (!isset($_GET['cn']))
           <p id="message"></message>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id = "modalOK" class="btn btn-default">Ok</button>
         </div>
       </div>
     </div>

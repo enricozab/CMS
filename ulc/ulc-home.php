@@ -95,7 +95,7 @@
                                     C.REMARKS_ID AS REMARKS_ID,
                                     R.DESCRIPTION AS REMARKS_DESCRIPTION,
                                     C.LAST_UPDATE AS LAST_UPDATE,
-                                    C.PENALTY AS PENALTY,
+                                    C.PENALTY_ID AS PENALTY,
                                     C.VERDICT AS VERDICT,
                                     C.HEARING_DATE AS HEARING_DATE,
                                     C.DATE_CLOSED AS DATE_CLOSED,
@@ -109,6 +109,7 @@
                         LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
                         LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
                         LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
+						LEFT JOIN   REF_PENALTIES P ON C.PENALTY_ID = P.PENALTY_ID
                         ORDER BY	  C.LAST_UPDATE';
                         $result=mysqli_query($dbc,$query);
                   if(!$result){

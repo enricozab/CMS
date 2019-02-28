@@ -454,7 +454,26 @@ if (!isset($_GET['cn']))
       });
 
       $("#endorsement").attr('disabled', true).text("Sent");
-
+		
+		//NOT DONE
+		//HELLOSIGN API
+    		$.ajax({
+              url: '../ajax/faculty-hellosign.php',
+              type: 'POST',
+              data: {
+    					title : "Incident Report",
+    					subject : "Incident Report Document Signature",
+    					message : "Please do sign this document.",
+                        fname : "<?php echo $rowClosure['first_name'] ?>",
+    					lname : "<?php echo $rowClosure['last_name'] ?>",
+    					email : "<?php echo $rowClosure['email'] ?>",
+    					filename : $('#inputfile').val()
+                    },
+                    success: function(response) {
+    					alert("Incident Report sent to your email! Check your email to sign the form.");
+    				}
+    		})
+		//HELLOSIGN API
     });
 
     /*$('#dismiss').click(function() {

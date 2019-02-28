@@ -348,13 +348,13 @@ if (!isset($_GET['cn']))
   					title : "Parent Letter",
   					subject : "Parent Letter Document Signature",
   					message : "Please do sign this document.",
-            name : "<?php echo $studentres['guardian_name'] ?>",
+					name : "<?php echo $studentres['guardian_name'] ?>",
   					email : "<?php echo $studentres['guardian_email'] ?>",
   					filename : $('#inputfile').val(),
             caseID : <?php echo $_GET['cn']; ?>
         },
         success: function(response) {
-          $('#message').text('Parent Letter has been submitted and sent to your email successfully! Check your email to sign the form.');
+          $("#message").text('Parent Letter has been submitted and sent to your email successfully! Check your email to sign the form.');
           $("#alertModal").modal("show");
           $("#form").attr('disabled',true);
 					  //alert("Parent Letter sent to your email! Check your email to sign the form.");
@@ -640,6 +640,11 @@ if (!isset($_GET['cn']))
         $('#letterlabel2').text("Please write an explanation");
       }
     });
+	  
+	$('#modalOK').click(function() {
+
+        $("#alertModal").modal("hide");
+		
 
     function studResponse() {
       $.ajax({
@@ -661,6 +666,7 @@ if (!isset($_GET['cn']))
           }
       });
     }
+  });
   });
 
 
