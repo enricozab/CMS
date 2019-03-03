@@ -5,6 +5,7 @@ session_start();
 /* By Qassim Hassan, http://wp-time.com/send-email-via-gmail-api-using-php/ */
 
 if( !isset($_GET['code']) or isset($_SESSION["access_token"]) ){
+	//checks which user is logged in based on the user type 
 	if ($_SESSION['user_type_id']==2){
 		header("location: ../faculty/faculty-report-student.php");
 	}
