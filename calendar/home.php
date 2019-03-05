@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-if(!isset($_SESSION['access_token'])) {
+if(!isset($_SESSION['access_token_calendar'])) {
 	header('Location: google-login.php');
-	exit();	
+	exit();
 }
 
 ?>
@@ -14,75 +14,21 @@ if(!isset($_SESSION['access_token'])) {
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.1.9/jquery.datetimepicker.min.css" />
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.1.9/jquery.datetimepicker.min.js"></script>
-<style type="text/css">
 
-#form-container {
-	width: 400px;
-	margin: 100px auto;
-}
-
-input[type="text"] {
-	border: 1px solid rgba(0, 0, 0, 0.15);
-	font-family: inherit;
-	font-size: inherit;
-	padding: 8px;
-	border-radius: 0px;
-	outline: none;
-	display: block;
-	margin: 0 0 20px 0;
-	width: 100%;
-	box-sizing: border-box;
-}
-
-select {
-	border: 1px solid rgba(0, 0, 0, 0.15);
-	font-family: inherit;
-	font-size: inherit;
-	padding: 8px;
-	border-radius: 2px;
-	display: block;
-	width: 100%;
-	box-sizing: border-box;
-	outline: none;
-	background: none;
-	margin: 0 0 20px 0;
-}
-
-.input-error {
-	border: 1px solid red !important;
-}
-
-#event-date {
-	display: none;
-}
-
-#create-event {
-	background: none;
-	width: 100%;
-    display: block;
-    margin: 0 auto;
-    border: 2px solid #2980b9;
-    padding: 8px;
-    background: none;
-    color: #2980b9;
-    cursor: pointer;
-}
-
-</style>
 </head>
 
 <body>
 
 <div id="form-container">
-	<input type="text" id="event-title" placeholder="Event Title" autocomplete="off" />
+	<input type="text" id="event-title" placeholder="Event Title" autocomplete="off" /><br><br>
 	<select id="event-type"  autocomplete="off">
 		<option value="FIXED-TIME">Fixed Time Event</option>
 		<option value="ALL-DAY">All Day Event</option>
-	</select>
-	<input type="text" id="event-start-time" placeholder="Event Start Time" autocomplete="off" />
-	<input type="text" id="event-end-time" placeholder="Event End Time" autocomplete="off" />
-	<input type="text" id="event-date" placeholder="Event Date" autocomplete="off" />
-	<input type="text" id="event-attendees" placeholder="Event Attendees" autocomplete="off" />
+	</select><br><br>
+	<input type="text" id="event-start-time" placeholder="Event Start Time" autocomplete="off" /><br><br>
+	<input type="text" id="event-end-time" placeholder="Event End Time" autocomplete="off" /><br><br>
+	<input type="text" id="event-date" placeholder="Event Date" autocomplete="off" /><br><br>
+	<input type="text" id="event-attendees" placeholder="Event Attendees" autocomplete="off" /><br><br>
 	<button id="create-event">Create Event</button>
 </div>
 
@@ -94,14 +40,14 @@ function AdjustMinTime(ct) {
   		current_date = dtob.getDate(),
   		current_month = dtob.getMonth() + 1,
   		current_year = dtob.getFullYear();
-  			
+
 	var full_date = current_year + '-' +
-					( current_month < 10 ? '0' + current_month : current_month ) + '-' + 
+					( current_month < 10 ? '0' + current_month : current_month ) + '-' +
 		  			( current_date < 10 ? '0' + current_date : current_date );
 
 	if(ct.dateFormat('Y-m-d') == full_date)
 		this.setOptions({ minTime: 0 });
-	else 
+	else
 		this.setOptions({ minTime: false });
 }
 
@@ -115,7 +61,7 @@ $("#event-type").on('change', function(e) {
 		$("#event-start-time, #event-end-time").hide();
 	}
 	else {
-		$("#event-date").hide(); 
+		$("#event-date").hide();
 		$("#event-start-time, #event-end-time").show();
 	}
 });
@@ -135,7 +81,7 @@ $("#create-event").on('click', function(e) {
 		$("#event-title").addClass('input-error');
 		error = 1;
 	}
-	
+
 	// added
 	if(!blank_reg_exp.test($("#event-attendees").val())) {
 		$("#event-attendees").addClass('input-error');
@@ -146,7 +92,7 @@ $("#create-event").on('click', function(e) {
 		if(!blank_reg_exp.test($("#event-start-time").val())) {
 			$("#event-start-time").addClass('input-error');
 			error = 1;
-		}		
+		}
 
 		if(!blank_reg_exp.test($("#event-end-time").val())) {
 			$("#event-end-time").addClass('input-error');
@@ -157,7 +103,7 @@ $("#create-event").on('click', function(e) {
 		if(!blank_reg_exp.test($("#event-date").val())) {
 			$("#event-date").addClass('input-error');
 			error = 1;
-		}	
+		}
 	}
 
 	if(error == 1)
@@ -173,8 +119,8 @@ $("#create-event").on('click', function(e) {
 	}
 
 	// Event details
-	parameters = { 	title: $("#event-title").val(), 
-					attendees: $("#event-attendees").val(), 
+	parameters = { 	title: $("#event-title").val(),
+					attendees: $("#event-attendees").val(),
 					event_time: {
 						start_time: $("#event-type").val() == 'FIXED-TIME' ? $("#event-start-time").val().replace(' ', 'T') + ':00' : null,
 						end_time: $("#event-type").val() == 'FIXED-TIME' ? $("#event-end-time").val().replace(' ', 'T') + ':00' : null,
@@ -186,12 +132,13 @@ $("#create-event").on('click', function(e) {
 	$("#create-event").attr('disabled', 'disabled');
 	$.ajax({
         type: 'POST',
-        url: 'ajax.php',
+        url: 'calendar_ajax.php',
         data: { event_details: parameters },
         dataType: 'json',
         success: function(response) {
         	$("#create-event").removeAttr('disabled');
         	alert('Event created with ID : ' + response.event_id);
+					test();
         },
         error: function(response) {
             $("#create-event").removeAttr('disabled');
@@ -199,6 +146,10 @@ $("#create-event").on('click', function(e) {
         }
     });
 });
+
+function test() {
+	location.replace('google-login.php')
+}
 
 </script>
 

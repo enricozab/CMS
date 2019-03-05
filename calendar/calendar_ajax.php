@@ -11,16 +11,19 @@ try {
 	$capi = new GoogleCalendarApi();
 
 	// Get user calendar timezone
-	$user_timezone = $capi->GetUserCalendarTimezone($_SESSION['access_token']);
+	$user_timezone = $capi->GetUserCalendarTimezone($_SESSION['access_token_calendar']);
 
 	// Create event on primary calendar
-	$event_id = $capi->CreateCalendarEvent('primary', $event['title'], $event['attendees'], $event['all_day'], $event['event_time'], $user_timezone, $_SESSION['access_token']);
-	
+	$event_id = $capi->CreateCalendarEvent('primary', $event['title'], $event['attendees'], $event['all_day'], $event['event_time'], $user_timezone, $_SESSION['access_token_calendar']);
+
 	echo json_encode([ 'event_id' => $event_id ]);
 }
 catch(Exception $e) {
 	header('Bad Request', true, 400);
     echo json_encode(array( 'error' => 1, 'message' => $e->getMessage() ));
 }
+
+//unset($_SESSION['access_token_calendar']);
+//header('Location: google-login.php');
 
 ?>
