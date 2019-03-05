@@ -280,13 +280,12 @@ if (!isset($_GET['irn']))
             url: '../ajax/users-send-email.php',
             type: 'POST',
             data: {
-                messageSubject: "[CMS] Case opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?> " + "on" + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>",
+                messageSubject: "[CMS] Case opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?> " + "on" + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>",
                 toID: to,
-                messageContent: "A new case has been opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + "on " + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>"
+                messageContent: "A new case has been opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + " on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>"
             },
             success: function(msg) {
               //resets the pages content - takes out all inserted values
-              $('#form')[0].reset();
             }
         });
       }
@@ -352,9 +351,9 @@ if (!isset($_GET['irn']))
           if($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){ ?>
             $('#form').find('button, select').attr('disabled',true);
             $('#details').attr('readonly',true);
-            $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
+            $(".chosen-select").attr('disabled', true).trigger("chosen:updated");
             $('#submit').text("Submitted");
-            $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>');
+            $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>').trigger("chosen:updated");
             $('select[id=ido] > option:first-child').text('<?php echo $row2['IDO']; ?>');
             $('#details').val('<?php echo $row['DETAILS']; ?>');
         <?php }

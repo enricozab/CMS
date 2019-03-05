@@ -272,7 +272,7 @@ if (!isset($_GET['cn']))
 
         else {
           //$("#parentModal").modal("show");
-          parentLetter();
+          //parentLetter();
         }
       }
 
@@ -378,6 +378,7 @@ if (!isset($_GET['cn']))
       }
 
       if(isEmpty){
+        console.log("hello");
         $.ajax({
             url: '../ajax/student-submit-forms.php',
             type: 'POST',
@@ -389,90 +390,89 @@ if (!isset($_GET['cn']))
                 response: document.getElementById("letter").value
             },
             success: function(msg) {
-                $("#form").attr('disabled', true);
                 $("#evidencediv").hide();
                 $("#viewevidence").show();
+
+                loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc=new window.docxtemplater().loadZip(zip);
+                // date
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                  dd = '0' + dd;
+                }
+                if (mm < 10) {
+                  mm = '0' + mm;
+                }
+                var today = dd + '/' + mm + '/' + yyyy;
+
+                doc.setData({
+                  <?php
+                  if ($formres2['student_response_form_id'] != null) { ?>
+                    formNum: <?php echo $formres2['student_response_form_id'] ?>,
+                  <?php }
+                  else {
+                    if ($formres['MAX'] != null) { ?>
+                      formNum: <?php echo $formres['MAX'] ?>,
+                    <?php }
+                    else { ?>
+                      formNum: 1,
+                    <?php }
+                  }
+                  ?>
+                  firstIDO: "<?php echo $idores['first_name'] ?>",
+                  lastIDO: "<?php echo $idores['last_name'] ?>",
+                  firstComplainant: "<?php echo $nameres['first_name'] ?>",
+                  lastComplainant: "<?php echo $nameres['last_name'] ?>",
+                  nature: "<?php echo $caseres['description'] ?>",
+                  section: '2.1??',
+                  date: today,
+                  dateApp: "<?php echo $caseres['date_filed'] ?>",
+                  term: document.getElementById("term").value,
+                  year: document.getElementById("schoolyr").value,
+                  admission: document.getElementById("admissionType").value,
+                  letter: document.getElementById("letter").value,
+                  firstStudent: "<?php echo $caseres['first_name'] ?>",
+                  lastStudent: "<?php echo $caseres['last_name'] ?>",
+                  yearLvl: "<?php echo $studentres['year_level'] ?>",
+                  idn: "<?php echo $nameres['user_id'] ?>",
+                  college: "<?php echo $nameres['description'] ?>",
+                  degree: "<?php echo $studentres['degree'] ?>"
+
+                });
+
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
+
+                catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
+
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out,"output.docx");
+
+                });
+                studResponse();
             }
         });
-
-        loadFile("../templates/template-student-reponse-form.docx",function(error,content){
-
-        if (error) { throw error };
-        var zip = new JSZip(content);
-        var doc=new window.docxtemplater().loadZip(zip);
-        // date
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-        var yyyy = today.getFullYear();
-        if (dd < 10) {
-          dd = '0' + dd;
-        }
-        if (mm < 10) {
-          mm = '0' + mm;
-        }
-        var today = dd + '/' + mm + '/' + yyyy;
-
-        doc.setData({
-          <?php
-          if ($formres2['student_response_form_id'] != null) { ?>
-            formNum: <?php echo $formres2['student_response_form_id'] ?>,
-          <?php }
-          else {
-            if ($formres['MAX'] != null) { ?>
-              formNum: <?php echo $formres['MAX'] ?>,
-            <?php }
-            else { ?>
-              formNum: 1,
-            <?php }
-          }
-          ?>
-          firstIDO: "<?php echo $idores['first_name'] ?>",
-          lastIDO: "<?php echo $idores['last_name'] ?>",
-          firstComplainant: "<?php echo $nameres['first_name'] ?>",
-          lastComplainant: "<?php echo $nameres['last_name'] ?>",
-          nature: "<?php echo $caseres['description'] ?>",
-          section: '2.1??',
-          date: today,
-          dateApp: "<?php echo $caseres['date_filed'] ?>",
-          term: document.getElementById("term").value,
-          year: document.getElementById("schoolyr").value,
-          admission: document.getElementById("admissionType").value,
-          letter: document.getElementById("letter").value,
-          firstStudent: "<?php echo $caseres['first_name'] ?>",
-          lastStudent: "<?php echo $caseres['last_name'] ?>",
-          yearLvl: "<?php echo $studentres['year_level'] ?>",
-          idn: "<?php echo $nameres['user_id'] ?>",
-          college: "<?php echo $nameres['description'] ?>",
-          degree: "<?php echo $studentres['degree'] ?>"
-
-        });
-
-        try {
-            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render();
-        }
-
-        catch (error) {
-            var e = {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties,
-            }
-            console.log(JSON.stringify({error: e}));
-            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-            throw error;
-        }
-
-        var out=doc.getZip().generate({
-            type:"blob",
-            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        }); //Output the document using Data-URI
-        saveAs(out,"output.docx");
-
-        });
-        studResponse();
       }
       else {
         $("#alertModal").modal("show");
@@ -502,82 +502,82 @@ if (!isset($_GET['cn']))
                   response: document.getElementById("letter2").value
               },
               success: function(msg) {
-                  $("#form").attr('disabled', true);
                   $("#evidencediv").hide();
                   $("#viewevidence").show();
+
+                  loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+                    if (error) { throw error };
+                    var zip = new JSZip(content);
+                    var doc=new window.docxtemplater().loadZip(zip);
+                    // date
+                    var today = new Date();
+                    var dd = today.getDate();
+                    var mm = today.getMonth() + 1; //January is 0!
+                    var yyyy = today.getFullYear();
+                    if (dd < 10) {
+                      dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                      mm = '0' + mm;
+                    }
+                    var today = dd + '/' + mm + '/' + yyyy;
+
+                    doc.setData({
+                      <?php
+                      if ($formres2['student_response_form_id'] != null) { ?>
+                        formNum: <?php echo $formres2['student_response_form_id'] ?>,
+                      <?php }
+                      else { ?>
+                        formNum: 1,
+                      <?php } ?>
+                      firstIDO: "<?php echo $idores['first_name'] ?>",
+                      lastIDO: "<?php echo $idores['last_name'] ?>",
+                      firstComplainant: "<?php echo $nameres['first_name'] ?>",
+                      lastComplainant: "<?php echo $nameres['last_name'] ?>",
+                      nature: "<?php echo $caseres['description'] ?>",
+                      section: '2.1??',
+                      date: today,
+                      dateApp: "<?php echo $caseres['date_filed'] ?>",
+                      term: document.getElementById("term2").value,
+                      year: document.getElementById("schoolyr2").value,
+                      admission: document.getElementById("admissionType2").value,
+                      letter: document.getElementById("letter2").value,
+                      firstStudent: "<?php echo $caseres['first_name'] ?>",
+                      lastStudent: "<?php echo $caseres['last_name'] ?>",
+                      yearLvl: "<?php echo $studentres['year_level'] ?>",
+                      idn: "<?php echo $nameres['user_id'] ?>",
+                      college: "<?php echo $nameres['description'] ?>",
+                      degree: "<?php echo $studentres['degree'] ?>"
+
+                    });
+
+                    try {
+                        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                        doc.render();
+                    }
+
+                    catch (error) {
+                        var e = {
+                            message: error.message,
+                            name: error.name,
+                            stack: error.stack,
+                            properties: error.properties,
+                        }
+                        console.log(JSON.stringify({error: e}));
+                        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                        throw error;
+                    }
+
+                    var out=doc.getZip().generate({
+                        type:"blob",
+                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    }); //Output the document using Data-URI
+                    saveAs(out,"output.docx");
+
+                  });
+                  studResponse();
               }
           });
-          loadFile("../templates/template-student-reponse-form.docx",function(error,content){
-            if (error) { throw error };
-            var zip = new JSZip(content);
-            var doc=new window.docxtemplater().loadZip(zip);
-            // date
-            var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth() + 1; //January is 0!
-            var yyyy = today.getFullYear();
-            if (dd < 10) {
-              dd = '0' + dd;
-            }
-            if (mm < 10) {
-              mm = '0' + mm;
-            }
-            var today = dd + '/' + mm + '/' + yyyy;
-
-            doc.setData({
-              <?php
-              if ($formres2['student_response_form_id'] != null) { ?>
-                formNum: <?php echo $formres2['student_response_form_id'] ?>,
-              <?php }
-              else { ?>
-                formNum: 1,
-              <?php } ?>
-              firstIDO: "<?php echo $idores['first_name'] ?>",
-              lastIDO: "<?php echo $idores['last_name'] ?>",
-              firstComplainant: "<?php echo $nameres['first_name'] ?>",
-              lastComplainant: "<?php echo $nameres['last_name'] ?>",
-              nature: "<?php echo $caseres['description'] ?>",
-              section: '2.1??',
-              date: today,
-              dateApp: "<?php echo $caseres['date_filed'] ?>",
-              term: document.getElementById("term2").value,
-              year: document.getElementById("schoolyr2").value,
-              admission: document.getElementById("admissionType2").value,
-              letter: document.getElementById("letter2").value,
-              firstStudent: "<?php echo $caseres['first_name'] ?>",
-              lastStudent: "<?php echo $caseres['last_name'] ?>",
-              yearLvl: "<?php echo $studentres['year_level'] ?>",
-              idn: "<?php echo $nameres['user_id'] ?>",
-              college: "<?php echo $nameres['description'] ?>",
-              degree: "<?php echo $studentres['degree'] ?>"
-
-            });
-
-            try {
-                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                doc.render();
-            }
-
-            catch (error) {
-                var e = {
-                    message: error.message,
-                    name: error.name,
-                    stack: error.stack,
-                    properties: error.properties,
-                }
-                console.log(JSON.stringify({error: e}));
-                // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                throw error;
-            }
-
-            var out=doc.getZip().generate({
-                type:"blob",
-                mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            }); //Output the document using Data-URI
-            saveAs(out,"output.docx");
-
-          });
-          studResponse();
         }
         else {
           $("#alertModal").modal("show");
@@ -616,13 +616,13 @@ if (!isset($_GET['cn']))
 
     $('#admissionType').on('change', function() {
       var option = $("option:selected", this);
-      if(this.value == "Full Admission") {
+      if(this.value == "1") {
         $('#letterlabel').text("Please write an apology and admission letter");
       }
-      else if(this.value == "Partial Admission/Denial") {
+      else if(this.value == "2") {
         $('#letterlabel').text("Please write an apology and explanation letter");
       }
-      else if(this.value == "Full Denial") {
+      else if(this.value == "3") {
         $('#letterlabel').text("Please write an explanation");
       }
       $('#letterarea').show();
@@ -630,21 +630,16 @@ if (!isset($_GET['cn']))
 
     $('#admissionType2').on('change', function() {
       var option = $("option:selected", this);
-      if(this.value == "Full Admission") {
+      if(this.value == "1") {
         $('#letterlabel2').text("Please write an apology and admission letter");
       }
-      else if(this.value == "Partial Admission/Denial") {
+      else if(this.value == "2") {
         $('#letterlabel2').text("Please write an apology and explanation letter");
       }
-      else if(this.value == "Full Denial") {
+      else if(this.value == "3") {
         $('#letterlabel2').text("Please write an explanation");
       }
     });
-	  
-	$('#modalOK').click(function() {
-
-        $("#alertModal").modal("hide");
-		
 
     function studResponse() {
       $.ajax({
@@ -661,15 +656,13 @@ if (!isset($_GET['cn']))
           },
           success: function(response) {
             $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+            $('#form').attr('disabled',true);
             $("#alertModal").modal("show");
           //alert("Student Response Form sent to your email! Check your email to sign the form.");
           }
       });
     }
   });
-  });
-
-
 
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
@@ -694,13 +687,14 @@ if (!isset($_GET['cn']))
     if($row['REMARKS_ID'] > 4) { ?>
       $("#commentarea").hide();
   <?php }
+    if($row['REMARKS_ID'] > 10) { ?>
+      //$("#form").show();
+      //$("#form").text("Send Parent Letter");
+  <?php }
     if($row['REMARKS_ID'] > 11) { ?>
       $("#appeal").attr('disabled', true);
       $("#form").attr('disabled', true);
-  <?php }
-    if($row['REMARKS_ID'] == 12) { ?>
       $("#form").show();
-      $("#form").text("Send Parent Letter");
   <?php }
     if($row['REMARKS_ID'] == 14) { ?>
       $("#appeal").hide();
@@ -738,9 +732,9 @@ if (!isset($_GET['cn']))
           <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
           <select id="admissionType" class="form-control">
             <option value="" disabled selected>Select Type</option>
-            <option value="Full Admission">Full Admission (Apology/Admission)</option>
-            <option value="Partial Admission/Denial">Partial Admission (Apology/Explanation)</option>
-            <option value="Full Denial">Full Denial (Explanation)</option>
+            <option value="1">Full Admission (Apology/Admission)</option>
+            <option value="2">Partial Admission (Apology/Explanation)</option>
+            <option value="3">Full Denial (Explanation)</option>
           </select>
           <br>
           <div id="letterarea" class="form-group" hidden>
@@ -801,18 +795,18 @@ if (!isset($_GET['cn']))
             <option value="<?php echo $rowForm['description']; ?>"><?php echo $rowForm['description']; ?></option>
             <?php
               if ($rowForm['admission_type_id'] == 1) { ?>
-                <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
-                <option value="Full Denial">Full Denial (Explanation)</option>
+                <option value="2">Partial Admission/Denial (Apology/Explanation)</option>
+                <option value="3">Full Denial (Explanation)</option>
               <?php }
 
               else if ($rowForm['admission_type_id'] == 2) {?>
-                <option value="Full Admission">Full Admission (Apology/Admission)</option>
-                <option value="Full Denial">Full Denial (Explanation)</option>
+                <option value="1">Full Admission (Apology/Admission)</option>
+                <option value="3">Full Denial (Explanation)</option>
               <?php }
 
               else { ?>
-                <option value="Full Admission">Full Admission (Apology/Admission)</option>
-                <option value="Partial Admission/Denial">Partial Admission/Denial (Apology/Explanation)</option>
+                <option value="1">Full Admission (Apology/Admission)</option>
+                <option value="2">Partial Admission/Denial (Apology/Explanation)</option>
               <?php } ?>
           </select>
           <br>

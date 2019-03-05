@@ -44,7 +44,7 @@ if (!isset($_GET['cn']))
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- FOR SEARCHABLE DROP -->
+    <!-- FOR SEARCHABLE DROP-->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
@@ -112,9 +112,6 @@ if (!isset($_GET['cn']))
     $resultOffences=mysqli_query($dbc,$query2);
     if(!$resultOffences){
       echo mysqli_error($dbc);
-    }
-    else{
-      $rowOffenses=mysqli_fetch_array($resultOffences,MYSQLI_ASSOC);
     }
 
     // gets other user information
@@ -190,9 +187,9 @@ if (!isset($_GET['cn']))
         <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
       </div>
 
-      <div class="form-group" id="penaltyarea">
+      <div class="form-group" id="penaltyarea" hidden>
         <label>Penalty</label>
-        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3">1 month suspension</textarea>
+        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
       </div>
 
       <div id="viewevidence">
@@ -204,42 +201,38 @@ if (!isset($_GET['cn']))
 
       <div class="row">
         <div class="col-sm-6">
-          <button type="submit" id="dismiss" name="dismiss" class="btn btn-danger">Dismiss</button>
-          <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" id="forward" name="submit" class="btn btn-success">Forward Discipline Case Referral Form</button>
         </div>
       </div>
 
       <br><br><br>
 
       <?php
-      //Removes 'new' badge and reduces notif's count
-      $query2='SELECT 		AU.CASE_ID AS CASE_ID,
-                          AU.IF_NEW AS IF_NEW
-              FROM 		    AULC_CASES AU
-              WHERE   	  AU.CASE_ID = "'.$_GET['cn'].'"';
-      $result2=mysqli_query($dbc,$query2);
-      if(!$result2){
-        echo mysqli_error($dbc);
-      }
-      else{
-        $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
-        if($row2['IF_NEW']){
-          $query2='UPDATE AULC_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
-          $result2=mysqli_query($dbc,$query2);
-          if(!$result2){
-            echo mysqli_error($dbc);
+        //Removes 'new' badge and reduces notif's count
+        $query2='SELECT 		AU.CASE_ID AS CASE_ID,
+                            AU.IF_NEW AS IF_NEW
+                FROM 		    AULC_CASES AU
+                WHERE   	  AU.CASE_ID = "'.$_GET['cn'].'"';
+        $result2=mysqli_query($dbc,$query2);
+        if(!$result2){
+          echo mysqli_error($dbc);
+        }
+        else{
+          $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+          if($row2['IF_NEW']){
+            $query2='UPDATE AULC_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+            $result2=mysqli_query($dbc,$query2);
+            if(!$result2){
+              echo mysqli_error($dbc);
+            }
           }
         }
-      }
 
         include 'aulc-notif-queries.php';
-		include 'aulc-form-queries.php';
+		    include 'aulc-form-queries.php';
       ?>
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -265,6 +258,8 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
     <?php include 'aulc-notif-scripts.php' ?>
 
+    $('.chosen-select').chosen({width: '100%'});
+
     $('#dismiss').click(function() {
       $.ajax({
           url: '../ajax/aulc-dismiss-case.php',
@@ -283,7 +278,8 @@ if (!isset($_GET['cn']))
       });
     });
 
-    $('#submit').click(function() {
+    $('#forward').click(function() {
+      alert($('input[name="caseDecision"]').val());
       $("#formModal").modal("show");
     });
 
@@ -293,7 +289,7 @@ if (!isset($_GET['cn']))
         JSZipUtils.getBinaryContent(url,callback);
     }
 
-    $('#forward').click(function() {
+    $('').click(function() {
 
       // REFERRAL FORM
 
@@ -375,7 +371,7 @@ if (!isset($_GET['cn']))
         }); //Output the document using Data-URI
         saveAs(out,"output.docx");
       });
-		
+
       $.ajax({
           url: '../ajax/aulc-forward-case.php',
           type: 'POST',
@@ -391,67 +387,152 @@ if (!isset($_GET['cn']))
             $("#alertModal").modal("show");
           }
       });
-		
     });
 
-    $("#caseDecision").click(function() {
+  	$('#submit').click(function() {
+      var ids = ['input[name="caseDecision"]','#details','#ido'];
+      var isEmpty = true;
 
-      if (document.getElementById('caseDecision').value == "File Case") {
-        document.getElementById('dispOffense').style.display= 'inline';
+      if($('#cheat').is(":visible")){
+        ids.push('#cheat-type');
+      }
+      else{
+        if($.inArray('#cheat-type', ids) !== -1){
+          ids.splice(ids.indexOf('#cheat-type'),1);
+        }
       }
 
-    });
-
-    $("#violationDes").click(function() {
-
-      if (document.getElementById('violationDes').value == "Yes") {
-        document.getElementById('changeViolation').style.display= 'inline';
+      for(var i = 0; i < ids.length; ++i ){
+        if($.trim($(ids[i]).val()).length == 0){
+          isEmpty = false;
+        }
       }
 
+      $.ajax({
+          url: '../ajax/aulc-forward-case.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+          },
+          success: function(msg) {
+            $('#message').text('Case forwarded to ULC successfully!');
+            $("#penalty").attr('readonly', true);
+            $("#submit").attr('disabled', true).text('Submitted');
+            $("#dismiss").attr('disabled', true);
+
+            $("#alertModal").modal("show");
+          }
+      });
+  	});
+
+    function helloEndorse() {
+      //HELLOSIGN API
+  		$.ajax({
+  		  url: '../ajax/faculty-hellosign.php',
+  		  type: 'POST',
+  		  data: {
+  					title : "Discipline Case Referral Form",
+  					subject : "Discipline Case Referral Form Document Signature",
+  					message : "Please do sign this document.",
+  					fname : "<?php echo $directorres['first_name'] ?>",
+  					lname : "<?php echo $directorres['last_name'] ?>",
+  					email : "<?php echo $directorres['email'] ?>",
+  					filename : $('#inputfile').val()
+  				},
+  				success: function(response) {
+  					alert("Discipline Case Referral Form sent to SDFO Director!");
+  				}
+  		});
+  		//HELLOSIGN API
+    }
+
+    $('input[name="caseDecision"]').click(function(){
+      if ($(this).val() == "File Case") {
+        $('#dispOffense').show();
+      }
+      else {
+        $('#dispOffense').hide();
+        $('#changeViolation').hide();
+      }
     });
-	
-	$('#modalOK').click(function() {
-		$("#alertModal").modal("hide");
-		
-		//HELLOSIGN API
-		$.ajax({
-		  url: '../ajax/faculty-hellosign.php',
-		  type: 'POST',
-		  data: {
-					title : "Discipline Case Referral Form",
-					subject : "Discipline Case Referral Form Document Signature",
-					message : "Please do sign this document.",
-					fname : "<?php echo $directorres['first_name'] ?>",
-					lname : "<?php echo $directorres['last_name'] ?>",
-					email : "<?php echo $directorres['email'] ?>",
-					filename : $('#inputfile').val()
-				},
-				success: function(response) {
-					alert("Discipline Case Referral Form sent to SDFO Director!");
-				}
-		});
-		//HELLOSIGN API
-	});
+
+    $('input[name="violationDes"]').click(function(){
+      if ($(this).val() == "Yes") {
+        $('#changeViolation').show();
+      }
+      else {
+        $('#changeViolation').hide();
+      }
+    });
   });
 
   <?php
+    if($row['PENALTY_DESC'] != null){ ?>
+      $("#penaltyarea").show();
+  <?php }
     if($row['REMARKS_ID'] == 7){ ?>
       $("#penalty").attr('readonly', true);
       $("#submit").attr('disabled', true);
-      $("#dismiss").attr('disabled', true).text('Dismissed');
   <?php }
     if($row['REMARKS_ID'] > 7){ ?>
-      $("#penalty").attr('readonly', true).val('<?php echo $row['PENALTY_DESC']; ?>');
       $("#submit").attr('disabled', true).text('Submitted');
-      $("#dismiss").attr('disabled', true);
   <?php }
     if($row['REMARKS_ID'] == 10 or $row['REMARKS_ID'] == 11){ ?>
-      $("#penalty").attr('readonly', true);
       $("#submit").hide();
-      $("#dismiss").hide();
   <?php } ?>
 
   </script>
+
+  <!-- Form Modal -->
+  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Associate University Legal Counsel Remarks</b></h4>
+        </div>
+
+        <div class="modal-body">
+
+          <label>Decision <span style="font-weight:normal; color:red;"> *</span></label>&nbsp;&nbsp;&nbsp;
+          <input type ="radio" name="caseDecision" id = "caseDecision" value = "File Case">&nbsp;&nbsp;File Case</input>&nbsp;&nbsp;&nbsp;
+          <input type ="radio" name="caseDecision" id = "caseDecision" value = "Dismiss Case">&nbsp;&nbsp;Dismiss Case</input><br><br>
+
+          <label>Reasons <span style="font-weight:normal; color:red;"> *</span></label>
+          <textarea id="reasonCase" style="height: 100px;" class="studentID form-control" placeholder="Enter Reason"></textarea><br>
+
+          <label>Remarks</label>
+          <textarea id="aulcRemarks" style="height: 100px;" class="studentID form-control" placeholder="Enter Remarks"></textarea><br>
+
+          <div id = "dispOffense" hidden>
+            <label>Offense: &nbsp;&nbsp; </label><?php echo $row['OFFENSE_DESCRIPTION']; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>Change offense? <span style="font-weight:normal; color:red;"> *</span></label>&nbsp;&nbsp;&nbsp;
+            <input type = "radio" name="violationDes" id = "violationDes" value = "Yes">&nbsp;&nbsp;Yes</input>&nbsp;&nbsp;&nbsp;
+            <input type = "radio" name="violationDes" id = "violationDes" value = "No">&nbsp;&nbsp;No</input><br><br>
+          </div>
+
+          <div id="changeViolation" class="form-group" style='width: 300px;' hidden>
+            <label>Select New Offense <span style="font-weight:normal; color:red;">*</span></label><br>
+            <select id="offenseSelect" style='width: 300px;' class="chosen-select">
+              <option value="" disabled selected>Select Offense</option>
+              <?php
+              while($rowOffenses=mysqli_fetch_array($resultOffences,MYSQLI_ASSOC)){
+                echo
+                  "<option value=\"{$rowOffenses['OFFENSE_ID']}\">{$rowOffenses['DESCRIPTION']}</option>";
+              }
+              ?>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" id="submit" class="btn btn-primary" data-dismiss="modal">Submit</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -465,74 +546,10 @@ if (!isset($_GET['cn']))
           <p id="message"></message>
         </div>
         <div class="modal-footer">
-          <button type="button" id = "modalOK" class="btn btn-default">Ok</button>
+          <button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Form Modal -->
-  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Remarks</b></h4>
-        </div>
-
-        <div class="modal-body">
-
-          <b>Decision:<span style="font-weight:normal; color:red;"> *</span></b>
-          <input type = "radio" name="caseDecision" id = "caseDecision" value = "File Case">  File Case</input>
-          <input type = "radio" name="caseDecision" id = "caseDecision" value = "Dismiss Case">  Dismiss Case</input><br><br>
-
-          <b>Reasons: <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span><span style="font-weight:normal; color:red;"> *</span></b>
-          <textarea id="reasonCase" style="height: 100px;" class="studentID form-control" placeholder="Enter Reason"></textarea><br>
-
-          <div id = "dispOffense" style = "display: none;">
-            <b>Offense:</b><?php echo "  " . $row['OFFENSE_DESCRIPTION']; ?><br>
-            Change offense?<span style="font-weight:normal; color:red;"> *</span>
-            <input type = "radio" name="violationDes" id = "violationDes" value = "Yes">  Yes</input>
-            <input type = "radio" name="violationDes" id = "violationDes" value = "No">  No</input><br><br>
-          </div>
-
-          <div id = "changeViolation" style ="display: none;">
-            <div class="form-group" style='width: 300px;'>
-              <label>Select New Offense: <span style="font-weight:normal; color:red;">*</span></label>
-              <select id="offenseSelect" class="form-control">
-                <option value="" disabled selected>Select Offense</option>
-                <?php
-                while($rowOffenses=mysqli_fetch_array($resultOffences,MYSQLI_ASSOC)){
-                  echo
-                    "<option value=\"{$rowOffenses['DESCRIPTION']}\">{$rowOffenses['DESCRIPTION']}</option>";
-                }
-                ?>
-              </select>
-            </div>
-          </div>
-
-          <b>Nature of Proceedings:<span style="font-weight:normal; color:red;"> *</span></b>
-          <select id="proceedingType" class="form-control">
-            <option value="" disabled selected>Select Type</option>
-            <option value="Formal Hearing">Formal Hearing</option>
-            <option value="Summary Proceedings">Summary Proceedings</option>
-            <option value="University Panel for Case Conference">University Panel for Case Conference</option>
-            <option value="Case Conference with DO Director">Case Conference with DO Director</option>
-          </select>
-          <br>
-
-          <b>Remarks: </b>
-          <textarea id="remark" style="height: 100px;" class="studentID form-control" placeholder="Enter Remarks"></textarea><br>
-
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" id = "forward" class="btn btn-primary" data-dismiss="modal">Submit</button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
 </body>

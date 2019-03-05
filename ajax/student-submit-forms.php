@@ -8,27 +8,10 @@
     echo mysqli_error($dbc);
   }
 
-  if ($_POST['admission'] == "Full Admission") {
-    $query="UPDATE CASES SET ADMISSION_TYPE_ID=1 WHERE CASE_ID = {$_POST['caseID']}";
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
-      echo mysqli_error($dbc);
-    }
-  }
-  else if ($_POST['admission'] == "Full Denial") {
-    $query="UPDATE CASES SET ADMISSION_TYPE_ID=3 WHERE CASE_ID = {$_POST['caseID']}";
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
-      echo mysqli_error($dbc);
-    }
-  }
-
-  else {
-    $query="UPDATE CASES SET ADMISSION_TYPE_ID=2 WHERE CASE_ID = {$_POST['caseID']}";
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
-      echo mysqli_error($dbc);
-    }
+  $query="UPDATE CASES SET ADMISSION_TYPE_ID={$_POST['admission']} WHERE CASE_ID = {$_POST['caseID']}";
+  $result=mysqli_query($dbc,$query);
+  if(!$result){
+    echo mysqli_error($dbc);
   }
 
   if ($_POST['remarks'] == 4) { // IF FOR REVIEWW

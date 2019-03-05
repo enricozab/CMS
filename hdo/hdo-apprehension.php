@@ -73,7 +73,7 @@
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
                       <label>Student <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                      <input id="studentID" name="studentID" value="11530022" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
@@ -109,15 +109,15 @@
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
+                      <input id="complainantID" value="20171234" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="location" class="form-control">
+                      <input id="location" value="G201" class="form-control">
                     </div>
                     <div class="form-group">
                       <label>Summary of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <textarea id="details" style="width:600px;" class="form-control" rows="3"></textarea>
+                      <textarea id="details" style="width:600px;" class="form-control" rows="3">MAMAMO</textarea>
   				          </div>
                     <?php
                       $query2='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 4';
@@ -263,6 +263,7 @@
           });
           $('#message').text('Submitted successfully!');
           $('#form')[0].reset();
+          $(".chosen-select").trigger("chosen:updated");
         }
 
         $("#alertModal").modal("show");

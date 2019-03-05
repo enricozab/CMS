@@ -100,11 +100,11 @@ if (!isset($_GET['cn']))
     }
 
     $CollegeQ = 'SELECT *
-                   FROM CASES C
-              LEFT JOIN USERS U ON U.USER_ID = C.REPORTED_STUDENT_ID
-              LEFT JOIN REF_USER_OFFICE R ON R.OFFICE_ID = U.OFFICE_ID
-              LEFT JOIN REF_STUDENTS RS ON RS.STUDENT_ID = C.REPORTED_STUDENT_ID
-                  WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+                          FROM CASES C
+                 JOIN     USERS U ON U.USER_ID = C.REPORTED_STUDENT_ID
+                 JOIN     REF_USER_OFFICE R ON R.OFFICE_ID = U.OFFICE_ID
+                 JOIN     REF_STUDENTS RS ON RS.STUDENT_ID = C.REPORTED_STUDENT_ID
+                 WHERE    C.CASE_ID = "'.$_GET['cn'].'"';
     $CollegeQRes=mysqli_query($dbc,$CollegeQ);
     if(!$CollegeQRes){
       echo mysqli_error($dbc);
@@ -197,6 +197,30 @@ if (!isset($_GET['cn']))
           </select>
           <textarea id="finpenalty" style="width:600px;" name="finpenalty" class="form-control" rows="3" hidden readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
         </div>
+        <br>
+        <div id="proceedingsList" class="form-group" hidden>
+          <label>Nature of Proceedings</label>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="pl" id="1" value="1" checked>Formal Hearing
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="pl" id="2" value="2">Summary Proceeding
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="pl" id="3" value="3">University Panel for Case Conference
+              </label>
+          </div>
+          <div class="radio">
+              <label>
+                  <input type="radio" name="pl" id="4" value="4">Case Conference with DO Director
+              </label>
+          </div>
+      </div>
         <br><br><br>
         <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
         <br><br><br><br><br>
@@ -277,12 +301,67 @@ if (!isset($_GET['cn']))
               url: '../ajax/director-close-case.php',
               type: 'POST',
               data: {
-                  caseID: "<?php echo $_GET['cn']; ?>",
+                  caseID: <?php echo $_GET['cn']; ?>,
                   penalty: $('#penalty').val()
               },
               success: function(response) {
-                var pen = response;
-                feedbackFile(pen);
+                loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
+                  if (error) { throw error };
+                  var zip = new JSZip(content);
+                  var doc=new window.docxtemplater().loadZip(zip);
+                  // date
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth() + 1; //January is 0!
+                  var yyyy = today.getFullYear();
+                  if (dd < 10) {
+                    dd = '0' + dd;
+                  }
+                  if (mm < 10) {
+                    mm = '0' + mm;
+                  }
+                  var today = dd + '/' + mm + '/' + yyyy;
+
+                  doc.setData({
+
+                    date: today,
+                    name: "<?php echo $row['STUDENT']; ?>",
+                    idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+                    degree: "<?php echo $CollegeQRow['degree']; ?>",
+                    college: "<?php echo $CollegeQRow['description']; ?>",
+                    nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+                    ido: "<?php echo $row['HANDLED_BY']; ?>",
+                    dRemark: response
+
+                  });
+
+                  try {
+                      // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                      doc.render();
+                  }
+
+                  catch (error) {
+                      var e = {
+                          message: error.message,
+                          name: error.name,
+                          stack: error.stack,
+                          properties: error.properties,
+                      }
+                      console.log(JSON.stringify({error: e}));
+                      // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                      throw error;
+                  }
+
+                  var out=doc.getZip().generate({
+                      type:"blob",
+                      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                  }); //Output the document using Data-URI
+                  saveAs(out,"output.docx");
+                });
+                $('#penalty').attr("disabled", true);
+                $("#endorse").attr('disabled', true).text("Submitted");
+                $('#message').text('Case closed. Discipline Case Feedback Form has been sent to the student.');
+                $("#alertModal").modal("show");
               }
           });
         }
@@ -292,15 +371,76 @@ if (!isset($_GET['cn']))
               url: '../ajax/director-endorse-case.php',
               type: 'POST',
               data: {
-                  caseID: "<?php echo $_GET['cn']; ?>",
-                  penalty: $('#penalty').val()
+                  caseID: <?php echo $_GET['cn']; ?>,
+                  penalty: $('#penalty').val(),
+                  proceeding: $("input:radio[name=pl]:checked").val()
               },
-              success: function(msg) {
+              success: function(response) {
+                loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
+                  if (error) { throw error };
+                  var zip = new JSZip(content);
+                  var doc=new window.docxtemplater().loadZip(zip);
+                  // date
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth() + 1; //January is 0!
+                  var yyyy = today.getFullYear();
+                  if (dd < 10) {
+                    dd = '0' + dd;
+                  }
+                  if (mm < 10) {
+                    mm = '0' + mm;
+                  }
+                  var today = dd + '/' + mm + '/' + yyyy;
+
+                  doc.setData({
+
+                    date: today,
+                    casenum: <?php echo $_GET['cn']; ?>,
+                    name: "<?php echo $row['STUDENT']; ?>",
+                    idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+                    college: "<?php echo $CollegeQRow['description']; ?>",
+                    degree: "<?php echo $CollegeQRow['degree']; ?>",
+                    violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+                    complainant: "<?php echo $row['COMPLAINANT']; ?>",
+                    nature: response,
+                    decision: "",
+                    reason: "",
+                    remark: "",
+                    changes: "",
+                    others: ""
+
+                  });
+
+                  try {
+                      // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                      doc.render();
+                  }
+
+                  catch (error) {
+                      var e = {
+                          message: error.message,
+                          name: error.name,
+                          stack: error.stack,
+                          properties: error.properties,
+                      }
+                      console.log(JSON.stringify({error: e}));
+                      // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                      throw error;
+                  }
+
+                  var out=doc.getZip().generate({
+                      type:"blob",
+                      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                  }); //Output the document using Data-URI
+                  saveAs(out,"output.docx");
+                });
+                $("input[type=radio]").attr('disabled', true);
+                $('#penalty').attr("disabled", true);
                 $("#endorse").attr('disabled', true).text("Endorsed");
                 $('#message').text('Case is endorsed to AULC.');
                 $("#alertModal").modal("show");
                 //referralFile(pen);
-                //$("#alertEndorse").modal("show");
               }
           });
           /*$.ajax({
@@ -331,82 +471,25 @@ if (!isset($_GET['cn']))
         JSZipUtils.getBinaryContent(url,callback);
     }
 
-    function feedbackFile(pen) {
-      loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
-        if (error) { throw error };
-        var zip = new JSZip(content);
-        var doc=new window.docxtemplater().loadZip(zip);
-        // date
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-        var yyyy = today.getFullYear();
-        if (dd < 10) {
-          dd = '0' + dd;
-        }
-        if (mm < 10) {
-          mm = '0' + mm;
-        }
-        var today = dd + '/' + mm + '/' + yyyy;
-
-        doc.setData({
-
-          date: today,
-          name: "<?php echo $row['STUDENT']; ?>",
-          idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
-          degree: "<?php echo $CollegeQRow['degree']; ?>",
-          college: "<?php echo $CollegeQRow['description']; ?>",
-          nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
-          ido: "<?php echo $row['HANDLED_BY']; ?>",
-          dRemark: pen
-
-        });
-
-        try {
-            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render();
-        }
-
-        catch (error) {
-            var e = {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties,
-            }
-            console.log(JSON.stringify({error: e}));
-            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-            throw error;
-        }
-
-        var out=doc.getZip().generate({
-            type:"blob",
-            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        }); //Output the document using Data-URI
-        saveAs(out,"output.docx");
-      });
-      $('#penalty').attr("disabled", true);
-      $("#endorse").attr('disabled', true).text("Submitted");
-      $('#message').text('Case closed. Discipline Case Feedback Form has been sent to the student.');
-      $("#alertModal").modal("show");
-    }
-
     $('#penalty').on('change', function() {
       var option = $("option:selected", this);
       if(this.value == 3) {
         $("#endorse").text("Endorse");
+        $("#proceedingsList").show();
       }
       else {
         $("#endorse").text("Submit");
+        $("#proceedingsList").hide();
       }
     });
 
   });
 
   <?php
-    if($row['TYPE'] == "Major" ){ ?>
+    if($row['TYPE'] == "Major"){ ?>
       $("#endorse").text("Endorse");
       $("#penaltyarea").hide();
+      $("#proceedingsList").show();
   <?php }
     if($row['REMARKS_ID'] < 6){ ?>
       $("#finpenalty").hide();
@@ -415,25 +498,12 @@ if (!isset($_GET['cn']))
       $("#endorse").hide();
       $("#penalty").hide();
   <?php }
+    if($row['REMARKS_ID'] > 5 and ($row['PENALTY_ID'] == 3 or $row['TYPE'] == "Major")){ ?>
+      $("#proceedingsList").show();
+      $("input[type=radio]").attr('disabled', true);
+  <?php }
   ?>
   </script>
-
-  <!-- Endorsement Form -->
-  <div class="modal fade" id="alertEndorse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
-        </div>
-        <div class="modal-body">
-          <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="submitFeedback" class="btn btn-default" data-dismiss="modal">Ok</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

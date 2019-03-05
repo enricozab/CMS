@@ -10,9 +10,9 @@
 	  }
 
 		$filename = 'output.docx';
-		
+
 		//CHANGE SOURCEPATH TO YOUR OWN PC'S DOWNLOAD PATH + \\output.docx
-		$sourcepath = 'C:\\Users\\debbiesimon11\\Downloads\\output.docx';
+		$sourcepath = 'C:\\Users\\Enrico Zabayle\\Downloads\\output.docx';
 		$targetpath = getcwd().'\\output.docx';
 
 		rename($sourcepath,$targetpath);
