@@ -138,7 +138,7 @@ $("#create-event").on('click', function(e) {
         success: function(response) {
         	$("#create-event").removeAttr('disabled');
         	alert('Event created with ID : ' + response.event_id);
-					test();
+					replaceURL();
         },
         error: function(response) {
             $("#create-event").removeAttr('disabled');
@@ -147,7 +147,7 @@ $("#create-event").on('click', function(e) {
     });
 });
 
-function test() {
+function replaceURL() {
 	location.replace('google-login.php')
 }
 
