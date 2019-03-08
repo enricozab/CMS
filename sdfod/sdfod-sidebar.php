@@ -55,37 +55,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="sdfod-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="sdfod-active-cases.php">Active</a>
-						</li>
-						<li>
-							<a href="sdfod-closed-cases.php">Closed</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-folder-open  fa-fw"></i> Files<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">File 1</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">Report 1</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="../gmailAPI/index.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="sdfod-home.php"><i class="fa fa-bell fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="sdfod-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>

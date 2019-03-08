@@ -71,6 +71,7 @@
                       <th>Last Update</th>
                       <th>Status</th>
                       <th>Remarks</th>
+                      <th>Graduating?</th>
                   </tr>
               </thead>
               <tbody>
