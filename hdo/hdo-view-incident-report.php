@@ -280,9 +280,9 @@ if (!isset($_GET['irn']))
             url: '../ajax/users-send-email.php',
             type: 'POST',
             data: {
-                messageSubject: "[CMS] Case opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?> " + "on" + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>",
+                messageSubject: "[CMS] Case opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + "on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>",
                 toID: to,
-                messageContent: "A new case has been opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + " on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>"
+                messageContent: "A new case has been opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + "on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>"
             },
             success: function(msg) {
               //resets the pages content - takes out all inserted values

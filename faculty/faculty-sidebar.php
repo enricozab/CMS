@@ -56,7 +56,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="faculty-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
+					<a href="faculty-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="faculty-report-student.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>

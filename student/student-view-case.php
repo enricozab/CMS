@@ -115,19 +115,6 @@ if (!isset($_GET['cn']))
     else {
        $rowForm = mysqli_fetch_array($resultForm,MYSQLI_ASSOC);
     }
-
-    $case = 'SELECT 	*
-               FROM		CASES
-              WHERE		CASE_ID = "'.$_GET['cn'].'"';
-    $caseRes = mysqli_query($dbc,$case);
-
-    if(!$caseRes) {
-       echo mysqli_error($dbc);
-    }
-
-    else {
-       $caseResRow = mysqli_fetch_array($caseRes,MYSQLI_ASSOC);
-    }
   ?>
 
     <div id="wrapper">
@@ -266,106 +253,35 @@ if (!isset($_GET['cn']))
       }
 
       else {
-        if (stat != 3) {
-          $("#formModal").modal("show");
-        }
+        $("#formModal").modal("show");
+        //$("#parentModal").modal("show");
+        //parentLetter();
 
-        else {
-          //$("#parentModal").modal("show");
-          //parentLetter();
-        }
       }
 
     });
 
-    <?php include "student-form-queries.php" ?>
-
-    function parentLetter() {
-      loadFile("../templates/template-parent-letter.docx",function(error,content){
-
-        if (error) { throw error };
-        var zip = new JSZip(content);
-        var doc=new window.docxtemplater().loadZip(zip);
-        // date
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-        var yyyy = today.getFullYear();
-        if (dd < 10) {
-          dd = '0' + dd;
-        }
-        if (mm < 10) {
-          mm = '0' + mm;
-        }
-        var today = dd + '/' + mm + '/' + yyyy;
-
-        doc.setData({
-          date: today,
-          idn: "<?php echo $nameres['user_id'] ?>",
-          firstName: "<?php echo $nameres['first_name'] ?>",
-          lastName: "<?php echo $nameres['last_name'] ?>",
-          course: "<?php echo $studentres['degree'] ?>",
-          college: "<?php echo $nameres['description'] ?>",
-          frequency: 1,
-          type: "<?php echo $caseres['type'] ?>",
-          nature: "<?php echo $caseres['description'] ?>",
-          guardian: "<?php echo $studentres['guardian_name'] ?>",
-          contact: "<?php echo $studentres['guardian_contact'] ?>",
-          address: "<?php echo $studentres['address'] ?>"
-
-        });
-
-        try {
-            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render();
-        }
-
-        catch (error) {
-            var e = {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties,
-            }
-            console.log(JSON.stringify({error: e}));
-            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-            throw error;
-        }
-
-        var out=doc.getZip().generate({
-            type:"blob",
-            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        }); //Output the document using Data-URI
-        saveAs(out,"output.docx");
-
-      });
-
-  	  //HELLOSIGN API - Parent Letter
-  	  $.ajax({
-        url: '../ajax/student-hellosign.php',
-        type: 'POST',
-        data: {
-  					title : "Parent Letter",
-  					subject : "Parent Letter Document Signature",
-  					message : "Please do sign this document.",
-					name : "<?php echo $studentres['guardian_name'] ?>",
-  					email : "<?php echo $studentres['guardian_email'] ?>",
-  					filename : $('#inputfile').val(),
-            caseID : <?php echo $_GET['cn']; ?>
-        },
-        success: function(response) {
-          $("#message").text('Parent Letter has been submitted and sent to your email successfully! Check your email to sign the form.');
-          $("#alertModal").modal("show");
-          $("#form").attr('disabled',true);
-					  //alert("Parent Letter sent to your email! Check your email to sign the form.");
-				}
-  		});
-  	  //HELLOSIGN API
-    }
-
     function loadFile(url,callback){
         JSZipUtils.getBinaryContent(url,callback);
     }
+
+    <?php include "student-form-queries.php" ?>
+
+    <?php
+      $countq = 'SELECT 		COUNT(C.CASE_ID) AS CASE_COUNT
+                  FROM		  CASES C
+                  LEFT JOIN	USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                  LEFT JOIN	REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+                  WHERE		  U.USER_ID = "'.$_SESSION['user_id'].'"
+                  AND       RO.TYPE = "'.$row['TYPE'].'"';
+      $countres = mysqli_query($dbc,$countq);
+      if(!$countres){
+        echo mysqli_error($dbc);
+      }
+      else{
+        $countrow = mysqli_fetch_array($countres,MYSQLI_ASSOC);
+      }
+    ?>
 
     $("#submitForm").click(function(){
       var ids = ['#schoolyr','#term','#letter','#admissionType'];
@@ -378,12 +294,12 @@ if (!isset($_GET['cn']))
       }
 
       if(isEmpty){
-        console.log("hello");
         $.ajax({
             url: '../ajax/student-submit-forms.php',
             type: 'POST',
             data: {
                 caseID: <?php echo $_GET['cn']; ?>,
+                remarks: <?php echo $row['REMARKS_ID']; ?>,
                 admission: document.getElementById("admissionType").value,
                 term: document.getElementById("term").value,
                 schoolyr: document.getElementById("schoolyr").value,
@@ -470,11 +386,19 @@ if (!isset($_GET['cn']))
                 saveAs(out,"output.docx");
 
                 });
-                studResponse();
+                $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+                <?php
+                  if($countrow['CASE_COUNT'] > 1) { ?>
+                    $("#parentModal").modal("show");
+                <?php }
+                  else { ?>
+                    $("#alertModal").modal("show");
+                <?php }
+                ?>
             }
         });
       }
-      else {
+      else{
         $("#alertModal").modal("show");
       }
     });
@@ -495,7 +419,7 @@ if (!isset($_GET['cn']))
               type: 'POST',
               data: {
                   caseID: <?php echo $_GET['cn']; ?>,
-                  remarks: <?php echo $caseResRow['remarks_id']; ?>,
+                  remarks: <?php echo $row['REMARKS_ID']; ?>,
                   admission: document.getElementById("admissionType2").value,
                   term: document.getElementById("term2").value,
                   schoolyr: document.getElementById("schoolyr2").value,
@@ -575,16 +499,141 @@ if (!isset($_GET['cn']))
                     saveAs(out,"output.docx");
 
                   });
-                  studResponse();
+                  $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
               }
           });
         }
-        else {
-          $("#alertModal").modal("show");
-        }
+        $("#alertModal").modal("show");
     });
 
-    <?php include 'student-notif-scripts.php' ?>
+    function sendStudResponseFirst() {
+      $.ajax({
+          url: '../ajax/users-hellosign.php',
+          type: 'POST',
+          data: {
+              title : "Student Response Form",
+              subject : "Student Response Form Document Signature",
+              message : "Please do sign this document.",
+                        fname : "<?php echo $nameres['first_name'] ?>",
+              lname : "<?php echo $nameres['last_name'] ?>",
+              email : "<?php echo $nameres['email'] ?>",
+              filename : $('#inputfile').val()
+          },
+          success: function(response) {
+            parentLetter()
+            $("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
+            $("#alertModal").modal("show");
+          }
+      });
+    }
+
+    function parentLetter() {
+      loadFile("../templates/template-parent-letter.docx",function(error,content){
+
+        if (error) { throw error };
+        var zip = new JSZip(content);
+        var doc=new window.docxtemplater().loadZip(zip);
+        // date
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+          dd = '0' + dd;
+        }
+        if (mm < 10) {
+          mm = '0' + mm;
+        }
+        var today = dd + '/' + mm + '/' + yyyy;
+
+        doc.setData({
+          date: today,
+          idn: "<?php echo $nameres['user_id'] ?>",
+          firstName: "<?php echo $nameres['first_name'] ?>",
+          lastName: "<?php echo $nameres['last_name'] ?>",
+          course: "<?php echo $studentres['degree'] ?>",
+          college: "<?php echo $nameres['description'] ?>",
+          frequency: <?php echo $countrow['CASE_COUNT'] ?>,
+          type: "<?php echo $caseres['type'] ?>",
+          nature: "<?php echo $caseres['description'] ?>",
+          guardian: "<?php echo $studentres['guardian_name'] ?>",
+          contact: "<?php echo $studentres['guardian_contact'] ?>",
+          address: "<?php echo $studentres['address'] ?>"
+
+        });
+
+        try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+        }
+
+        catch (error) {
+            var e = {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+                properties: error.properties,
+            }
+            console.log(JSON.stringify({error: e}));
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+            throw error;
+        }
+
+        var out=doc.getZip().generate({
+            type:"blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }); //Output the document using Data-URI
+        saveAs(out,"output.docx");
+      });
+    }
+
+    $("#submitParent").click(function(){
+      sendStudResponseFirst();
+    });
+
+    $('#alertModal').on('click', function() {
+
+      if($('#message').text() == "Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.") {
+        $.ajax({
+            url: '../ajax/users-hellosign.php',
+            type: 'POST',
+            data: {
+                title : "Student Response Form",
+                subject : "Student Response Form Document Signature",
+                message : "Please do sign this document.",
+                fname : "<?php echo $nameres['first_name'] ?>",
+                lname : "<?php echo $nameres['last_name'] ?>",
+                email : "<?php echo $nameres['email'] ?>",
+                filename : $('#inputfile').val()
+            },
+            success: function(response) {
+              $('#form').attr('disabled',true);
+            }
+        });
+      }
+      else if($('#message').text() == "Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.") {
+        $.ajax({
+          url: '../ajax/users-hellosign.php',
+          type: 'POST',
+          data: {
+    					title : "Parent Letter",
+    					subject : "Parent Letter Document Signature",
+    					message : "Please do sign this document.",
+  					  name : "<?php echo $studentres['guardian_name'] ?>",
+    					email : "enrico_zabayle@dlsu.edu.ph",
+    					filename : $('#inputfile').val(),
+              caseID : <?php echo $_GET['cn']; ?>
+          },
+          success: function(response) {
+            <!-- <?php echo $studentres['guardian_email'] ?> -->
+            $("#form").attr('disabled',true);
+  				}
+    		});
+      }
+      else{
+        $('#alertModal').modal("hide");
+      }
+    });
 
     $("#appendevidence").click(function(){
       $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
@@ -640,29 +689,9 @@ if (!isset($_GET['cn']))
         $('#letterlabel2').text("Please write an explanation");
       }
     });
-
-    function studResponse() {
-      $.ajax({
-          url: '../ajax/student-hellosign.php',
-          type: 'POST',
-          data: {
-              title : "Student Response Form",
-              subject : "Student Response Form Document Signature",
-              message : "Please do sign this document.",
-                        fname : "<?php echo $nameres['first_name'] ?>",
-              lname : "<?php echo $nameres['last_name'] ?>",
-              email : "<?php echo $nameres['email'] ?>",
-              filename : $('#inputfile').val()
-          },
-          success: function(response) {
-            $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
-            $('#form').attr('disabled',true);
-            $("#alertModal").modal("show");
-          //alert("Student Response Form sent to your email! Check your email to sign the form.");
-          }
-      });
-    }
   });
+
+  <?php include 'student-notif-scripts.php' ?>
 
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
@@ -687,18 +716,8 @@ if (!isset($_GET['cn']))
     if($row['REMARKS_ID'] > 4) { ?>
       $("#commentarea").hide();
   <?php }
-    if($row['REMARKS_ID'] > 10) { ?>
-      //$("#form").show();
-      //$("#form").text("Send Parent Letter");
-  <?php }
     if($row['REMARKS_ID'] > 11) { ?>
       $("#appeal").attr('disabled', true);
-      $("#form").attr('disabled', true);
-      $("#form").show();
-  <?php }
-    if($row['REMARKS_ID'] == 14) { ?>
-      $("#appeal").hide();
-      $("#form").hide();
   <?php } ?>
   </script>
 
@@ -751,7 +770,6 @@ if (!isset($_GET['cn']))
   </div>
 
   <!-- Form Modals w Details -->
-
   <div class="modal fade" id="formModalDetails" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -832,6 +850,52 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
+  <!-- Parent Letter Modal -->
+  <div class="modal fade" id="parentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Parent/Guardian Letter</b></h4>
+        </div>
+        <div class="modal-body">
+
+          <p>Date: <?php echo date("d-m-Y"); ?></p>
+          <br>
+          <p><b>Mr. MICHAEL G. MILLANES</b></p>
+          <p><i>Director</i></p>
+          <p>Student Discipline Formation Office</p>
+          <p>De La Salle University</p>
+          <br>
+          <p>Dear <b>Mr. Millanes</b>:</p>
+          <br>
+          <p>Greetings!</p>
+          <br>
+          <p>Please be informed that my son/daughter, Mr./Ms. <b><?php echo $row["STUDENT"]; ?></b>, taking up
+            <b><?php echo $studentres["degree"]; ?></b> under the <b><?php echo $nameres["description"]; ?></b>
+            with ID No. <b><?php echo $studentres["user_id"]; ?></b> has notified me that he/she incurred his/her
+            <b><?php echo $countrow['CASE_COUNT']; ?></b>; <b><?php echo $caseres["type"]; ?></b> offense on
+            <b><?php echo $caseres["description"]; ?></b>.</p>
+          <br>
+          <p>As his/her parent/guardian, I fully understand the seriousness of my son/daughter’s action/s
+            and believes that the University, through the Student Discipline Formation Office has the right
+            to enforce the necessary corrective measure/s as recommended in the present student handbook
+            Sections 1, 4 and 5.</p>
+          <br>
+          <p>Thank you very much and More Power!</p>
+          <br>
+          <p>Parent’s/Guardian’s Name: <b><?php echo $studentres["guardian_name"]; ?></b></p>
+          <p>Contact Information: <b><?php echo $studentres["guardian_contact"]; ?></b></p>
+          <p>Present Address: <b><?php echo $studentres["address"]; ?></b></p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "submitParent" class="btn btn-primary" data-dismiss="modal">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal -->
   <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -853,3 +917,9 @@ if (!isset($_GET['cn']))
 </body>
 
 </html>
+
+<style>
+
+p{ margin: 0; }
+
+</style>

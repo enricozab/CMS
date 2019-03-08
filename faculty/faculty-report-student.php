@@ -320,7 +320,7 @@
         if($('#message').text() != "Please fill in all the required ( * ) fields!") {
           //HELLOSIGN API
           $.ajax({
-                url: '../ajax/faculty-hellosign.php',
+                url: '../ajax/users-hellosign.php',
                 type: 'POST',
                 data: {
                     title : "Incident Report",
@@ -344,7 +344,7 @@
       function sendIncidentReport() {
         location.href= '<?php echo $login_url; ?>';
         <?php
-          if( isset($_SESSION['access_token']) ) { ?>
+          if(isset($_SESSION['access_token']) ) { ?>
             var emails = ['hdo.cms@gmail.com'];
             sendEmail(emails);
           <?php }
