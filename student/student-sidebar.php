@@ -55,26 +55,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="student-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="activecases.php">Active</a>
-						</li>
-						<li>
-							<a href="closedcases.php">Closed</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-file-text-o fa-fw"></i> Files<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">File 1</a>
-						</li>
-					</ul>
+					<a href="student-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="student-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>

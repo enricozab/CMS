@@ -13,7 +13,8 @@ if( isset($_SESSION["access_token"]) or isset($_SESSION["emailAddress"]) ){
 	if ($_SESSION['user_type_id']==3){
 		header("location: localhost/cms/hdo/hdo-incident-reports.php");
 	}
-}else{
+}
+else{
 	if ($_SESSION['user_type_id']==2){
 		header("location: localhost/cms/faculty/faculty-report-student.php");
 	}
