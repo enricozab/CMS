@@ -61,6 +61,9 @@
 				<li>
 					<a href="faculty-report-student.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>
 				</li>
+				<li>
+					<a href="faculty-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+				</li>
 			</ul>
 		</div>
 		<!-- /.sidebar-collapse -->

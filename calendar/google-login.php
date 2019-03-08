@@ -1,5 +1,5 @@
 <?php
-session_start();
+@session_start();
 
 require_once('google-calendar-api.php');
 require_once('settings.php');
@@ -16,7 +16,25 @@ if(isset($_GET['code'])) {
 		$_SESSION['access_token_calendar'] = $data['access_token'];
 
 		// Redirect to the page where user can create event
-		header('Location: home.php');
+		if ($_SESSION['user_type_id']==1){
+			header('Location: ../student/student-calendar.php');
+		}
+		if ($_SESSION['user_type_id']==3){
+			header('Location: ../hdo/hdo-calendar.php');
+		}
+		if ($_SESSION['user_type_id']==4){
+			header('Location: ../ido/ido-calendar.php');
+		}
+		if ($_SESSION['user_type_id']==6){
+			header('Location: ../aulc/aulc-calendar.php');
+		}
+		if ($_SESSION['user_type_id']==7){
+			header('Location: ../ulc/ulc-calendar.php');
+		}
+		if ($_SESSION['user_type_id']==9){
+			header('Location: ../sdfod/sdfod-calendar.php');
+		}
+		//header('Location: home.php');
 		exit();
 	}
 	catch(Exception $e) {
@@ -30,6 +48,7 @@ if(isset($_GET['code'])) {
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
 <!-- Bootstrap Core CSS -->
 <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -58,7 +77,7 @@ if(isset($_GET['code'])) {
 <?php
 $login_url = 'https://accounts.google.com/o/oauth2/auth?scope=' . urlencode('https://www.googleapis.com/auth/calendar') . '&redirect_uri=' . urlencode(CLIENT_REDIRECT_URL) . '&response_type=code&client_id=' . CLIENT_ID . '&access_type=online';
 ?>
-<button id="login">Login with Google</button>
+<button class="btn btn-primary" id="login">Login with Google</button>
 
 <script>
 $('#login').click(function() {

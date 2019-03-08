@@ -119,7 +119,7 @@
           $_SESSION['last_name']=$row['LAST_NAME'];
           $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
           $_SESSION['phone']=$row['PHONE'];
-          $_SESSION['email']=$email;
+          $_SESSION['user_email']=$email;
 
           if($_SESSION['user_type_id']==1){
             header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/student/student-home.php");
