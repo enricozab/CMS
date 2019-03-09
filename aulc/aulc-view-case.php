@@ -260,26 +260,7 @@ if (!isset($_GET['cn']))
 
     $('.chosen-select').chosen({width: '100%'});
 
-    $('#dismiss').click(function() {
-      $.ajax({
-          url: '../ajax/aulc-dismiss-case.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>
-          },
-          success: function(msg) {
-            $('#message').text('Case returned to IDO successfully!');
-            $("#penalty").attr('readonly', true);
-            $("#submit").attr('disabled', true);
-            $("#dismiss").attr('disabled', true).text('Dismissed');
-
-            $("#alertModal").modal("show");
-          }
-      });
-    });
-
     $('#forward').click(function() {
-      alert($('input[name="caseDecision"]').val());
       $("#formModal").modal("show");
     });
 
@@ -389,16 +370,25 @@ if (!isset($_GET['cn']))
       });
     });
 
-  	$('#submit').click(function() {
-      var ids = ['input[name="caseDecision"]','#details','#ido'];
+  	$('#submitRef').click(function() {
+      var ids = ['input[name="caseDecision"]:checked','#reasonCase','input[name="violationDes"]:checked'];
       var isEmpty = true;
 
-      if($('#cheat').is(":visible")){
-        ids.push('#cheat-type');
+      if($('#dispOffense').is(":visible")){
+        ids.push('#violationDes');
       }
       else{
-        if($.inArray('#cheat-type', ids) !== -1){
-          ids.splice(ids.indexOf('#cheat-type'),1);
+        if($.inArray('#violationDes', ids) !== -1){
+          ids.splice(ids.indexOf('#violationDes'),1);
+        }
+      }
+
+      if($('#changeViolation').is(":visible")){
+        ids.push('#offenseSelect');
+      }
+      else{
+        if($.inArray('#offenseSelect', ids) !== -1){
+          ids.splice(ids.indexOf('#offenseSelect'),1);
         }
       }
 
@@ -408,21 +398,51 @@ if (!isset($_GET['cn']))
         }
       }
 
-      $.ajax({
-          url: '../ajax/aulc-forward-case.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>,
-          },
-          success: function(msg) {
-            $('#message').text('Case forwarded to ULC successfully!');
-            $("#penalty").attr('readonly', true);
-            $("#submit").attr('disabled', true).text('Submitted');
-            $("#dismiss").attr('disabled', true);
+      if(isEmpty) {
+        var changevio = null;
+        if($('#changeViolation').is(":visible")){
+          changevio=$('offenseSelect').val();
+        }
+        if($('input[name="caseDecision"]:checked').val() == "File Case") {
+          alert(changevio);
+          $.ajax({
+              url: '../ajax/aulc-forward-case.php',
+              type: 'POST',
+              data: {
+                  caseID: <?php echo $_GET['cn']; ?>,
+                  decision: $('input[name="caseDecision"]:checked').val(),
+                  reason: $('#reasonCase').val(),
+                  aulc_remarks: $('#aulcRemarks').val(),
+                  changeoff: $('input[name="violationDes"]:checked').val(),
+                  changevio: changevio
+              },
+              success: function(msg) {
+                $('#message').text('Case forwarded to ULC successfully!');
+                $('#forward').attr('disabled', true);
+              }
+          });
+        }
+        else {
+          $.ajax({
+              url: '../ajax/aulc-dismiss-case.php',
+              type: 'POST',
+              data: {
+                  caseID: <?php echo $_GET['cn']; ?>
+              },
+              success: function(msg) {
+                $('#message').text('Case returned to IDO successfully!');
+                $("#penalty").attr('readonly', true);
+                $("#submit").attr('disabled', true);
+                $("#dismiss").attr('disabled', true).text('Dismissed');
 
-            $("#alertModal").modal("show");
-          }
-      });
+                $("#alertModal").modal("show");
+              }
+          });
+        }
+
+
+      }
+      $("#alertModal").modal("show");
   	});
 
     function helloEndorse() {
@@ -457,7 +477,7 @@ if (!isset($_GET['cn']))
     });
 
     $('input[name="violationDes"]').click(function(){
-      if ($(this).val() == "Yes") {
+      if ($(this).val() == 1) {
         $('#changeViolation').show();
       }
       else {
@@ -471,14 +491,10 @@ if (!isset($_GET['cn']))
       $("#penaltyarea").show();
   <?php }
     if($row['REMARKS_ID'] == 7){ ?>
-      $("#penalty").attr('readonly', true);
-      $("#submit").attr('disabled', true);
+      $("#forward").hide();
   <?php }
     if($row['REMARKS_ID'] > 7){ ?>
-      $("#submit").attr('disabled', true).text('Submitted');
-  <?php }
-    if($row['REMARKS_ID'] == 10 or $row['REMARKS_ID'] == 11){ ?>
-      $("#submit").hide();
+      $("#forward").hide();
   <?php } ?>
 
   </script>
@@ -500,16 +516,16 @@ if (!isset($_GET['cn']))
           <input type ="radio" name="caseDecision" id = "caseDecision" value = "Dismiss Case">&nbsp;&nbsp;Dismiss Case</input><br><br>
 
           <label>Reasons <span style="font-weight:normal; color:red;"> *</span></label>
-          <textarea id="reasonCase" style="height: 100px;" class="studentID form-control" placeholder="Enter Reason"></textarea><br>
+          <textarea id="reasonCase" style="height: 100px;" class="form-control" placeholder="Enter Reason"></textarea><br>
 
           <label>Remarks</label>
-          <textarea id="aulcRemarks" style="height: 100px;" class="studentID form-control" placeholder="Enter Remarks"></textarea><br>
+          <textarea id="aulcRemarks" style="height: 100px;" class="form-control" placeholder="Enter Remarks"></textarea><br>
 
           <div id = "dispOffense" hidden>
             <label>Offense: &nbsp;&nbsp; </label><?php echo $row['OFFENSE_DESCRIPTION']; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <label>Change offense? <span style="font-weight:normal; color:red;"> *</span></label>&nbsp;&nbsp;&nbsp;
-            <input type = "radio" name="violationDes" id = "violationDes" value = "Yes">&nbsp;&nbsp;Yes</input>&nbsp;&nbsp;&nbsp;
-            <input type = "radio" name="violationDes" id = "violationDes" value = "No">&nbsp;&nbsp;No</input><br><br>
+            <label>Change Offense? <span style="font-weight:normal; color:red;"> *</span></label>&nbsp;&nbsp;&nbsp;
+            <input type = "radio" name="violationDes" id = "violationDes" value = "1">&nbsp;&nbsp;Yes</input>&nbsp;&nbsp;&nbsp;
+            <input type = "radio" name="violationDes" id = "violationDes" value = "0">&nbsp;&nbsp;No</input><br><br>
           </div>
 
           <div id="changeViolation" class="form-group" style='width: 300px;' hidden>
@@ -527,7 +543,7 @@ if (!isset($_GET['cn']))
         </div>
 
         <div class="modal-footer">
-          <button type="submit" id="submit" class="btn btn-primary" data-dismiss="modal">Submit</button>
+          <button type="submit" id="submitRef" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>
@@ -543,7 +559,7 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
         </div>
         <div class="modal-body">
-          <p id="message"></message>
+          <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
         </div>
         <div class="modal-footer">
           <button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>

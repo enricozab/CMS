@@ -136,12 +136,12 @@
 
         $("#event-type").on('change', function(e) {
         	if($(this).val() == 'ALL-DAY') {
-        		$("#event-date").show();
-        		$("#event-start-time, #event-end-time").hide();
+        		$("#datearea").show();
+        		$("#timearea").hide();
         	}
         	else {
-        		$("#event-date").hide();
-        		$("#event-start-time, #event-end-time").show();
+        		$("#datearea").hide();
+        		$("#timearea").show();
         	}
         });
 
@@ -233,7 +233,7 @@
         function replaceURL() {
           //change
         	location.replace('ido-calendar.php')
-          <?php unset($_SESSION['access_token_calendar']); ?>
+          <?php //unset($_SESSION['access_token_calendar']); ?>
         }
     <?php
     }

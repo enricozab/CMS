@@ -3,6 +3,7 @@ session_start();
 header('Content-type: application/json');
 
 require_once('../calendar/google-calendar-api.php');
+require_once('../mysql_connect.php');
 
 try {
 	// Get event details
@@ -23,6 +24,13 @@ catch(Exception $e) {
     echo json_encode(array( 'error' => 1, 'message' => $e->getMessage() ));
 }
 
+if(isset($_POST["caseID"])) {
+	$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=9 WHERE CASE_ID = {$_POST['caseID']}";
+  $result=mysqli_query($dbc,$query);
+  if(!$result){
+    echo mysqli_error($dbc);
+  }
+}
 //unset($_SESSION['access_token_calendar']);
 //header('Location: google-login.php');
 

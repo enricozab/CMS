@@ -205,7 +205,7 @@
       });
 
       $('#active').on('click', function () {
-          $('#case-notif-table').DataTable().columns(5).search("Opened","On Going").draw();
+          $('#case-notif-table').DataTable().columns(5).search("Opened|On Going", true, false).draw();
           $('#active').focus();
           $(this).css("background-color", "#e6e6e6");
           $('#all').css("background-color", "white");
@@ -213,7 +213,7 @@
       });
 
       $('#closed').on('click', function () {
-          $('#case-notif-table').DataTable().columns(5).search("Closed").draw();
+          $('#case-notif-table').DataTable().columns(5).search("Closed|Dismissed", true, false).draw();
           $('#closed').focus();
           $(this).css("background-color", "#e6e6e6");
           $('#active').css("background-color", "white");

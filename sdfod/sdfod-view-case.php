@@ -185,7 +185,7 @@ if (!isset($_GET['cn']))
           }
         ?>
         <div id="penaltyarea" class="form-group" style='width: 400px;'>
-          <label>Penalty <span style="font-weight:normal; color:red;">*</span></label>
+          <label>Remarks <span style="font-weight:normal; color:red;">*</span></label>
           <select id="penalty" class="form-control">
             <option value="" disabled selected>Select the corresponding penalty</option>
             <?php

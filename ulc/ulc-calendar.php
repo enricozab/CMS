@@ -135,17 +135,48 @@
 
         $("#event-type").on('change', function(e) {
         	if($(this).val() == 'ALL-DAY') {
-        		$("#event-date").show();
-        		$("#event-start-time, #event-end-time").hide();
+        		$("#datearea").show();
+        		$("#timearea").hide();
         	}
         	else {
-        		$("#event-date").hide();
-        		$("#event-start-time, #event-end-time").show();
+        		$("#datearea").hide();
+        		$("#timearea").show();
         	}
         });
 
         // Send an ajax request to create event
         $("#create-event").on('click', function(e) {
+          /*var ids = ['input[name="caseDecision"]:checked','#reasonCase','input[name="violationDes"]:checked'];
+          var isEmpty = true;
+
+          if($('#dispOffense').is(":visible")){
+            ids.push('#violationDes');
+          }
+          else{
+            if($.inArray('#violationDes', ids) !== -1){
+              ids.splice(ids.indexOf('#violationDes'),1);
+            }
+          }
+
+          if($('#changeViolation').is(":visible")){
+            ids.push('#offenseSelect');
+          }
+          else{
+            if($.inArray('#offenseSelect', ids) !== -1){
+              ids.splice(ids.indexOf('#offenseSelect'),1);
+            }
+          }
+
+          for(var i = 0; i < ids.length; ++i ){
+            if($.trim($(ids[i]).val()).length == 0){
+              isEmpty = false;
+            }
+          }
+
+          if(isEmpty) {
+
+          }*/
+
         	if($("#create-event").attr('data-in-progress') == 1)
         		return;
 
@@ -213,26 +244,37 @@
 
         	$("#create-event").attr('disabled', 'disabled');
         	$.ajax({
-                type: 'POST',
-                url: '../ajax/calendar-create-event.php',
-                data: { event_details: parameters },
-                dataType: 'json',
-                success: function(response) {
-                	$("#create-event").removeAttr('disabled');
-                	alert('Event created');
-        					replaceURL();
-                },
-                error: function(response) {
-                    $("#create-event").removeAttr('disabled');
-                    console.log(response);
-                }
-            });
+              type: 'POST',
+              url: '../ajax/calendar-create-event.php',
+              data: {
+                event_details: parameters,
+                <?php
+                  if(isset($_GET['cn'])) { ?>
+                    caseID: <?php echo $_GET['cn']; ?>
+                <?php }
+                ?>
+              },
+              dataType: 'json',
+              success: function(response) {
+              	//$("#create-event").removeAttr('disabled');
+                $("#message").text("An event has been created successfully!");
+              	$("#alertModal").modal("show");
+              },
+              error: function(response) {
+                //$("#create-event").removeAttr('disabled');
+                console.log(response);
+              }
+          });
+        });
+
+        $("#modalOK").on("click", function() {
+          replaceURL();
         });
 
         function replaceURL() {
           //change
         	location.replace('ulc-calendar.php')
-          <?php unset($_SESSION['access_token_calendar']); ?>
+          <?php //unset($_SESSION['access_token_calendar']); ?>
         }
     <?php
     }
@@ -247,6 +289,8 @@
     $('#create').click(function() {
       $("#eventModal").modal("show");
     });
+
+
   });
   </script>
 
