@@ -13,19 +13,32 @@
     $aulc_remarks = "'".$_POST['aulc_remarks']."'";
   }
 
-  $changeoff = 'NULL';
+  $changeoff = 0;
   if($_POST['changeoff'] != null){
     $changeoff = $_POST['changeoff'];
   }
 
   $changevio = 'NULL';
   if($_POST['changevio'] != null){
-    $changeoff = $_POST['changevio'];
+    $changevio = $_POST['changevio'];
+  }
+
+  $cheat = 'NULL';
+  if($_POST['cheat'] != null){
+    $cheat = $_POST['cheat'];
   }
 
   $query="UPDATE CASE_REFERRAL_FORMS SET CASE_DECISION='{$_POST['decision']}', REASON='{$_POST['reason']}', AULC_REMARKS={$aulc_remarks}, CHANGE_OFFENSE={$changeoff}, NEW_OFFENSE={$changevio} WHERE CASE_ID={$_POST['caseID']}";
   $result=mysqli_query($dbc,$query);
   if(!$result){
     echo mysqli_error($dbc);
+  }
+
+  if($changevio == 1) {
+    $query="UPDATE CASES SET OFFENSE_ID={$changevio}, CHEATING_TYPE_ID={$cheat} WHERE CASE_ID={$_POST['caseID']}";
+    $result=mysqli_query($dbc,$query);
+    if(!$result){
+      echo mysqli_error($dbc);
+    }
   }
 ?>

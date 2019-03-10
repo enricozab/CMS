@@ -79,6 +79,7 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.IF_APPEAL AS IF_APPEAL,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW,
@@ -87,6 +88,8 @@ if (!isset($_GET['cn']))
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
             LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+            LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
+            LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
@@ -153,8 +156,20 @@ if (!isset($_GET['cn']))
         </div>
 
         <div class="form-group" id="penaltyarea" hidden>
-          <label>Penalty</label>
+          <?php
+            if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+              <label>SDFO Director's Remarks</label>
+          <?php }
+            else { ?>
+              <label>Penalty</label>
+          <?php }
+          ?>
           <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+        </div>
+
+        <div class="form-group" id="proceedingarea" hidden>
+          <label>Nature of Proceedings</label>
+          <textarea id="proceeding" style="width:600px;" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
         </div>
 
         <div class="form-group" id="evidencediv">
@@ -169,13 +184,9 @@ if (!isset($_GET['cn']))
             <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
           </div>
         </div>
-        <div id="viewevidence" hidden>
-          <br>
-          <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-        </div>
         <br><br>
         <?php
-          if($row['TYPE'] == "Major") {
+          if($row['TYPE'] == "Major" || $row['PENALTY_DESC'] == "Will be processed as a major discipline offense") {
             echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>';
           }
         ?>
@@ -307,7 +318,6 @@ if (!isset($_GET['cn']))
             },
             success: function(msg) {
                 $("#evidencediv").hide();
-                $("#viewevidence").show();
 
                 loadFile("../templates/template-student-reponse-form.docx",function(error,content){
 
@@ -427,7 +437,6 @@ if (!isset($_GET['cn']))
               },
               success: function(msg) {
                   $("#evidencediv").hide();
-                  $("#viewevidence").show();
 
                   loadFile("../templates/template-student-reponse-form.docx",function(error,content){
                     if (error) { throw error };
@@ -656,7 +665,6 @@ if (!isset($_GET['cn']))
           success: function(msg) {
               $('#message').text('An appeal has been sent successfully!');
               $("#appeal").attr('disabled', true);
-              $("#form").attr('disabled', true);
 
               $("#alertModal").modal("show");
           }
@@ -696,7 +704,6 @@ if (!isset($_GET['cn']))
   <?php
     if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
       $("#evidencediv").hide();
-      $("#viewevidence").show();
   <?php }
     if($row['COMMENT'] != null ){ ?>
       $("#commentarea").show();
@@ -704,7 +711,10 @@ if (!isset($_GET['cn']))
     if($row['PENALTY_DESC'] != null ){ ?>
       $("#penaltyarea").show();
   <?php }
-    if(($row['REMARKS_ID'] != 10 and $row['TYPE'] != "Major") or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL']) { ?>
+    if($row['PROCEEDING'] != null ){ ?>
+      $("#proceedingarea").show();
+  <?php }
+    if($row['REMARKS_ID'] != 11 or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL']) { ?>
       $("#appeal").hide();
   <?php }
     if($row['REMARKS_ID'] < 2 or $row['REMARKS_ID'] > 4) { ?>

@@ -80,12 +80,18 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
+                        CRF.CASE_DECISION AS CASE_DECISION,
+                        CRF.ULC_OTHER_REMARKS AS ULC_OTHER_REMARKS,
+                        RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
             FROM 		    CASES C
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
             LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+            LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
+            LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
@@ -129,54 +135,117 @@ if (!isset($_GET['cn']))
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Submitted Forms</b>
                       </div>
-                      <!-- .panel-heading -->
                       <div class="panel-body">
                         <table class="table">
                           <tbody>
                             <tr>
-                              <td>Form 1</td>
-                              <td><i>10/14/18</i></td>
+                              <td>Student Response Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                             <tr>
-                              <td>Form 2</td>
-                              <td><i>10/10/18</i></td>
+                              <td>Parent/Guardian Letter</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                             <tr>
-                              <td>Form 3</td>
-                              <td><i>10/10/18</i></td>
+                              <td>Discipline Case Feedback Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                              <td>Discipline Case Referral Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
                       <!-- .panel-body -->
-                  </div>
+                    </div>
                 </div>
               </div>
 			<br><br>
-      <div class="form-group">
-        <label>Summary of the Incident</label>
-        <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label>Summary of the Incident</label>
+            <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+          </div>
 
-      <div class="form-group" id="penaltyarea" hidden>
-        <label>SDFO Director's Remarks</label>
-        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-      </div>
+          <div class="form-group" id="penaltyarea" hidden>
+            <label>SDFO Director's Remarks</label>
+            <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+          </div>
 
-      <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+          <div class="form-group" id="proceedingarea">
+            <label>Nature of Proceedings</label>
+            <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+          </div>
 
-      <div class="form-group" id="verdictarea" hidden>
-        <br><br>
-        <label>Verdict</label>
-        <div class="radio">
-            <label>
-                <input type="radio" name="verdict" id="guilty" value="Guilty" checked>Guilty
-            </label>
+          <div class="form-group" id="otherarea">
+            <label>Other Comments/Remarks</label>
+            <textarea id="ulcRemarks" style="height: 100px;" class="form-control" placeholder="Enter Comments/Remarks"><?php echo $row['ULC_OTHER_REMARKS']; ?></textarea>
+          </div>
+
+          <br>
+
+          <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+
+          <br>
+
+          <div class="form-group" id="verdictarea" hidden>
+            <br><br>
+            <label>Verdict <span style="font-weight:normal; color:red;">*</span></label>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="verdict" id="Guilty" value="Guilty" checked>Guilty &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="verdict" id="NotGuilty" value="Not Guilty">Not Guilty
+                </label>
+            </div>
+          </div>
+
+          <br>
+
+          <div class="form-group" id="finalpenaltyarea">
+            <label>Penalty</label>
+            <textarea id="finalpenalty" style="height: 100px;" class="form-control" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+          </div>
         </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="verdict" id="notguilty" value="Not Guilty">Not Guilty
-            </label>
+
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                  <b style = "font-size: 17px;">Related Cases</b>
+              </div>
+              <div class="panel-body" style="overflow-y: scroll; height:300px;">
+                <ul style="list-style-type:none;">
+                  <?php include 'ulc-related-case-queries.php';?>
+
+                  <?php
+                    while($relatedrow=mysqli_fetch_array($relatedres,MYSQLI_ASSOC)) {
+                      if($relatedrow['CASE_ID'] != $_GET['cn']) {
+                        echo "<li>
+                                <div style='margin-right: 20px; margin-left: -20px;'>
+                                    <p>
+                                        <strong>Case No. {$relatedrow['CASE_ID']}</strong>
+                                        <span class='pull-right text-muted'><button type='submit' id='viewCase' name='return' class='btn btn-info'>View Case</button></span>
+                                    </p>
+                                    <div>
+                                        <br>
+                                        <p>Status: <strong>{$relatedrow['STATUS_DESCRIPTION']}</strong></p>";
+                                        if($relatedrow['STATUS_DESCRIPTION'] == "Closed") {
+                                          echo "<p>Proceedings: <strong>{$relatedrow['PROCEEDINGS']}</strong></p>
+                                                <p>Penalty: <strong>{$relatedrow['PENALTY_DESC']}</strong></p>";
+                                        }
+                        echo        "</div>
+
+                                </div>
+                              </li>
+                              <hr style='margin-right: 20px; margin-left: -20px;'>";
+                      }
+                    }
+                  ?>
+                </ul>
+              </div>
+              <!-- .panel-body -->
+            </div>
         </div>
       </div>
 
@@ -184,8 +253,13 @@ if (!isset($_GET['cn']))
 
       <div class="row">
         <div class="col-sm-6">
-          <button type="submit" id="review" name="submit" class="btn btn-success">Review Discipline Case Referral Form</button>
-          <button type="button" id="schedule" class="btn btn-success" onclick="location.href='ulc-calendar.php?cn=<?php echo $_GET['cn']; ?>'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule Hearing</button>
+          <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Referral Form</button>
+          <button type="button" id="schedule" class="btn btn-success" onclick="location.href='ulc-calendar.php?cn=<?php echo $_GET['cn']; ?>'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule the Proceeding</button>
+          <?php
+            if($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 13) { ?>
+              <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+          <?php }
+          ?>
           <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse to the President</button>
         </div>
       </div>
@@ -218,9 +292,6 @@ if (!isset($_GET['cn']))
     </div>
     <!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 
@@ -249,60 +320,62 @@ if (!isset($_GET['cn']))
       $("#revModal").modal("show");
     });
 
-    $('#modalSign').click(function() {
-      $.ajax({
-          url: '../ajax/ulc-update-dcrf.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>,
-              other: $("#ulcremarks").val(),
-          },
-          success: function(msg) {
-            $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form.');
-            $("#review").attr('disabled', true);
+    $('#sign').click(function() {
+      if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
+        $.ajax({
+            url: '../ajax/ulc-update-dcrf.php',
+            type: 'POST',
+            data: {
+                caseID: <?php echo $_GET['cn']; ?>,
+                other: $("#ulcRemarks").val()
+            },
+            success: function(msg) {
+              $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule the proceeding.');
+              $("#sign").attr('disabled', true);
 
-            $("#alertModal").modal("show");
-          }
-      });
+              $("#alertModal").modal("show");
+            }
+        });
+      }
+      else {
+        $.ajax({
+            url: '../ajax/ulc-return-to-sdfod.php',
+            type: 'POST',
+            data: {
+                caseID: <?php echo $_GET['cn']; ?>,
+                other: $("#ulcRemarks").val()
+            },
+            success: function(msg) {
+              $('#message').text('Case returned to IDO successfully for dismissal.');
+              $("#review").attr('disabled', true);
+
+              $("#alertModal").modal("show");
+            }
+        });
+      }
     });
 
     $('#modalOK').click(function() {
-      $("#review").hide();
-      $("#schedule").show();
-    });
-
-    $('#hearing').click(function() {
-      $.ajax({
-          url: '../ajax/ulc-under-hearing.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>
-          },
-          success: function(msg) {
-            $('#message').text('Case is scheduled for hearing.');
-            $("#schedule").attr('disabled', true);
-            $("#hearing").attr('disabled', true);
-            $("#verdictarea").show();
-
-            $("#alertModal").modal("show");
-          }
-      });
+      if('<?php echo $row['CASE_DECISION']; ?>' == "File Case" && <?php echo $row['REMARKS_ID']; ?> == 8) {
+        $("#review").hide();
+        $("#schedule").show();
+      }
     });
 
     $('#submit').click(function() {
       var verdict = $("input[name='verdict']:checked").val();
       if(verdict == "Not Guilty") {
         $.ajax({
-            url: '../ajax/ulc-not-guilty.php',
+            url: '../ajax/ulc-verdict.php',
             type: 'POST',
             data: {
                 caseID: <?php echo $_GET['cn']; ?>,
                 verdict: verdict
             },
             success: function(msg) {
-              $('#message').text('Case dismissed.');
+              $('#message').text('Case returned to SDFO Directory successfully for final signature and dismissal.');
               $("#submit").attr('disabled', true).text("Submitted");
-              $("#penalty").attr('readonly', true);
+              $("#finalpenalty").attr('readonly', true);
               $("input[type=radio]").attr('disabled', true);
 
               $("#alertModal").modal("show");
@@ -311,17 +384,17 @@ if (!isset($_GET['cn']))
       }
       else {
         $.ajax({
-            url: '../ajax/ulc-guilty.php',
+            url: '../ajax/ulc-verdict.php',
             type: 'POST',
             data: {
                 caseID: <?php echo $_GET['cn']; ?>,
-                penalty: $('#penalty').val(),
+                decision: $('#finalpenalty').val(),
                 verdict: verdict
             },
             success: function(msg) {
-              $('#message').text('Case closed.');
+              $('#message').text('Case returned to SDFO Directory successfully for final signature and closing.');
               $("#submit").attr('disabled', true).text("Submitted");
-              $("#penalty").attr('readonly', true);
+              $("#finalpenalty").attr('readonly', true);
               $("input[type=radio]").attr('disabled', true);
 
               $("#alertModal").modal("show");
@@ -368,44 +441,49 @@ if (!isset($_GET['cn']))
     if($row['PENALTY_DESC'] != null) { ?>
       $("#penaltyarea").show();
   <?php }
-    if($row['REMARKS_ID'] == 8){ ?>
+    if($row['REMARKS_ID'] < 9){ ?>
       $("#schedule").hide();
       $("#endorse").hide();
   <?php }
-    if($signrow['if_signed']){ ?>
-      $("#review").hide();
+    if($row['REMARKS_ID'] == 8 and $signrow['if_signed']){ ?>
+      $("#sign").hide();
       $("#schedule").show();
+      $("#otherarea").hide();
   <?php }
-    if($row['REMARKS_ID'] > 8){ ?>
-      $("#review").hide();
+    if($row['REMARKS_ID'] == 7 or $row['REMARKS_ID'] > 8){ ?>
+      $("#sign").hide();
       $("#schedule").hide();
       $("#endorse").hide();
+      $("#otherarea").hide();
+  <?php }
+    if($row['REMARKS_ID'] > 9) { ?>
+      $("#finalpenalty").attr('readonly',true);
+      $("#verdictarea").show();
+      $("#<?php echo $row['VERDICT']; ?>").prop("checked", true);
+      $("input[type=radio]").attr('disabled', true);
+  <?php }
+    if($row['REMARKS_ID'] == 12) { ?>
+      $("#endorse").show();
+  <?php }
+    if($row['PROCEEDING_DECISION'] != null) { ?>
+      $("#finalpenaltyarea").show();
+      $("#finalpenalty").attr('readonly',true);
+      $("#verdictarea").show();
+      if('<?php echo $row['VERDICT']; ?>' == "Not Guilty") {
+        $("#NotGuilty").prop("checked", true);
+      }
+      else{
+        $("#<?php echo $row['VERDICT']; ?>").prop("checked", true);
+      }
+      $("input[type=radio]").attr('disabled', true);
+  <?php }
+    if($row['REMARKS_ID'] == 13) { ?>
+      $("#finalpenalty").attr('readonly',false);
+      $("input[type=radio]").attr('disabled', false);
   <?php }
   ?>
 
   </script>
-
-  <!-- Review Modal -->
-  <div class="modal fade" id="revModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>University Legal Counsel Remarks</b></h4>
-        </div>
-        <div class="modal-body">
-          <br>
-          <label><i>------------- Reviews Case -------------</i></label>
-          <br><br><br>
-          <label>Other Comments/Remarks</label>
-          <textarea id="ulcRemarks" style="height: 100px;" class="form-control" placeholder="Enter Comments/Remarks"></textarea><br>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="modalSign" class="btn btn-primary" data-dismiss="modal">Sign Form</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -428,3 +506,8 @@ if (!isset($_GET['cn']))
 </body>
 
 </html>
+
+<style>
+p{ margin: 0; }
+
+</style>

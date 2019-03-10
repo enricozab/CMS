@@ -219,15 +219,19 @@
                 data: { event_details: parameters },
                 dataType: 'json',
                 success: function(response) {
-                	$("#create-event").removeAttr('disabled');
-                	alert('Event created');
-        					replaceURL();
+                	//$("#create-event").removeAttr('disabled');
+                  $("#message").text("An event has been created successfully!");
+                	$("#alertModal").modal("show");
                 },
                 error: function(response) {
-                    $("#create-event").removeAttr('disabled');
+                    //$("#create-event").removeAttr('disabled');
                     console.log(response);
                 }
             });
+        });
+
+        $("#modalOK").on("click", function() {
+          replaceURL();
         });
 
         function replaceURL() {

@@ -73,6 +73,7 @@ if (!isset($_GET['cn']))
                         C.PENALTY_ID AS PENALTY_ID,
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
+                        RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
@@ -80,6 +81,8 @@ if (!isset($_GET['cn']))
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
             LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+            LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
+            LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
@@ -117,48 +120,33 @@ if (!isset($_GET['cn']))
     					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
               <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
             </div>
-
-            <div class="col-lg-6">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                      <b style = "font-size: 17px;">Submitted Forms</b>
-                  </div>
-                  <!-- .panel-heading -->
-                  <div class="panel-body">
-                    <table class="table">
-                      <tbody>
-                        <tr>
-                          <td>Form 1</td>
-                          <td><i>10/14/18</i></td>
-                        </tr>
-                        <tr>
-                          <td>Form 2</td>
-                          <td><i>10/10/18</i></td>
-                        </tr>
-                        <tr>
-                          <td>Form 3</td>
-                          <td><i>10/10/18</i></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <!-- .panel-body -->
-              </div>
-            </div>
         </div>
   			<br><br>
   			<!-- /.panel-heading -->
-        <div class="form-group">
-          <label>Summary of the Incident</label>
-          <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label>Summary of the Incident</label>
+              <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+            </div>
+            <div class="form-group" id="penaltyarea" hidden>
+            <?php
+              if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                <label>SDFO Director's Remarks</label>
+            <?php }
+              else { ?>
+                <label>Penalty</label>
+            <?php }
+            ?>
+              <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+            </div>
+            <div class="form-group" id="proceedingarea" hidden>
+              <label>Nature of Proceedings</label>
+              <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+            </div>
+            <br><br><br><br><br>
+          </div>
         </div>
-        <div class="form-group" id="penaltyarea" hidden>
-          <label>Penalty</label>
-          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-        </div>
-        <br>
-        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-        <br><br><br><br><br>
       </div>
 
       <?php
@@ -219,6 +207,9 @@ if (!isset($_GET['cn']))
   <?php
     if($row['PENALTY_DESC'] != null ){ ?>
       $("#penaltyarea").show();
+  <?php }
+    if($row['PROCEEDING'] != null ){ ?>
+      $("#proceedingarea").show();
   <?php } ?>
   </script>
 

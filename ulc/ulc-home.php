@@ -62,19 +62,20 @@
 			<div class="row">
         <div class="col-lg-12">
           <br>
-          <button type="button" class="tableButton btn btn-default" id="all">All Cases</button>
-          <button type="button" class="tableButton btn btn-default" id="active">Active</button>
-          <button type="button" class="tableButton btn btn-default" id="closed">Closed</button>
+          <div class="btn-group">
+            <button type="button" class="tableButton btn btn-default" id="all">All Cases</button>
+            <button type="button" class="tableButton btn btn-default" id="active">Active</button>
+            <button type="button" class="tableButton btn btn-default" id="closed">Closed</button>
+          </div>
           <style>
               .tableButton {
-                float:left;
-                width: 80px;
+                width: 100px;
               }
               #all {border-radius: 3px 0px 0px 3px;}
               #active {border-radius: 0px;}
               #closed {border-radius: 0px 3px 3px 0px;}
           </style>
-          <br><br><br>
+          <br><br>
           <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
               <thead>
                   <tr>
@@ -126,7 +127,7 @@
                         LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
                         LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
                         LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
-						LEFT JOIN   REF_PENALTIES P ON C.PENALTY_ID = P.PENALTY_ID
+						            LEFT JOIN   REF_PENALTIES P ON C.PENALTY_ID = P.PENALTY_ID
                         ORDER BY	  C.LAST_UPDATE';
                         $result=mysqli_query($dbc,$query);
                   if(!$result){

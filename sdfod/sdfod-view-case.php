@@ -79,12 +79,17 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        CRF.CASE_DECISION AS CASE_DECISION,
+                        RCP.CASE_PROCEEDINGS_ID AS CASE_PROCEEDINGS_ID,
+                        RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
             FROM 		    CASES C
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
             LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+            LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
+            LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
@@ -147,16 +152,12 @@ if (!isset($_GET['cn']))
                         <table class="table">
                           <tbody>
                             <tr>
-                              <td>Form 1</td>
-                              <td><i>10/14/18</i></td>
+                              <td>Student Response Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                             <tr>
-                              <td>Form 2</td>
-                              <td><i>10/10/18</i></td>
-                            </tr>
-                            <tr>
-                              <td>Form 3</td>
-                              <td><i>10/10/18</i></td>
+                              <td>Parent/Guardian Letter</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                           </tbody>
                         </table>
@@ -166,63 +167,72 @@ if (!isset($_GET['cn']))
                 </div>
           </div>
   			<br><br>
-        <div class="form-group">
-          <label>Summary of the Incident</label>
-          <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-        </div>
-        <!--<div class="form-group" id="penaltyarea" hidden>
-          <label>Penalty</label>
-          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-        </div>-->
-        <br>
-        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-        <br><br><br>
-        <?php
-          $query2='SELECT PENALTY_ID, PENALTY_DESC FROM REF_PENALTIES';
-          $result2=mysqli_query($dbc,$query2);
-          if(!$result2){
-            echo mysqli_error($dbc);
-          }
-        ?>
-        <div id="penaltyarea" class="form-group" style='width: 400px;'>
-          <label>Remarks <span style="font-weight:normal; color:red;">*</span></label>
-          <select id="penalty" class="form-control">
-            <option value="" disabled selected>Select the corresponding penalty</option>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label>Summary of the Incident</label>
+              <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+            </div>
+            <!--<div class="form-group" id="penaltyarea" hidden>
+              <label>Penalty</label>
+              <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+            </div>-->
+            <br>
+            <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+            <br><br><br>
             <?php
-            while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-              echo
-                "<option value=\"{$row2['PENALTY_ID']}\">{$row2['PENALTY_DESC']}</option>";
-            }
+              $query2='SELECT PENALTY_ID, PENALTY_DESC FROM REF_PENALTIES';
+              $result2=mysqli_query($dbc,$query2);
+              if(!$result2){
+                echo mysqli_error($dbc);
+              }
             ?>
-          </select>
-          <textarea id="finpenalty" style="width:600px;" name="finpenalty" class="form-control" rows="3" hidden readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+            <div id="penaltyarea" class="form-group" style='width: 400px;'>
+              <label>Remarks <span style="font-weight:normal; color:red;">*</span></label>
+              <select id="penalty" class="form-control">
+                <option value="" disabled selected>Select the corresponding penalty</option>
+                <?php
+                while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                  echo
+                    "<option value=\"{$row2['PENALTY_ID']}\">{$row2['PENALTY_DESC']}</option>";
+                }
+                ?>
+              </select>
+              <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" hidden readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+            </div>
+            <br>
+            <div id="proceedingsList" class="form-group" hidden>
+              <label>Nature of Proceedings</label>
+              <div class="radio">
+                  <label>
+                      <input type="radio" name="proceedings" id="1" value="1" checked>Formal Hearing
+                  </label>
+              </div>
+              <div class="radio">
+                  <label>
+                      <input type="radio" name="proceedings" id="2" value="2">Summary Proceeding
+                  </label>
+              </div>
+              <div class="radio">
+                  <label>
+                      <input type="radio" name="proceedings" id="3" value="3">University Panel for Case Conference
+                  </label>
+              </div>
+              <div class="radio">
+                  <label>
+                      <input type="radio" name="proceedings" id="4" value="4">Case Conference with DO Director
+                  </label>
+              </div>
+          </div>
         </div>
-        <br>
-        <div id="proceedingsList" class="form-group" hidden>
-          <label>Nature of Proceedings</label>
-          <div class="radio">
-              <label>
-                  <input type="radio" name="pl" id="1" value="1" checked>Formal Hearing
-              </label>
-          </div>
-          <div class="radio">
-              <label>
-                  <input type="radio" name="pl" id="2" value="2">Summary Proceeding
-              </label>
-          </div>
-          <div class="radio">
-              <label>
-                  <input type="radio" name="pl" id="3" value="3">University Panel for Case Conference
-              </label>
-          </div>
-          <div class="radio">
-              <label>
-                  <input type="radio" name="pl" id="4" value="4">Case Conference with DO Director
-              </label>
-          </div>
       </div>
         <br><br><br>
         <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
+        <?php
+          if($row['REMARKS_ID'] == 14) { ?>
+          <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Feedback Form</button>
+        <?php }
+        ?>
         <br><br><br><br><br>
       </div>
 
@@ -471,6 +481,28 @@ if (!isset($_GET['cn']))
         JSZipUtils.getBinaryContent(url,callback);
     }
 
+    $('#sign').on('click', function() {
+      $.ajax({
+          url: '../ajax/director-return-to-ido.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              decision: '<?php echo $row['CASE_DECISION']; ?>'
+          },
+          success: function(msg) {
+            if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
+              $('#message').text('Check your email to sign the Discipline Case Feedback Form.');
+            }
+            else {
+              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
+            }
+            $("#sign").attr('disabled', true)
+
+            $("#alertModal").modal("show");
+          }
+      });
+    });
+
     $('#penalty').on('change', function() {
       var option = $("option:selected", this);
       if(this.value == 3) {
@@ -482,7 +514,6 @@ if (!isset($_GET['cn']))
         $("#proceedingsList").hide();
       }
     });
-
   });
 
   <?php
@@ -500,6 +531,7 @@ if (!isset($_GET['cn']))
   <?php }
     if($row['REMARKS_ID'] > 5 and ($row['PENALTY_ID'] == 3 or $row['TYPE'] == "Major")){ ?>
       $("#proceedingsList").show();
+       $("#<?php echo $row['CASE_PROCEEDINGS_ID']; ?>").prop("checked", true);
       $("input[type=radio]").attr('disabled', true);
   <?php }
   ?>

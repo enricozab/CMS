@@ -86,6 +86,7 @@ if (!isset($_GET['cn']))
                         C.PENALTY_ID AS PENALTY_ID,
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
+                        RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.HEARING_DATE AS HEARING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
@@ -93,6 +94,8 @@ if (!isset($_GET['cn']))
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
             LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+            LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
+            LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
@@ -154,7 +157,7 @@ if (!isset($_GET['cn']))
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="panel panel-default">
+                    <div class="panel panel-default" style="width: 500px;">
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Submitted Forms</b>
                       </div>
@@ -163,16 +166,20 @@ if (!isset($_GET['cn']))
                         <table class="table">
                           <tbody>
                             <tr>
-                              <td>Form 1</td>
-                              <td><i>10/14/18</i></td>
+                              <td>Student Response Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                             <tr>
-                              <td>Form 2</td>
-                              <td><i>10/10/18</i></td>
+                              <td>Parent/Guardian Letter</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                             <tr>
-                              <td>Form 3</td>
-                              <td><i>10/10/18</i></td>
+                              <td>Discipline Case Feedback Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                              <td>Discipline Case Referral Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
                           </tbody>
                         </table>
@@ -188,8 +195,13 @@ if (!isset($_GET['cn']))
       </div>
 
       <div class="form-group" id="penaltyarea" hidden>
-        <label>Penalty</label>
+        <label>SDFO Director's Remarks</label>
         <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+      </div>
+
+      <div class="form-group" id="proceedingarea">
+        <label>Nature of Proceedings</label>
+        <textarea id="proceeding" style="width:600px;" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
       </div>
 
       <div id="viewevidence">
@@ -259,6 +271,16 @@ if (!isset($_GET['cn']))
     <?php include 'aulc-notif-scripts.php' ?>
 
     $('.chosen-select').chosen({width: '100%'});
+
+    $('#offenseSelect').on('change',function() {
+      var offense_id=$(this).val();
+      if(offense_id==1) {
+        $('#cheat').show();
+      }
+      else{
+        $('#cheat').hide();
+      }
+    });
 
     $('#forward').click(function() {
       $("#formModal").modal("show");
@@ -371,7 +393,7 @@ if (!isset($_GET['cn']))
     });
 
   	$('#submitRef').click(function() {
-      var ids = ['input[name="caseDecision"]:checked','#reasonCase','input[name="violationDes"]:checked'];
+      var ids = ['input[name="caseDecision"]:checked','#reasonCase'];
       var isEmpty = true;
 
       if($('#dispOffense').is(":visible")){
@@ -392,6 +414,15 @@ if (!isset($_GET['cn']))
         }
       }
 
+      if($('#cheat').is(":visible")){
+        ids.push('#cheat-type');
+      }
+      else{
+        if($.inArray('#cheat-type', ids) !== -1){
+          ids.splice(ids.indexOf('#cheat-type'),1);
+        }
+      }
+
       for(var i = 0; i < ids.length; ++i ){
         if($.trim($(ids[i]).val()).length == 0){
           isEmpty = false;
@@ -399,48 +430,35 @@ if (!isset($_GET['cn']))
       }
 
       if(isEmpty) {
+        var changeoff = null;
         var changevio = null;
+        var cheat = null;
+        if($('#dispOffense').is(":visible")){
+          changeoff=$('#violationDes').val();
+        }
         if($('#changeViolation').is(":visible")){
-          changevio=$('offenseSelect').val();
+          changevio=$('#offenseSelect').val();
         }
-        if($('input[name="caseDecision"]:checked').val() == "File Case") {
-          alert(changevio);
-          $.ajax({
-              url: '../ajax/aulc-forward-case.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  decision: $('input[name="caseDecision"]:checked').val(),
-                  reason: $('#reasonCase').val(),
-                  aulc_remarks: $('#aulcRemarks').val(),
-                  changeoff: $('input[name="violationDes"]:checked').val(),
-                  changevio: changevio
-              },
-              success: function(msg) {
-                $('#message').text('Case forwarded to ULC successfully!');
-                $('#forward').attr('disabled', true);
-              }
-          });
+        if($('#cheat').is(":visible")){
+          cheat=$('#cheat-type').val();
         }
-        else {
-          $.ajax({
-              url: '../ajax/aulc-dismiss-case.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>
-              },
-              success: function(msg) {
-                $('#message').text('Case returned to IDO successfully!');
-                $("#penalty").attr('readonly', true);
-                $("#submit").attr('disabled', true);
-                $("#dismiss").attr('disabled', true).text('Dismissed');
-
-                $("#alertModal").modal("show");
-              }
-          });
-        }
-
-
+        $.ajax({
+            url: '../ajax/aulc-forward-case.php',
+            type: 'POST',
+            data: {
+                caseID: <?php echo $_GET['cn']; ?>,
+                decision: $('input[name="caseDecision"]:checked').val(),
+                reason: $('#reasonCase').val(),
+                aulc_remarks: $('#aulcRemarks').val(),
+                changeoff: changeoff,
+                changevio: changevio,
+                cheat: cheat
+            },
+            success: function(msg) {
+              $('#message').text('Case forwarded to ULC successfully!');
+              $('#forward').attr('disabled', true);
+            }
+        });
       }
       $("#alertModal").modal("show");
   	});
@@ -536,6 +554,25 @@ if (!isset($_GET['cn']))
               while($rowOffenses=mysqli_fetch_array($resultOffences,MYSQLI_ASSOC)){
                 echo
                   "<option value=\"{$rowOffenses['OFFENSE_ID']}\">{$rowOffenses['DESCRIPTION']}</option>";
+              }
+              ?>
+            </select>
+          </div>
+          <?php
+            $query2='SELECT CHEATING_TYPE_ID, DESCRIPTION FROM REF_CHEATING_TYPE';
+            $result2=mysqli_query($dbc,$query2);
+            if(!$result2){
+              echo mysqli_error($dbc);
+            }
+          ?>
+          <div id="cheat" class="form-group" style='width: 300px;' hidden>
+            <label>Cheating Type <span style="font-weight:normal; color:red;">*</span></label>
+            <select id="cheat-type" class="form-control">
+              <option value="" disabled selected>Select Type</option>
+              <?php
+              while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                echo
+                  "<option value=\"{$row2['CHEATING_TYPE_ID']}\">{$row2['DESCRIPTION']}</option>";
               }
               ?>
             </select>
