@@ -76,11 +76,7 @@
                     </div>
                     <div class="form-group" style = "width: 180px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="date" type="date" name="date" class="form-control"/>
-                    </div>
-                    <div class="form-group" style = "width: 180px;">
-                      <label>Time of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="time" type="time" name="time" class="form-control"/>
+                      <input  id="date" type="text" class="form-control" placeholder="Enter Date"/>
                     </div>
                     <div class="form-group">
                       <label>Please provide a summary of the incident <span style="font-weight:normal; color:red;">*</span></label>
@@ -137,6 +133,12 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <!--Datetimepicker -->
+    <!-- scripts from calendar api  -->
+    <link rel="stylesheet" href="../extra-css/jquery.datetimepicker.min.css" />
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
+    <script src="../extra-css/jquery.datetimepicker.min.js"></script>
+
     <!-- Form Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
@@ -147,6 +149,8 @@
     $(document).ready(function() {
 
       <?php include 'faculty-notif-scripts.php' ?>
+
+      $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, step: 1});
 
       $('.studentID').keypress(validateNumber);
 
@@ -194,7 +198,7 @@
       var studentlist = [];
 
       $('#submit').click(function() {
-        var ids = ['#location','#date','#time','textarea'];
+        var ids = ['#location','#date','textarea'];
         var isEmpty = true;
 
         $('.studentID').each(function(i, obj){
@@ -218,7 +222,6 @@
                   studentID: studentlist,
                   location: $('#location').val(),
                   date: $('#date').val(),
-                  time: $('#time').val(),
                   details: $('#details').val()
               },
               success: function(msg) {
