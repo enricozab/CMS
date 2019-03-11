@@ -383,7 +383,7 @@ if (!isset($_GET['cn']))
               data: {
                   caseID: <?php echo $_GET['cn']; ?>,
                   penalty: $('#penalty').val(),
-                  proceeding: $("input:radio[name=pl]:checked").val()
+                  proceeding: $("input:radio[name=proceedings]:checked").val()
               },
               success: function(response) {
                 loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
@@ -531,7 +531,7 @@ if (!isset($_GET['cn']))
   <?php }
     if($row['REMARKS_ID'] > 5 and ($row['PENALTY_ID'] == 3 or $row['TYPE'] == "Major")){ ?>
       $("#proceedingsList").show();
-       $("#<?php echo $row['CASE_PROCEEDINGS_ID']; ?>").prop("checked", true);
+      $("#<?php echo $row['CASE_PROCEEDINGS_ID']; ?>").prop("checked", true);
       $("input[type=radio]").attr('disabled', true);
   <?php }
   ?>

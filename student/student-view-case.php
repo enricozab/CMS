@@ -79,6 +79,7 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.IF_APPEAL AS IF_APPEAL,
                         C.DATE_CLOSED AS DATE_CLOSED,
@@ -143,45 +144,76 @@ if (!isset($_GET['cn']))
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
 
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                          <b style = "font-size: 17px;">Submitted Forms</b>
+                      </div>
+                      <!-- .panel-heading -->
+                      <div class="panel-body">
+                        <table class="table">
+                          <tbody>
+                            <tr>
+                              <td>Student Response Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                              <td>Parent/Guardian Letter</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                              <td>Discipline Case Feedback Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <!-- .panel-body -->
+                  </div>
+                </div>
             </div>
   			<br><br>
-        <div class="form-group">
-          <label>Summary of the Incident</label>
-          <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-        </div>
-
-        <div class="form-group" id="commentarea" hidden>
-          <label>Comment</label>
-          <textarea id="comment" style="width:600px;" name="comment" class="form-control" rows="3" readonly><?php echo $row['COMMENT']; ?></textarea>
-        </div>
-
-        <div class="form-group" id="penaltyarea" hidden>
-          <?php
-            if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-              <label>SDFO Director's Remarks</label>
-          <?php }
-            else { ?>
-              <label>Penalty</label>
-          <?php }
-          ?>
-          <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-        </div>
-
-        <div class="form-group" id="proceedingarea" hidden>
-          <label>Nature of Proceedings</label>
-          <textarea id="proceeding" style="width:600px;" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
-        </div>
-
-        <div class="form-group" id="evidencediv">
-          <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
-          <br><br>
-          <div id="evidencelist">
-            <div class="form-group" style="width:300px;">
-              <input type="file">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label>Summary of the Incident</label>
+              <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
             </div>
-          </div>
-          <div id="appendevidence">
-            <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
+
+            <div class="form-group" id="commentarea" hidden>
+              <label>Comment</label>
+              <textarea id="comment" name="comment" class="form-control" rows="3" readonly><?php echo $row['COMMENT']; ?></textarea>
+            </div>
+
+            <div class="form-group" id="proceedingarea" hidden>
+              <label>Nature of Proceedings</label>
+              <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+            </div>
+
+            <div class="form-group" id="penaltyarea" hidden>
+              <label>Penalty</label>
+              <?php
+                if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+              <?php }
+                else if($row['PROCEEDING_DECISION'] != null) { ?>
+                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+              <?php }
+              ?>
+            </div>
+
+            <div class="form-group" id="evidencediv">
+              <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
+              <br><br>
+              <div id="evidencelist">
+                <div class="form-group" style="width:300px;">
+                  <input type="file">
+                </div>
+              </div>
+              <div id="appendevidence">
+                <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
+              </div>
+            </div>
           </div>
         </div>
         <br><br>
@@ -708,7 +740,7 @@ if (!isset($_GET['cn']))
     if($row['COMMENT'] != null ){ ?>
       $("#commentarea").show();
   <?php }
-    if($row['PENALTY_DESC'] != null ){ ?>
+    if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null){ ?>
       $("#penaltyarea").show();
   <?php }
     if($row['PROCEEDING'] != null ){ ?>

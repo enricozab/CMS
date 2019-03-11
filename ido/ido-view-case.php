@@ -204,7 +204,7 @@ if (!isset($_GET['cn']))
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="panel panel-default" style="width: 500px;">
+                    <div class="panel panel-default">
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Submitted Forms</b>
                       </div>
@@ -220,6 +220,10 @@ if (!isset($_GET['cn']))
                               <td>Parent/Guardian Letter</td>
                               <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
                             </tr>
+                            <tr>
+                              <td>Discipline Case Feedback Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>
@@ -230,32 +234,35 @@ if (!isset($_GET['cn']))
               </div>
 
 			<br><br>
-      <div class="form-group">
-        <label>Summary of the Incident</label>
-        <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label>Summary of the Incident</label>
+            <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+          </div>
+
+          <div class="form-group" id="penaltyarea" hidden>
+            <?php
+              if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                <label>SDFO Director's Remarks</label>
+            <?php }
+              else { ?>
+                <label>Penalty</label>
+            <?php }
+            ?>
+            <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+          </div>
+
+          <div class="form-group" id="proceedingarea" hidden>
+            <label>Nature of Proceedings</label>
+            <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+          </div>
+
+          <br>
+
+          <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+        </div>
       </div>
-
-      <div class="form-group" id="penaltyarea" hidden>
-        <?php
-          if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-            <label>SDFO Director's Remarks</label>
-        <?php }
-          else { ?>
-            <label>Penalty</label>
-        <?php }
-        ?>
-        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-      </div>
-
-      <div class="form-group" id="proceedingarea" hidden>
-        <label>Nature of Proceedings</label>
-        <textarea id="proceeding" style="width:600px;" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
-      </div>
-
-      <br>
-
-      <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-
       <br><br><br><br>
       <div class="row">
         <div class="col-sm-6">
@@ -727,7 +734,7 @@ if (!isset($_GET['cn']))
           <p>Year Level: <b><?php echo $studentres["year_level"]; ?></b></p>
           <p>College: <b><?php echo $nameres["description"]; ?></b></p>
           <p>Degree: <b><?php echo $studentres["degree"]; ?></b></p>
-          <p>School Year / Term: <b>SY <?php echo $formres2["school_year"]; ?> / Term <?php echo $formres2["term"]; ?></b></p>
+          <p>Academic Year / Term: <b>AY <?php echo $formres2["school_year"]; ?> / Term <?php echo $formres2["term"]; ?></b></p>
           <br>
           <p><b>CASE DETAILS</b></p>
           <p>Violation/Offense: <b><?php echo $row["OFFENSE_DESCRIPTION"]; ?></b></p>
