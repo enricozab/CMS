@@ -1,4 +1,16 @@
 <?php
+  //Get students
+  $studentsquery = 'SELECT * FROM cms.users WHERE user_type_id = 1';
+  $studentres = mysqli_query($dbc,$studentsquery);
+
+  if(!$studentres){
+    echo mysqli_error($dbc);
+  }
+  else{
+    $studentrow=mysqli_fetch_array($studentres,MYSQLI_ASSOC);
+  }
+
+
   // office
   $officequery = 'SELECT *
                     FROM REF_USER_OFFICE C

@@ -53,6 +53,7 @@
     <div id="wrapper">
 
         <?php include 'faculty-sidebar.php'; ?>
+		<?php include 'faculty-form-queries.php'; ?>
 
         <div id="page-wrapper">
             <div class="row">
@@ -63,7 +64,16 @@
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
                         <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                        <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                        <select id="studentID" name="studentID" class="studentID form-control" placeholder="Enter ID No.">
+							<?php
+								while($row = mysqli_fetch_assoc($studentres))
+								{
+								  $idnumber = $row['user_id'];
+								  $studentname = $row['first_name'].' '.$row['last_name'];
+								  echo '<option value="'.$idnumber .'">' . $idnumber .' : '. $studentname .'</option>';
+								}
+							?>
+						</select>
                       </div>
                     </div>
                     <div id="appendstudent">
@@ -233,7 +243,7 @@
             });
           }
 
-          <?php  include 'faculty-form-queries.php'  ?>
+          //<?php  include 'faculty-form-queries.php'  ?>
 
           //generate incident report form (doc file)
           function loadFile(url,callback){
@@ -357,7 +367,7 @@
       					title : "Incident Report",
       					subject : "Incident Report Document Signature",
       					message : "Please do sign this document.",
-                fname : "<?php echo $nameres['first_name'] ?>",
+						fname : "<?php echo $nameres['first_name'] ?>",
       					lname : "<?php echo $nameres['last_name'] ?>",
       					email : "<?php echo $nameres['email'] ?>",
       					filename : $('#inputfile').val()
