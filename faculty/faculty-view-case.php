@@ -75,6 +75,7 @@ if (!isset($_GET['cn']))
                         C.VERDICT AS VERDICT,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
             FROM 		    CASES C
@@ -129,21 +130,24 @@ if (!isset($_GET['cn']))
               <label>Summary of the Incident</label>
               <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
             </div>
-            <div class="form-group" id="penaltyarea" hidden>
-            <?php
-              if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                <label>SDFO Director's Remarks</label>
-            <?php }
-              else { ?>
-                <label>Penalty</label>
-            <?php }
-            ?>
-              <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-            </div>
+
             <div class="form-group" id="proceedingarea" hidden>
               <label>Nature of Proceedings</label>
               <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
             </div>
+
+            <div class="form-group" id="penaltyarea" hidden>
+              <label>Penalty</label>
+              <?php
+                if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+              <?php }
+                else if($row['PROCEEDING_DECISION'] != null) { ?>
+                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+              <?php }
+              ?>
+            </div>
+
             <br><br><br><br><br>
           </div>
         </div>
@@ -205,7 +209,7 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row['PENALTY_DESC'] != null ){ ?>
+    if($row['PENALTY_DESC'] != null  || $row['PROCEEDING_DECISION'] != null){ ?>
       $("#penaltyarea").show();
   <?php }
     if($row['PROCEEDING'] != null ){ ?>

@@ -203,7 +203,7 @@ if (!isset($_GET['cn']))
 
           <br>
 
-          <div class="form-group" id="finalpenaltyarea">
+          <div class="form-group" id="finalpenaltyarea" hidden>
             <label>Penalty</label>
             <textarea id="finalpenalty" style="height: 100px;" class="form-control" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
           </div>
@@ -232,7 +232,7 @@ if (!isset($_GET['cn']))
                                         <p>Status: <strong>{$relatedrow['STATUS_DESCRIPTION']}</strong></p>";
                                         if($relatedrow['STATUS_DESCRIPTION'] == "Closed") {
                                           echo "<p>Proceedings: <strong>{$relatedrow['PROCEEDINGS']}</strong></p>
-                                                <p>Penalty: <strong>{$relatedrow['PENALTY_DESC']}</strong></p>";
+                                                <p>Penalty: <strong>{$relatedrow['PROCEEDING_DECISION']}</strong></p>";
                                         }
                         echo        "</div>
 
@@ -316,9 +316,9 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
     <?php include 'ulc-notif-scripts.php' ?>
 
-    $('#review').click(function() {
+    /*$('#review').click(function() {
       $("#revModal").modal("show");
-    });
+    });*/
 
     $('#sign').click(function() {
       if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
@@ -347,7 +347,7 @@ if (!isset($_GET['cn']))
             },
             success: function(msg) {
               $('#message').text('Case returned to IDO successfully for dismissal.');
-              $("#review").attr('disabled', true);
+              $("#sign").attr('disabled', true);
 
               $("#alertModal").modal("show");
             }
@@ -356,10 +356,7 @@ if (!isset($_GET['cn']))
     });
 
     $('#modalOK').click(function() {
-      if('<?php echo $row['CASE_DECISION']; ?>' == "File Case" && <?php echo $row['REMARKS_ID']; ?> == 8) {
-        $("#review").hide();
-        $("#schedule").show();
-      }
+      location.reload();
     });
 
     $('#submit').click(function() {
@@ -455,6 +452,10 @@ if (!isset($_GET['cn']))
       $("#schedule").hide();
       $("#endorse").hide();
       $("#otherarea").hide();
+  <?php }
+    if($row['REMARKS_ID'] > 8) { ?>
+      $("#verdictarea").show();
+      $("#finalpenaltyarea").show();
   <?php }
     if($row['REMARKS_ID'] > 9) { ?>
       $("#finalpenalty").attr('readonly',true);

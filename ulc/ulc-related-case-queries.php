@@ -24,6 +24,7 @@
                       RP.PENALTY_DESC AS PENALTY_DESC,
                       C.VERDICT AS VERDICT,
                       C.HEARING_DATE AS HEARING_DATE,
+                      C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                       C.DATE_CLOSED AS DATE_CLOSED,
                       C.IF_NEW AS IF_NEW,
                       RCP.PROCEEDINGS_DESC AS PROCEEDINGS
@@ -39,7 +40,7 @@
           LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
-          WHERE       RO.TYPE = "'.$row['OFFENSE_ID'].'"
+          WHERE       C.OFFENSE_ID = "'.$row['OFFENSE_ID'].'"
           ORDER BY	  C.CASE_ID';
   $relatedres=mysqli_query($dbc,$relatedq);
   if(!$relatedres){
