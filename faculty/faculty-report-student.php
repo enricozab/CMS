@@ -74,9 +74,14 @@
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="location" name="location" value="G211" class="form-control" placeholder="Enter Location"/>
                     </div>
-                    <div class="form-group" style = "width: 180px;">
+                    <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input  id="date" type="text" class="form-control" placeholder="Enter Date"/>
+                      <div class='input-group date'>
+                        <input  id='date' type='text' class="form-control" placeholder="Enter Date"/>
+                        <span id='cal' style="cursor: pointer;" class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                      </div>
                     </div>
                     <div class="form-group">
                       <label>Please provide a summary of the incident <span style="font-weight:normal; color:red;">*</span></label>
@@ -151,6 +156,10 @@
       <?php include 'faculty-notif-scripts.php' ?>
 
       $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, step: 1});
+
+      $('#cal').on('click', function() {
+        $("#date").focus();
+      })
 
       $('.studentID').keypress(validateNumber);
 
