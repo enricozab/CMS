@@ -40,6 +40,7 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
 </head>
 
 <body>
@@ -57,9 +58,7 @@
                 <div class="col-lg-12">
                     <h3 class="page-header">Calendar</h3>
                 </div>
-                <div>
-                  <img src="../images/calendar.png" width="1500" height="700">
-                </div>
+                <?php include '../calendar/button_and_calendar.php' ?>
                 <!-- /.col-lg-12 -->
             </div>
         </div>
@@ -92,8 +91,13 @@
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
+  //all functinos have to be inside this functions
+  //function that runs once the page is loaded
+
   $(document).ready(function() {
       <?php include 'hdo-notif-scripts.php'?>
+      $("#login").hide();
+      $("#create").hide();
   });
   </script>
 

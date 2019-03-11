@@ -1,4 +1,4 @@
-<?php include 'sdfod.php' ?>
+<?php include 'faculty.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,17 +40,18 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
 </head>
 
 <body>
 
   <?php
-    include 'sdfod-notif-queries.php'
+    include 'faculty-notif-queries.php'
   ?>
 
     <div id="wrapper">
 
-        <?php include 'sdfod-sidebar.php';?>
+        <?php include 'faculty-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
@@ -90,8 +91,11 @@
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
+  //all functinos have to be inside this functions
+  //function that runs once the page is loaded
+
   $(document).ready(function() {
-      <?php include 'sdfod-notif-scripts.php'?>
+      <?php include 'faculty-notif-scripts.php'?>
       $("#login").hide();
       $("#create").hide();
   });

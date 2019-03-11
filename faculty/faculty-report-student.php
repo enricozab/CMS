@@ -74,6 +74,7 @@
 								}
 							?>
 						</select>
+                        <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" value="11530022" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                       </div>
                     </div>
                     <div id="appendstudent">
@@ -82,19 +83,20 @@
                     <br>
                     <div class="form-group" style = "width: 300px;">
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="location" name="location" class="form-control" placeholder="Enter Location"/>
+                      <input id="location" name="location" value="G211" class="form-control" placeholder="Enter Location"/>
                     </div>
-                    <div class="form-group" style = "width: 180px;">
+                    <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="date" type="date" name="date" class="form-control"/>
-                    </div>
-                    <div class="form-group" style = "width: 180px;">
-                      <label>Time of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="time" type="time" name="time" class="form-control"/>
+                      <div class='input-group date'>
+                        <input  id='date' type='text' class="form-control" placeholder="Enter Date"/>
+                        <span id='cal' style="cursor: pointer;" class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                      </div>
                     </div>
                     <div class="form-group">
                       <label>Please provide a summary of the incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5"></textarea>
+                      <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5">HAHAHAHA</textarea>
                     </div>
                     <br>
                     <div class="form-group">
@@ -147,6 +149,12 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <!--Datetimepicker -->
+    <!-- scripts from calendar api  -->
+    <link rel="stylesheet" href="../extra-css/jquery.datetimepicker.min.css" />
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
+    <script src="../extra-css/jquery.datetimepicker.min.js"></script>
+
     <!-- Form Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
@@ -157,6 +165,12 @@
     $(document).ready(function() {
 
       <?php include 'faculty-notif-scripts.php' ?>
+
+      $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, step: 1});
+
+      $('#cal').on('click', function() {
+        $("#date").focus();
+      })
 
       $('.studentID').keypress(validateNumber);
 
@@ -201,131 +215,165 @@
         e.preventDefault();
       });
 
-      $('form').submit(function(e) {
-        e.preventDefault();
-      });
       var studentlist = [];
 
       $('#submit').click(function() {
-          $("#alertModal").modal("show");
+        var ids = ['#location','#date','textarea'];
+        var isEmpty = true;
 
-          var ids = ['#location','#date','#time','textarea'];
-          var isEmpty = true;
-
-          $('.studentID').each(function(i, obj){
-            if(obj.value.length == 0){
-              isEmpty = false;
-            }
-            studentlist.push(parseInt(obj.value));
-          });
-
-          for(var i = 0; i < ids.length; ++i ) {
-            if($.trim($(ids[i]).val()).length == 0) {
-              isEmpty = false;
-            }
+        $('.studentID').each(function(i, obj){
+          if(obj.value.length == 0){
+            isEmpty = false;
           }
+          studentlist.push(parseInt(obj.value));
+        });
 
-          if(isEmpty) {
-            $.ajax({
-                url: '../ajax/faculty-insert-incident-report.php',
-                type: 'POST',
-                data: {
-                    studentID: studentlist,
-                    location: $('#location').val(),
-                    date: $('#date').val(),
-                    time: $('#time').val(),
-                    details: $('#details').val()
-                },
-                success: function(msg) {
-                    generate();
-                    $('#message').text('Submitted successfully!');
-                }
-            });
+        for(var i = 0; i < ids.length; ++i ) {
+          if($.trim($(ids[i]).val()).length == 0) {
+            isEmpty = false;
           }
+        }
 
           //<?php  include 'faculty-form-queries.php'  ?>
-
-          //generate incident report form (doc file)
-          function loadFile(url,callback){
-              JSZipUtils.getBinaryContent(url,callback);
-          }
-          function generate(){
-            for(var i = 0; i < studentlist.length; ++i ) {
-              $.ajax({
-                  url: '../ajax/get-student-info.php',
-                  type: 'POST',
-                  data: {
-                      studentID: studentlist[i]
-                  },
-                  success: function(response) {
-                    var stud = JSON.parse(response);
-                    loadFile("../templates/template-incident-report.docx",function(error,content){
-                        if (error) { throw error };
-                        var zip = new JSZip(content);
-                        var doc=new window.docxtemplater().loadZip(zip);
-                        // date
-                        var today = new Date();
-                        var dd = today.getDate();
-                        var mm = today.getMonth() + 1; //January is 0!
-                        var yyyy = today.getFullYear();
-                        if (dd < 10) {
-                          dd = '0' + dd;
-                        }
-                        if (mm < 10) {
-                          mm = '0' + mm;
-                        }
-                        var today = dd + '/' + mm + '/' + yyyy;
-                        doc.setData({
-                          <?php
-                          if ($formres['MAX'] != null) { ?>
-                            formNum: <?php echo $formres['MAX'] ?>,
-                          <?php }
-                          else { ?>
-                            formNum: 1,
-                          <?php }
-                          ?>
-                          date: today,
-                          first: "<?php echo $nameres['first_name'] ?>",
-                          last: "<?php echo $nameres['last_name'] ?>",
-                          details: "<?php echo $officerow['description'] ?>",
-                          college: stud.description,
-                          studentF: stud.first_name,
-                          studentL: stud.last_name,
-                          idn: stud.user_id,
-                          degree: stud.degree,
-                          loc: document.getElementById("location").value,
-                          dateIncident: document.getElementById("date").value,
-                          summary: document.getElementById("details").value
-                        });
-                        try {
-                            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                            doc.render();
-                        }
-                        catch (error) {
-                            var e = {
-                                message: error.message,
-                                name: error.name,
-                                stack: error.stack,
-                                properties: error.properties,
-                            }
-                            console.log(JSON.stringify({error: e}));
-                            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                            throw error;
-                        }
-                        var out=doc.getZip().generate({
-                            type:"blob",
-                            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        }); //Output the document using Data-URI
-                        saveAs(out,"output.docx",  {
-                          locURL: "/localhost/CMS/ajax"
-                        });
-                    });
-                  }
-              });
-            }
-          }
-
+        if(isEmpty) {
+          $.ajax({
+              url: '../ajax/faculty-insert-incident-report.php',
+              type: 'POST',
+              data: {
+                  studentID: studentlist,
+                  location: $('#location').val(),
+                  date: $('#date').val(),
+                  details: $('#details').val()
+              },
+              success: function(msg) {
+                  generate();
+                  $("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
+                  $("#alertModal").modal("show");
+              }
+          });
+        }
+        else {
+          $("#alertModal").modal("show");
+        }
       });
+
+      <?php  include 'faculty-form-queries.php'  ?>
+
+      //generate incident report form (doc file)
+      function loadFile(url,callback){
+          JSZipUtils.getBinaryContent(url,callback);
+      }
+      function generate(){
+        for(var i = 0; i < studentlist.length; ++i ) {
+          $.ajax({
+              url: '../ajax/get-student-info.php',
+              type: 'POST',
+              data: {
+                  studentID: studentlist[i]
+              },
+              success: function(response) {
+                var stud = JSON.parse(response);
+                loadFile("../templates/template-incident-report.docx",function(error,content){
+                    if (error) { throw error };
+                    var zip = new JSZip(content);
+                    var doc=new window.docxtemplater().loadZip(zip);
+                    // date
+                    var today = new Date();
+                    var dd = today.getDate();
+                    var mm = today.getMonth() + 1; //January is 0!
+                    var yyyy = today.getFullYear();
+                    if (dd < 10) {
+                      dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                      mm = '0' + mm;
+                    }
+                    var today = dd + '/' + mm + '/' + yyyy;
+                    doc.setData({
+                      <?php
+                      if ($formres['MAX'] != null) { ?>
+                        formNum: <?php echo $formres['MAX'] ?>,
+                      <?php }
+                      else { ?>
+                        formNum: 1,
+                      <?php }
+                      ?>
+                      date: today,
+                      first: "<?php echo $nameres['first_name'] ?>",
+                      last: "<?php echo $nameres['last_name'] ?>",
+                      details: "<?php echo $officerow['description'] ?>",
+                      college: stud.description,
+                      studentF: stud.first_name,
+                      studentL: stud.last_name,
+                      idn: stud.user_id,
+                      degree: stud.degree,
+                      loc: document.getElementById("location").value,
+                      dateIncident: document.getElementById("date").value,
+                      summary: document.getElementById("details").value
+                    });
+                    try {
+                        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                        doc.render();
+                    }
+                    catch (error) {
+                        var e = {
+                            message: error.message,
+                            name: error.name,
+                            stack: error.stack,
+                            properties: error.properties,
+                        }
+                        console.log(JSON.stringify({error: e}));
+                        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                        throw error;
+                    }
+                    var out=doc.getZip().generate({
+                        type:"blob",
+                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    }); //Output the document using Data-URI
+                    saveAs(out,"output.docx",  {
+                      locURL: "/localhost/CMS/ajax"
+                    });
+                });
+              }
+          });
+        }
+      }
+
+      $('#alertModal').on('click', function() {
+
+        if($('#message').text() != "Please fill in all the required ( * ) fields!") {
+          //HELLOSIGN API
+          $.ajax({
+                url: '../ajax/users-hellosign.php',
+                type: 'POST',
+                data: {
+                    title : "Incident Report",
+                    subject : "Incident Report Document Signature",
+                    message : "Please do sign this document.",
+                    fname : "<?php echo $nameres['first_name'] ?>",
+                    lname : "<?php echo $nameres['last_name'] ?>",
+                    email : "<?php echo $nameres['email'] ?>",
+                    filename : $('#inputfile').val()
+                },
+                success: function(response) {
+                  sendIncidentReport();
+              }
+          });
+        }
+        else{
+          $('#alertModal').modal("hide");
+        }
+      });
+
+      function sendIncidentReport() {
+        location.href= '<?php echo $login_url; ?>';
+        <?php
+          if(isset($_SESSION['access_token']) ) { ?>
+            var emails = ['hdo.cms@gmail.com'];
+            sendEmail(emails);
+          <?php }
+        ?>
+      }
 
       //GMAIL API function
       function sendEmail(to){
@@ -333,9 +381,9 @@
             url: '../ajax/users-send-email.php',
             type: 'POST',
             data: {
-                messageSubject: "[CMS] Incident Report created on " + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>",
+                messageSubject: "[CMS] Incident Report created on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>",
                 toID: to,
-                messageContent:"I filed a new incident report on " + "<?php echo date("h:i:sa"); echo date("Y/m/d");?>"
+                messageContent:"I filed a new incident report on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>"
             },
             success: function(msg) {
               //resets the pages content - takes out all inserted values

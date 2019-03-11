@@ -55,34 +55,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="ido-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="ido-active-cases.php">Active</a>
-						</li>
-						<li>
-							<a href="ido-closed-cases.php">Closed</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-folder-open  fa-fw"></i> Files<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">File 1</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">Report 1</a>
-						</li>
-					</ul>
+					<a href="ido-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="ido-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>

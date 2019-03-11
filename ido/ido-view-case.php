@@ -87,12 +87,15 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
             FROM 		    CASES C
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
             LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+            LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
+            LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
@@ -199,6 +202,31 @@ if (!isset($_GET['cn']))
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default" style="width: 500px;">
+                      <div class="panel-heading">
+                          <b style = "font-size: 17px;">Submitted Forms</b>
+                      </div>
+                      <!-- .panel-heading -->
+                      <div class="panel-body">
+                        <table class="table">
+                          <tbody>
+                            <tr>
+                              <td>Student Response Form</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                              <td>Parent/Guardian Letter</td>
+                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <!-- .panel-body -->
+                  </div>
+                </div>
+
               </div>
 
 			<br><br>
@@ -207,21 +235,36 @@ if (!isset($_GET['cn']))
         <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
       </div>
 
-      <button type="button" class="btn btn-outline btn-primary" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
-      <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-      <button type="submit" id="viewForm" name="viewForm" class="btn btn-outline btn-primary">Review Submitted Form</button>
-
-      <br><br>
-
       <div class="form-group" id="penaltyarea" hidden>
-        <label>Penalty</label>
+        <?php
+          if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+            <label>SDFO Director's Remarks</label>
+        <?php }
+          else { ?>
+            <label>Penalty</label>
+        <?php }
+        ?>
         <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
       </div>
+
+      <div class="form-group" id="proceedingarea" hidden>
+        <label>Nature of Proceedings</label>
+        <textarea id="proceeding" style="width:600px;" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+      </div>
+
+      <br>
+
+      <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
 
       <br><br><br><br>
       <div class="row">
         <div class="col-sm-6">
-          <button type="submit" id="return" name="return" class="btn btn-primary">Return to Student</button>
+          <button type="submit" id="return" name="return" class="btn btn-warning">Return to Student</button>
+          <?php
+            if ($row['TYPE'] == 'Major') { ?>
+              <button type="button" class="btn btn-success" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
+          <?php }
+          ?>
           <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
           <button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>
@@ -283,6 +326,7 @@ if (!isset($_GET['cn']))
 
     var totalID;
     <?php include 'ido-notif-scripts.php' ?>
+    <?php include "ido-form-queries.php" ?>
 
     $('#submit').click(function() {
       $.ajax({
@@ -454,7 +498,7 @@ if (!isset($_GET['cn']))
       });
 
       $("#endorsement").attr('disabled', true).text("Sent");
-		
+
 		//NOT DONE
 		//HELLOSIGN API
     		$.ajax({
@@ -503,21 +547,9 @@ if (!isset($_GET['cn']))
     }
 
     $('#sendcl').click(function() {
-      $.ajax({
-          url: '../ajax/ido-send-closure-letter.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>
-          },
-          success: function(msg) {
-              $('#message').text('Case dismissed.');
-              $("#sendcl").attr('disabled', true);
+      $('#closureModal').modal('show');
 
-              $("#alertModal").modal("show");
-          }
-      });
-
-      loadFile("../templates/template-closure-letter.docx",function(error,content){
+      /*loadFile("../templates/template-closure-letter.docx",function(error,content){
 
           if (error) { throw error };
           var zip = new JSZip(content);
@@ -580,6 +612,22 @@ if (!isset($_GET['cn']))
           }); //Output the document using Data-URI
           saveAs(out,"output.docx");
 
+      });*/
+    });
+
+    $('#submitClosure').click(function() {
+      $.ajax({
+          url: '../ajax/ido-send-closure-letter.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+              $("#message").text('Case dismissed. Closure Letter has been sent to the student successfully.');
+              $("#sendcl").attr('disabled', true);
+
+              $("#alertModal").modal("show");
+          }
       });
     });
   });
@@ -590,6 +638,9 @@ if (!isset($_GET['cn']))
   <?php }
     if($row['PENALTY_DESC'] != null){ ?>
       $("#penaltyarea").show();
+  <?php }
+    if($row['PROCEEDING'] != null ){ ?>
+      $("#proceedingarea").show();
   <?php }
     if($row['REMARKS_ID'] != 3){ ?>
       $("#submit").attr('disabled', true);
@@ -616,24 +667,6 @@ if (!isset($_GET['cn']))
   } ?>
 
   </script>
-
-  <!-- Modal -->
-  <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
-        </div>
-        <div class="modal-body">
-          <p id="message"></message>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Add Comment Modal -->
   <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -676,6 +709,65 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
+  <!-- Closure Letter Modal -->
+  <div class="modal fade" id="closureModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Closure Letter</b></h4>
+        </div>
+        <div class="modal-body">
+
+          <p>Date: <b><?php echo date("d-m-Y"); ?></b></p>
+          <br>
+          <p><b>STUDENT DETAILS</b></p>
+          <p>Student: <b><?php echo $row["STUDENT"]; ?></b></p>
+          <p>ID Number: <b><?php echo $row["REPORTED_STUDENT_ID"]; ?></b></p>
+          <p>Year Level: <b><?php echo $studentres["year_level"]; ?></b></p>
+          <p>College: <b><?php echo $nameres["description"]; ?></b></p>
+          <p>Degree: <b><?php echo $studentres["degree"]; ?></b></p>
+          <p>School Year / Term: <b>SY <?php echo $formres2["school_year"]; ?> / Term <?php echo $formres2["term"]; ?></b></p>
+          <br>
+          <p><b>CASE DETAILS</b></p>
+          <p>Violation/Offense: <b><?php echo $row["OFFENSE_DESCRIPTION"]; ?></b></p>
+          <p>Date of Apprehension: <b><?php echo $row["DATE_FILED"]; ?></b></p>
+          <p>Complainant: <b><?php echo $row["COMPLAINANT"]; ?></b></p>
+          <p>Investigating Discipline Officer: <b><?php echo $row["HANDLED_BY"]; ?></b></p>
+          <p>Case Decision: <b>Case Dismissed</b></p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "submitClosure" class="btn btn-primary" data-dismiss="modal">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
+
+<style>
+
+p{ margin: 0; }
+
+</style>

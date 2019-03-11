@@ -1,4 +1,4 @@
-<?php include 'ido.php' ?>
+<?php include 'aulc.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,21 +45,19 @@
 <body>
 
   <?php
-    include 'ido-notif-queries.php'
+    include 'aulc-notif-queries.php'
   ?>
 
     <div id="wrapper">
 
-        <?php include 'ido-sidebar.php';?>
+        <?php include 'aulc-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header">Calendar</h3>
                 </div>
-                <div>
-                  <img src="../images/calendar.png" width="1500" height="700">
-                </div>
+                <?php include '../calendar/button_and_calendar.php' ?>
                 <!-- /.col-lg-12 -->
             </div>
         </div>
@@ -93,7 +91,9 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-      <?php include 'ido-notif-scripts.php'?>
+      <?php include 'aulc-notif-scripts.php'?>
+      $("#login").hide();
+      $("#create").hide();
   });
   </script>
 

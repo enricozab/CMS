@@ -8,49 +8,37 @@
     echo mysqli_error($dbc);
   }
 
-  // INSERT REFERRAL FORM TO DB
-
-  else if($_POST['nature'] == "Formal Hearing") {
-
-    $query="INSERT INTO CASE_REFERRAL_FORMS (CASE_ID, CASE_DECISION, REASON, PROCEEDINGS, AULC_REMARKS)
-                 VALUES ('{$_POST['caseID']}', '{$_POST['decision']}',  '{$_POST['reason']}', 1, '{$_POST['remark']}')";
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
-      echo mysqli_error($dbc);
-    }
-
+  $aulc_remarks = 'NULL';
+  if($_POST['aulc_remarks'] != null){
+    $aulc_remarks = "'".$_POST['aulc_remarks']."'";
   }
 
-  else if($_POST['nature'] == "Summary Proceedings") {
-
-    $query="INSERT INTO CASE_REFERRAL_FORMS (CASE_ID, CASE_DECISION, REASON, PROCEEDINGS, AULC_REMARKS)
-                 VALUES ('{$_POST['caseID']}', '{$_POST['decision']}',  '{$_POST['reason']}', 2, '{$_POST['remark']}')";
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
-      echo mysqli_error($dbc);
-    }
-
+  $changeoff = 0;
+  if($_POST['changeoff'] != null){
+    $changeoff = $_POST['changeoff'];
   }
 
-  else if($_POST['nature'] == "University Panel for Case Conference") {
-
-    $query="INSERT INTO CASE_REFERRAL_FORMS (CASE_ID, CASE_DECISION, REASON, PROCEEDINGS, AULC_REMARKS)
-                 VALUES ('{$_POST['caseID']}', '{$_POST['decision']}',  '{$_POST['reason']}', 3, '{$_POST['remark']}')";
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
-      echo mysqli_error($dbc);
-    }
-
+  $changevio = 'NULL';
+  if($_POST['changevio'] != null){
+    $changevio = $_POST['changevio'];
   }
 
-  else {
+  $cheat = 'NULL';
+  if($_POST['cheat'] != null){
+    $cheat = $_POST['cheat'];
+  }
 
-    $query="INSERT INTO CASE_REFERRAL_FORMS (CASE_ID, CASE_DECISION, REASON, PROCEEDINGS, AULC_REMARKS)
-                 VALUES ('{$_POST['caseID']}', '{$_POST['decision']}',  '{$_POST['reason']}', 4, '{$_POST['remark']}')";
+  $query="UPDATE CASE_REFERRAL_FORMS SET CASE_DECISION='{$_POST['decision']}', REASON='{$_POST['reason']}', AULC_REMARKS={$aulc_remarks}, CHANGE_OFFENSE={$changeoff}, NEW_OFFENSE={$changevio} WHERE CASE_ID={$_POST['caseID']}";
+  $result=mysqli_query($dbc,$query);
+  if(!$result){
+    echo mysqli_error($dbc);
+  }
+
+  if($changevio == 1) {
+    $query="UPDATE CASES SET OFFENSE_ID={$changevio}, CHEATING_TYPE_ID={$cheat} WHERE CASE_ID={$_POST['caseID']}";
     $result=mysqli_query($dbc,$query);
     if(!$result){
       echo mysqli_error($dbc);
     }
-
   }
 ?>

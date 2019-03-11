@@ -55,32 +55,13 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="hdo-home.php"><i class="fa fa-bell fa-fw"></i> Case Notifications <span id="cn" class="badge"></span></a>
+					<a href="hdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="hdo-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge"></span></a>
 				</li>
 				<li>
 					<a href="hdo-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="hdo-active-cases.php">Active</a>
-						</li>
-						<li>
-							<a href="hdo-closed-cases.php">Closed</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-folder-open  fa-fw"></i> Files<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">File 1</a>
-						</li>
-					</ul>
 				</li>
 				<li>
 					<a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
