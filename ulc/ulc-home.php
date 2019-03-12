@@ -91,7 +91,7 @@
               </thead>
               <tbody>
                 <?php
-                $query='SELECT 		  C.CASE_ID AS CASE_ID,
+                $query='SELECT 		  DISTINCT(C.CASE_ID) AS CASE_ID,
                                     C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                                     C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                                     CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,

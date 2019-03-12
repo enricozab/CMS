@@ -40,7 +40,7 @@
           LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
-          WHERE       C.OFFENSE_ID = "'.$row['OFFENSE_ID'].'"
+          WHERE       (RO.TYPE="MAJOR" OR RP.PENALTY_DESC="Will be processed as a major discipline offense") AND C.OFFENSE_ID = "'.$row['OFFENSE_ID'].'"
           ORDER BY	  C.CASE_ID';
   $relatedres=mysqli_query($dbc,$relatedq);
   if(!$relatedres){

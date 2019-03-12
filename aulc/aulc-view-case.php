@@ -157,7 +157,7 @@ if (!isset($_GET['cn']))
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="panel panel-default" style="width: 500px;">
+                    <div class="panel panel-default">
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Submitted Forms</b>
                       </div>
@@ -189,24 +189,28 @@ if (!isset($_GET['cn']))
                 </div>
               </div>
 			<br><br>
-      <div class="form-group">
-        <label>Summary of the Incident</label>
-        <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label>Summary of the Incident</label>
+            <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+          </div>
 
-      <div class="form-group" id="penaltyarea" hidden>
-        <label>SDFO Director's Remarks</label>
-        <textarea id="penalty" style="width:600px;" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-      </div>
+          <div class="form-group" id="penaltyarea" hidden>
+            <label>SDFO Director's Remarks</label>
+            <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+          </div>
 
-      <div class="form-group" id="proceedingarea">
-        <label>Nature of Proceedings</label>
-        <textarea id="proceeding" style="width:600px;" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
-      </div>
+          <div class="form-group" id="proceedingarea">
+            <label>Nature of Proceedings</label>
+            <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+          </div>
 
-      <div id="viewevidence">
-        <br>
-        <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+          <div id="viewevidence">
+            <br>
+            <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+          </div>
+        </div>
       </div>
 
       <br><br><br>

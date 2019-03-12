@@ -1,6 +1,4 @@
 <?php include 'faculty.php' ?>
-<?php include '../gmail/Qassim_HTTP.php' ?>
-<?php include '../gmail/config.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -149,6 +147,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+
+    <?php include '../gmail/script.php'; ?>
 
     <script>
     $(document).ready(function() {
@@ -344,7 +344,9 @@
                     filename : $('#inputfile').val()
                 },
                 success: function(response) {
-                  sendIncidentReport();
+                  sendEmail('hdo.cms@gmail.com','[CMS] Reported Student on ' + new Date($.now()), 'Message');
+                  $('#alertModal').modal("hide");
+                  $('#form')[0].reset();
               }
           });
         }
@@ -352,33 +354,6 @@
           $('#alertModal').modal("hide");
         }
       });
-
-      function sendIncidentReport() {
-        location.href= '<?php echo $login_url; ?>';
-        <?php
-          if(isset($_SESSION['access_token']) ) { ?>
-            var emails = ['hdo.cms@gmail.com'];
-            sendEmail(emails);
-          <?php }
-        ?>
-      }
-
-      //GMAIL API function
-      function sendEmail(to){
-        $.ajax({
-            url: '../ajax/users-send-email.php',
-            type: 'POST',
-            data: {
-                messageSubject: "[CMS] Incident Report created on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>",
-                toID: to,
-                messageContent:"I filed a new incident report on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>"
-            },
-            success: function(msg) {
-              //resets the pages content - takes out all inserted values
-              $('#form')[0].reset();
-            }
-        });
-      }
     });
   	</script>
 

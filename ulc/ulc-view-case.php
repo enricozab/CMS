@@ -229,6 +229,7 @@ if (!isset($_GET['cn']))
                                     </p>
                                     <div>
                                         <br>
+                                        <p>Offense: <strong>{$relatedrow['OFFENSE_DESCRIPTION']}</strong></p>
                                         <p>Status: <strong>{$relatedrow['STATUS_DESCRIPTION']}</strong></p>";
                                         if($relatedrow['STATUS_DESCRIPTION'] == "Closed") {
                                           echo "<p>Proceedings: <strong>{$relatedrow['PROCEEDINGS']}</strong></p>

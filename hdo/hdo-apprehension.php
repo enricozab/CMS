@@ -45,6 +45,12 @@
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
+    <!--Datetimepicker -->
+    <!-- scripts from calendar api  -->
+    <link rel="stylesheet" href="../extra-css/jquery.datetimepicker.min.css" />
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
+    <script src="../extra-css/jquery.datetimepicker.min.js"></script>
+
 </head>
 
 <body>
@@ -110,6 +116,15 @@
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="complainantID" value="20171234" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
+                    </div>
+                    <div class="form-group" style = "width: 300px;">
+                      <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
+                      <div class='input-group date'>
+                        <input  id='date' type='text' class="form-control" placeholder="Enter Date"/>
+                        <span id='cal' style="cursor: pointer;" class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                      </div>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
@@ -188,6 +203,12 @@
 
       $('.chosen-select').chosen();
 
+      $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, step: 1});
+
+      $('#cal').on('click', function() {
+        $("#date").focus();
+      })
+      
       $('.studentID').keypress(validateNumber);
       $('.comID').keypress(validateNumber);
 
