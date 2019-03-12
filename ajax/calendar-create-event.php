@@ -19,12 +19,20 @@ try {
 
 	echo json_encode([ 'event_id' => $event_id ]);
 
-	if(isset($_POST["caseID"])) {
-		$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=9 WHERE CASE_ID = {$_POST['caseID']}";
+	if(isset($_SESSION["caseID"])) {
+		if($_SESSION['user_type_id'] == 7) {
+			$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=9 WHERE CASE_ID = {$_SESSION['caseID']}";
+		}
+		else if($_SESSION['user_type_id'] == 4) {
+			$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=3 WHERE CASE_ID = {$_SESSION['caseID']}";
+		}
 	  $result=mysqli_query($dbc,$query);
 	  if(!$result){
 	    echo mysqli_error($dbc);
 	  }
+		else{
+			unset($_SESSION['caseID']);
+		}
 	}
 }
 catch(Exception $e) {

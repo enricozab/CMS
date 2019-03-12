@@ -261,6 +261,7 @@ if (!isset($_GET['irn']))
                   offenseID: $('#offense').val(),
                   cheatingType: $('#cheat-type').val(),
                   complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
+                  dateIncident: "<?php echo $row['DATE_INCIDENT']; ?>",
                   location: "<?php echo $row['LOCATION']; ?>",
                   details: $('#details').val(),
                   assignIDO: $('#ido').val()

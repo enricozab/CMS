@@ -87,6 +87,7 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
@@ -242,15 +243,15 @@ if (!isset($_GET['cn']))
           </div>
 
           <div class="form-group" id="penaltyarea" hidden>
+            <label>Penalty</label>
             <?php
-              if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                <label>SDFO Director's Remarks</label>
+              if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
             <?php }
-              else { ?>
-                <label>Penalty</label>
+              else if($row['PROCEEDING_DECISION'] != null) { ?>
+                <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
             <?php }
             ?>
-            <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
           </div>
 
           <div class="form-group" id="proceedingarea" hidden>
@@ -269,7 +270,7 @@ if (!isset($_GET['cn']))
           <button type="submit" id="return" name="return" class="btn btn-warning">Return to Student</button>
           <?php
             if ($row['TYPE'] == 'Major') { ?>
-              <button type="button" class="btn btn-success" id="schedule" onclick="location.href='ido-calendar.php'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
+              <button type="button" class="btn btn-success" id="schedule"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
           <?php }
           ?>
           <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
@@ -637,34 +638,60 @@ if (!isset($_GET['cn']))
           }
       });
     });
+
+    $('#schedule').on('click', function() {
+      <?php $_SESSION['caseID']=$_GET['cn']; ?>
+      location.href='ido-calendar.php';
+    });
+
   });
+
+  <?php
+    $isformq='SELECT * FROM STUDENT_RESPONSE_FORMS WHERE "'.$_GET['cn'].'"';
+    $isformres=mysqli_query($dbc,$isformq);
+    if(!$isformres){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $isformrow=mysqli_fetch_array($isformres,MYSQLI_ASSOC);
+    }
+  ?>
 
   <?php
     if($row['TYPE'] == "Major"){ ?>
       $("#admitarea").show();
   <?php }
-    if($row['PENALTY_DESC'] != null){ ?>
+    if($row['PENALTY_DESC'] != null  || $row['PROCEEDING_DECISION'] != null){ ?>
       $("#penaltyarea").show();
+      $("#penalty").attr('readonly', true);
   <?php }
     if($row['PROCEEDING'] != null ){ ?>
       $("#proceedingarea").show();
   <?php }
-    if($row['REMARKS_ID'] != 3){ ?>
+    if($row['REMARKS_ID'] != 2){ ?>
+      $("#schedule").hide();
+      $("#return").hide();
+      $("#submit").hide();
+  <?php }
+    if($row['REMARKS_ID'] == 2 && isset($isformrow)){ ?>
+      $("#schedule").hide();
+      $("#return").show();
+      $("#submit").show();
+  <?php }
+    if($row['REMARKS_ID'] != 2){ ?>
       $("#submit").attr('disabled', true);
       $("#return").attr('disabled', true);
       $("#schedule").attr('disabled', true);
-      $("#penalty").attr('readonly', true);
-      <?php
-          if($row['REMARKS_ID'] > 4) { ?>
-            $("#penalty").val("<?php echo $row['PENALTY_DESC']; ?>");
+
+      <?php {
+          /*if($row['REMARKS_ID'] > 4) { ?>
             $("#schedule").hide();
             $("#return").hide();
             $("#submit").hide();
         <?php if($row['PENALTY_DESC'] == null){ ?>
-                $("#penaltyarea").hide();
-        <?php }
-          }
-    }
+                $("#penaltyarea").hide();*/
+            }
+      }
   if($row['REMARKS_ID'] != 7) { ?>
     $("#sendcl").hide();
   <?php }

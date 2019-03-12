@@ -213,10 +213,18 @@
           };
 
         	$("#create-event").attr('disabled', 'disabled');
+          //../ajax/calendar-create-event.php
         	$.ajax({
                 type: 'POST',
                 url: '../ajax/calendar-create-event.php',
-                data: { event_details: parameters },
+                data: {
+                  event_details: parameters,
+                  <?php
+                    if(isset($_SESSION['caseID'])) { ?>
+                      caseID: <?php echo $_SESSION['caseID']; ?>
+                  <?php }
+                  ?>
+                },
                 dataType: 'json',
                 success: function(response) {
                 	//$("#create-event").removeAttr('disabled');

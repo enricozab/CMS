@@ -249,8 +249,8 @@
               data: {
                 event_details: parameters,
                 <?php
-                  if(isset($_GET['cn'])) { ?>
-                    caseID: <?php echo $_GET['cn']; ?>
+                  if(isset($_SESSION['caseID'])) { ?>
+                    caseID: <?php echo $_SESSION['caseID']; ?>
                 <?php }
                 ?>
               },

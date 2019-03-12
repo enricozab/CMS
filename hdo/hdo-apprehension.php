@@ -208,7 +208,7 @@
       $('#cal').on('click', function() {
         $("#date").focus();
       })
-      
+
       $('.studentID').keypress(validateNumber);
       $('.comID').keypress(validateNumber);
 
@@ -250,7 +250,7 @@
       });
 
       $('#submit').click(function() {
-        var ids = ['#studentID','#offense','#complainantID','#location','#details','#ido'];
+        var ids = ['#studentID','#offense','#complainantID','#date','#location','#details','#ido'];
         var isEmpty = true;
 
         if($('#cheat').is(":visible")){
@@ -277,6 +277,7 @@
                   offenseID: $('#offense').val(),
                   cheatingType: $('#cheat-type').val(),
                   complainantID: $('#complainantID').val(),
+                  dateIncident: $('#date').val(),
                   location: $('#location').val(),
                   details: $('#details').val(),
                   assignIDO: $('#ido').val()

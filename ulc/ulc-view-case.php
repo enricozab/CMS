@@ -255,7 +255,7 @@ if (!isset($_GET['cn']))
       <div class="row">
         <div class="col-sm-6">
           <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Referral Form</button>
-          <button type="button" id="schedule" class="btn btn-success" onclick="location.href='ulc-calendar.php?cn=<?php echo $_GET['cn']; ?>'"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule the Proceeding</button>
+          <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule the Proceeding</button>
           <?php
             if($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 13) { ?>
               <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
@@ -418,6 +418,11 @@ if (!isset($_GET['cn']))
             $("#alertModal").modal("show");
           }
       });
+    });
+
+    $('#schedule').on('click', function() {
+      <?php $_SESSION['caseID']=$_GET['cn']; ?>
+      location.href='ulc-calendar.php';
     });
 
   });
