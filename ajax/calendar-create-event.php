@@ -21,7 +21,14 @@ try {
 
 	if(isset($_SESSION["caseID"])) {
 		if($_SESSION['user_type_id'] == 7) {
-			$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=9, HEARING_DATE='{$event['event_time']['event_date']}' WHERE CASE_ID = {$_SESSION['caseID']}";
+			$hdate = null;
+			if($event['event_time']['event_date'] != null) {
+				$hdate = $event['event_time']['event_date'];
+			}
+			else {
+				$hdate = $event['event_time']['start_time'];
+			}
+			$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=9, HEARING_DATE='{$hdate}' WHERE CASE_ID = {$_SESSION['caseID']}";
 		}
 		else if($_SESSION['user_type_id'] == 4) {
 			$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=3 WHERE CASE_ID = {$_SESSION['caseID']}";
@@ -30,9 +37,7 @@ try {
 	  if(!$result){
 	    echo mysqli_error($dbc);
 	  }
-		else{
-			unset($_SESSION['caseID']);
-		}
+		unset($_SESSION['caseID']);
 	}
 }
 catch(Exception $e) {

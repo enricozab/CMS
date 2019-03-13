@@ -593,13 +593,13 @@ if (!isset($_GET['cn']))
           <div id="proceeding" class="form-group" hidden>
             <?php
               if($row['ADMISSION_TYPE_ID'] == 1) {
-                echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>Formal Hearing";
+                echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>University Panel for Case Conference";
               }
               else if($row['ADMISSION_TYPE_ID'] == 2) {
                 echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>Summary Proceeding&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
               }
               else {
-                echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>University Panel for Case Conference";
+                echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>Formal Hearing";
               }
             ?>
         </div>

@@ -136,17 +136,21 @@ if (!isset($_GET['cn']))
               <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
             </div>
 
-            <div class="form-group" id="penaltyarea" hidden>
-              <label>Penalty</label>
-              <?php
-                if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-              <?php }
-                else if($row['PROCEEDING_DECISION'] != null) { ?>
-                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
-              <?php }
-              ?>
-            </div>
+            <?php
+            if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
+              <div class="form-group" id="penaltyarea">
+                <label>Penalty</label>
+                <?php
+                  if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+                <?php }
+                  else if($row['PROCEEDING_DECISION'] != null) { ?>
+                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                <?php }
+                ?>
+              </div>
+            <?php }
+            ?>
 
             <br><br><br><br><br>
           </div>
@@ -208,10 +212,7 @@ if (!isset($_GET['cn']))
 
   });
 
-  <?php
-    if($row['PENALTY_DESC'] != null  || $row['PROCEEDING_DECISION'] != null){ ?>
-      $("#penaltyarea").show();
-  <?php }
+  <?php 
     if($row['PROCEEDING'] != null ){ ?>
       $("#proceedingarea").show();
   <?php } ?>

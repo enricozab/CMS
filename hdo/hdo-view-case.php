@@ -74,6 +74,7 @@ if (!isset($_GET['cn']))
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
+                        C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
             FROM 		    CASES C
@@ -120,33 +121,7 @@ if (!isset($_GET['cn']))
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
 
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Submitted Forms</b>
-                      </div>
-                      <!-- .panel-heading -->
-                      <div class="panel-body">
-                        <table class="table">
-                          <tbody>
-                            <tr>
-                              <td>Student Response Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Parent/Guardian Letter</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Discipline Case Feedback Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- .panel-body -->
-                  </div>
-                </div>
+
           </div>
   			<br><br>
         <div class="row">
@@ -155,21 +130,28 @@ if (!isset($_GET['cn']))
               <label>Summary of the Incident</label>
               <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row2['DETAILS']; ?></textarea>
             </div>
-            <div class="form-group" id="penaltyarea" hidden>
-            <?php
-              if($row['TYPE'] == "Minor" and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                <label>SDFO Director's Remarks</label>
-            <?php }
-              else { ?>
-                <label>Penalty</label>
-            <?php }
-            ?>
-              <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row2['PENALTY_DESC']; ?></textarea>
-            </div>
+
             <div class="form-group" id="proceedingarea" hidden>
               <label>Nature of Proceedings</label>
               <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row2['PROCEEDING']; ?></textarea>
             </div>
+
+            <?php
+            if($row2['PENALTY_DESC'] != null || $row2['PROCEEDING_DECISION'] != null) { ?>
+              <div class="form-group" id="penaltyarea">
+                <label>Penalty</label>
+                <?php
+                  if($row2['PENALTY_DESC'] != null and $row2['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row2['PENALTY_DESC']; ?></textarea>
+                <?php }
+                  else if($row2['PROCEEDING_DECISION'] != null) { ?>
+                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row2['PROCEEDING_DECISION']; ?></textarea>
+                <?php }
+                ?>
+              </div>
+            <?php }
+            ?>
+
             <br>
             <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
             <br><br><br><br><br>
@@ -221,9 +203,6 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    if($row2['PENALTY_DESC'] != null ){ ?>
-      $("#penaltyarea").show();
-  <?php }
     if($row2['PROCEEDING'] != null ){ ?>
       $("#proceedingarea").show();
   <?php } ?>
