@@ -162,7 +162,7 @@
 	$need_AS = 0;
 	$need_FORMS = 0;
 	$campus = "";
-	$studentlevel = "";
+	$studentlevel = 0;
 
 	//////////////MINOR CASES
 
@@ -173,32 +173,32 @@
 			case	0:
 						$need_AS = 0;
 						$need_FORMS = 0;
-						$studentlevel = 'Graduate';
+						$studentlevel = 1;
 						break;
 			case	1:
 						$need_AS = 1;
 						$need_FORMS = 0;
-						$studentlevel = 'Graduate';
+						$studentlevel = 1;
 						break;
 			case	2:
 						$need_AS = 0;
 						$need_FORMS = 1;
-						$studentlevel = 'Graduate';
+						$studentlevel = 1;
 						break;
 			case	3:
 						$need_AS = 0;
 						$need_FORMS = 0;
-						$studentlevel = 'Undergraduate';
+						$studentlevel = 0;
 						$cases_with_no_acad_service = array();
 			case	4:
 						$need_AS = 1;
 						$need_FORMS = 0;
-						$studentlevel = 'Undergraduate';
+						$studentlevel = 0;
 						$cases_with_acad_service = array();
 			case	5:
 						$need_AS = 0;
 						$need_FORMS = 1;
-						$studentlevel = 'Undergraduate';
+						$studentlevel = 0;
 						$cases_with_forms = array();
 		}
 
@@ -207,11 +207,11 @@
 		//Loop per college
 		for($i=1; $i<=7; $i++){
 			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MINORCASES FROM CASES C
-                  LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
-                  LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
+									LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
 									LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
 									LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
 									LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
+									LEFT JOIN REF_STUDENTS RS				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
 									WHERE U.OFFICE_ID = " .$i ."
 												&& RO.TYPE = 'Minor'
 												&& C.PENALTY_ID = 1
@@ -219,7 +219,7 @@
 												&& C.NEED_FORMS = " .$need_FORMS ."
 												&& SRF.TERM = ".$term ."
 												&& SRF.SCHOOL_YEAR = '" .$ay. "'" ."
-												&& RS.LEVEL = '" .$studentlevel ."'";
+												&& RS.IF_GRADUATING = " .$studentlevel;
 
 			$numcasesres = mysqli_query($dbc,$numcasesquery);
 
@@ -293,16 +293,16 @@
 		//Loop per college
 		for($i=1; $i<=7; $i++){
 			$numcasesquery = "SELECT C.REPORTED_STUDENT_ID, COUNT(C.REPORTED_STUDENT_ID) CASES FROM CASES C
-                LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
-								LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
+								LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
 								LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
 								LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
 								LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
+								LEFT JOIN REF_STUDENTS RS				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
 								WHERE U.OFFICE_ID = 1
 											&& RO.TYPE = 'Minor'
 											&& SRF.TERM = " .$term ."
 											&& SRF.SCHOOL_YEAR = " .$ay ."
-											&& RS.LEVEL = '" .$studentlevel ."'
+											&& RS.IF_GRADUATING = " .$studentlevel ."
 								GROUP BY C.REPORTED_STUDENT_ID
 								HAVING CASES = " .$offense;
 
