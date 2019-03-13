@@ -203,37 +203,7 @@ if (!isset($_GET['cn']))
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
-
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Submitted Forms</b>
-                      </div>
-                      <!-- .panel-heading -->
-                      <div class="panel-body">
-                        <table class="table">
-                          <tbody>
-                            <tr>
-                              <td>Student Response Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Parent/Guardian Letter</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Discipline Case Feedback Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- .panel-body -->
-                  </div>
-                </div>
-
               </div>
-
 			<br><br>
       <div class="row">
         <div class="col-lg-6">
@@ -242,22 +212,26 @@ if (!isset($_GET['cn']))
             <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
           </div>
 
-          <div class="form-group" id="penaltyarea" hidden>
-            <label>Penalty</label>
-            <?php
-              if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-            <?php }
-              else if($row['PROCEEDING_DECISION'] != null) { ?>
-                <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
-            <?php }
-            ?>
-          </div>
-
           <div class="form-group" id="proceedingarea" hidden>
             <label>Nature of Proceedings</label>
             <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
           </div>
+
+          <?php
+          if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
+            <div class="form-group" id="penaltyarea">
+              <label>Penalty</label>
+              <?php
+                if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+              <?php }
+                else if($row['PROCEEDING_DECISION'] != null) { ?>
+                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+              <?php }
+              ?>
+            </div>
+          <?php }
+          ?>
 
           <br>
 
@@ -647,7 +621,7 @@ if (!isset($_GET['cn']))
   });
 
   <?php
-    $isformq='SELECT * FROM STUDENT_RESPONSE_FORMS WHERE "'.$_GET['cn'].'"';
+    $isformq='SELECT * FROM STUDENT_RESPONSE_FORMS WHERE CASE_ID = "'.$_GET['cn'].'"';
     $isformres=mysqli_query($dbc,$isformq);
     if(!$isformres){
       echo mysqli_error($dbc);
@@ -660,10 +634,6 @@ if (!isset($_GET['cn']))
   <?php
     if($row['TYPE'] == "Major"){ ?>
       $("#admitarea").show();
-  <?php }
-    if($row['PENALTY_DESC'] != null  || $row['PROCEEDING_DECISION'] != null){ ?>
-      $("#penaltyarea").show();
-      $("#penalty").attr('readonly', true);
   <?php }
     if($row['PROCEEDING'] != null ){ ?>
       $("#proceedingarea").show();

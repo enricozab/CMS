@@ -79,6 +79,7 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         CRF.CASE_DECISION AS CASE_DECISION,
                         RCP.CASE_PROCEEDINGS_ID AS CASE_PROCEEDINGS_ID,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
@@ -141,30 +142,6 @@ if (!isset($_GET['cn']))
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
-
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Submitted Forms</b>
-                      </div>
-                      <!-- .panel-heading -->
-                      <div class="panel-body">
-                        <table class="table">
-                          <tbody>
-                            <tr>
-                              <td>Student Response Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Parent/Guardian Letter</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- .panel-body -->
-                  </div>
-                </div>
           </div>
   			<br><br>
         <div class="row">
@@ -206,6 +183,15 @@ if (!isset($_GET['cn']))
               </select>
               <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" hidden readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
             </div>
+
+            <?php
+            if($row['PROCEEDING_DECISION'] != null) { ?>
+              <div class="form-group" id="penaltyarea">
+                <label>Penalty</label>
+                <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+              </div>
+            <?php }
+            ?>
 
             <!--<div id="proceedingsList" class="form-group" hidden>
               <label>Nature of Proceedings</label>
@@ -456,7 +442,7 @@ if (!isset($_GET['cn']))
                 //$("input[type=radio]").attr('disabled', true);
                 $('#penalty').attr("disabled", true);
                 $("#endorse").attr('disabled', true).text("Endorsed");
-                $('#message').text('Case is endorsed to AULC.');
+                $('#message').text('Check your email to sign the Discipline Case Referral Form. Case is endorsed to AULC.');
                 $("#alertModal").modal("show");
                 //referralFile(pen);
               }

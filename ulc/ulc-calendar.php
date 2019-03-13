@@ -90,7 +90,7 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <!-- scripts from calendar api //cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.1.9/jquery.datetimepicker.min.css -->
-    <link rel="stylesheet" href="../extra-css/jquery.datetimepicker.min.css" />../extra-css/
+    <link rel="stylesheet" href="../extra-css/jquery.datetimepicker.min.css" />
     <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> //cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.1.9/jquery.datetimepicker.min.js -->
     <script src="../extra-css/jquery.datetimepicker.min.js"></script>
 
@@ -131,7 +131,7 @@
 
         // DateTimePicker plugin : http://xdsoft.net/jqplugins/datetimepicker/
         $("#event-start-time, #event-end-time").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
-        $("#event-date").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
+        $("#event-date").datetimepicker({ format: 'Y-m-d', timepicker: false, minDate: 0 });
 
         $("#event-type").on('change', function(e) {
         	if($(this).val() == 'ALL-DAY') {
