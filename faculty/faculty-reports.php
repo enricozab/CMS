@@ -63,7 +63,7 @@
                     <div id="academicyear_div">
                       <div class="form-group" style = "width: 300px;">
                         <label>Academic Year: <span style="font-weight:normal; font-style:italic; font-size:12px;"></span> <span style="font-weight:normal; color:red;">*</span></label>
-						
+
                         <select id="academicyear" name="academicyear" class="academicyear form-control" placeholder="2018-2019">
 							<option value="2018-2019"> 2018-2019 </option>
 						</select>
@@ -78,7 +78,7 @@
 						</select>
                     </div>
                     <br><br>
-					
+
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
@@ -125,12 +125,12 @@
       <?php include 'faculty-notif-scripts.php'?>
   });
   </script>
-  
+
   <?php
-  
+
   if(isset($_POST['submit'])){
 	require_once('../mysql_connect.php');
-	
+
 	//Get director's email
 	  $sdfodquery = 'SELECT * FROM CMS.USERS WHERE USER_TYPE_ID = 9;';
 	  $sdfodres = mysqli_query($dbc,$sdfodquery);
@@ -141,7 +141,7 @@
 	  else{
 		$sdfodrow=mysqli_fetch_array($sdfodres,MYSQLI_ASSOC);
 	  }
-	
+
 	//Get number of students that commited minor offenses per college
 	$cases_with_no_acad_service = [];
 	$cases_with_acad_service = [];
@@ -156,16 +156,16 @@
 	$cases_downgraded_to_minor = [];
 	$totalcases = [];
 	$chosenarray = array();
-	
+
 	$ay = $_POST['academicyear'];
 	$term = $_POST['term'];
 	$need_AS = 0;
 	$need_FORMS = 0;
 	$campus = "";
 	$studentlevel = "";
-	
+
 	//////////////MINOR CASES
-	
+
 	$z = 1;
 	//Formative Case Conference with students where incidents were recorded but without any offense
 	for($x = 0; $x < 6; $x++){
@@ -201,25 +201,26 @@
 						$studentlevel = 'Undergraduate';
 						$cases_with_forms = array();
 		}
-		
+
 		$chosenarray = array();
-		
+
 		//Loop per college
 		for($i=1; $i<=7; $i++){
-			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MINORCASES FROM CASES C 
-									LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
+			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MINORCASES FROM CASES C
+                  LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
+                  LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
 									LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
 									LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
 									LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
-									WHERE U.OFFICE_ID = " .$i ." 
+									WHERE U.OFFICE_ID = " .$i ."
 												&& RO.TYPE = 'Minor'
 												&& C.PENALTY_ID = 1
 												&& C.NEED_ACAD_SERVICE = " .$need_AS ."
 												&& C.NEED_FORMS = " .$need_FORMS ."
 												&& SRF.TERM = ".$term ."
 												&& SRF.SCHOOL_YEAR = '" .$ay. "'" ."
-												&& U.LEVEL = '" .$studentlevel ."'";
-												
+												&& RS.LEVEL = '" .$studentlevel ."'";
+
 			$numcasesres = mysqli_query($dbc,$numcasesquery);
 
 			if(!$numcasesres){
@@ -228,9 +229,9 @@
 			else{
 				$casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
 				$cases = $casesrow['MINORCASES'];
-				
+
 				$totalcases[]= $cases;
-				
+
 				switch ($x){
 					case	0:
 								$cases_with_acad_service[]= $cases;
@@ -266,44 +267,45 @@
 			}
 			$z++;
 		}
-		
+
 		if($i=7){
 					$sum = array_sum($chosenarray);
 				}
 	}
-	
+
 	//Formative Case Conferences with Students w/ Minor Offenses
 	$offense = 0;
 	for($x = 0; $x < 10; $x++){
-		
+
 		if($x%2 == 0){
 			$need_AS = 1;
 			$need_FORMS = 0;
 			$studentlevel = 'Graduate';
 			$offense++;
 		}
-		
+
 		else{
 			$need_AS = 0;
 			$need_FORMS = 0;
 			$studentlevel = 'Undergraduate';
 		}
-		
+
 		//Loop per college
 		for($i=1; $i<=7; $i++){
-			$numcasesquery = "SELECT C.REPORTED_STUDENT_ID, COUNT(C.REPORTED_STUDENT_ID) CASES FROM CASES C 
-								LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
+			$numcasesquery = "SELECT C.REPORTED_STUDENT_ID, COUNT(C.REPORTED_STUDENT_ID) CASES FROM CASES C
+                LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
+								LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
 								LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
 								LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
 								LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
-								WHERE U.OFFICE_ID = 1 
-											&& RO.TYPE = 'Minor' 
+								WHERE U.OFFICE_ID = 1
+											&& RO.TYPE = 'Minor'
 											&& SRF.TERM = " .$term ."
 											&& SRF.SCHOOL_YEAR = " .$ay ."
-											&& U.LEVEL = '" .$studentlevel ."'
-								GROUP BY C.REPORTED_STUDENT_ID 
+											&& RS.LEVEL = '" .$studentlevel ."'
+								GROUP BY C.REPORTED_STUDENT_ID
 								HAVING CASES = " .$offense;
-												
+
 			$numcasesres = mysqli_query($dbc,$numcasesquery);
 
 			if(!$numcasesres){
@@ -333,17 +335,17 @@
 		$z++;
 		}
 	}
-	
+
 	//////////////MAJOR CASES
-	
-	
-	
+
+
+
 	//Generate exec command to run python
 	$exec = 'generate-report-final.py ' .$sdfodrow['email'] .' ' .$ay .' ' .$term;
 	foreach ($totalcases as $value){
 		$exec = $exec .' ' . $value;
 	}
-	
+
 	$output=shell_exec($exec);
 	echo("DONE!");
 	exit;
