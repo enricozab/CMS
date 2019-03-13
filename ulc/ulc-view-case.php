@@ -176,7 +176,7 @@ if (!isset($_GET['cn']))
                       <br>
 
                       <div class="form-group" id="finalpenaltyarea">
-                        <label>Penalty</label>
+                        <label>Penalty <span style="color:red;">*</span></label>
                         <textarea id="finalpenalty" style="height: 100px;" class="form-control" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
                       </div>
                     <?php }
@@ -254,10 +254,10 @@ if (!isset($_GET['cn']))
             if(($row['REMARKS_ID'] == 9 && date('Y-m-d H:i:s') > $row['HEARING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
               <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <?php }
-            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 1){ ?>
+            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 3){ ?>
             <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule the Proceeding</button>
           <?php }
-            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 3){ ?>
+            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 1){ ?>
               <button type="submit" id="returnD" name="returnD" class="btn btn-primary">Return to Director for UPCC</button>
           <?php }
             if($row['REMARKS_ID'] == 12){ ?>
@@ -357,7 +357,7 @@ if (!isset($_GET['cn']))
                 other: $("#ulcRemarks").val()
             },
             success: function(msg) {
-              $('#message').text('Case returned to IDO successfully for dismissal.');
+              $('#message').text('Case returned to SDFO Director successfully for dismissal.');
               $("#sign").attr('disabled', true);
 
               $("#alertModal").modal("show");

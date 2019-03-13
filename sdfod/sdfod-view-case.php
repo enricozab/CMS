@@ -364,7 +364,7 @@ if (!isset($_GET['cn']))
                 });
                 $('#penalty').attr("disabled", true);
                 $("#endorse").attr('disabled', true).text("Submitted");
-                $('#message').text('Case closed. Discipline Case Feedback Form has been sent to the student.');
+                $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
                 $("#alertModal").modal("show");
               }
           });

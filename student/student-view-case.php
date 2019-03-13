@@ -144,7 +144,7 @@ if (!isset($_GET['cn']))
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
 
-                
+
             </div>
   			<br><br>
         <div class="row">
@@ -196,7 +196,7 @@ if (!isset($_GET['cn']))
         </div>
         <br><br>
         <?php
-          if($row['TYPE'] == "Major" || $row['PENALTY_DESC'] == "Will be processed as a major discipline offense") {
+          if(($row['TYPE'] == "Major" || $row['PENALTY_DESC'] == "Will be processed as a major discipline offense") && $row['VERDICT'] == "Guilty") {
             echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>';
           }
         ?>

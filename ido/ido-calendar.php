@@ -259,11 +259,6 @@
     //show modal if you click create event button
     $('#create').click(function() {
       $("#eventModal").modal("show");
-      <?php
-        if(isset($_SESSION['caseID'])) { ?>
-          alert(<?php echo $_SESSION['caseID']; ?>);
-      <?php }
-      ?>
     });
 
   });

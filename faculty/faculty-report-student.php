@@ -62,16 +62,6 @@
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
                         <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                        <select id="studentID" name="studentID" class="studentID form-control" placeholder="Enter ID No.">
-							<?php
-								while($row = mysqli_fetch_assoc($studentres))
-								{
-								  $idnumber = $row['user_id'];
-								  $studentname = $row['first_name'].' '.$row['last_name'];
-								  echo '<option value="'.$idnumber .'">' . $idnumber .' : '. $studentname .'</option>';
-								}
-							?>
-						</select>
                         <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" value="11530022" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                       </div>
                     </div>
@@ -170,7 +160,7 @@
 
       $('#cal').on('click', function() {
         $("#date").focus();
-      })
+      });
 
       $('.studentID').keypress(validateNumber);
 
@@ -189,7 +179,7 @@
         }
       };
 
-      $("#appendstudent").click(function(){
+      $("#appendstudent").click(function() {
         $("#studentinvolved").append('<div class="form-group input-group" style="width: 300px;" id="newstudent"><input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>'+
         '<span id="removestudent" style="cursor: pointer;" class="input-group-addon"><span style="color:red;" class="fa fa-times"></span></span>'+
         '</div>');
@@ -199,7 +189,6 @@
         $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
         '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
         '<input type="file">'+
-
         '</div>');
       });
 
@@ -234,7 +223,7 @@
           }
         }
 
-          //<?php  include 'faculty-form-queries.php'  ?>
+        <?php  include 'faculty-form-queries.php'  ?>
         if(isEmpty) {
           $.ajax({
               url: '../ajax/faculty-insert-incident-report.php',
@@ -366,48 +355,12 @@
           $('#alertModal').modal("hide");
         }
       });
-      
-      function sendIncidentReport() {
-        location.href= '<?php echo $login_url; ?>';
-        <?php
-          if(isset($_SESSION['access_token']) ) { ?>
-            var emails = ['hdo.cms@gmail.com'];
-            sendEmail(emails);
-          <?php }
-        ?>
-      }
 
-      //GMAIL API function
-      function sendEmail(to){
-        $.ajax({
-            url: '../ajax/users-send-email.php',
-            type: 'POST',
-            data: {
-                messageSubject: "[CMS] Incident Report created on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>",
-                toID: to,
-                messageContent:"I filed a new incident report on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>"
-            },
-            success: function(msg) {
-              //resets the pages content - takes out all inserted values
-              $('#form')[0].reset();
-            }
-        });
-      }
-      
       $('#modalOK').click(function() {
         //checks if all necessary values are filled out
         if ($('#message').text() == "Submitted successfully!"){
           //hides modal
           $("#alertModal").modal("hide");
-
-      		//GMAIL API - sends email
-      		location.href= '<?php echo $login_url; ?>';
-          <?php
-            if( isset($_SESSION['access_token']) ) { ?>
-              var emails = ['hdo.cms@gmail.com'];
-              sendEmail(emails);
-            <?php }
-          ?>
 
       		//HELLOSIGN API
       		$.ajax({
