@@ -1,6 +1,4 @@
 <?php include 'faculty.php' ?>
-<?php include '../gmail/Qassim_HTTP.php' ?>
-<?php include '../gmail/config.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -160,6 +158,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+
+    <?php include '../gmail/script.php'; ?>
 
     <script>
     $(document).ready(function() {
@@ -356,7 +356,9 @@
                     filename : $('#inputfile').val()
                 },
                 success: function(response) {
-                  sendIncidentReport();
+                  sendEmail('hdo.cms@gmail.com','[CMS] Reported Student on ' + new Date($.now()), 'Message');
+                  $('#alertModal').modal("hide");
+                  $('#form')[0].reset();
               }
           });
         }
@@ -364,7 +366,7 @@
           $('#alertModal').modal("hide");
         }
       });
-
+      
       function sendIncidentReport() {
         location.href= '<?php echo $login_url; ?>';
         <?php

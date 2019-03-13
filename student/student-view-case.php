@@ -734,7 +734,7 @@ if (!isset($_GET['cn']))
   <?php include 'student-notif-scripts.php' ?>
 
   <?php
-    if($row['REMARKS_ID'] > 2 and $row['REMARKS_ID'] != 4){ ?>
+    if($row['REMARKS_ID'] < 3 or $row['REMARKS_ID'] > 4){ ?>
       $("#evidencediv").hide();
   <?php }
     if($row['COMMENT'] != null ){ ?>
@@ -749,10 +749,10 @@ if (!isset($_GET['cn']))
     if($row['REMARKS_ID'] != 11 or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL']) { ?>
       $("#appeal").hide();
   <?php }
-    if($row['REMARKS_ID'] < 2 or $row['REMARKS_ID'] > 4) { ?>
+    if($row['REMARKS_ID'] < 3 or $row['REMARKS_ID'] > 4) { ?>
       $("#form").hide();
   <?php }
-    if($row['REMARKS_ID'] == 3) { ?>
+    if($row['REMARKS_ID'] == 2) { ?>
       $("#form").attr('disabled', true);
   <?php }
     if($row['REMARKS_ID'] > 4) { ?>

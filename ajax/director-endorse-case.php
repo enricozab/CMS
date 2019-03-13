@@ -13,23 +13,11 @@
     echo mysqli_error($dbc);
   }
 
-  $query="INSERT INTO CASE_REFERRAL_FORMS (CASE_ID,PROCEEDINGS)
-            VALUES ({$_POST['caseID']},{$_POST['proceeding']})";
+  $query="INSERT INTO CASE_REFERRAL_FORMS (CASE_ID)
+            VALUES ({$_POST['caseID']})";
 
   $result=mysqli_query($dbc,$query);
   if(!$result){
     echo mysqli_error($dbc);
-  }
-
-  $prquery = "SELECT *
-              FROM   REF_CASE_PROCEEDINGS RCP
-              WHERE  RCP.CASE_PROCEEDINGS_ID = {$_POST['proceeding']}";
-  $prres=mysqli_query($dbc,$prquery);
-  if(!$prres){
-    echo mysqli_error($dbc);
-  }
-  else{
-    $prrow=mysqli_fetch_array($prres,MYSQLI_ASSOC);
-    echo $prrow['proceedings_desc'];
   }
 ?>

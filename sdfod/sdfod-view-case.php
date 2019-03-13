@@ -177,9 +177,15 @@ if (!isset($_GET['cn']))
               <label>Penalty</label>
               <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
             </div>-->
-            <br>
-            <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-            <br><br><br>
+            <?php
+              if($row['PROCEEDING'] != null) {
+                echo "<div class='form-group' id='proceedingarea'>
+                        <label>Nature of Proceedings</label>
+                        <textarea id='proceeding' name='proceeding' class='form-control' rows='3' readonly>{$row['PROCEEDING']}</textarea>
+                      </div>";
+              }
+            ?>
+
             <?php
               $query2='SELECT PENALTY_ID, PENALTY_DESC FROM REF_PENALTIES';
               $result2=mysqli_query($dbc,$query2);
@@ -200,8 +206,8 @@ if (!isset($_GET['cn']))
               </select>
               <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" hidden readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
             </div>
-            <br>
-            <div id="proceedingsList" class="form-group" hidden>
+
+            <!--<div id="proceedingsList" class="form-group" hidden>
               <label>Nature of Proceedings</label>
               <div class="radio">
                   <label>
@@ -223,10 +229,12 @@ if (!isset($_GET['cn']))
                       <input type="radio" name="proceedings" id="4" value="4">Case Conference with DO Director
                   </label>
               </div>
-          </div>
+          </div>-->
+            <br>
+            <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         </div>
       </div>
-        <br><br><br>
+        <br><br><br><br><br>
         <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
         <?php
           if($row['REMARKS_ID'] == 14) { ?>
@@ -383,7 +391,7 @@ if (!isset($_GET['cn']))
               data: {
                   caseID: <?php echo $_GET['cn']; ?>,
                   penalty: $('#penalty').val(),
-                  proceeding: $("input:radio[name=proceedings]:checked").val()
+                  //proceeding: $("input:radio[name=proceedings]:checked").val()
               },
               success: function(response) {
                 loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
@@ -413,7 +421,7 @@ if (!isset($_GET['cn']))
                     degree: "<?php echo $CollegeQRow['degree']; ?>",
                     violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
                     complainant: "<?php echo $row['COMPLAINANT']; ?>",
-                    nature: response,
+                    nature: "",
                     decision: "",
                     reason: "",
                     remark: "",
@@ -445,7 +453,7 @@ if (!isset($_GET['cn']))
                   }); //Output the document using Data-URI
                   saveAs(out,"output.docx");
                 });
-                $("input[type=radio]").attr('disabled', true);
+                //$("input[type=radio]").attr('disabled', true);
                 $('#penalty').attr("disabled", true);
                 $("#endorse").attr('disabled', true).text("Endorsed");
                 $('#message').text('Case is endorsed to AULC.');
@@ -507,11 +515,11 @@ if (!isset($_GET['cn']))
       var option = $("option:selected", this);
       if(this.value == 3) {
         $("#endorse").text("Endorse");
-        $("#proceedingsList").show();
+        //$("#proceedingsList").show();
       }
       else {
         $("#endorse").text("Submit");
-        $("#proceedingsList").hide();
+        //$("#proceedingsList").hide();
       }
     });
   });
@@ -520,7 +528,7 @@ if (!isset($_GET['cn']))
     if($row['TYPE'] == "Major"){ ?>
       $("#endorse").text("Endorse");
       $("#penaltyarea").hide();
-      $("#proceedingsList").show();
+      //$("#proceedingsList").show();
   <?php }
     if($row['REMARKS_ID'] < 6){ ?>
       $("#finpenalty").hide();
@@ -530,9 +538,9 @@ if (!isset($_GET['cn']))
       $("#penalty").hide();
   <?php }
     if($row['REMARKS_ID'] > 5 and ($row['PENALTY_ID'] == 3 or $row['TYPE'] == "Major")){ ?>
-      $("#proceedingsList").show();
-      $("#<?php echo $row['CASE_PROCEEDINGS_ID']; ?>").prop("checked", true);
-      $("input[type=radio]").attr('disabled', true);
+      //$("#proceedingsList").show();
+      //$("#<?php echo $row['CASE_PROCEEDINGS_ID']; ?>").prop("checked", true);
+      //$("input[type=radio]").attr('disabled', true);
   <?php }
   ?>
   </script>

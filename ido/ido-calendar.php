@@ -132,7 +132,7 @@
 
         // DateTimePicker plugin : http://xdsoft.net/jqplugins/datetimepicker/
         $("#event-start-time, #event-end-time").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
-        $("#event-date").datetimepicker({ format: 'Y-m-d', timepicker: false, minDate: 0 });
+        $("#event-date").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
 
         $("#event-type").on('change', function(e) {
         	if($(this).val() == 'ALL-DAY') {
@@ -213,10 +213,18 @@
           };
 
         	$("#create-event").attr('disabled', 'disabled');
+          //../ajax/calendar-create-event.php
         	$.ajax({
                 type: 'POST',
                 url: '../ajax/calendar-create-event.php',
-                data: { event_details: parameters },
+                data: {
+                  event_details: parameters,
+                  <?php
+                    if(isset($_SESSION['caseID'])) { ?>
+                      caseID: <?php echo $_SESSION['caseID']; ?>
+                  <?php }
+                  ?>
+                },
                 dataType: 'json',
                 success: function(response) {
                 	//$("#create-event").removeAttr('disabled');

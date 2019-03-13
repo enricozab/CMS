@@ -14,7 +14,7 @@
         <select class="form-control" id="event-type"  autocomplete="off">
           <option value="" disabled selected>Select Event Type</option>
           <option value="FIXED-TIME">Fixed Time Event</option>
-          <option value="ALL-DAY">All Day Event</option>
+          <option value="ALL-DAY">One Day Event</option>
         </select>
         <br>
         <div id="datearea" class="form-group" hidden>

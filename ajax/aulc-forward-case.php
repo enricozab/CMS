@@ -28,7 +28,7 @@
     $cheat = $_POST['cheat'];
   }
 
-  $query="UPDATE CASE_REFERRAL_FORMS SET CASE_DECISION='{$_POST['decision']}', REASON='{$_POST['reason']}', AULC_REMARKS={$aulc_remarks}, CHANGE_OFFENSE={$changeoff}, NEW_OFFENSE={$changevio} WHERE CASE_ID={$_POST['caseID']}";
+  $query="UPDATE CASE_REFERRAL_FORMS SET CASE_DECISION='{$_POST['decision']}', REASON='{$_POST['reason']}', PROCEEDINGS={$_POST['proceeding']}, AULC_REMARKS={$aulc_remarks}, CHANGE_OFFENSE={$changeoff}, NEW_OFFENSE={$changevio} WHERE CASE_ID={$_POST['caseID']}";
   $result=mysqli_query($dbc,$query);
   if(!$result){
     echo mysqli_error($dbc);

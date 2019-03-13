@@ -1,6 +1,4 @@
 <?php include 'hdo.php' ?>
-<?php include '../gmail/Qassim_HTTP.php' ?>
-<?php include '../gmail/config.php' ?>
 <?php
 if (!isset($_GET['irn']))
     header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/hdo/hdo-home.php");
@@ -212,6 +210,8 @@ if (!isset($_GET['irn']))
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <?php include '../gmail/script.php'; ?>
+
     <script type='text/javascript'>
     $(document).ready(function() {
       <?php include 'hdo-notif-scripts.php' ?>
@@ -261,6 +261,7 @@ if (!isset($_GET['irn']))
                   offenseID: $('#offense').val(),
                   cheatingType: $('#cheat-type').val(),
                   complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
+                  dateIncident: "<?php echo $row['DATE_INCIDENT']; ?>",
                   location: "<?php echo $row['LOCATION']; ?>",
                   details: $('#details').val(),
                   assignIDO: $('#ido').val()
@@ -275,30 +276,9 @@ if (!isset($_GET['irn']))
         $("#alertModal").modal("show");
       });
 
-      function sendEmail(to){
-        $.ajax({
-            url: '../ajax/users-send-email.php',
-            type: 'POST',
-            data: {
-                messageSubject: "[CMS] Case opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + "on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>",
-                toID: to,
-                messageContent: "A new case has been opened for " + "<?php echo $row['REPORTED_STUDENT_ID']; ?>" + "on " + "<?php echo date("Y/m/d")." ".date("h:i:sa");?>"
-            },
-            success: function(msg) {
-              //resets the pages content - takes out all inserted values
-            }
-        });
-      }
-
       $('#modalOK').click(function() {
         //checks if all necessary values are filled out
         if ($('#message').text() == "Submitted successfully!"){
-          //hides modal
-          $("#alertModal").modal("hide");
-
-          //GMAIL API
-          location.href= '<?php echo $login_url; ?>';
-
           //gets IDOs email address
           var idoemail;
           <?php
@@ -317,15 +297,17 @@ if (!isset($_GET['irn']))
             }
           }?>
 
-          //sends email
-          <?php
-          if( isset($_SESSION['access_token']) ) { ?>
-            var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
-            var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
-            var emails = [complainantemail, studentemail, idoemail];
-            sendEmail(emails);
-          <?php }
-          ?>
+          //sets complainant and student emails
+          var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
+          var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
+
+          //sends emails
+          sendEmail(complainantemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+
+          //hides modal
+          $("#alertModal").modal("hide");
         }
         else{
           //hides modal
