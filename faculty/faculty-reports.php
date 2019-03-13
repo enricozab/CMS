@@ -162,8 +162,7 @@
 	$need_AS = 0;
 	$need_FORMS = 0;
 	$campus = "";
-	$studentlevel = 0;
-	$studentlevel = "";
+	$studentlevel = "Graduate";
 	//////////////MINOR CASES
 
 	$z = 1;
@@ -173,32 +172,32 @@
 			case	0:
 						$need_AS = 0;
 						$need_FORMS = 0;
-						$studentlevel = 1;
+						$studentlevel = "Graduate";
 						break;
 			case	1:
 						$need_AS = 1;
 						$need_FORMS = 0;
-						$studentlevel = 1;
+						$studentlevel = "Graduate";
 						break;
 			case	2:
 						$need_AS = 0;
 						$need_FORMS = 1;
-						$studentlevel = 1;
+						$studentlevel = "Graduate";
 						break;
 			case	3:
 						$need_AS = 0;
 						$need_FORMS = 0;
-						$studentlevel = 0;
+						$studentlevel = "Undergraduate";
 						$cases_with_no_acad_service = array();
 			case	4:
 						$need_AS = 1;
 						$need_FORMS = 0;
-						$studentlevel = 0;
+						$studentlevel = "Undergraduate";
 						$cases_with_acad_service = array();
 			case	5:
 						$need_AS = 0;
 						$need_FORMS = 1;
-						$studentlevel = 0;
+						$studentlevel = "Undergraduate";
 						$cases_with_forms = array();
 		}
 
@@ -221,7 +220,6 @@
 												&& C.NEED_FORMS = " .$need_FORMS ."
 												&& SRF.TERM = ".$term ."
 												&& SRF.SCHOOL_YEAR = '" .$ay. "'" ."
-												&& RS.IF_GRADUATING = " .$studentlevel;
 												&& RS.LEVEL = '" .$studentlevel ."'";
 			$numcasesres = mysqli_query($dbc,$numcasesquery);
 
@@ -301,12 +299,6 @@
 								LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
 								LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
 								LEFT JOIN REF_STUDENTS RS				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
-								WHERE U.OFFICE_ID = 1 
-											&& RO.TYPE = 'Minor' 
-											&& SRF.TERM = " .$term ."
-											&& SRF.SCHOOL_YEAR = " .$ay ."
-											&& RS.IF_GRADUATING = " .$studentlevel ."
-								GROUP BY C.REPORTED_STUDENT_ID 
 								WHERE U.OFFICE_ID = 1
 											&& RO.TYPE = 'Minor'
 											&& SRF.TERM = " .$term ."
