@@ -673,6 +673,10 @@ if (!isset($_GET['cn']))
       $("#return").hide();
       $("#submit").hide();
   <?php }
+    if(!isset($isformrow)){ ?>
+      $("#return").hide();
+      $("#submit").hide();
+  <?php }
     if($row['REMARKS_ID'] == 2 && isset($isformrow)){ ?>
       $("#schedule").hide();
       $("#return").show();

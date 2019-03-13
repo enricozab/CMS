@@ -131,7 +131,7 @@
 
         // DateTimePicker plugin : http://xdsoft.net/jqplugins/datetimepicker/
         $("#event-start-time, #event-end-time").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
-        $("#event-date").datetimepicker({ format: 'Y-m-d', timepicker: false, minDate: 0 });
+        $("#event-date").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
 
         $("#event-type").on('change', function(e) {
         	if($(this).val() == 'ALL-DAY') {
