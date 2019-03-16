@@ -113,7 +113,7 @@
                                     R.DESCRIPTION AS REMARKS_DESCRIPTION,
                                     C.LAST_UPDATE AS LAST_UPDATE,
                                     C.VERDICT AS VERDICT,
-                                    C.HEARING_DATE AS HEARING_DATE,
+                                    C.PROCEEDING_DATE AS PROCEEDING_DATE,
                                     C.DATE_CLOSED AS DATE_CLOSED,
                                     C.IF_NEW AS IF_NEW
                         FROM 		    AULC_CASES AU
