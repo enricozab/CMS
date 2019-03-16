@@ -115,7 +115,7 @@
                                     C.PENALTY_ID AS PENALTY_ID,
                                     RP.PENALTY_DESC AS PENALTY_DESC,
                                     C.VERDICT AS VERDICT,
-                                    C.HEARING_DATE AS HEARING_DATE,
+                                    C.PROCEEDING_DATE AS PROCEEDING_DATE,
                                     C.DATE_CLOSED AS DATE_CLOSED,
                                     C.IF_NEW AS IF_NEW
                         FROM 		    CASES C
