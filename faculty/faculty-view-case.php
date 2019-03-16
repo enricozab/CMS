@@ -74,7 +74,7 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
-                        C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DATE AS PROCEEDING_DATE,
                         C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW

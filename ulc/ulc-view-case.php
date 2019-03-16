@@ -79,7 +79,7 @@ if (!isset($_GET['cn']))
                         C.PENALTY_ID AS PENALTY_ID,
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
-                        C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DATE AS PROCEEDING_DATE,
                         C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         CRF.PROCEEDINGS AS PROCEEDING_ID,
                         CRF.CASE_DECISION AS CASE_DECISION,
@@ -161,7 +161,7 @@ if (!isset($_GET['cn']))
                     <br>
 
                     <?php
-                    if(($row['HEARING_DATE'] != null && date('Y-m-d H:i:s') > $row['HEARING_DATE']) || ($row['PROCEEDING_DECISION'] != null)) { ?>
+                    if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || ($row['PROCEEDING_DECISION'] != null)) { ?>
                       <div class="form-group" id="verdictarea">
                         <br><br>
                         <label>Verdict <span style="font-weight:normal; color:red;">*</span></label>
@@ -251,11 +251,14 @@ if (!isset($_GET['cn']))
           ?>
 
           <?php
-            if(($row['REMARKS_ID'] == 9 && date('Y-m-d H:i:s') > $row['HEARING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
+            if(($row['REMARKS_ID'] == 9 && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
               <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <?php }
             if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 3){ ?>
-            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule the Proceeding</button>
+            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Hearing</button>
+          <?php }
+            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 2){ ?>
+            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Summary Proceeding</button>
           <?php }
             if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 1){ ?>
               <button type="submit" id="returnD" name="returnD" class="btn btn-primary">Return to Director for UPCC</button>
@@ -333,7 +336,7 @@ if (!isset($_GET['cn']))
                 other: $("#ulcRemarks").val()
             },
             success: function(msg) {
-            $("#sign").attr('disabled', true);
+              $("#sign").attr('disabled', true);
               if(<?php echo $row['PROCEEDING_ID']; ?> == 1) {
                 $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for hearing.');
               }

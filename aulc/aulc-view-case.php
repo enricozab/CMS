@@ -87,7 +87,7 @@ if (!isset($_GET['cn']))
                         RP.PENALTY_DESC AS PENALTY_DESC,
                         C.VERDICT AS VERDICT,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
-                        C.HEARING_DATE AS HEARING_DATE,
+                        C.PROCEEDING_DATE AS PROCEEDING_DATE,
                         C.DATE_CLOSED AS DATE_CLOSED,
                         C.IF_NEW AS IF_NEW
             FROM 		    CASES C
@@ -154,38 +154,6 @@ if (!isset($_GET['cn']))
           					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-                </div>
-
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Submitted Forms</b>
-                      </div>
-                      <!-- .panel-heading -->
-                      <div class="panel-body">
-                        <table class="table">
-                          <tbody>
-                            <tr>
-                              <td>Student Response Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Parent/Guardian Letter</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Discipline Case Feedback Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                            <tr>
-                              <td>Discipline Case Referral Form</td>
-                              <td><button type="submit" id="info" name="return" class="btn btn-info">View</button></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- .panel-body -->
-                  </div>
                 </div>
               </div>
 			<br><br>
