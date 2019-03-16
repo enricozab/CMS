@@ -64,41 +64,7 @@
 					<a href="hdo-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
 				</li>
 				<li>
-					<a href="#"><i class="fa fa-clipboard fa-fw"></i> Reports<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">Report 1</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="hdo-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
-				</li>
-				<li>
 					<a href="hdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="../pages/panels-wells.html">Panels and Wells</a>
-						</li>
-						<li>
-							<a href="../pages/buttons.html">Buttons</a>
-						</li>
-						<li>
-							<a href="../pages/notifications.html">Notifications</a>
-						</li>
-						<li>
-							<a href="../pages/typography.html">Typography</a>
-						</li>
-						<li>
-							<a href="../pages/icons.html"> Icons</a>
-						</li>
-						<li>
-							<a href="../pages/grid.html">Grid</a>
-						</li>
-					</ul>
 				</li>
 			</ul>
 		</div>

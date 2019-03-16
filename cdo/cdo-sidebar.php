@@ -11,7 +11,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="ulc-home.php">
+		<a class="navbar-brand" href="cdo-home.php">
 			<div class="row">
 				&nbsp; <img src="../images/newlogo.png" style="width: 30px; height: 30px;">&nbsp; Case Management System
 			</div>
@@ -55,10 +55,13 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="ulc-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
+					<a href="cdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
-					<a href="ulc-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="faculty-reports.php"><i class="fa fa-clipboard fa-fw"></i> Reports</a>
+				</li>
+				<li>
+					<a href="cdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 			</ul>
 		</div>

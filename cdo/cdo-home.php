@@ -1,4 +1,4 @@
-<?php include 'sdfod.php' ?>
+<?php include 'cdo.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,17 +45,17 @@
 <body>
 
   <?php
-    include 'sdfod-notif-queries.php';
+    include 'cdo-notif-queries.php';
   ?>
 
   <div id="wrapper">
 
-    <?php include 'sdfod-sidebar.php'; ?>
+    <?php include 'cdo-sidebar.php'; ?>
 
     <div id="page-wrapper">
       <div class="row">
           <div class="col-lg-8">
-              <h3 class="page-header">Case Notifications</h3>
+              <h3 class="page-header">Cases</h3>
           </div>
       </div>
 			<!-- case notification table -->
@@ -116,8 +116,8 @@
                                       C.HEARING_DATE AS HEARING_DATE,
                                       C.DATE_CLOSED AS DATE_CLOSED,
                                       C.IF_NEW AS IF_NEW
-                          FROM 		    SDFOD_CASES SDFOD
-                          LEFT JOIN   CASES C ON SDFOD.CASE_ID = C.CASE_ID
+                          FROM 		    CDO_CASES CDO
+                          LEFT JOIN   CASES C ON CDO.CASE_ID = C.CASE_ID
                           LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
                           LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
                           LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
@@ -140,7 +140,7 @@
                       else {
                         $grad = "No";
                       }
-                      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='sdfod-view-case.php?cn={$row2['CASE_ID']}'\">
+                      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='cdo-view-case.php?cn={$row2['CASE_ID']}'\">
                             <td>{$row2['CASE_ID']} <span id=\"{$row2['CASE_ID']}\" class=\"badge\"></span></td>
                             <td>{$row2['OFFENSE_DESCRIPTION']}</td>
                             <td>{$row2['TYPE']}</td>
@@ -219,13 +219,13 @@
           $('#all').css("background-color", "white");
       });
 
-      <?php include 'sdfod-notif-scripts.php'?>
+      <?php include 'cdo-notif-scripts.php'?>
 
       <?php
       //Removes 'new' badge and reduces notif's count
-      $query2='SELECT 		SDFOD.CASE_ID AS CASE_ID,
-                          SDFOD.IF_NEW AS IF_NEW
-              FROM 		    SDFOD_CASES SDFOD';
+      $query2='SELECT 		CDO.CASE_ID AS CASE_ID,
+                          CDO.IF_NEW AS IF_NEW
+              FROM 		    CDO_CASES CDO';
       $result2=mysqli_query($dbc,$query2);
       if(!$result2){
         echo mysqli_error($dbc);

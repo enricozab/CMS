@@ -203,7 +203,7 @@
 
       $('.chosen-select').chosen();
 
-      $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, step: 1});
+      $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, maxTime: 0, step: 1});
 
       $('#cal').on('click', function() {
         $("#date").focus();

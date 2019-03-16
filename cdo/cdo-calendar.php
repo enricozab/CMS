@@ -1,4 +1,4 @@
-<?php include 'hdo.php' ?>
+<?php include 'cdo.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Active Cases</title>
+    <title>CMS - Calendar</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-	  <!-- DataTables CSS -->
+    <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
@@ -40,55 +40,27 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
 </head>
 
 <body>
 
-  <?php include 'hdo-notif-queries.php' ?>
+  <?php
+    include 'cdo-notif-queries.php'
+  ?>
 
     <div id="wrapper">
 
-        <?php include 'hdo-sidebar.php';?>
+        <?php include 'cdo-sidebar.php';?>
 
         <div id="page-wrapper">
-			<br><br>
-            <div class="panel panel-default">
-				<div class="panel-heading">
-					<b>Active Cases</b>
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<table width="100%" class="table table-striped table-bordered table-hover" id="active-cases-table">
-						<thead>
-							<tr>
-								<th>Case No.</th>
-								<th>Offense</th>
-								<th>Type</th>
-								<th>Date Filed</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr class="odd" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000002&off=Left ID&type=Minor&date=10/13/2018&stat=Pending';">
-								<td>00000002</td>
-								<td>Left ID</td>
-								<td>Minor</td>
-								<td>10/13/2018</td>
-								<td>Pending</td>
-							</tr>
-							<tr class="even" onmouseover="this.style.cursor='pointer'" onclick="location.href='do-view-case.php?cn=00000003&off=Cheating&type=Major&date=10/13/2018&stat=For Review';">
-								<td>00000003</td>
-								<td>Cheating</td>
-								<td>Major</td>
-								<td>10/13/2018</td>
-								<td>For Review</td>
-							</tr>
-						</tbody>
-					</table>
-					<!-- /.table-responsive -->
-				</div>
-				<!-- /.panel-body -->
-			</div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header">Calendar</h3>
+                </div>
+                <?php include '../calendar/button_and_calendar.php' ?>
+                <!-- /.col-lg-12 -->
+            </div>
         </div>
         <!-- /#page-wrapper -->
 
@@ -118,14 +90,16 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
-    <script>
-    $(document).ready(function() {
-        $('#active-cases-table').DataTable({
-            "order": [[ 0, "desc" ]]
-        });
-        <?php include 'hdo-notif-scripts.php' ?>
-    });
-    </script>
+  <script>
+  //all functinos have to be inside this functions
+  //function that runs once the page is loaded
+
+  $(document).ready(function() {
+      <?php include 'cdo-notif-scripts.php'?>
+      $("#login").hide();
+      $("#create").hide();
+  });
+  </script>
 
 </body>
 
