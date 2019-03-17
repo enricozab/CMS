@@ -129,6 +129,8 @@ if (!isset($_GET['cn']))
           					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+
+
                     <br><br>
                     <div class="form-group">
                       <label>Summary of the Incident</label>
@@ -141,12 +143,13 @@ if (!isset($_GET['cn']))
                     </div>
 
                     <?php
-                      if($row['PROCEEDING'] != null) {
-                        echo "<div class='form-group' id='proceedingarea'>
-                                <label>Nature of Proceedings</label>
-                                <textarea id='proceeding' name='proceeding' class='form-control' rows='3' readonly>{$row['PROCEEDING']}</textarea>
-                              </div>";
-                      }
+                      if($row['PROCEEDING'] != null) { ?>
+                        <div class='form-group' id='proceedingarea'>
+                          <label>Nature of Proceedings</label>
+                          <textarea id='proceeding' name='proceeding' class='form-control' rows='3' readonly><?php echo $row['PROCEEDING']; ?>
+                          </textarea>
+                        </div>
+                    <?php }
                     ?>
 
                     <div class="form-group" id="otherarea">
@@ -158,23 +161,24 @@ if (!isset($_GET['cn']))
 
                     <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
 
-                    <br>
+                    <br><br><br>
 
                     <?php
-                    if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || ($row['PROCEEDING_DECISION'] != null)) { ?>
-                      <div class="form-group" id="verdictarea">
-                        <br><br>
-                        <label>Verdict <span style="font-weight:normal; color:red;">*</span></label>
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="verdict" id="Guilty" value="Guilty" checked>Guilty &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <input type="radio" name="verdict" id="NotGuilty" value="Not Guilty">Not Guilty
-                            </label>
+                    if((($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['PROCEEDING_DECISION'] != null) and $row['REMARKS_ID'] != 16) {
+                      if($row['PROCEEDING_ID'] == 3) { ?>
+                        <div class="form-group" id="verdictarea">
+                          <label>Verdict <span style="font-weight:normal; color:red;">*</span></label>
+                          <div class="radio">
+                              <label>
+                                  <input type="radio" name="verdict" id="Guilty" value="Guilty" checked>Guilty &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                  <input type="radio" name="verdict" id="NotGuilty" value="Not Guilty">Not Guilty
+                              </label>
+                          </div>
                         </div>
-                      </div>
 
-                      <br>
-
+                        <br>
+                      <?php }
+                      ?>
                       <div class="form-group" id="finalpenaltyarea">
                         <label>Penalty <span style="color:red;">*</span></label>
                         <textarea id="finalpenalty" style="height: 100px;" class="form-control" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
@@ -189,33 +193,33 @@ if (!isset($_GET['cn']))
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Related Cases</b>
                       </div>
-                      <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
+                      <div class="panel-body" style="overflow-y: scroll; max-height: 100%;">
                         <ul style="list-style-type:none;">
                           <?php include 'ulc-related-case-queries.php';?>
 
                           <?php
-                            while($relatedrow=mysqli_fetch_array($relatedres,MYSQLI_ASSOC)) {
-                              if($relatedrow['CASE_ID'] != $_GET['cn']) {
+                            if ($relatedres->num_rows > 0) {
+                              while($relatedrow=mysqli_fetch_array($relatedres,MYSQLI_ASSOC)) {
                                 echo "<li>
                                         <div style='margin-right: 20px; margin-left: -20px;'>
-                                            <p>
-                                                <strong>Case No. {$relatedrow['CASE_ID']}</strong>
-                                                <span class='pull-right text-muted'><button type='submit' id='viewCase' name='return' class='btn btn-info'>View Case</button></span>
-                                            </p>
-                                            <div>
-                                                <br>
-                                                <p>Offense: <strong>{$relatedrow['OFFENSE_DESCRIPTION']}</strong></p>
-                                                <p>Status: <strong>{$relatedrow['STATUS_DESCRIPTION']}</strong></p>";
-                                                if($relatedrow['STATUS_DESCRIPTION'] == "Closed") {
-                                                  echo "<p>Proceedings: <strong>{$relatedrow['PROCEEDINGS']}</strong></p>
-                                                        <p>Penalty: <strong>{$relatedrow['PROCEEDING_DECISION']}</strong></p>";
-                                                }
-                                echo        "</div>
-
+                                          <p>
+                                              <strong>Case No. {$relatedrow['CASE_ID']}</strong>
+                                              <span class='pull-right text-muted'><button type='submit' id='viewCase' name='return' class='btn btn-info'>View Case</button></span>
+                                          </p>
+                                          <div>
+                                              <br>
+                                              <p>Offense: <strong>{$relatedrow['OFFENSE_DESCRIPTION']}</strong></p>
+                                              <p>Status: <strong>{$relatedrow['STATUS_DESCRIPTION']}</strong></p>
+                                              <p>Proceedings: <strong>{$relatedrow['PROCEEDINGS']}</strong></p>
+                                              <p>Penalty: <strong>{$relatedrow['PROCEEDING_DECISION']}</strong></p>
+                                          </div>
                                         </div>
                                       </li>
                                       <hr style='margin-right: 20px; margin-left: -20px;'>";
                               }
+                            }
+                            else {
+                              echo "<p style='margin-right: 20px; margin-left: -20px;'>No related closed cases available.</p>";
                             }
                           ?>
                         </ul>
@@ -251,17 +255,17 @@ if (!isset($_GET['cn']))
           ?>
 
           <?php
-            if(($row['REMARKS_ID'] == 9 && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
+            if((($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 15) && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
               <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <?php }
             if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 3){ ?>
-            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Hearing</button>
+              <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Formal Hearing</button>
           <?php }
             if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 2){ ?>
-            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Summary Proceeding</button>
+              <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Summary Proceeding</button>
           <?php }
             if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 1){ ?>
-              <button type="submit" id="returnD" name="returnD" class="btn btn-primary">Return to Director for UPCC</button>
+              <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for UPCC</button>
           <?php }
             if($row['REMARKS_ID'] == 12){ ?>
               <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse to the President</button>
@@ -337,8 +341,8 @@ if (!isset($_GET['cn']))
             },
             success: function(msg) {
               $("#sign").attr('disabled', true);
-              if(<?php echo $row['PROCEEDING_ID']; ?> == 1) {
-                $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for hearing.');
+              if(<?php echo $row['PROCEEDING_ID']; ?> == 3) {
+                $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for formal hearing.');
               }
               else if(<?php echo $row['PROCEEDING_ID']; ?> == 2) {
                 $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for summary proceeding.');
@@ -374,24 +378,45 @@ if (!isset($_GET['cn']))
     });
 
     $('#submit').click(function() {
-      var verdict = $("input[name='verdict']:checked").val();
-      if(verdict == "Not Guilty") {
-        $.ajax({
-            url: '../ajax/ulc-verdict.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                verdict: verdict
-            },
-            success: function(msg) {
-              $('#message').text('Case returned to SDFO Directory successfully for final signature and dismissal.');
-              $("#submit").attr('disabled', true).text("Submitted");
-              $("#finalpenalty").attr('readonly', true);
-              $("input[type=radio]").attr('disabled', true);
+      if(<?php echo $row['PROCEEDING_ID']; ?> == 3) {
+        var verdict = $("input[name='verdict']:checked").val();
+        if(verdict == "Not Guilty") {
+          $.ajax({
+              url: '../ajax/ulc-verdict.php',
+              type: 'POST',
+              data: {
+                  caseID: <?php echo $_GET['cn']; ?>,
+                  verdict: verdict
+              },
+              success: function(msg) {
+                $('#message').text('Case returned to SDFO Directory successfully for final signature and dismissal.');
+                $("#submit").attr('disabled', true).text("Submitted");
+                $("#finalpenalty").attr('readonly', true);
+                $("input[type=radio]").attr('disabled', true);
 
-              $("#alertModal").modal("show");
-            }
-        });
+                $("#alertModal").modal("show");
+              }
+          });
+        }
+        else {
+          $.ajax({
+              url: '../ajax/ulc-verdict.php',
+              type: 'POST',
+              data: {
+                  caseID: <?php echo $_GET['cn']; ?>,
+                  decision: $('#finalpenalty').val(),
+                  verdict: verdict
+              },
+              success: function(msg) {
+                $('#message').text('Case returned to SDFO Directory successfully for final signature and closing.');
+                $("#submit").attr('disabled', true).text("Submitted");
+                $("#finalpenalty").attr('readonly', true);
+                $("input[type=radio]").attr('disabled', true);
+
+                $("#alertModal").modal("show");
+              }
+          });
+        }
       }
       else {
         $.ajax({
@@ -399,8 +424,7 @@ if (!isset($_GET['cn']))
             type: 'POST',
             data: {
                 caseID: <?php echo $_GET['cn']; ?>,
-                decision: $('#finalpenalty').val(),
-                verdict: verdict
+                decision: $('#finalpenalty').val()
             },
             success: function(msg) {
               $('#message').text('Case returned to SDFO Directory successfully for final signature and closing.');
@@ -463,7 +487,7 @@ if (!isset($_GET['cn']))
       //$("#verdictarea").show();
       //$("#finalpenaltyarea").show();
   <?php }
-    if($row['REMARKS_ID'] > 9) { ?>
+    if($row['REMARKS_ID'] > 9 and $row['REMARKS_ID'] != 15 and $row['REMARKS_ID'] != 16) { ?>
       $("#finalpenalty").attr('readonly',true);
       //$("#verdictarea").show();
       $("#<?php echo $row['VERDICT']; ?>").prop("checked", true);

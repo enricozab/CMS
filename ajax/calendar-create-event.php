@@ -23,12 +23,18 @@ try {
 		if($_SESSION['user_type_id'] == 7) {
 			$pdate = null;
 			if($event['event_time']['event_date'] != null) {
-				$hdate = $event['event_time']['event_date'];
+				$pdate = $event['event_time']['event_date'];
 			}
 			else {
-				$hdate = $event['event_time']['start_time'];
+				$pdate = $event['event_time']['start_time'];
 			}
-			$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=9, PROCEEDING_DATE='{$pdate}' WHERE CASE_ID = {$_SESSION['caseID']}";
+			$query="UPDATE 	CASES SET IF_NEW=1, STATUS_ID=2, PROCEEDING_DATE='{$pdate}',
+											REMARKS_ID=CASE
+																		WHEN (SELECT PROCEEDINGS FROM CASE_REFERRAL_FORMS WHERE CASE_ID = {$_SESSION['caseID']})=3 THEN 9
+																		WHEN (SELECT PROCEEDINGS FROM CASE_REFERRAL_FORMS WHERE CASE_ID = {$_SESSION['caseID']})=2 THEN 15
+																		ELSE 16
+																	END
+							WHERE 	CASE_ID = {$_SESSION['caseID']}";
 		}
 		else if($_SESSION['user_type_id'] == 4) {
 			$query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=3 WHERE CASE_ID = {$_SESSION['caseID']}";

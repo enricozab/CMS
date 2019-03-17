@@ -374,7 +374,7 @@ if (!isset($_GET['cn']))
       var isEmpty = true;
 
       if($('#dispOffense').is(":visible")){
-        ids.push('#violationDes');
+        ids.push('input[name="violationDes"]:checked');
       }
       else{
         if($.inArray('#violationDes', ids) !== -1){
@@ -411,7 +411,7 @@ if (!isset($_GET['cn']))
         var changevio = null;
         var cheat = null;
         if($('#dispOffense').is(":visible")){
-          changeoff=$('#violationDes').val();
+          changeoff=$('input[name="violationDes"]:checked').val();
         }
         if($('#changeViolation').is(":visible")){
           changevio=$('#offenseSelect').val();

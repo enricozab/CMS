@@ -1,5 +1,5 @@
 <?php
-  $relatedq='SELECT 		C.CASE_ID AS CASE_ID,
+  $relatedq='SELECT 	C.CASE_ID AS CASE_ID,
                       C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                       C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                       CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
@@ -40,7 +40,8 @@
           LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
-          WHERE       (RO.TYPE="MAJOR" OR RP.PENALTY_DESC="Will be processed as a major discipline offense") AND C.OFFENSE_ID = "'.$row['OFFENSE_ID'].'"
+          WHERE       (RO.TYPE="MAJOR" OR RP.PENALTY_DESC="Will be processed as a major discipline offense") AND S.DESCRIPTION = "Closed"
+                      AND C.OFFENSE_ID = "'.$row['OFFENSE_ID'].'" AND C.CASE_ID != "'.$_GET['cn'].'"
           ORDER BY	  C.CASE_ID';
   $relatedres=mysqli_query($dbc,$relatedq);
   if(!$relatedres){

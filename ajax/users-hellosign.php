@@ -11,7 +11,7 @@
 
 		rename($sourcepath,$targetpath);
 
-		if($_POST['title'] == "Parent's Letter"){
+		if($_POST['title'] == "Parent Letter"){
 			$name = $_POST['name'];
 
 			$query="UPDATE CASES SET WITH_PARENT_LETTER=1 WHERE CASE_ID = {$_POST['caseID']}";

@@ -193,6 +193,15 @@ if (!isset($_GET['cn']))
             <?php }
             ?>
 
+            <?php
+              if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16) { ?>
+                <div class="form-group" id="finpenaltyarea">
+                  <label>Penalty</label>
+                  <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                </div>
+            <?php }
+            ?>
+
             <!--<div id="proceedingsList" class="form-group" hidden>
               <label>Nature of Proceedings</label>
               <div class="radio">
@@ -224,7 +233,12 @@ if (!isset($_GET['cn']))
         <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
         <?php
           if($row['REMARKS_ID'] == 14) { ?>
-          <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Feedback Form</button>
+            <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Feedback Form</button>
+        <?php }
+        ?>
+        <?php
+          if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16) { ?>
+            <button type="button" id="submitPD" class="btn btn-primary" data-dismiss="modal">Submit</button>
         <?php }
         ?>
         <br><br><br><br><br>
