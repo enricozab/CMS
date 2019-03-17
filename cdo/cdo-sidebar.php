@@ -58,7 +58,7 @@
 					<a href="cdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
-					<a href="faculty-reports.php"><i class="fa fa-clipboard fa-fw"></i> Reports</a>
+					<a href="cdo-reports.php"><i class="fa fa-clipboard fa-fw"></i> Reports</a>
 				</li>
 				<li>
 					<a href="cdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
