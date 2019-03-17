@@ -249,7 +249,7 @@ if (!isset($_GET['cn']))
           ?>
           <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
-          <button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>
+          <!--<button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>-->
         </div>
       </div>
       <br><br><br>

@@ -19,10 +19,19 @@
     }
   }
   else {
-    $query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=14, PROCEEDING_DECISION='{$_POST['decision']}' WHERE CASE_ID = {$_POST['caseID']}";
-    $result=mysqli_query($dbc,$query);
-    if(!$result){
-      echo mysqli_error($dbc);
+    if(isset($_POST['pd'])) {
+      $query="UPDATE CASES SET IF_NEW=1, REMARKS_ID=14, PROCEEDING_DECISION='{$_POST['decision']}' WHERE CASE_ID = {$_POST['caseID']}";
+      $result=mysqli_query($dbc,$query);
+      if(!$result){
+        echo mysqli_error($dbc);
+      }
+    }
+    else {
+      $query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=14, PROCEEDING_DECISION='{$_POST['decision']}' WHERE CASE_ID = {$_POST['caseID']}";
+      $result=mysqli_query($dbc,$query);
+      if(!$result){
+        echo mysqli_error($dbc);
+      }
     }
   }
 

@@ -194,10 +194,10 @@ if (!isset($_GET['cn']))
             ?>
 
             <?php
-              if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16) { ?>
-                <div class="form-group" id="finpenaltyarea">
-                  <label>Penalty</label>
-                  <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+              if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16 && $row['PROCEEDING_DECISION'] == null) { ?>
+                <div class="form-group" id="penpenaltyarea">
+                  <label>Penalty <span style="color:red;">*</span></label>
+                  <textarea id="finfinpenalty" name="finfinpenalty" class="form-control" rows="3" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
                 </div>
             <?php }
             ?>
@@ -237,8 +237,13 @@ if (!isset($_GET['cn']))
         <?php }
         ?>
         <?php
-          if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16) { ?>
+          if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16 && $row['PROCEEDING_DECISION'] == null) { ?>
             <button type="button" id="submitPD" class="btn btn-primary" data-dismiss="modal">Submit</button>
+        <?php }
+        ?>
+        <?php
+          if($row['REMARKS_ID'] == 11) { ?>
+            <button type="button" id="sendAcad" class="btn btn-success" data-dismiss="modal">Send Academic Endorsement Service Form</button>
         <?php }
         ?>
         <br><br><br><br><br>
@@ -522,6 +527,51 @@ if (!isset($_GET['cn']))
         //$("#proceedingsList").hide();
       }
     });
+
+    $('#submitPD').on('click', function() {
+      var ids = ['#finfinpenalty'];
+      var isEmpty = true;
+
+      for(var i = 0; i < ids.length; ++i ) {
+        if($.trim($(ids[i]).val()).length == 0) {
+          isEmpty = false;
+        }
+      }
+      if(isEmpty) {
+        $.ajax({
+            url: '../ajax/ulc-verdict.php',
+            type: 'POST',
+            data: {
+                caseID: <?php echo $_GET['cn']; ?>,
+                decision: $('#finfinpenalty').val(),
+                pd: 1
+            },
+            success: function(msg) {
+              $('#message').text('Case is ready for final signature and closing.');
+              $("#finfinpenalty").attr('readonly', true);
+              $("#submitPD").attr('disabled', true);
+            }
+        });
+      }
+      $("#alertModal").modal("show");
+    });
+
+    $('#sendAcad').on('click', function() {
+      $.ajax({
+          url: '../ajax/sdfod-academic-service.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+            $('#message').text('Academic Service Endorsement Form has been sent to student successfully!');
+            $("#sendAcad").attr('disabled', true);
+
+            $("#alertModal").modal("show");
+          }
+      });
+
+    });
   });
 
   <?php
@@ -556,7 +606,7 @@ if (!isset($_GET['cn']))
           <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="submitFeedback" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

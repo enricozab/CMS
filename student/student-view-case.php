@@ -194,10 +194,15 @@ if (!isset($_GET['cn']))
             </div>
           </div>
         </div>
-        <br><br>
+        <br><br><br><br><br>
         <?php
           if(($row['TYPE'] == "Major" || $row['PENALTY_DESC'] == "Will be processed as a major discipline offense") && $row['VERDICT'] == "Guilty") {
-            echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button>';
+            echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button><br>';
+          }
+        ?>
+        <?php
+          if($row['REMARKS_ID'] == 17) {
+            echo '<button type="submit" id="downloadAS" name="downloadAS" class="btn btn-success">Download Academic Service Form</button><br>';
           }
         ?>
         <button type="submit" id="form" name="form" class="btn btn-success">Send Student Response Letter</button>
