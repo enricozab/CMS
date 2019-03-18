@@ -128,6 +128,7 @@
                           LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
                           LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
                           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+
                           ORDER BY	  C.LAST_UPDATE';
                   $result2=mysqli_query($dbc,$query2);
                   if(!$result2){

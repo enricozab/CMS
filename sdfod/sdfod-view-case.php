@@ -163,29 +163,123 @@ if (!isset($_GET['cn']))
               }
             ?>
 
+            <?php include 'sdfod-count-minor.php' ?>
+
             <?php
-              $query2='SELECT PENALTY_ID, PENALTY_DESC FROM REF_PENALTIES';
+              $query2='SELECT DIRECTOR_REMARKS_ID, DIRECTOR_REMARKS FROM REF_DIRECTOR_REMARKS';
               $result2=mysqli_query($dbc,$query2);
               if(!$result2){
                 echo mysqli_error($dbc);
               }
             ?>
-            <div id="penaltyarea" class="form-group" style='width: 400px;'>
-              <label>Remarks <span style="font-weight:normal; color:red;">*</span></label>
-              <select id="penalty" class="form-control">
-                <option value="" disabled selected>Select the corresponding penalty</option>
-                <?php
-                while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-                  echo
-                    "<option value=\"{$row2['PENALTY_ID']}\">{$row2['PENALTY_DESC']}</option>";
+
+            <br>
+
+            <div class="form-group">
+              <label>Remarks</label>
+              <?php
+              while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                if ($row2['DIRECTOR_REMARKS_ID'] == 1 && $currentMinorOffense == 62 && $numSameMinor < 3 && $row['TYPE'] == "Minor") {
+                  echo "<div class='checkbox'>
+                            <label>
+                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
+                            </label>
+                        </div>";
+                }
+                if ($row2['DIRECTOR_REMARKS_ID'] == 2 && $numSameMinor == 1 && $currentMinorOffense != 62 && $row['TYPE'] == "Minor") {
+                  echo "<div class='checkbox'>
+                            <label>
+                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
+                            </label>
+                        </div>";
+                }
+                if ($row2['DIRECTOR_REMARKS_ID'] == 3 && ((($numSameMinorOffense > 2 || $numSameMinor > 4) && $currentMinorOffense != 62) || $row['TYPE'] == "Major")) {
+                  echo "<div class='checkbox'>
+                            <label>
+                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
+                            </label>
+                        </div>";
+                }
+                if ($row2['DIRECTOR_REMARKS_ID'] == 4 && $numSameMinorOffense > 1 && $currentMinorOffense != 62  && $row['TYPE'] == "Minor") {
+                  echo "<div class='checkbox'>
+                            <label>
+                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']} <b><i>$numSameMinorOffense time(s)</i></b>
+                            </label>
+                        </div>";
+                }
+                  if ($row2['DIRECTOR_REMARKS_ID'] == 5 && $numSameMinor > 1 && $currentMinorOffense != 62  && $row['TYPE'] == "Minor") {
+                    echo "<div class='checkbox'>
+                              <label>
+                                  <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']} <b><i>$numSameMinor time(s)</i></b>
+                              </label>
+                          </div>";
+                  }
                 }
                 ?>
-              </select>
-              <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" hidden readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
             </div>
 
             <?php
+              if($row['TYPE'] == "Minor") {?>
+              <?php
+                if($row['REMARKS_ID'] < 6) { ?>
+                  <?php
+                    $query2='SELECT DIRECTOR_REMARKS_ID, DIRECTOR_REMARKS FROM REF_DIRECTOR_REMARKS';
+                    $result2=mysqli_query($dbc,$query2);
+                    if(!$result2){
+                      echo mysqli_error($dbc);
+                    }
+                  ?>
+
+                  <?php
+                    while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                      if ($row2['DIRECTOR_REMARKS_ID'] == 1 && $currentMinorOffense == 62 && $numSameMinor < 3) {
+                        echo "<br>
+                              <div class='form-group'>
+                                <label>Penalty</label>
+                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>No penalty will be given</textarea>
+                              </div>";
+                      }
+                      elseif ($row2['DIRECTOR_REMARKS_ID'] == 2 && $numSameMinor == 1 && $currentMinorOffense != 62) {
+                        echo "<br>
+                              <div class='form-group'>
+                                <label>Penalty</label>
+                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Warning will be given</textarea>
+                              </div>";
+                      }
+                      elseif ($row2['DIRECTOR_REMARKS_ID'] == 4 && $numSameMinor == 2 && $currentMinorOffense != 62) {
+                        echo "<br>
+                              <div class='form-group'>
+                                <label>Penalty</label>
+                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Reprimand will be given</textarea>
+                              </div>";
+                      }
+                      elseif ($row2['DIRECTOR_REMARKS_ID'] == 5 && $numSameMinor > 2 && $numSameMinor < 5 && $currentMinorOffense != 62) {
+                        echo "<br>
+                              <div class='form-group'>
+                                <label>Penalty</label>
+                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Student will be referred to University Councelor</textarea>
+                              </div>";
+                      }
+                    }
+                  ?>
+              <?php }
+              ?>
+            <?php }
+            ?>
+
+            <?php
+            if($row['PENALTY_DESC'] != null) { ?>
+              <br>
+              <div class="form-group" id="penaltyarea">
+                <label>Penalty</label>
+                <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+              </div>
+            <?php }
+            ?>
+
+            <?php
             if($row['PROCEEDING_DECISION'] != null) { ?>
+              <br>
               <div class="form-group" id="penaltyarea">
                 <label>Penalty</label>
                 <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
@@ -195,6 +289,7 @@ if (!isset($_GET['cn']))
 
             <?php
               if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16 && $row['PROCEEDING_DECISION'] == null) { ?>
+                <br>
                 <div class="form-group" id="penpenaltyarea">
                   <label>Penalty <span style="color:red;">*</span></label>
                   <textarea id="finfinpenalty" name="finfinpenalty" class="form-control" rows="3" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
@@ -230,7 +325,14 @@ if (!isset($_GET['cn']))
         </div>
       </div>
         <br><br><br><br><br>
-        <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
+        <?php
+          if($row['TYPE'] == "Major" || ($row['REMARKS_ID'] == 5 && ($numSameMinorOffense > 2 || $numSameMinor > 4))) { ?>
+            <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
+        <?php }
+          elseif ($row['REMARKS_ID'] == 5) { ?>
+            <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
+        <?php  }
+        ?>
         <?php
           if($row['REMARKS_ID'] == 14) { ?>
             <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Feedback Form</button>
@@ -306,188 +408,166 @@ if (!isset($_GET['cn']))
     <?php include 'sdfod-notif-scripts.php' ?>
 
     $('#endorse').click(function() {
-      var ids = ['#penalty'];
-      var isEmpty = true;
+      var remarks = [];
+      var minor = true;
+      $.each($("input[name='remarks']:checked"), function(){
+          remarks.push($(this).val());
+      });
 
-      if($('#penalty').is(":visible")){
-        for(var i = 0; i < ids.length; ++i ){
-          if($.trim($(ids[i]).val()).length == 0){
-            isEmpty = false;
-          }
+      for(var i = 0; i < remarks.length; ++i ) {
+        if(remarks[i] == 3) {
+          minor = false;
         }
       }
 
-      if(isEmpty) {
-        if($('#penalty').val() != 3 && $('#penalty').is(":visible")) {
-          $.ajax({
-            //../ajax/director-close-case.php
-              url: '../ajax/director-close-case.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  penalty: $('#penalty').val()
-              },
-              success: function(response) {
-                loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
-                  if (error) { throw error };
-                  var zip = new JSZip(content);
-                  var doc=new window.docxtemplater().loadZip(zip);
-                  // date
-                  var today = new Date();
-                  var dd = today.getDate();
-                  var mm = today.getMonth() + 1; //January is 0!
-                  var yyyy = today.getFullYear();
-                  if (dd < 10) {
-                    dd = '0' + dd;
-                  }
-                  if (mm < 10) {
-                    mm = '0' + mm;
-                  }
-                  var today = dd + '/' + mm + '/' + yyyy;
+      if(minor){
+        $.ajax({
+          //../ajax/director-close-case.php
+            url: '',
+            type: 'POST',
+            data: {
+                caseID: <?php echo $_GET['cn']; ?>,
+                dRemarks: remarks,
+                penalty: $('#finpenalty').val()
+            },
+            success: function(response) {
+              loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc=new window.docxtemplater().loadZip(zip);
+                // date
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                  dd = '0' + dd;
+                }
+                if (mm < 10) {
+                  mm = '0' + mm;
+                }
+                var today = dd + '/' + mm + '/' + yyyy;
 
-                  doc.setData({
+                doc.setData({
 
-                    date: today,
-                    name: "<?php echo $row['STUDENT']; ?>",
-                    idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
-                    degree: "<?php echo $CollegeQRow['degree']; ?>",
-                    college: "<?php echo $CollegeQRow['description']; ?>",
-                    nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
-                    ido: "<?php echo $row['HANDLED_BY']; ?>",
-                    dRemark: response
+                  date: today,
+                  name: "<?php echo $row['STUDENT']; ?>",
+                  idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+                  degree: "<?php echo $CollegeQRow['degree']; ?>",
+                  college: "<?php echo $CollegeQRow['description']; ?>",
+                  nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+                  ido: "<?php echo $row['HANDLED_BY']; ?>",
+                  dremark: response,
+                  penalty: $('#finpenalty').val()
 
-                  });
-
-                  try {
-                      // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                      doc.render();
-                  }
-
-                  catch (error) {
-                      var e = {
-                          message: error.message,
-                          name: error.name,
-                          stack: error.stack,
-                          properties: error.properties,
-                      }
-                      console.log(JSON.stringify({error: e}));
-                      // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                      throw error;
-                  }
-
-                  var out=doc.getZip().generate({
-                      type:"blob",
-                      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                  }); //Output the document using Data-URI
-                  saveAs(out,"output.docx");
                 });
-                $('#penalty').attr("disabled", true);
-                $("#endorse").attr('disabled', true).text("Submitted");
-                $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
-                $("#alertModal").modal("show");
-              }
-          });
-        }
-        else {
-          $.ajax({
-            //../ajax/director-endorse-case.php
-              url: '../ajax/director-endorse-case.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  penalty: $('#penalty').val(),
-                  //proceeding: $("input:radio[name=proceedings]:checked").val()
-              },
-              success: function(response) {
-                loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
-                  if (error) { throw error };
-                  var zip = new JSZip(content);
-                  var doc=new window.docxtemplater().loadZip(zip);
-                  // date
-                  var today = new Date();
-                  var dd = today.getDate();
-                  var mm = today.getMonth() + 1; //January is 0!
-                  var yyyy = today.getFullYear();
-                  if (dd < 10) {
-                    dd = '0' + dd;
-                  }
-                  if (mm < 10) {
-                    mm = '0' + mm;
-                  }
-                  var today = dd + '/' + mm + '/' + yyyy;
 
-                  doc.setData({
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
 
-                    date: today,
-                    casenum: <?php echo $_GET['cn']; ?>,
-                    name: "<?php echo $row['STUDENT']; ?>",
-                    idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
-                    college: "<?php echo $CollegeQRow['description']; ?>",
-                    degree: "<?php echo $CollegeQRow['degree']; ?>",
-                    violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
-                    complainant: "<?php echo $row['COMPLAINANT']; ?>",
-                    nature: "",
-                    decision: "",
-                    reason: "",
-                    remark: "",
-                    changes: "",
-                    others: ""
+                catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
 
-                  });
-
-                  try {
-                      // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                      doc.render();
-                  }
-
-                  catch (error) {
-                      var e = {
-                          message: error.message,
-                          name: error.name,
-                          stack: error.stack,
-                          properties: error.properties,
-                      }
-                      console.log(JSON.stringify({error: e}));
-                      // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                      throw error;
-                  }
-
-                  var out=doc.getZip().generate({
-                      type:"blob",
-                      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                  }); //Output the document using Data-URI
-                  saveAs(out,"output.docx");
-                });
-                //$("input[type=radio]").attr('disabled', true);
-                $('#penalty').attr("disabled", true);
-                $("#endorse").attr('disabled', true).text("Endorsed");
-                $('#message').text('Check your email to sign the Discipline Case Referral Form. Case is endorsed to AULC.');
-                $("#alertModal").modal("show");
-                //referralFile(pen);
-              }
-          });
-          /*$.ajax({
-              url: '../ajax/director-endorse-case.php',
-              type: 'POST',
-              data: {
-                  caseID: "<?php echo $_GET['cn']; ?>",
-                  decision: $('#caseDecision').val(),
-                  reason: $('#reasonCase').val(),
-                  nature: $('#proceedingType').val(),
-                  remark: remarks
-              },
-              success: function(msg) {
-                $('#message').text('Case closed.');
-                $('#submitFeedback').text("Send Discipline Case Feedback Form");
-
-                $("#alertModal").modal("show");
-              }
-          });*/
-        }
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out,"output.docx");
+              });
+              $("#endorse").attr('disabled', true).text("Submitted");
+              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
+            }
+        });
       }
       else {
-        $("#alertModal").modal("show");
+        $.ajax({
+          //../ajax/director-endorse-case.php
+            url: '../ajax/director-endorse-case.php',
+            type: 'POST',
+            data: {
+                caseID: <?php echo $_GET['cn']; ?>
+                //proceeding: $("input:radio[name=proceedings]:checked").val()
+            },
+            success: function(response) {
+              loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc=new window.docxtemplater().loadZip(zip);
+                // date
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                  dd = '0' + dd;
+                }
+                if (mm < 10) {
+                  mm = '0' + mm;
+                }
+                var today = dd + '/' + mm + '/' + yyyy;
+
+                doc.setData({
+
+                  date: today,
+                  casenum: <?php echo $_GET['cn']; ?>,
+                  name: "<?php echo $row['STUDENT']; ?>",
+                  idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+                  college: "<?php echo $CollegeQRow['description']; ?>",
+                  degree: "<?php echo $CollegeQRow['degree']; ?>",
+                  violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+                  complainant: "<?php echo $row['COMPLAINANT']; ?>",
+                  nature: "",
+                  decision: "",
+                  reason: "",
+                  remark: "",
+                  changes: "",
+                  others: ""
+
+                });
+
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
+
+                catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
+
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out,"output.docx");
+              });
+              //$("input[type=radio]").attr('disabled', true);
+              $('#penalty').attr("disabled", true);
+              $("#endorse").attr('disabled', true).text("Endorsed");
+              $('#message').text('Check your email to sign the Discipline Case Referral Form. Case is endorsed to AULC.');
+              //referralFile(pen);
+            }
+        });
       }
+      $("#alertModal").modal("show");
     });
 
     function loadFile(url,callback){
@@ -495,14 +575,20 @@ if (!isset($_GET['cn']))
     }
 
     $('#sign').on('click', function() {
+      var remarks = [];
+      $.each($("input[name='remarks']:checked"), function(){
+          remarks.push($(this).val());
+      });
+
       $.ajax({
           url: '../ajax/director-return-to-ido.php',
           type: 'POST',
           data: {
               caseID: <?php echo $_GET['cn']; ?>,
-              decision: '<?php echo $row['CASE_DECISION']; ?>'
+              decision: '<?php echo $row['CASE_DECISION']; ?>',
+              dRemarks: remarks
           },
-          success: function(msg) {
+          success: function(response) {
             if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
               $('#message').text('Check your email to sign the Discipline Case Feedback Form.');
             }
@@ -514,18 +600,6 @@ if (!isset($_GET['cn']))
             $("#alertModal").modal("show");
           }
       });
-    });
-
-    $('#penalty').on('change', function() {
-      var option = $("option:selected", this);
-      if(this.value == 3) {
-        $("#endorse").text("Endorse");
-        //$("#proceedingsList").show();
-      }
-      else {
-        $("#endorse").text("Submit");
-        //$("#proceedingsList").hide();
-      }
     });
 
     $('#submitPD').on('click', function() {
@@ -576,12 +650,12 @@ if (!isset($_GET['cn']))
 
   <?php
     if($row['TYPE'] == "Major"){ ?>
-      $("#endorse").text("Endorse");
-      $("#penaltyarea").hide();
+      //$("#endorse").text("Endorse");
+      //$("#penaltyarea").hide();
       //$("#proceedingsList").show();
   <?php }
     if($row['REMARKS_ID'] < 6){ ?>
-      $("#finpenalty").hide();
+      //$("#finpenalty").hide();
   <?php }
     if($row['REMARKS_ID'] > 5){ ?>
       $("#endorse").hide();

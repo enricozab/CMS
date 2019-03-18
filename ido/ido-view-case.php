@@ -101,6 +101,7 @@ if (!isset($_GET['cn']))
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
             LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';
     $result=mysqli_query($dbc,$query);
@@ -133,7 +134,8 @@ if (!isset($_GET['cn']))
                     JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
                     JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
                     JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
-                    JOIN REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+                    LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+
                    WHERE C.CASE_ID = "'.$_GET['cn'].'"';
 
       $qClosureRes=mysqli_query($dbc,$qClosure);
