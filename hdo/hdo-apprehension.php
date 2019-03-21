@@ -51,6 +51,16 @@
     <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
     <script src="../extra-css/jquery.datetimepicker.min.js"></script>
 
+    <!-- GDRIVE -->
+
+    <script src="../gdrive/date.js" type="text/javascript"></script>
+    <script src="../gdrive/addFolder4.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    </script>
+    <script src="../gdrive/upload.js"></script>
+
 </head>
 
 <body>
@@ -197,8 +207,19 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <!-- gmail -->
+    <?php include '../gmail/send-email.php'; ?>
+
     <script>
     $(document).ready(function() {
+      // NEW DRIVE
+      var caseData;
+
+      $('#folderBtn').click(function() {
+        buttonAddfolder(caseData);
+      });
+      // END DRIVE
+
       <?php include 'hdo-notif-scripts.php'?>
 
       $('.chosen-select').chosen();
@@ -250,6 +271,7 @@
       });
 
       $('#submit').click(function() {
+        $('#waitModal').modal("show"); // new drive
         var ids = ['#studentID','#offense','#complainantID','#date','#location','#details','#ido'];
         var isEmpty = true;
 
@@ -280,16 +302,77 @@
                   dateIncident: $('#date').val(),
                   location: $('#location').val(),
                   details: $('#details').val(),
-                  assignIDO: $('#ido').val()
-              }
+                  assignIDO: $('#ido').val(),
+                  page: "HDO-APPREHENSION" // NEW DRIVE
+              },
+
+              success: function(response) {
+
+                data = response.split("/");
+            		caseData = "Case #" + data[5];
+                loadData(response);
+              } // END NEW DRIVE
           });
-          $('#message').text('Submitted successfully!');
+          //$('#message').text('Submitted successfully!');
           $('#form')[0].reset();
           $(".chosen-select").trigger("chosen:updated");
         }
 
-        $("#alertModal").modal("show");
+        //$("#alertModal").modal("show");
       });
+
+      $('#modalOK').click(function() {
+        //checks if all necessary values are filled out
+        if ($('#message').text() == "Submitted successfully!"){
+          //gets IDOs email address
+          var idoemail;
+          <?php
+          $idoquery='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO, EMAIL AS IDO_EMAIL FROM USERS WHERE USER_TYPE_ID = 4';
+          $idoresult=mysqli_query($dbc,$idoquery);
+          if(!$idoresult){
+            echo mysqli_error($dbc);
+          }
+          else{
+            while($idorow=mysqli_fetch_array($idoresult,MYSQLI_ASSOC)){ ?>
+              var idorow = "<?php echo $idorow['USER_ID']; ?>";
+              if (idorow == $('#ido').val()){
+                idoemail = "<?php echo $idorow['IDO_EMAIL']; ?>";
+              }
+          <?php
+            }
+          }?>
+          //gets students email address
+          <?php
+          $studentquery='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS STUDENT, EMAIL AS STUDENT_EMAIL FROM USERS WHERE USER_TYPE_ID = 1';
+          $studentresult=mysqli_query($dbc,$studentquery);
+          if(!$studentresult){
+            echo mysqli_error($dbc);
+          }
+          else{
+            while($studentrow=mysqli_fetch_array($studentresult,MYSQLI_ASSOC)){ ?>
+              var studentrow = "<?php echo $studentrow['USER_ID']; ?>";
+              if (studentrow == $('#studentID').val()){
+                studentemail = "<?php echo $studentrow['STUDENT_EMAIL']; ?>";
+              }
+          <?php
+            }
+          }?>
+
+          //sends emails
+          sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+
+          //hides modal
+          $("#alertModal").modal("hide");
+          $('#form')[0].reset();
+          $(".chosen-select").trigger("chosen:updated");
+        }
+        else{
+          //hides modal
+          $("#alertModal").modal("hide");
+        }
+      });
+
     });
     </script>
 
@@ -305,11 +388,49 @@
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+						<button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
 					</div>
 				</div>
 			</div>
     </div>
+    <!-- NEW DRIVE  -->
+
+    <!-- Folder Modal -->
+    <div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> Thank you for authenticating the use of Google Drive.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" id = "folderBtn" class="btn btn-default">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wait Modal -->
+    <div class="modal fade" id="waitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> Please wait. </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
 </body>
 
 </html>

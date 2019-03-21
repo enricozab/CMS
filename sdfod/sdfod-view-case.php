@@ -50,6 +50,16 @@ if (!isset($_GET['cn']))
     <script src="../form-generation/FileSaver.js"></script>
     <script src="../form-generation/jszip-utils.js"></script>
 
+    <!-- GDRIVE -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="../gdrive/date.js" type="text/javascript"></script>
+    <script src="../gdrive/ah.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    </script>
+    <script src="../gdrive/upload.js"></script>
+
 </head>
 
 <body>
@@ -118,6 +128,100 @@ if (!isset($_GET['cn']))
     else{
       $CollegeQRow=mysqli_fetch_array($CollegeQRes,MYSQLI_ASSOC);
     }
+
+    // NEW - DRIVE
+    $queryStud2 = 'SELECT *
+                    FROM CASES C
+                    JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                    JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
+                    JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
+                   WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+    $resultStud2 = mysqli_query($dbc,$queryStud2);
+
+    if(!$resultStud2){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $rowStud2 = mysqli_fetch_array($resultStud2,MYSQLI_ASSOC);
+    }
+
+    if ($rowStud2['if_graduating'] == 1) {
+      $graduate = "Graduate";
+    }
+
+    else {
+      $graduate = "Undergraduate";
+    }
+
+    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "SDFOD-VIEW-CASE" . "/" . $_GET['cn'];
+    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
+
+    $queryForm = 'SELECT *
+                    FROM CASE_REFERRAL_FORMS
+                   WHERE CASE_ID = "'.$_GET['cn'].'"';
+    $resForm = mysqli_query($dbc,$queryForm);
+
+     if(!$resForm){
+       echo mysqli_error($dbc);
+     }
+     else{
+       $rowForm = mysqli_fetch_array($resForm,MYSQLI_ASSOC);
+     }
+
+     // FOR CLOSURE LETTER
+
+     $qClosure = 'SELECT *
+                    FROM CASES C
+                    JOIN STUDENT_RESPONSE_FORMS S ON S.CASE_ID = C.CASE_ID
+                    JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                    JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
+                    JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
+                    JOIN REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+                   WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+      $qClosureRes=mysqli_query($dbc,$qClosure);
+      if(!$qClosureRes){
+        echo mysqli_error($dbc);
+      }
+      else{
+        $rowClosure=mysqli_fetch_array($qClosureRes,MYSQLI_ASSOC);
+      }
+
+      $qComplainant = 'SELECT *
+                     FROM CASES C
+                     JOIN USERS U ON C.COMPLAINANT_ID = U.USER_ID
+                    WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+       $qComplainantRes=mysqli_query($dbc,$qComplainant);
+       if(!$qComplainantRes){
+         echo mysqli_error($dbc);
+       }
+       else{
+         $qComplainantRow=mysqli_fetch_array($qComplainantRes,MYSQLI_ASSOC);
+       }
+
+     // calculating left/lost idea
+
+     $fiveplus = 'SELECT COUNT(C.OFFENSE_ID) AS TOTAL
+                    FROM CASES C
+                    JOIN REF_OFFENSES R ON C.OFFENSE_ID = R.OFFENSE_ID
+                   WHERE C.OFFENSE_ID = 57 AND C.REPORTED_STUDENT_ID = "'.$rowClosure['user_id'].'"';
+
+      $fiveplusRes=mysqli_query($dbc,$fiveplus);
+      $fiveplusRow = mysqli_fetch_assoc($fiveplusRes);
+
+      $form = 'SELECT MAX(STUDENT_RESPONSE_FORM_ID)+1 AS MAX
+                FROM STUDENT_RESPONSE_FORMS';
+      $formq = mysqli_query($dbc,$form);
+
+      if(!$formq){
+        echo mysqli_error($dbc);
+      }
+      else{
+        $formres = mysqli_fetch_array($formq);
+      }
+     // END NEW - DRIVE
   ?>
 
     <div id="wrapper">
@@ -321,10 +425,13 @@ if (!isset($_GET['cn']))
               </div>
           </div>-->
             <br>
-            <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+            <button type="button" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         </div>
       </div>
         <br><br><br><br><br>
+        <!-- // NEW - DRIVE -->
+        <input type="file" id="fUpload" class="hide"/>
+        <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
         <?php
           if($row['TYPE'] == "Major" || ($row['REMARKS_ID'] == 5 && ($numSameMinorOffense > 2 || $numSameMinor > 4))) { ?>
             <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
@@ -348,6 +455,8 @@ if (!isset($_GET['cn']))
             <button type="button" id="sendAcad" class="btn btn-success" data-dismiss="modal">Send Academic Endorsement Service Form</button>
         <?php }
         ?>
+        <!-- // NEW - DRIVE -->
+        <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
         <br><br><br><br><br>
       </div>
 
@@ -483,10 +592,15 @@ if (!isset($_GET['cn']))
                     type:"blob",
                     mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 }); //Output the document using Data-URI
-                saveAs(out,"output.docx");
+                saveAs(out,"Discipline Case Feedback Form.docx");
               });
               $("#endorse").attr('disabled', true).text("Submitted");
-              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
+              // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
+              // NEW - DRIVE
+              document.getElementById('file-case').style.display = 'none';
+              document.getElementById('not-file').style.display = 'none';
+              document.getElementById('file-close').style.display = 'block';
+              $('#newFormModal').modal("show");
             }
         });
       }
@@ -557,13 +671,19 @@ if (!isset($_GET['cn']))
                     type:"blob",
                     mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 }); //Output the document using Data-URI
-                saveAs(out,"output.docx");
+                saveAs(out,"Discipline Case Referral Form.docx");
               });
               //$("input[type=radio]").attr('disabled', true);
               $('#penalty').attr("disabled", true);
               $("#endorse").attr('disabled', true).text("Endorsed");
-              $('#message').text('Check your email to sign the Discipline Case Referral Form. Case is endorsed to AULC.');
+              // $('#message').text('Check your email to sign the Discipline Case Referral Form. Case is endorsed to AULC.');
               //referralFile(pen);
+
+              // NEW - DRIVE
+              document.getElementById('file-case').style.display = 'none';
+              document.getElementById('not-file').style.display = 'none';
+              document.getElementById('file-close').style.display = 'block';
+              $("#newFormModal").modal("show");
             }
         });
       }
@@ -590,14 +710,26 @@ if (!isset($_GET['cn']))
           },
           success: function(response) {
             if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
-              $('#message').text('Check your email to sign the Discipline Case Feedback Form.');
+
+              // new drive
+              document.getElementById("file-case").style.display = 'none';
+              document.getElementById("not-file").style.display = 'none';
+              document.getElementById('file-close').style.display = 'block';
+              // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
             }
             else {
-              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
+              // new drive
+              document.getElementById('file-case').style.display = 'none';
+              document.getElementById('not-file').style.display = 'block';
+              document.getElementById('file-close').style.display = 'none';
+              // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
             }
             $("#sign").attr('disabled', true)
 
-            $("#alertModal").modal("show");
+            // NEW - DRIVE
+            $("#uploading").show();
+            $("#newFormModal").modal("show");
+            // $("#alertModal").modal("show");
           }
       });
     });
@@ -630,6 +762,46 @@ if (!isset($_GET['cn']))
       $("#alertModal").modal("show");
     });
 
+    // NEW - DRIVE
+    $('#uploading').click(function() {
+      $("#waitModal").modal("show");
+    });
+
+    $('#btnViewEvidence').click(function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='sdfod-gdrive-case.php';
+    });
+
+    $('#updateTable').click(function() {
+
+      <?php
+         if ($row['REMARKS_ID'] == 6){
+          $updateQry = 'UPDATE CASE_REFERRAL_FORMS
+                           SET IF_UPLOADED = 1
+                         WHERE CASE_ID = "'.$_GET['cn'].'"';
+
+          $update = mysqli_query($dbc,$updateQry);
+          if(!$update){
+            echo mysqli_error($dbc);
+          }
+        }
+
+        else if ($row['REMARKS_ID'] == 11) {
+          $updateQry = 'UPDATE CASE_REFERRAL_FORMS
+                           SET IF_UPLOADED = 4
+                         WHERE CASE_ID = "'.$_GET['cn'].'"';
+
+          $update = mysqli_query($dbc,$updateQry);
+          if(!$update){
+            echo mysqli_error($dbc);
+          }
+        }
+      ?>
+
+    });
+
+    // END DRIVE
+
     $('#sendAcad').on('click', function() {
       $.ajax({
           url: '../ajax/sdfod-academic-service.php',
@@ -644,8 +816,8 @@ if (!isset($_GET['cn']))
             $("#alertModal").modal("show");
           }
       });
-
     });
+
   });
 
   <?php
@@ -667,6 +839,23 @@ if (!isset($_GET['cn']))
       //$("input[type=radio]").attr('disabled', true);
   <?php }
   ?>
+  // NEW - DRIVE
+  <?php
+    if (($rowForm['if_uploaded'] == 0 AND $row['REMARKS_ID'] == 6) || $row['REMARKS_ID'] == 11){ ?>
+
+      $("#uploading").show();
+<?php }
+  ?>
+
+  <?php
+    if ($row['TYPE'] != "Minor"){
+      if ($row['REMARKS_ID'] == 11 || $row['REMARKS_ID'] == 10) {?>
+      $("#endorsement").hide();
+<?php
+      }
+    }
+  ?>
+  // END NEW - DRIVE
   </script>
 
   <!-- Modal -->
@@ -678,6 +867,102 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-body">
           <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- // NEW - DRIVE -->
+
+  <!-- New Modal -->
+  <div class="modal fade" id="newFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
+        </div>
+        <div class="modal-body">
+          <!-- <p id="message">Case succesfully endorsed to the AULC! Discipline Case Referral Form has been sent to your email. <br><br> <b>Next Steps: </b>  <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p> -->
+          <p id="file-case">Discipline Case Feedback Form was submitted succesfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
+          <p id="not-file">Case successfully returned to IDO! Discipline Case Feedback Form has been sent to your email. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
+          <p id="file-close"><b>Case is closed!</b><br> Discipline Case Feedback Form was submitted and has been sent to your email. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRIVE Modal -->
+  <div class="modal fade" id="driveModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> You have authenticated the use of Google Drive. You can now upload your evidences.</p>
+        </div>
+        <div class="modal-footer">
+          <input type="file" id="fUpload" class="hide"/>
+          <button type="button" id = "fileUpload" class="btn btn-primary" data-dismiss="modal">Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Form Upload</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> File was uploaded successfully!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wait Modal -->
+  <div class="modal fade" id="waitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> Please wait. </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Form Upload</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> File was uploaded successfully!</p>
         </div>
         <div class="modal-footer">
           <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>

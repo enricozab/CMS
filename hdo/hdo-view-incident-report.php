@@ -49,6 +49,16 @@ if (!isset($_GET['irn']))
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
+    <!-- GDRIVE -->
+
+    <script src="../gdrive/date.js" type="text/javascript"></script>
+    <script src="../gdrive/addFolder2.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    </script>
+    <script src="../gdrive/upload.js"></script>
+
 </head>
 
 <body>
@@ -92,6 +102,33 @@ if (!isset($_GET['irn']))
                     else{
                       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
                     }
+
+                    // new drive
+                    $queryStud = 'SELECT *
+                                    FROM INCIDENT_REPORTS IR
+                                    JOIN USERS U ON IR.REPORTED_STUDENT_ID = U.USER_ID
+                                    JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
+                                    JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
+                                   WHERE IR.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"';
+
+                    $resultStud = mysqli_query($dbc,$queryStud);
+
+                    if(!$queryStud){
+                      echo mysqli_error($dbc);
+                    }
+                    else{
+                      $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
+                    }
+
+                    if ($rowStud['if_graduating'] == 1) {
+                      $graduate = "Graduate";
+                    }
+
+                    else {
+                      $graduate = "Undergraduate";
+                    }
+
+                    $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['reported_student_id'] .  "/" . "HDO-VIEW-INCIDENT";
                   ?>
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
@@ -210,10 +247,18 @@ if (!isset($_GET['irn']))
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
-    <?php include '../gmail/script.php'; ?>
+    <!-- gmail -->
+    <?php include '../gmail/send-email.php'; ?>
 
     <script type='text/javascript'>
     $(document).ready(function() {
+      // new drive
+      var caseData;
+
+      $("#evidence").click(function () {
+        $("#driveModal").modal("show");
+      });
+      // end drive
       <?php include 'hdo-notif-scripts.php' ?>
 
       $('.chosen-select').chosen();
@@ -233,6 +278,10 @@ if (!isset($_GET['irn']))
       });
 
       $('#submit').click(function(){
+        // new drive
+        $('#waitModal').modal("show");
+        // end drive
+
         var ids = ['#offense','#details','#ido'];
         var isEmpty = true;
 
@@ -264,16 +313,17 @@ if (!isset($_GET['irn']))
                   dateIncident: "<?php echo $row['DATE_INCIDENT']; ?>",
                   location: "<?php echo $row['LOCATION']; ?>",
                   details: $('#details').val(),
-                  assignIDO: $('#ido').val()
+                  assignIDO: $('#ido').val(),
+                  page: "HDO-VIEW-CASE"
               }
           });
-          $('#message').text('Submitted successfully!');
+          // $('#message').text('Submitted successfully!');
           $('#form').find('input, textarea, button, select').attr('disabled','disabled');
           $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
-          $('#submit').text("Submitted"); // copy for fill out form
+          // $('#submit').text("Submitted"); // copy for fill out form
         }
 
-        $("#alertModal").modal("show");
+        // $("#alertModal").modal("show");
       });
 
       $('#modalOK').click(function() {
@@ -313,8 +363,6 @@ if (!isset($_GET['irn']))
           //hides modal
           $("#alertModal").modal("hide");
         }
-
-
       });
 
       //Changes button text and disabled
@@ -362,6 +410,79 @@ if (!isset($_GET['irn']))
 				</div>
 			</div>
     </div>
+
+    <!-- DRIVE Modal -->
+    <div class="modal fade" id="driveModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> You have authenticated the use of Google Drive. You can now upload your evidences.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick = "btnSubmit()">Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>File Upload</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> File was uploaded successfully!</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Folder Modal -->
+    <div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> Thank you for authenticating the use of Google Drive.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" id = "folderBtn" class="btn btn-default">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wait Modal -->
+    <div class="modal fade" id="waitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> Please wait. </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
 </body>
 
 </html>

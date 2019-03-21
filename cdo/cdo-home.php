@@ -44,9 +44,7 @@
 
 <body>
 
-  <?php
-    include 'cdo-notif-queries.php';
-  ?>
+  <?php include 'cdo-notif-queries.php' ?>
 
   <div id="wrapper">
 

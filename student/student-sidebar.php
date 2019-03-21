@@ -60,6 +60,9 @@
 				<li>
 					<a href="student-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
+				<li>
+					<a href="student-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+				</li>
 			</ul>
 		</div>
 		<!-- /.sidebar-collapse -->

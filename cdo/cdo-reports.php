@@ -61,55 +61,56 @@
                         <label>Academic Year: <span style="font-weight:normal; font-style:italic; font-size:12px;"></span> <span style="font-weight:normal; color:red;">*</span></label>
 
                         <select id="academicyear" name="academicyear" class="academicyear form-control">
-							<!--<option value="2014-2015"> 2014-2015 </option>
-							<option value="2015-2016"> 2015-2016 </option>
-							<option value="2016-2017"> 2016-2017 </option>
-							<option value="2017-2018"> 2017-2018 </option>
-							<option value="2018-2019"> 2018-2019 </option>-->
-							<?php
-								require_once('../mysql_connect.php');
-								$sqlQuery = "SELECT DISTINCT(SRF.SCHOOL_YEAR) 
-												FROM CMS.STUDENT_RESPONSE_FORMS SRF 
-												ORDER BY SRF.SCHOOL_YEAR ASC";
-								$sqlRes = mysqli_query($dbc, $sqlQuery);
-								while ($row = $sqlRes->fetch_assoc()){
-									echo '<option value="' .$row['SCHOOL_YEAR'] .'">' . $row['SCHOOL_YEAR'] . '</option>';
-								}
-							?>
-						</select>
+            							<!--<option value="2014-2015"> 2014-2015 </option>
+            							<option value="2015-2016"> 2015-2016 </option>
+            							<option value="2016-2017"> 2016-2017 </option>
+            							<option value="2017-2018"> 2017-2018 </option>
+            							<option value="2018-2019"> 2018-2019 </option>-->
+            							<?php
+            								require_once('../mysql_connect.php');
+            								$sqlQuery = "SELECT DISTINCT(SRF.SCHOOL_YEAR)
+            												FROM CMS.STUDENT_RESPONSE_FORMS SRF
+            												ORDER BY SRF.SCHOOL_YEAR ASC";
+            								$sqlRes = mysqli_query($dbc, $sqlQuery);
+            								while ($row = $sqlRes->fetch_assoc()){
+            									echo "<option value='{$row['SCHOOL_YEAR']}'>{$row['SCHOOL_YEAR']}</option>";
+            								}
+            							?>
+            						</select>
                       </div>
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Term <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="term" name="term" class="term form-control">
-							<option value=1> 1 </option>
-							<option value=2> 2 </option>
-							<option value=3> 3 </option>
-							
-							<?php/*
-								require_once('../mysql_connect.php');
-								$sqlQuery = "SELECT DISTINCT(SRF.TERM) 
-												FROM CMS.STUDENT_RESPONSE_FORMS SRF 
-												ORDER BY SRF.TERM ASC";
-								$sqlRes = mysqli_query($dbc, $sqlQuery);
-								while ($row = $sqlRes->fetch_assoc()){
-									echo "<option value= ".$row['TERM'] . ">" . $row['TERM'] . "</option>";
-								}
-							*/?>
-						</select>
+          							<option value=1> 1 </option>
+          							<option value=2> 2 </option>
+          							<option value=3> 3 </option>
+
+          							<?php
+          								/*require_once('../mysql_connect.php');
+          								$sqlQuery = "SELECT DISTINCT(SRF.TERM)
+          												FROM CMS.STUDENT_RESPONSE_FORMS SRF
+          												ORDER BY SRF.TERM ASC";
+          								$sqlRes = mysqli_query($dbc, $sqlQuery);
+          								while ($row = $sqlRes->fetch_assoc()){
+          									echo "<option value= ".$row['TERM'] . ">" . $row['TERM'] . "</option>";
+          								}*/
+          							?>
+          						</select>
                     </div>
-					<div class="form-group" style = "width: 300px;">
+  					        <div class="form-group" style = "width: 300px;">
                       <label>Case Type <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="casetype" name="casetype" class="casetype form-control">
-							<option value="Minor"> Minor </option>
-							<option value="Major"> Major </option>
-						</select>
+          							<option value="Minor"> Minor </option>
+          							<option value="Major"> Major </option>
+      						    </select>
                     </div>
-					<br>
+          					<br>
+
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Generate</button>
-                  </form>
-                  <br><br><br>
-                </div>
+                    </form>
+                    <br><br><br>
+                    </div>
 
                 <div class="col-lg-6">
                 </div>
@@ -117,6 +118,7 @@
             </div>
         </div>
         <!-- /#page-wrapper -->
+        <?php include 'cdo-notif-queries.php'; ?>
 
     </div>
     <!-- /#wrapper -->
@@ -149,30 +151,60 @@
   //function that runs once the page is loaded
 
   $(document).ready(function() {
-      <?php include 'faculty-notif-scripts.php'?>
+
+    <?php include 'cdo-notif-scripts.php' ?>
+
   });
   </script>
 
   <?php
 		if(isset($_POST['submit'])){
-			
+
 			$ay = $_POST['academicyear'];
 			$term = $_POST['term'];
 			$type = $_POST['casetype'];
-			
+
 			include 'insert-generated-report.php';
-			
+
 			if($type == "Minor" && $reportNum != 0){
 				//echo 'Minor', '<br>';
 				include 'cdo-generate-minor-report.php';
 			}
-			
+
 			else if($type == "Major" && $reportNum != 0){
-				//echo 'Major', '<br>';;
+				//echo 'Major', '<br>';
 				include 'cdo-generate-major-report.php';
 			}
+
+      echo "<script type='text/javascript'>
+            $(document).ready(function(){
+              var x = document.getElementById('msg').textContent;
+              document.getElementById('modalMessage').innerHTML = x;
+              $('#Modal').modal('show');
+        });
+        </script>";
 		}
 	?>
+
+  <!-- Modal -->
+  <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Generate Report</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="modalMessage">Report generated!</p><br>
+          <p id="modalMessage2"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>

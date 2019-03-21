@@ -149,8 +149,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
 
-    <?php include '../gmail/script.php'; ?>
-
     <script>
     $(document).ready(function() {
 
@@ -236,13 +234,14 @@
               },
               success: function(msg) {
                   generate();
-                  $("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
-                  $("#alertModal").modal("show");
+                  // $("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
+                  // $("#alertModal").modal("show");
+                  $("#sendModal").modal("show");
               }
           });
         }
         else {
-          $("#alertModal").modal("show");
+          $("#sendModal").modal("show");
         }
       });
 
@@ -345,7 +344,6 @@
                     filename : $('#inputfile').val()
                 },
                 success: function(response) {
-                  sendEmail('hdo.cms@gmail.com','[CMS] Reported Student on ' + new Date($.now()), 'Message');
                   $('#alertModal').modal("hide");
                   $('#form')[0].reset();
               }
@@ -402,6 +400,24 @@
 					</div>
 					<div class="modal-footer">
             <button type="submit" id = "modalOK" class="btn btn-default">Ok</button>
+					</div>
+				</div>
+			</div>
+    </div>
+
+    <!-- NEW DRIVE -->
+		<div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Important Reminder</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message">Your Incident Report Form has been downloaded. Please email it to <b>ido.cms1@gmail.com</b> for processing. </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "nextModal" class="btn btn-default">Ok</button>
 					</div>
 				</div>
 			</div>

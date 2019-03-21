@@ -55,7 +55,15 @@ if (!isset($_GET['cn']))
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
 
+    <!-- GDRIVE -->
 
+    <script src="../gdrive/date.js" type="text/javascript"></script>
+    <script src="../gdrive/ah.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    </script>
+    <script src="../gdrive/upload.js"></script>
 </head>
 
 <body>
@@ -181,6 +189,89 @@ if (!isset($_GET['cn']))
          else{
            $qleftRow=mysqli_fetch_array($qleftRes,MYSQLI_ASSOC);
          }
+
+         // NEW - DRIVE -->
+
+         $queryStud = 'SELECT *
+                         FROM CASES C
+                         JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                         JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
+                         JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
+                        WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+         $resultStud = mysqli_query($dbc,$queryStud);
+
+         if(!$queryStud){
+           echo mysqli_error($dbc);
+         }
+         else{
+           $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
+         }
+
+         if ($rowStud['if_graduating'] == 1) {
+           $graduate = "Graduate";
+         }
+
+         else {
+           $graduate = "Undergraduate";
+         }
+
+         $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['reported_student_id'] . "/" . "IDO-VIEW-CASE" . "/" . $_GET['cn'];
+         $passCase = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
+
+         // STUDENT RESPONSE FORM
+         $queryResp = 'SELECT *
+                         FROM CASES C
+                         JOIN STUDENT_RESPONSE_FORMS S ON C.CASE_ID = S.CASE_ID
+                        WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+         $resultResp = mysqli_query($dbc,$queryResp);
+
+         if(!$resultResp){
+           echo mysqli_error($dbc);
+         }
+         else{
+           $rowResp = mysqli_fetch_array($resultResp,MYSQLI_ASSOC);
+         }
+
+
+         //incident
+         $query = 'SELECT *
+                     FROM INCIDENT_REPORTS I
+                     JOIN CASES C ON C.INCIDENT_REPORT_ID = I.INCIDENT_REPORT_ID
+                    WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+         $result=mysqli_query($dbc,$query);
+         if(!$result){
+           echo mysqli_error($dbc);
+         }
+         else{
+           $row1 = mysqli_fetch_array($result,MYSQLI_ASSOC);
+         }
+
+         // student response
+         $query2 = 'SELECT *
+                     FROM STUDENT_RESPONSE_FORMS
+                     WHERE CASE_ID = "'.$_GET['cn'].'"';
+         $result2=mysqli_query($dbc,$query2);
+         if(!$result2){
+           echo mysqli_error($dbc);
+         }
+         else{
+           $rowResp = mysqli_fetch_array($result2,MYSQLI_ASSOC);
+         }
+
+         $query3 = 'SELECT *
+                      FROM FORM_UPLOADING
+                     WHERE CASE_ID = "'.$_GET['cn'].'"';
+         $result3=mysqli_query($dbc,$query3);
+         if(!$result3){
+           echo mysqli_error($dbc);
+         }
+         else{
+           $row3 = mysqli_fetch_array($result3,MYSQLI_ASSOC);
+         }
+
+         // END NEW - DRIVE -->
   ?>
 
     <div id="wrapper">
@@ -205,6 +296,143 @@ if (!isset($_GET['cn']))
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
                 </div>
+
+                <!-- // NEW - DRIVE -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b> Upload Evidences </b> <button type="submit" id = "first" name="evidence" class="btn btn-primary btn-sm" style = "margin-left: 220px;" onclick="handle('<?php echo $passData;?>')">Authenticate Google Drive</button>
+                        </div>
+
+                        <div id = "uploadPanel" class="panel-body" style = "display: none">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>File Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                          <?php
+                                            if ($row['IF_UPLOADED'] == 1) { ?>
+                                              <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                     <?php  }
+
+                                            else { ?>
+                                              <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                     <?php  }
+                                          ?>
+
+                                          <td>Incident Report Form</td>
+
+                                        <tr>
+
+                                          <?php
+                                            if ($rowResp['if_uploaded'] == 1) { ?>
+                                              <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                     <?php  }
+
+                                            else { ?>
+                                              <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                     <?php  }
+                                          ?>
+
+                                          <td>Student Response Form</td>
+
+                                        </tr>
+
+                                      <?php
+
+                                        if ($row['IF_APPEAL'] == 1) { ?>
+                                          <tr>
+
+                                            <?php
+                                              if ($rowResp['if_uploaded'] == 2) { ?>
+                                                <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                       <?php  }
+
+                                              else { ?>
+                                                <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                       <?php  }
+                                            ?>
+
+                                            <td>Student Response Form for Appeal</td>
+
+                                          </tr>
+                                  <?php }
+
+                                      ?>
+
+                                        <tr>
+
+                                          <?php
+                                            if ($row['WITH_PARENT_LETTER'] == 0) { ?>
+                                              <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Not Applicable</button></td>
+                                     <?php  }
+
+                                            else { ?>
+                                              <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                     <?php  }
+                                          ?>
+
+                                          <td>Parent Letter</td>
+
+                                        </tr>
+
+                                        <tr>
+                                          <td><button type="submit" id = "four" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                          <td>Other Evidences</td>
+
+                                        </tr>
+
+                                        <!-- <tr>
+                                            <?php
+                                              if ($row['IF_UPLOADED'] == 1) { ?>
+                                                <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                       <?php  }
+
+                                              else { ?>
+                                                <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs" onclick="handle('<?php echo $passData;?>')">Upload</button></td>
+                                       <?php  }
+                                            ?>
+
+                                            <td>Incident Report Form</td>
+                                        </tr>
+                                        <tr>
+                                          <?php
+                                            if ($rowResp['if_uploaded'] == 1) { ?>
+                                              <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs" onclick="handle('<?php echo $passData;?>')">Submitted</button></td>
+                                     <?php  }
+
+                                            else { ?>
+                                              <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                     <?php  }
+                                          ?>
+                                            <td>Student Response Form</td>
+                                        </tr>
+                                        <?php
+                                          if($row['WITH_PARENT_LETTER'] == 1) {?>
+                                        <tr>
+                                            <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" onclick="btnSubmit('three')">Upload</button></td>
+                                            <td>Parent Letter</td>
+                                        </tr>
+                                   <?php  }?>
+
+                                        <tr>
+                                            <td><button type="submit" id = "four" name="evidence" class="btn btn-outline btn-primary btn-xs" onclick="btnSubmit('three')">Upload</button></td>
+                                            <td>Other Evidences</td>
+                                        </tr> -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                  <!-- //END NEW - DRIVE -->
               </div>
 			<br><br>
       <div class="row">
@@ -236,8 +464,10 @@ if (!isset($_GET['cn']))
           ?>
 
           <br>
-
-          <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+          <!-- new drive -->
+          <button type="button" id="btnViewEvidence" class="btn btn-outline btn-primary">View evidence</button>
+          <input type="file" id="fUpload" class="hide"/>
+          <!-- end drive -->
         </div>
       </div>
       <br><br><br><br>
@@ -252,6 +482,11 @@ if (!isset($_GET['cn']))
           <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
           <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
           <!--<button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>-->
+
+          <!-- // NEW - DRIVE -->
+          <button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>
+          <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
+          <!-- END - DRIVE -->
         </div>
       </div>
       <br><br><br>
@@ -312,6 +547,77 @@ if (!isset($_GET['cn']))
     <?php include 'ido-notif-scripts.php' ?>
     <?php include "ido-form-queries.php" ?>
 
+    // NEW DRIVE
+    <?php
+    if ($rowResp['if_uploaded'] == 1 && $row1['if_uploaded'] == 1) { // incident & student response uploaded
+      // student response - appeal
+      if ($row['IF_APPEAL'] == 1) {  // there is an appeal (meaning theres another student  response form)
+
+        if ($row2['if_uploaded'] == 4) { // other student response is uploaded
+
+          if ($row['WITH_PARENT_LETTER'] == 1) { // theres parent letter and its uploaded
+
+            if ($row3['pl_uploaded'] == 1) {
+              ?>
+              // $("#submit").removeAttr('disabled');
+              //$("#submit").style.display = "block";
+              document.getElementById("submit").disabled = false;
+              <?php
+            }
+          }
+
+          else {
+            ?>
+            //$("#submit").removeAttr('disabled');
+            //$("#submit").style.display = "block";
+            document.getElementById("submit").disabled = false;
+            <?php
+          }
+        }
+
+      }
+
+      else {
+        if ($row['WITH_PARENT_LETTER'] == 1) { // theres parent letter and its uploaded
+
+          if ($row3['pl_uploaded'] == 1) {
+            ?>
+            //$("#submit").removeAttr('disabled')
+            //$("#submit").style.display = "block";
+            document.getElementById("submit").disabled = false;
+            <?php
+          }
+        }
+
+        else { ?>
+          //$("#submit").removeAttr('disabled');
+          document.getElementById("submit").disabled = false;
+          <?php
+        }
+      }
+    }
+
+    ?>
+
+    $('#updateTable').click(function() {
+
+      <?php
+        $updateQry = 'UPDATE FORM_UPLOADING
+                         SET CLOSURE_UPLOADED = 1
+                       WHERE CASE_ID = "'.$_GET['cn'].'"';
+
+        $update = mysqli_query($dbc,$updateQry);
+        if(!$update){
+          echo mysqli_error($dbc);
+        }
+      ?>
+    });
+
+    $('#uploading').click(function() {
+      $("#waitModal").modal("show");
+    });
+    // END NEW - DRIVE
+
     $('#submit').click(function() {
       $.ajax({
           url: '../ajax/ido-forward-case.php',
@@ -330,6 +636,91 @@ if (!isset($_GET['cn']))
           }
       });
     });
+
+    // new drive
+    $('#uploadEvidence').click(function() {
+      $("#driveModal").modal("show");
+    });
+
+    $('#incidentUpload').click(function() {
+
+      <?php
+        $updateQry = 'UPDATE INCIDENT_REPORTS
+                         SET IF_UPLOADED = 1
+                       WHERE INCIDENT_REPORT_ID = "'.$row['INCIDENT_REPORT_ID'].'"';
+
+        $update = mysqli_query($dbc,$updateQry);
+        if(!$update){
+          echo mysqli_error($dbc);
+        }
+      ?>
+    });
+
+    $('#responseUpload').click(function() {
+
+      <?php
+        if ($row['IF_APPEAL'] == 1) {
+          $updateQry = 'UPDATE STUDENT_RESPONSE_FORMS
+                           SET IF_UPLOADED = 3
+                         WHERE STUDENT_RESPONSE_FORM_ID =  "'.$rowResp['student_response_form_id'].'"';
+        }
+        else {
+          $updateQry = 'UPDATE STUDENT_RESPONSE_FORMS
+                           SET IF_UPLOADED = 1
+                         WHERE STUDENT_RESPONSE_FORM_ID =  "'.$rowResp['student_response_form_id'].'"';
+        }
+
+        $update = mysqli_query($dbc,$updateQry);
+        if(!$update){
+          echo mysqli_error($dbc);
+        }
+      ?>
+    });
+
+    $('#first').click(function() {
+      $("#waitModal").modal("show");
+    });
+
+    $('#one').click(function(data) {
+      $("#waitModal").modal("show");
+
+      var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+      btnSubmit(data);
+    });
+
+    $('#two').click(function(data) {
+      $("#waitModal").modal("show");
+
+      var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+      btnSubmit(data);
+    });
+
+    $('#three').click(function(data) {
+      $("#waitModal").modal("show");
+
+      var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+      btnSubmit(data);
+    });
+
+    $('#four').click(function(data) {
+      $("#waitModal").modal("show");
+
+      var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+      btnSubmit(data);
+    });
+
+    $('#five').click(function(data) {
+      $("#waitModal").modal("show");
+
+      var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+      btnSubmit(data);
+    });
+
+    $('#btnViewEvidence').click(function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='ido-gdrive-case.php';
+    });
+    // end drive
 
     $('#submitComment').click(function() {
       $.ajax({
@@ -362,7 +753,7 @@ if (!isset($_GET['cn']))
     $('#endorsement').click(function() {
       calculateID();
       $('#hourz').text('Student entered campus with lost or left ID for ' + totalID + ' times.');
-      $("#acadService").modal("show");
+      // $("#acadService").modal("show");
     });
 
     $('#submitHours').click(function() { // create referral form
@@ -385,6 +776,20 @@ if (!isset($_GET['cn']))
           }
           var today = dd + '/' + mm + '/' + yyyy;
 
+          // new drive
+          var formNumber;
+          <?php
+          if ($formres['MAX'] != null) { ?>
+            formNumber = <?php echo $formres['MAX'] ?>;
+          <?php }
+          else { ?>
+            formNumber = 1;
+          <?php }
+          ?>
+
+          var titleForm = "Academic Service Endorsement Form #" + formNumber + ".docx";
+          // end drive
+
           doc.setData({
 
             date: today,
@@ -420,7 +825,7 @@ if (!isset($_GET['cn']))
               type:"blob",
               mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           }); //Output the document using Data-URI
-          saveAs(out,"output.docx");
+          saveAs(out, titleForm);
 
       });
 
@@ -442,6 +847,20 @@ if (!isset($_GET['cn']))
           }
           var today = dd + '/' + mm + '/' + yyyy;
 
+          // new drive
+          var formNumber;
+          <?php
+          if ($formres['MAX'] != null) { ?>
+            formNumber = <?php echo $formres['MAX'] ?>;
+          <?php }
+          else { ?>
+            formNumber = 1;
+          <?php }
+          ?>
+
+          var titleForm = "Academic Service Form #" + formNumber + ".docx";
+          // end drive
+
           doc.setData({
 
             date: today,
@@ -477,7 +896,7 @@ if (!isset($_GET['cn']))
               type:"blob",
               mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           }); //Output the document using Data-URI
-          saveAs(out,"output.docx");
+          saveAs(out, titleForm);
 
       });
 
@@ -767,6 +1186,63 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRIVE Modal -->
+  <div class="modal fade" id="driveModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> You have authenticated the use of Google Drive. You can now upload your evidences.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <!-- <button type="button" class="btn btn-primary" data-dismiss="modal" onclick = "btnSubmit()">Upload</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- // NEW - DRIVE -->
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Form Upload</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> File was uploaded successfully!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wait Modal -->
+  <div class="modal fade" id="waitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> Please wait. </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

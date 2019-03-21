@@ -55,7 +55,7 @@
     <div id="page-wrapper">
       <div class="row">
           <div class="col-lg-8">
-              <h3 class="page-header">Case Notifications</h3>
+              <h3 class="page-header">Cases</h3>
           </div>
       </div>
 			<!-- case notification table -->

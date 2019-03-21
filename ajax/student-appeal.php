@@ -7,4 +7,14 @@
   if(!$result){
     echo mysqli_error($dbc);
   }
+
+  // new thea
+
+  $query="UPDATE STUDENT_RESPONSE_FORMS SET IF_UPLPOADED =2 WHERE CASE_ID = {$_POST['caseID']}";
+  $result=mysqli_query($dbc,$query);
+  if(!$result){
+    echo mysqli_error($dbc);
+  }
+
+  // end thea
 ?>

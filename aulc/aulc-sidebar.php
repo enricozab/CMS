@@ -57,27 +57,16 @@
 				<li>
 					<a href="aulc-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
+				<!-- new thea -->
 				<li>
-					<a href="#"><i class="fa fa-bullseye fa-fw"></i> Case Tracker<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="aulc-active-cases.php">Active</a>
-						</li>
-						<li>
-							<a href="aulc-closed-cases.php">Closed</a>
-						</li>
-					</ul>
+					<a href="aulc-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
-				<li>
-					<a href="#"><i class="fa fa-folder-open  fa-fw"></i> Files<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="#">File 1</a>
-						</li>
-					</ul>
-				</li>
+				<!-- end new thea -->
 				<li>
 					<a href="aulc-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+				</li>
+				<li>
+					<a href="aulc-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 			</ul>
 		</div>

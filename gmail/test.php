@@ -20,7 +20,7 @@
     <div class="container">
       <h1>Gmail API demo</h1>
 
-      <a href="#compose-modal" data-toggle="modal" id="compose-button" class="btn btn-primary pull-right hidden">Compose</a>
+      <button id="compose-button" class="btn btn-primary pull-right hidden" onclick="compose()">Compose</button>
 
       <button id="authorize-button" class="btn btn-primary hidden">Authorize</button>
 
@@ -111,6 +111,9 @@
       var scopes =
         'https://www.googleapis.com/auth/gmail.readonly '+
         'https://www.googleapis.com/auth/gmail.send';
+      function compose(){
+        $('#compose-modal').modal('show');
+      }
       function handleClientLoad() {
         gapi.client.setApiKey(apiKey);
         window.setTimeout(checkAuth, 1);
@@ -119,7 +122,7 @@
         gapi.auth.authorize({
           client_id: clientId,
           scope: scopes,
-          immediate: true
+          immediate: false
         }, handleAuthResult);
       }
       function handleAuthClick() {

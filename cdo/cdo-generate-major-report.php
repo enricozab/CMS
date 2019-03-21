@@ -1,6 +1,7 @@
 <?php
+//////////////MAJOR CASES
 	require_once('../mysql_connect.php');
-	
+
 	//Get director's email
 	  $sdfodquery = 'SELECT * FROM CMS.USERS WHERE USER_TYPE_ID = 9;';
 	  $sdfodres = mysqli_query($dbc,$sdfodquery);
@@ -18,7 +19,7 @@
 	$status = 0;
 
 	$z = 1;
-	//Cases/complaints under processing	& Dismissed Cases	
+	//Cases/complaints under processing	& Dismissed Cases
 	for($x = 0; $x < 4; $x++){
 		switch ($x){
 			case	0:
@@ -41,7 +42,7 @@
 
 		//Loop per college
 		for($i=1; $i<=7; $i++){
-			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MAJORCASES FROM CASES C 
+			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MAJORCASES FROM CASES C
 								LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
 								LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
 								LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
@@ -49,8 +50,8 @@
 								LEFT JOIN REF_STUDENTS RS				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
 								LEFT JOIN CASE_REFERRAL_FORMS CRF		ON C.CASE_ID = CRF.CASE_ID
 								LEFT JOIN REF_CASE_PROCEEDINGS RCP		ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
-								WHERE U.OFFICE_ID = " .$i ." 
-											&& RO.TYPE = 'Major' 
+								WHERE U.OFFICE_ID = " .$i ."
+											&& RO.TYPE = 'Major'
 											&& SRF.TERM = " .$term ."
 											&& SRF.SCHOOL_YEAR = '" .$ay ."'
 											&& RS.LEVEL = '" .$studentlevel ."'
@@ -64,6 +65,7 @@
 				$cases = $casesrow['MAJORCASES'];
 				$totalcases[]= $cases;
 			}
+			//echo 'Data Num #', $z, '<br>';
 			$z++;
 		}
 	}
@@ -79,7 +81,7 @@
 		else{
 			$studentlevel = 'Undergraduate';
 		}
-		
+
 		switch ($x){
 					case	0:
 								$proceedings = 3;
@@ -106,11 +108,11 @@
 								$studentlevel = 'Undergraduate';
 								break;
 		}
-				
+
 		//Loop per college
 		for($i=1; $i<=7; $i++){
-			
-			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MAJORCASES FROM CASES C 
+
+			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MAJORCASES FROM CASES C
 								LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
 								LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
 								LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
@@ -118,8 +120,8 @@
 								LEFT JOIN REF_STUDENTS RS				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
 								LEFT JOIN CASE_REFERRAL_FORMS CRF		ON C.CASE_ID = CRF.CASE_ID
 								LEFT JOIN REF_CASE_PROCEEDINGS RCP		ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
-								WHERE U.OFFICE_ID = " .$i ." 
-											&& RO.TYPE = 'Major' 
+								WHERE U.OFFICE_ID = " .$i ."
+											&& RO.TYPE = 'Major'
 											&& SRF.TERM = " .$term ."
 											&& SRF.SCHOOL_YEAR = '" .$ay ."'
 											&& RS.LEVEL = '" .$studentlevel ."'
@@ -135,6 +137,7 @@
 				$cases = $casesrow['MAJORCASES'];
 				$totalcases[]= $cases;
 			}
+			//echo 'Data Num #', $z, '<br>';
 			$z++;
 		}
 	}
@@ -144,9 +147,8 @@
 	foreach ($totalcases as $value){
 		$exec = $exec .' ' . $value;
 	}
-	
-	//Create GSheets
-	$output=shell_exec($exec);
-	exit;
 
+	//Create GSheets
+	////echo "Exec: ", $exec;
+	$output=shell_exec($exec);
 ?>

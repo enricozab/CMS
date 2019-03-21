@@ -55,7 +55,15 @@ if (!isset($_GET['cn']))
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
 
+    <!-- GDRIVE -->
 
+    <script src="../gdrive/date.js" type="text/javascript"></script>
+    <script src="../gdrive/ah.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    </script>
+    <script src="../gdrive/upload.js"></script>
 </head>
 
 <body>
@@ -132,6 +140,48 @@ if (!isset($_GET['cn']))
     else{
       $rowStud=mysqli_fetch_array($resStud,MYSQLI_ASSOC);
     }
+
+    // NEW - DRIVE
+    $queryStud2 = 'SELECT *
+                    FROM CASES C
+                    JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                    JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
+                    JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
+                   WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+    $resultStud2 = mysqli_query($dbc,$queryStud2);
+
+    if(!$resultStud2){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $rowStud2 = mysqli_fetch_array($resultStud2,MYSQLI_ASSOC);
+    }
+
+    if ($rowStud2['if_graduating'] == 1) {
+      $graduate = "Graduate";
+    }
+
+    else {
+      $graduate = "Undergraduate";
+    }
+
+    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "AULC-VIEW-CASE" . "/" . $_GET['cn'];
+    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
+
+    $queryForm = 'SELECT *
+                    FROM CASE_REFERRAL_FORMS
+                   WHERE CASE_ID = "'.$_GET['cn'].'"';
+    $resForm = mysqli_query($dbc,$queryForm);
+
+     if(!$resForm){
+       echo mysqli_error($dbc);
+     }
+     else{
+       $rowForm = mysqli_fetch_array($resForm,MYSQLI_ASSOC);
+     }
+
+     // END NEW - DRIVE
   ?>
 
     <div id="wrapper">
@@ -192,6 +242,8 @@ if (!isset($_GET['cn']))
       <div class="row">
         <div class="col-sm-6">
           <button type="submit" id="forward" name="submit" class="btn btn-success">Forward Discipline Case Referral Form</button>
+          <!-- // NEW - DRIVE -->
+          <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
         </div>
       </div>
 
@@ -370,6 +422,17 @@ if (!isset($_GET['cn']))
       });
     });
 
+    // NEW - DRIVE
+    $('#fileUpload').click(function() {
+      var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
+      btnSubmit(data);
+    });
+
+    $('#uploading').click(function() {
+      $("#waitModal").modal("show");
+    });
+    // END NEW - DRIVE
+
   	$('#submitRef').click(function() {
       var ids = ['input[name="caseDecision"]:checked','#reasonCase'];
       var isEmpty = true;
@@ -463,6 +526,53 @@ if (!isset($_GET['cn']))
   		//HELLOSIGN API
     }
 
+    // NEW - DRIVE
+    $('#uploading').click(function(){
+        $("#waitModal").modal("show");
+    });
+
+    $('input[name="caseDecision"]').click(function(){
+      if ($(this).val() == "File Case") {
+        $('#dispOffense').show();
+        $('#proceeding').show();
+      }
+      else {
+        $('#dispOffense').hide();
+        $('#proceeding').hide();
+        $('#changeViolation').hide();
+      }
+    });
+
+    $('input[name="violationDes"]').click(function(){
+      if ($(this).val() == 1) {
+        $('#changeViolation').show();
+      }
+      else {
+        $('#changeViolation').hide();
+      }
+    });
+  });
+
+  $('#btnViewEvidence').click(function() {
+    <?php $_SESSION['pass'] = $passCase; ?>
+    location.href='aulc-gdrive-case.php';
+  });
+
+  $('#updateTable').click(function() {
+
+    <?php
+      $updateQry = 'UPDATE CASE_REFERRAL_FORMS
+                       SET IF_UPLOADED = 2
+                     WHERE CASE_ID = "'.$_GET['cn'].'"';
+
+      $update = mysqli_query($dbc,$updateQry);
+      if(!$update){
+        echo mysqli_error($dbc);
+      }
+    ?>
+  });
+  // END NEW - DRIVE
+
     $('input[name="caseDecision"]').click(function(){
       if ($(this).val() == "File Case") {
         $('#dispOffense').show();
@@ -495,6 +605,15 @@ if (!isset($_GET['cn']))
     if($row['REMARKS_ID'] > 7){ ?>
       $("#forward").hide();
   <?php } ?>
+
+  // NEW - DRIVE
+  <?php
+
+    if ($rowForm['if_uploaded'] == 1 AND $row['REMARKS_ID'] == 8){ ?>
+      $("#uploading").show();
+<?php }
+  ?>
+  // END NEW - DRIVE
 
   </script>
 
@@ -595,6 +714,81 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- // NEW - DRIVE -->
+
+  <!-- New Modal -->
+  <div class="modal fade" id="newFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message">Case successfully forwarded to the ULC! The Discipline Case Referral Form has been sent to your email. <br><br> <b>Next Steps: </b> <br>  <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRIVE Modal -->
+  <div class="modal fade" id="driveModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> You have authenticated the use of Google Drive. You can now upload your evidences.</p>
+        </div>
+        <div class="modal-footer">
+          <input type="file" id="fUpload" class="hide"/>
+          <button type="button" id = "fileUpload" class="btn btn-primary" data-dismiss="modal">Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Form Upload</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> File was uploaded successfully!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wait Modal -->
+  <div class="modal fade" id="waitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> Please wait. </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

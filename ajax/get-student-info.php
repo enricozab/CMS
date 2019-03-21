@@ -15,6 +15,6 @@
   else{
    $studentres=mysqli_fetch_array($studentq,MYSQLI_ASSOC);
 
-  echo json_encode($studentres);
+   echo json_encode($studentres);
   }
  ?>

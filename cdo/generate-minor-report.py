@@ -12,6 +12,11 @@ term = str(sys.argv[3])
 reportnum = str(sys.argv[4])
 spreadsheetname = "Report No. " + reportnum + " Summary Report for Minor Cases for AY " + ay + " Term " + term
 
+"""
+file = open("C://xampp//htdocs//CMS//cdo//samplefile.txt", "a")
+file.write(str(sys.argv))
+"""
+
 # use creds to create a client to interact with the Google Drive API
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
@@ -57,14 +62,14 @@ sheet.update_cells(cell_list)
 cols = ["E","F","G","H","I","J","K","L"]
 rows = ["3","4","5","6","7","8","9","10","11","12",
 		"13","14","15","16","17","18","19","20"]
-		
+
 ###### BATCH PROCESSING OF DATA
 cell_list = sheet.range('E3:K8')
 argsnum = 5
 for cell in cell_list:
 	cell.value = (int(sys.argv[argsnum]));
 	argsnum=argsnum+1
-	
+
 ##Update in batch
 sheet.update_cells(cell_list)
 
@@ -72,7 +77,7 @@ cell_list = sheet.range('E10:K19')
 for cell in cell_list:
 	cell.value = (int(sys.argv[argsnum]));
 	argsnum=argsnum+1
-	
+
 ##Update in batch
 sheet.update_cells(cell_list)
 
@@ -80,11 +85,11 @@ sheet.update_cells(cell_list)
 for x in range(len(rows)):
 	for y in cols:
 		cell = (y+rows[x])
-		
+
 		if y == "L":
 			sum = "=SUM(E" + rows[x] + ":K" + rows[x] + ")"
 			sheet.update_acell(cell, sum)
-			
+
 		if rows[x]=="9":
 			sum = "=SUM(" + y + "3:" + y + "8)"
 			sheet.update_acell(cell, sum)
@@ -92,7 +97,7 @@ for x in range(len(rows)):
 		if rows[x]=="20":
 			sum = "=SUM(" + y + "10:" + y + "19)"
 			sheet.update_acell(cell, sum)
-			
+
 ##CALCULATE GRAND TOTAL
 grandtotal = "=SUM(E3:K8,E10:K19)"
 sheet.update_acell("B21", grandtotal)

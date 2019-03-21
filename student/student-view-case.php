@@ -353,6 +353,20 @@ if (!isset($_GET['cn']))
                 }
                 var today = dd + '/' + mm + '/' + yyyy;
 
+                // new thea
+                var formNumber;
+                <?php
+                if ($formres['MAX'] != null) { ?>
+                  formNumber = <?php echo $formres['MAX'] ?>;
+                <?php }
+                else { ?>
+                  formNumber = 1;
+                <?php }
+                ?>
+
+                var titleForm = "Student Response Form #" + formNumber + ".docx";
+                // end thea
+
                 doc.setData({
                   <?php
                   if ($formres2['student_response_form_id'] != null) { ?>
@@ -409,16 +423,20 @@ if (!isset($_GET['cn']))
                     type:"blob",
                     mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 }); //Output the document using Data-URI
-                saveAs(out,"output.docx");
+                saveAs(out, titleForm); // new drive
 
                 });
-                $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+                //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+                $('#message').text('form');
                 <?php
                   if($countrow['CASE_COUNT'] > 1) { ?>
                     $("#parentModal").modal("show");
                 <?php }
                   else { ?>
-                    $("#alertModal").modal("show");
+                    // $("#alertModal").modal("show");
+                    $('#message').hide();
+                    $('#appealMsg').show();
+                    $("#newFormModal").modal("show");
                 <?php }
                 ?>
             }
@@ -471,6 +489,20 @@ if (!isset($_GET['cn']))
                     }
                     var today = dd + '/' + mm + '/' + yyyy;
 
+                    // new thea
+                    var formNumber;
+                    <?php
+                    if ($formres['MAX'] != null) { ?>
+                      formNumber = <?php echo $formres['MAX'] ?>;
+                    <?php }
+                    else { ?>
+                      formNumber = 1;
+                    <?php }
+                    ?>
+
+                    var titleForm = "Student Response Form #" + formNumber + ".docx";
+                    // end thea
+
                     doc.setData({
                       <?php
                       if ($formres2['student_response_form_id'] != null) { ?>
@@ -521,14 +553,16 @@ if (!isset($_GET['cn']))
                         type:"blob",
                         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     }); //Output the document using Data-URI
-                    saveAs(out,"output.docx");
+                    saveAs(out,titleForm);
 
                   });
-                  $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+                  //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+                  $('#message').text('form');
               }
           });
         }
-        $("#alertModal").modal("show");
+        //$("#alertModal").modal("show");
+        $("#newFormModal").modal("show");
     });
 
     function sendStudResponseFirst() {
@@ -546,8 +580,10 @@ if (!isset($_GET['cn']))
           },
           success: function(response) {
             parentLetter()
-            $("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
-            $("#alertModal").modal("show");
+            // $("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
+            // $("#alertModal").modal("show");
+            $("#message").text('forms');
+            $("#newFormModal").modal("show");
           }
       });
     }
@@ -608,7 +644,7 @@ if (!isset($_GET['cn']))
             type:"blob",
             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         }); //Output the document using Data-URI
-        saveAs(out,"output.docx");
+        saveAs(out,"Parent Letter.docx");
       });
     }
 
@@ -618,7 +654,7 @@ if (!isset($_GET['cn']))
 
     $('#alertModal').on('click', function() {
 
-      if($('#message').text() == "Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.") {
+      if($('#message').text() == "form") { // new
         $.ajax({
             url: '../ajax/users-hellosign.php',
             type: 'POST',
@@ -636,7 +672,7 @@ if (!isset($_GET['cn']))
             }
         });
       }
-      else if($('#message').text() == "Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.") {
+      else if($('#message').text() == "forms") { // new
         $.ajax({
           url: '../ajax/users-hellosign.php',
           type: 'POST',
@@ -679,10 +715,15 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
-              $('#message').text('An appeal has been sent successfully!');
+              //$('#message').text('An appeal has been sent successfully!');
               $("#appeal").attr('disabled', true);
 
-              $("#alertModal").modal("show");
+              // NEW DRIVE
+              $('#message').show();
+              $('#appealMsg').hide();
+              document.getElementById('appealMsg').style.display = "none";
+              $("#newFormModal").modal("show");
+              //$("#alertModal").modal("show");
           }
       });
     });
@@ -936,6 +977,26 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
+  <!-- New Modal -->
+  <div class="modal fade" id="newFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message">Student Response Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and evidences to <b>ido.cms1@gmail.com</b>.</p>
+          <p id = "appealMsg">An appeal has been sent successfully! A new Student Response Form has been sent to your email. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and evidences to <b>ido.cms1@gmail.com</b>.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 </body>
 

@@ -97,6 +97,34 @@ if (!isset($_GET['cn']))
     else{
       $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
     }
+
+    // NEW - DRIVE -->
+
+    $queryStud = 'SELECT *
+                    FROM CASES C
+                    JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                    JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
+                    JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
+                   WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+    $resultStud = mysqli_query($dbc,$queryStud);
+
+    if(!$queryStud){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
+    }
+
+    if ($rowStud['if_graduating'] == 1) {
+      $graduate = "Graduate";
+    }
+
+    else {
+      $graduate = "Undergraduate";
+    }
+
+    $passCase = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
   ?>
 
     <div id="wrapper">
