@@ -205,7 +205,7 @@ if (!isset($_GET['irn']))
                       </select>
                     </div>
                     <br><br>
-                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary" onclick="handle('<?php echo $passData;?>')">Submit</button>
                   </form>
                   <br><br><br>
                   <?php
@@ -248,12 +248,16 @@ if (!isset($_GET['irn']))
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <!-- gmail -->
-    <?php include '../gmail/send-email.php'; ?>
+    <?php // include '../gmail/send-email.php'; ?>
 
     <script type='text/javascript'>
     $(document).ready(function() {
       // new drive
       var caseData;
+
+      $('#folderBtn').click(function() {
+        buttonAddfolder(caseData);
+      });
 
       $("#evidence").click(function () {
         $("#driveModal").modal("show");
@@ -315,6 +319,11 @@ if (!isset($_GET['irn']))
                   details: $('#details').val(),
                   assignIDO: $('#ido').val(),
                   page: "HDO-VIEW-CASE"
+              },
+
+              success: function(response) {
+                var string = "Case #";
+                caseData = string.concat(response);
               }
           });
           // $('#message').text('Submitted successfully!');
@@ -352,9 +361,9 @@ if (!isset($_GET['irn']))
           var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
 
           //sends emails
-          sendEmail(complainantemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          /*sendEmail(complainantemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
           sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
-          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');*/
 
           //hides modal
           $("#alertModal").modal("hide");
@@ -363,6 +372,8 @@ if (!isset($_GET['irn']))
           //hides modal
           $("#alertModal").modal("hide");
         }
+
+
       });
 
       //Changes button text and disabled
@@ -403,7 +414,8 @@ if (!isset($_GET['irn']))
 					</div>
 					<div class="modal-body">
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
-					</div>
+            <p id = "done">Case has been created and passed to the assigned IDO successfully!</p>
+          </div>
 					<div class="modal-footer">
 						<button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
 					</div>
@@ -482,7 +494,7 @@ if (!isset($_GET['irn']))
         </div>
       </div>
     </div>
-    
+
 </body>
 
 </html>

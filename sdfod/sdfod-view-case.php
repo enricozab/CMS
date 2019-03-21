@@ -431,7 +431,7 @@ if (!isset($_GET['cn']))
         <br><br><br><br><br>
         <!-- // NEW - DRIVE -->
         <input type="file" id="fUpload" class="hide"/>
-        <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
+        <!-- <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button> -->
         <?php
           if($row['TYPE'] == "Major" || ($row['REMARKS_ID'] == 5 && ($numSameMinorOffense > 2 || $numSameMinor > 4))) { ?>
             <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
@@ -753,13 +753,34 @@ if (!isset($_GET['cn']))
                 pd: 1
             },
             success: function(msg) {
-              $('#message').text('Case is ready for final signature and closing.');
+              //$('#message').text('Case is ready for final signature and closing.');
               $("#finfinpenalty").attr('readonly', true);
               $("#submitPD").attr('disabled', true);
+
+              if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
+
+                // new drive
+                document.getElementById("file-case").style.display = 'none';
+                document.getElementById("not-file").style.display = 'none';
+                document.getElementById('file-close').style.display = 'block';
+                // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
+              }
+              else {
+                // new drive
+                document.getElementById('file-case').style.display = 'none';
+                document.getElementById('not-file').style.display = 'block';
+                document.getElementById('file-close').style.display = 'none';
+                // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
+              }
+              $("#sign").attr('disabled', true)
+
+              // NEW - DRIVE
+              $("#uploading").show();
+              $("#newFormModal").modal("show");
             }
         });
       }
-      $("#alertModal").modal("show");
+      //$("#alertModal").modal("show");
     });
 
     // NEW - DRIVE

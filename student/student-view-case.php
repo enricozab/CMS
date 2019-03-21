@@ -433,9 +433,11 @@ if (!isset($_GET['cn']))
                     $("#parentModal").modal("show");
                 <?php }
                   else { ?>
+
                     // $("#alertModal").modal("show");
                     $('#message').hide();
                     $('#appealMsg').show();
+                    document.getElementById('appealMsg').style.display = "none";
                     $("#newFormModal").modal("show");
                 <?php }
                 ?>
@@ -717,6 +719,8 @@ if (!isset($_GET['cn']))
           success: function(msg) {
               //$('#message').text('An appeal has been sent successfully!');
               $("#appeal").attr('disabled', true);
+
+              alert("hi");
 
               // NEW DRIVE
               $('#message').show();

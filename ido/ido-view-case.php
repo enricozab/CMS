@@ -98,7 +98,10 @@ if (!isset($_GET['cn']))
                         C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.DATE_CLOSED AS DATE_CLOSED,
-                        C.IF_NEW AS IF_NEW
+                        C.IF_NEW AS IF_NEW,
+                        C.WITH_PARENT_LETTER AS WITH_PARENT_LETTER,
+                        C.IF_APPEAL AS IF_APPEAL,
+                        IR.IF_UPLOADED AS IF_UPLOADED
             FROM 		    CASES C
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
@@ -109,6 +112,7 @@ if (!isset($_GET['cn']))
             LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
             LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
             LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+            LEFT JOIN   INCIDENT_REPORTS IR ON IR.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
 
             WHERE   	  C.CASE_ID = "'.$_GET['cn'].'"
             ORDER BY	  C.LAST_UPDATE';

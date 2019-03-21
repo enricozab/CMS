@@ -208,7 +208,7 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <!-- gmail -->
-    <?php include '../gmail/send-email.php'; ?>
+    <?php // include '../gmail/send-email.php'; ?>
 
     <script>
     $(document).ready(function() {
@@ -359,8 +359,8 @@
           }?>
 
           //sends emails
-          sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
-          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          /*sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');*/
 
           //hides modal
           $("#alertModal").modal("hide");
@@ -430,7 +430,7 @@
         </div>
       </div>
     </div>
-    
+
 </body>
 
 </html>

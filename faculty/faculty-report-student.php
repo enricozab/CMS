@@ -65,10 +65,10 @@
                         <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" value="11530022" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                       </div>
                     </div>
-                    <div id="appendstudent">
+                    <!--<div id="appendstudent">
                       <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another student</a></span>
                     </div>
-                    <br>
+                    <br>-->
                     <div class="form-group" style = "width: 300px;">
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="location" name="location" value="G211" class="form-control" placeholder="Enter Location"/>
@@ -153,6 +153,8 @@
     $(document).ready(function() {
 
       <?php include 'faculty-notif-scripts.php' ?>
+
+      var titleForm;
 
       $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, maxTime: 0, step: 1});
 
@@ -241,7 +243,7 @@
           });
         }
         else {
-          $("#sendModal").modal("show");
+          $("#alertModal").modal("show");
         }
       });
 
@@ -252,6 +254,7 @@
           JSZipUtils.getBinaryContent(url,callback);
       }
       function generate(){
+
         for(var i = 0; i < studentlist.length; ++i ) {
           $.ajax({
               url: '../ajax/get-student-info.php',
@@ -277,6 +280,19 @@
                       mm = '0' + mm;
                     }
                     var today = dd + '/' + mm + '/' + yyyy;
+
+                    var formNumber;
+
+                    <?php
+                    if ($formres['MAX'] != null) { ?>
+                      formNumber = <?php echo $formres['MAX']; ?>
+                      // code...
+                    <?php }
+                    else { ?>
+                      formNumber = 1;
+                    <?php } ?>
+                    titleForm = "Incident Report Form #" + formNumber + ".docx";
+
                     doc.setData({
                       <?php
                       if ($formres['MAX'] != null) { ?>
@@ -318,7 +334,7 @@
                         type:"blob",
                         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     }); //Output the document using Data-URI
-                    saveAs(out,"output.docx",  {
+                    saveAs(out, titleForm,  {
                       locURL: "/localhost/CMS/ajax"
                     });
                 });
@@ -327,62 +343,24 @@
         }
       }
 
-      $('#alertModal').on('click', function() {
-
-        if($('#message').text() != "Please fill in all the required ( * ) fields!") {
-          //HELLOSIGN API
-          $.ajax({
-                url: '../ajax/users-hellosign.php',
-                type: 'POST',
-                data: {
-                    title : "Incident Report",
-                    subject : "Incident Report Document Signature",
-                    message : "Please do sign this document.",
-                    fname : "<?php echo $nameres['first_name'] ?>",
-                    lname : "<?php echo $nameres['last_name'] ?>",
-                    email : "<?php echo $nameres['email'] ?>",
-                    filename : $('#inputfile').val()
-                },
-                success: function(response) {
-                  $('#alertModal').modal("hide");
-                  $('#form')[0].reset();
-              }
-          });
-        }
-        else{
-          $('#alertModal').modal("hide");
-        }
-      });
-
-      $('#modalOK').click(function() {
-        //checks if all necessary values are filled out
-        if ($('#message').text() == "Submitted successfully!"){
-          //hides modal
-          $("#alertModal").modal("hide");
-
-      		//HELLOSIGN API
-      		$.ajax({
-                url: '../ajax/faculty-hellosign.php',
-                type: 'POST',
-                data: {
-      					title : "Incident Report",
-      					subject : "Incident Report Document Signature",
-      					message : "Please do sign this document.",
-						fname : "<?php echo $nameres['first_name'] ?>",
-      					lname : "<?php echo $nameres['last_name'] ?>",
-      					email : "<?php echo $nameres['email'] ?>",
-      					filename : $('#inputfile').val()
-                      },
-                      success: function(response) {
-      					alert("Incident Report sent to your email! Check your email to sign the form.");
-      				}
-      		})
-        }
-        //else hides the modal
-        else{
-          //hides modal
-          $("#alertModal").modal("hide");
-        }
+      $('#otherOK').on('click', function() {
+    		$.ajax({
+              url: '../ajax/users-hellosign.php',
+              type: 'POST',
+              data: {
+                  formT : titleForm,
+        					title : "Incident Report",
+        					subject : "Incident Report Document Signature",
+        					message : "Please do sign this document.",
+  						    fname : "<?php echo $nameres['first_name'] ?>",
+        					lname : "<?php echo $nameres['last_name'] ?>",
+        					email : "<?php echo $nameres['email'] ?>",
+        					filename : $('#inputfile').val()
+              },
+              success: function(response) {
+                $('#form')[0].reset();
+    				}
+    		});
       });
     });
   	</script>
@@ -414,10 +392,10 @@
 						<h4 class="modal-title" id="myModalLabel"><b>Important Reminder</b></h4>
 					</div>
 					<div class="modal-body">
-						<p id="message">Your Incident Report Form has been downloaded. Please email it to <b>ido.cms1@gmail.com</b> for processing. </p>
+						<p id="success">Your Incident Report Form has been sent to your email succesfully. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form to <b>hdo.cms@gmail.com</b> after signing. Attach your evidences as well.</p>
 					</div>
 					<div class="modal-footer">
-            <button type="submit" id = "nextModal" class="btn btn-default">Ok</button>
+            <button type="submit" id="otherOK" class="btn btn-default" data-dismiss="modal">Ok</button>
 					</div>
 				</div>
 			</div>

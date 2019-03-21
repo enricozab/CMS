@@ -3,11 +3,11 @@
 		session_start();
 		require_once('../mysql_connect.php');
 
-		$filename = 'output.docx';
+		$filename = $_POST['formT'];
 
 		//CHANGE SOURCEPATH TO YOUR OWN PC'S DOWNLOAD PATH + \\output.docx
-		$sourcepath = 'C:\\Users\\Enrico Zabayle\\Downloads\\output.docx';
-		$targetpath = getcwd().'\\output.docx';
+		$sourcepath = 'C:\\Users\\Enrico Zabayle\\Downloads\\'.$_POST['formT'];
+		$targetpath = getcwd().'\\'.$_POST['formT'];
 
 		rename($sourcepath,$targetpath);
 
