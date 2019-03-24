@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>CMS - Reports</title>
 
@@ -33,6 +34,9 @@
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -40,11 +44,37 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <style>
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite; /* Safari */
+      animation: spin 2s linear infinite;
+      position: relative;
+      top: 50%;
+      left: 40%;
+    }
+
+    /* Safari */
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    </style>
 
 </head>
 
 <body>
 
+    <?php include 'cdo-notif-queries.php'?>
     <div id="wrapper">
 
         <?php include 'cdo-sidebar.php';?>
@@ -54,77 +84,59 @@
                 <h3 class="page-header">Generate Summary Report For Cases</h3>
 
                 <div class="col-lg-12">
-				<!--------------------------->
-                  <form id="form" action="cdo-reports.php" method="post">
-                    <div id="academicyear_div">
-                      <div class="form-group" style = "width: 300px;">
-                        <label>Academic Year: <span style="font-weight:normal; font-style:italic; font-size:12px;"></span> <span style="font-weight:normal; color:red;">*</span></label>
-
-                        <select id="academicyear" name="academicyear" class="academicyear form-control">
-            							<!--<option value="2014-2015"> 2014-2015 </option>
-            							<option value="2015-2016"> 2015-2016 </option>
-            							<option value="2016-2017"> 2016-2017 </option>
-            							<option value="2017-2018"> 2017-2018 </option>
-            							<option value="2018-2019"> 2018-2019 </option>-->
-            							<?php
-            								require_once('../mysql_connect.php');
-            								$sqlQuery = "SELECT DISTINCT(SRF.SCHOOL_YEAR)
-            												FROM CMS.STUDENT_RESPONSE_FORMS SRF
-            												ORDER BY SRF.SCHOOL_YEAR ASC";
-            								$sqlRes = mysqli_query($dbc, $sqlQuery);
-            								while ($row = $sqlRes->fetch_assoc()){
-            									echo "<option value='{$row['SCHOOL_YEAR']}'>{$row['SCHOOL_YEAR']}</option>";
-            								}
-            							?>
-            						</select>
-                      </div>
-                    </div>
+				        <!--------------------------->
+                <!--<form id="form">-->
+                  <div id="academicyear_div">
                     <div class="form-group" style = "width: 300px;">
-                      <label>Term <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="term" name="term" class="term form-control">
-          							<option value=1> 1 </option>
-          							<option value=2> 2 </option>
-          							<option value=3> 3 </option>
-
+                      <label>Academic Year: <span style="font-weight:normal; font-style:italic; font-size:12px;"></span> <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="academicyear" name="academicyear" class="academicyear form-control">
+          							<!--<option value="2014-2015"> 2014-2015 </option>
+          							<option value="2015-2016"> 2015-2016 </option>
+          							<option value="2016-2017"> 2016-2017 </option>
+          							<option value="2017-2018"> 2017-2018 </option>
+          							<option value="2018-2019"> 2018-2019 </option>-->
           							<?php
-          								/*require_once('../mysql_connect.php');
-          								$sqlQuery = "SELECT DISTINCT(SRF.TERM)
+          								require_once('../mysql_connect.php');
+          								$sqlQuery = "SELECT DISTINCT(SRF.SCHOOL_YEAR)
           												FROM CMS.STUDENT_RESPONSE_FORMS SRF
-          												ORDER BY SRF.TERM ASC";
+          												ORDER BY SRF.SCHOOL_YEAR ASC";
           								$sqlRes = mysqli_query($dbc, $sqlQuery);
           								while ($row = $sqlRes->fetch_assoc()){
-          									echo "<option value= ".$row['TERM'] . ">" . $row['TERM'] . "</option>";
-          								}*/
+          									echo '<option value="' .$row['SCHOOL_YEAR'] .'">' . $row['SCHOOL_YEAR'] . '</option>';
+          								}
           							?>
           						</select>
                     </div>
-  					        <div class="form-group" style = "width: 300px;">
-                      <label>Case Type <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="casetype" name="casetype" class="casetype form-control">
-          							<option value="Minor"> Minor </option>
-          							<option value="Major"> Major </option>
-      						    </select>
-                    </div>
-          					<br>
+                  </div>
 
-                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Generate</button>
-                    </form>
-                    <br><br><br>
-                    </div>
+                  <div class="form-group" style = "width: 300px;">
+                    <label>Term <span style="font-weight:normal; color:red;">*</span></label>
+                    <select id="term" name="term" class="term form-control">
+        							<option value=1> 1 </option>
+        							<option value=2> 2 </option>
+        							<option value=3> 3 </option>
+        						</select>
+                  </div>
 
-                <div class="col-lg-6">
-                </div>
-                <!-- /.col-lg-12 -->
+        					<div class="form-group" style = "width: 300px;">
+                        <label>Case Type <span style="font-weight:normal; color:red;">*</span></label>
+                        <select id="casetype" name="casetype" class="casetype form-control">
+            							<option value="Minor"> Minor </option>
+            							<option value="Major"> Major </option>
+        						</select>
+                  </div>
+
+                  <br>
+                  <button type="button" id="submit" name="submit" class="btn btn-primary" onClick="submitForm()">Generate</button>
+                <!--</form>-->
+                <br><br><br>
+              </div>
+
             </div>
         </div>
         <!-- /#page-wrapper -->
-        <?php include 'cdo-notif-queries.php'; ?>
-
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -146,60 +158,72 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+
   <script>
-  //all functinos have to be inside this functions
-  //function that runs once the page is loaded
+  <?php include 'cdo-notif-scripts.php'?>
+    function submitForm(){
+      var ay = document.getElementById('academicyear').value;
+      var term = document.getElementById('term').value;
+      var caseType = document.getElementById('casetype').value;
+      console.log("AY: " + ay);
+      console.log("Term: " + term);
+      console.log("CaseType: " + caseType);
+      $('#loadingModal').modal('show');
+        $.ajax({
+            url: 'insert-generated-report.php',
+            type: 'POST',
+            data: {
+                ay: ay,
+                term: term,
+                caseType: caseType
+            },
+            success: function(msg) {
+              console.log(msg.toString());
+              console.log("SUCCESS!");
 
-  $(document).ready(function() {
+              document.getElementById('modalMessage').innerHTML = msg.toString();
+              $('#loadingModal').modal('hide');
+              // var x = document.getElementById('para').textContent;
+              // console.log("X: " + x);
+              // document.getElementById('modalMessage').innerHTML = x;
+              var msg1 = "Summary Report for " + caseType + " Cases AY " + ay + " Term " + term;
+              document.getElementById('myModalLabel').innerHTML = msg1;
+              $('#successModal').modal('show');
+            }
+        });
 
-    <?php include 'cdo-notif-scripts.php' ?>
-
-  });
+    }
   </script>
 
-  <?php
-		if(isset($_POST['submit'])){
-
-			$ay = $_POST['academicyear'];
-			$term = $_POST['term'];
-			$type = $_POST['casetype'];
-
-			include 'insert-generated-report.php';
-
-			if($type == "Minor" && $reportNum != 0){
-				//echo 'Minor', '<br>';
-				include 'cdo-generate-minor-report.php';
-			}
-
-			else if($type == "Major" && $reportNum != 0){
-				//echo 'Major', '<br>';
-				include 'cdo-generate-major-report.php';
-			}
-
-      echo "<script type='text/javascript'>
-            $(document).ready(function(){
-              var x = document.getElementById('msg').textContent;
-              document.getElementById('modalMessage').innerHTML = x;
-              $('#Modal').modal('show');
-        });
-        </script>";
-		}
-	?>
-
-  <!-- Modal -->
-  <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- Notification Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Generate Report</b></h4>
+          <h4 class="modal-title" id="myModalLabel" align="center"><b>Report Generation</b></h4>
         </div>
         <div class="modal-body">
-          <p id="modalMessage">Report generated!</p><br>
-          <p id="modalMessage2"></p>
+          <p id="modalMessage">Report has been generated and sent to the SDFO Director!</p><br>
         </div>
         <div class="modal-footer">
           <button type="submit" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Loading Modal-->
+  <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel" align="center"><b>Generating Report</b></h4>
+        </div>
+        <div class="modal-body">
+          <div class="loader" align="center"></div>
+          <h5 align="center">Please wait</h5>
         </div>
       </div>
     </div>

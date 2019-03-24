@@ -57,16 +57,34 @@
 				<li>
 					<a href="ido-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
-				<!-- new drive -->
-				<li>
-					<a href="ido-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
-				</li>
-				<!-- end drive -->
 				<li>
 					<a href="ido-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="ido-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="ido-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
+				</li>
+				<li>
+					<a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
+					<ul class="nav nav-second-level">
+						<li>
+							<a href="../pages/panels-wells.html">Panels and Wells</a>
+						</li>
+						<li>
+							<a href="../pages/buttons.html">Buttons</a>
+						</li>
+						<li>
+							<a href="../pages/notifications.html">Notifications</a>
+						</li>
+						<li>
+							<a href="../pages/typography.html">Typography</a>
+						</li>
+						<li>
+							<a href="../pages/icons.html"> Icons</a>
+						</li>
+						<li>
+							<a href="../pages/grid.html">Grid</a>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</div>

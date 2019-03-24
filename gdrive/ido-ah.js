@@ -15,7 +15,7 @@ var FOLDER_ARRAY = [];
 var ASCENDING_ARRAY= [];
 var cancel = 0, buttonNum;
 var madeIDN = 0, folderData = 'hi';
-var college, course, idn, graduating, fullIDN, page, caseNum;
+var college, course, idn, graduating, fullIDN, page, caseNum, btnNum, userName, offense, type, finalDesc;
 /******************** AUTHENTICATION ********************/
 
 
@@ -26,45 +26,29 @@ function handle(data) {
 
 	page = data[4];
 	console.log("PAGE: " + page);
-	if (page == "IDO-VIEW-CASE") {
+	if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
 		college = data[0];
 		course = data[1];
 		graduating = data[2];
 		fullIDN = data[3];
 		caseNum = "Case #" + data[5];
 		idn = fullIDN.substring(0, 3);
-		console.log("CASENUM: " + caseNum);
-	}
-
-	else if (page == "SDFOD-VIEW-CASE"){
-		college = data[0];
-		course = data[1];
-		graduating = data[2];
-		fullIDN = data[3];
-		idn = fullIDN.substring(0, 3);
-		caseNum = "Case #" + data[5];
-		console.log("CASENUM: " + caseNum);
 	}
 
 	else {
 		college = data[0];
 		course = data[1];
-		graduating = data[2];
-		fullIDN = data[3];
-		idn = fullIDN.substring(0, 3);
-		caseNum = "Case #" + data[5];
+		idn = data[2];
+		graduating = data[3];
+		fullIDN = data[4];
 	}
-
-	function handleAdd() {
-		 $('#getStudentDetails').click();
-	}
-
+	//
 	// console.log("CASE NUM: " + caseNum);
 	console.log("COURSE: " + course);
 	console.log("COLLEGE: " + college);
 	console.log("IDN: " + idn);
 	console.log("GRADUATING: " + graduating);
-  console.log("FULLIDN: " + fullIDN);
+	console.log("CASENUM: " + caseNum);
 
 	gapi.auth2.getAuthInstance().signIn();
 }
@@ -119,60 +103,92 @@ function getFiles(){
 		console.log("getFiles");
 
 		var request = gapi.client.drive.about.get();
-     var obj = {};
-     request.execute(function(resp) {
-        if (!resp.error) {
-          userName = resp.name;
-          console.log("USER NAME: " + userName);
+    var obj = {};
+    request.execute(function(resp) {
+       if (!resp.error) {
+         userName = resp.name;
+         console.log("USER NAME: " + userName);
 
-          var query = "";
+         var query = "";
 
-          if (userName == "Thea Mae Firaza") {
-            console.log("yes");
-            $(".button-opt").show();
-            query = "trashed=false and '" + FOLDER_ID + "' in parents";
-          }
+         if (userName == "Thea Mae Firaza") {
+           console.log("yes");
+           $(".button-opt").show();
+           query = "trashed=false and '" + FOLDER_ID + "' in parents";
+         }
 
-          else {
-            $(".button-opt").show();
-            query = (FOLDER_ID == "root") ? "trashed=false and sharedWithMe" : "trashed=false and '" + FOLDER_ID + "' in parents";
-            if (FOLDER_ID != "root" && FOLDER_PERMISSION == "true") {
-              $(".button-opt").show();
-            }
-          }
-
-          var request = gapi.client.drive.files.list({
-              'maxResults': NO_OF_FILES,
-              'q': query
-          });
-
-        request.execute(function (resp) {
-           if (!resp.error) {
-               DRIVE_FILES = resp.items;
-
-               for (var i = 0; i < DRIVE_FILES.length; i++) {
-                   DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
-
-                   if (DRIVE_FILES[i].fileType == "folder") {
-                       if (DRIVE_FILES[i].title == "CMS") {
-                           console.log("CMS");
-                           FOLDER_ID = DRIVE_FILES[i].id;
-                       }
-                   }
-               }
-
-               console.log("folder id CMS: " + FOLDER_ID);
-               getCMSFiles();
+         else {
+           $(".button-opt").show();
+           query = (FOLDER_ID == "root") ? "trashed=false and sharedWithMe" : "trashed=false and '" + FOLDER_ID + "' in parents";
+           if (FOLDER_ID != "root" && FOLDER_PERMISSION == "true") {
+             $(".button-opt").show();
            }
-           else{
-                showErrorMessage("Error: " + resp.error.message);
-           }
-        });
+         }
 
-        }else{
-             showErrorMessage("Error: " + resp.error.message);
-        }
-    });
+         var request = gapi.client.drive.files.list({
+             'maxResults': NO_OF_FILES,
+             'q': query
+         });
+
+       request.execute(function (resp) {
+          if (!resp.error) {
+              DRIVE_FILES = resp.items;
+
+              for (var i = 0; i < DRIVE_FILES.length; i++) {
+                  DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
+
+                  if (DRIVE_FILES[i].fileType == "folder") {
+                      if (DRIVE_FILES[i].title == "CMS") {
+                          console.log("CMS");
+                          FOLDER_ID = DRIVE_FILES[i].id;
+                      }
+                  }
+              }
+
+              console.log("folder id CMS: " + FOLDER_ID);
+              getCMSFiles();
+          }
+          else{
+               showErrorMessage("Error: " + resp.error.message);
+          }
+       });
+
+       }else{
+            showErrorMessage("Error: " + resp.error.message);
+       }
+   });
+
+		// var query = "";
+		//
+		// query = "trashed=false and '" + FOLDER_ID + "' in parents";
+    // var request = gapi.client.drive.files.list({
+    //     'maxResults': NO_OF_FILES,
+    //     'q': query
+    // });
+		//
+    // request.execute(function (resp) {
+    //    if (!resp.error) {
+    //         DRIVE_FILES = resp.items;
+		//
+		// 				for (var i = 0; i < DRIVE_FILES.length; i++) {
+	  //             DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
+		//
+	  //             if (DRIVE_FILES[i].fileType == "folder") {
+	  //                 if (DRIVE_FILES[i].title == "CMS") {
+	  //                     console.log("CMS");
+	  //                     FOLDER_ID = DRIVE_FILES[i].id;
+	  //                 }
+	  //             }
+	  //         }
+		//
+	  //         console.log("folder id CMS: " + FOLDER_ID);
+	  //         getCMSFiles();
+    //    }
+		//
+		// 	 else{
+    //         console.log("Error: " + resp.error.message);
+    //    }
+    // });
 }
 
 /**************** NEW ****************/
@@ -250,41 +266,6 @@ function courseFiles() {
     });
 }
 
-function idnFilesForFolder() {
-    console.log("idnFilesForFolder");
-
-    for (var i = 0; i < DRIVE_FILES.length; i++) {
-      DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
-
-      if (DRIVE_FILES[i].fileType == "folder") {
-          if (DRIVE_FILES[i].title == idn) {
-              console.log("IDN");
-
-              FOLDER_ID = DRIVE_FILES[i].id;
-              console.log("folder id IDN: " + FOLDER_ID);
-          }
-      }
-    }
-
-    var query = "";
-    query = "trashed=false and '" + FOLDER_ID + "' in parents";
-
-    var request = gapi.client.drive.files.list({
-        'maxResults': NO_OF_FILES,
-        'q': query
-    });
-
-    request.execute(function (resp) {
-       if (!resp.error) {
-           DRIVE_FILES = resp.items;
-					 getFullIDNFiles();
-       }
-       else{
-            showErrorMessage("Error: " + resp.error.message);
-       }
-    });
-}
-
 function idnFiles() {
     console.log("idnFiles");
 
@@ -315,7 +296,7 @@ function idnFiles() {
 
 					 console.log("Page: " + page);
 
-					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "HDO-VIEW-INCIDENT") {
+					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || "ULC-VIEW-CASE") {
 						 getFullIDNFiles();
 					 }
 
@@ -409,7 +390,7 @@ function getFullIDNFiles() {
 						 addCaseFolder();
 					 }
 
-					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE") {
+					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
 						 getCaseFiles();
 					 }
        }
@@ -446,9 +427,14 @@ function getCaseFiles() {
        if (!resp.error) {
            DRIVE_FILES = resp.items;
 
-					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE") {
+					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
 						 $("#waitModal").modal("hide");
 						 $('#driveModal').modal("show");
+						 $("#uploading").hide();
+
+						 $('#first').hide();
+						 $('#uploadPanel').show();
+			       // document.getElementById("uploadPanel").style.display = "block";
 					 }
        }
        else{
@@ -503,9 +489,6 @@ function addCaseFolder() {
 			 if (!resp.error) {
 				 console.log("CASE FOLDER DONE");
 				 $('#waitModal').modal("hide");
-				 $("#done").show();
-				 $("#message").hide();
-				 $('#alertModal').modal("show");
 			 }else{
 				hideStatus();
 				hideLoading();
@@ -527,10 +510,9 @@ function showProgressPercentage(percentageValue) {
 /**************** NEW ****************/
 
 function buttonAddfolder(folder) {
-
 	folderData = folder;
 	console.log("CASE FOLDER: " + folderData);
-	console.log("buttonAddfolder");
+	console.log("button-addfolder");
 	$('#folderModal').modal("hide");
 	$('#waitModal').modal("show");
 
@@ -538,7 +520,7 @@ function buttonAddfolder(folder) {
 		DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
 
 		if (DRIVE_FILES[i].fileType == "folder") {
-				if (DRIVE_FILES[i].title == fullIDN) { // if student folder already exists
+				if (DRIVE_FILES[i].title == fullIDN) {
 					idnFiles();
 				}
 
@@ -566,61 +548,10 @@ function buttonAddfolder(folder) {
 							madeIDN = 1;
 							console.log("IDN FOLDER DONE");
 
-							//addCaseFolder();
-						  idnFilesForFolder();
+						  idnFiles();
 						 }else{
-							showErrorMessage("Error: " + resp.error.message);
-						 }
-					});
-				}
-		}
-	}
-}
-
-function btnAddFolder(data) {
-
-	folderData = data;
-
-	console.log("CASE FOLDER: " + folderData);
-	console.log("buttonAddfolder");
-	$('#folderModal').modal("hide");
-	$('#waitModal').modal("show");
-
-	for (var i = 0; i < DRIVE_FILES.length; i++) {
-		DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
-
-		if (DRIVE_FILES[i].fileType == "folder") {
-				if (DRIVE_FILES[i].title == fullIDN) { // if student folder already exists
-					idnFiles();
-				}
-
-				else {
-					var access_token =  gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
-					var request = gapi.client.request({
-						 'path': '/drive/v2/files/',
-						 'method': 'POST',
-						 'headers': {
-							 'Content-Type': 'application/json',
-							 'Authorization': 'Bearer ' + access_token,
-						 },
-						 'body':{
-							 "title" : fullIDN,
-							 "mimeType" : "application/vnd.google-apps.folder",
-							 "parents": [{
-								"kind": "drive#file",
-								"id": FOLDER_ID
-							}]
-						 }
-					});
-
-					request.execute(function(resp) {
-						 if (!resp.error) {
-							madeIDN = 1;
-							console.log("IDN FOLDER DONE");
-
-							//addCaseFolder();
-						  idnFilesForFolder();
-						 }else{
+							hideStatus();
+							hideLoading();
 							showErrorMessage("Error: " + resp.error.message);
 						 }
 					});
@@ -665,32 +596,29 @@ function btnAddFolder(data) {
 
 function submitButton (event) {
 	console.log("btnSubmit");
-	$("#fUpload").click();
+		$("#fUpload").click();
 }
 
 function btnSubmit(data) {
 
 	console.log("DATA BTNSUMIT: " + data);
 
-	if (data == "two") {
-		$("#two").attr('disabled', true).text("Submitted");
-		$("#three").removeAttr('disabled');
-		$('#responseUpload').click();
+	data = data.split("|");
+
+	page = data[3];
+
+	if (page == "IDO-VIEW") {
+		btnNum = data[0];
+		offense = data[1];
+		type = data[2];
 	}
 
-	else if (data == "three") {
-		$("#three").attr('disabled', true).text("Submitted");
-	}
-	else if (data == "four") {
-		$("#four").attr('disabled', true).text("Submitted");
+	else  {
+		offense = data[0];
+		type = data[1];
 	}
 
-	else {
-		$("#one").attr('disabled', true).text("Submitted");
-		$("#two").removeAttr('disabled');
-		$('#incidentUpload').click();
-	}
-
+	finalDesc = type + ", " + offense;
 	submitThis();
 }
 
@@ -709,7 +637,7 @@ function submitThis(){
 $(function(){
 
 	$("#btnSubmit").click(function () {
-		console.log("btnSubmit");
+			console.log("btnSubmit");
 			$("#fUpload").click();
 	});
 
@@ -722,7 +650,7 @@ $(function(){
 			  var file = uploadObj.prop("files")[0];
 			  var metadata = {
 			    'title': file.name,
-			    'description': "bytutorial.com File Upload",
+			    'description': finalDesc,
 			    'mimeType': file.type || 'application/octet-stream',
 			    "parents": [{
 			      "kind": "drive#file",
@@ -753,16 +681,46 @@ $(function(){
 			      onComplete: function(response){
 			        $("#upload-percentage").hide(1000);
 			        var errorResponse = JSON.parse(response);
+
 			        if(errorResponse.message != null){
 								console.log("Error: " + errorResponse.error.message);
 			          $("#fUpload").val("");
 			          getDriveFiles();
 			        }
-			        else{
 
-								if (page == "IDO-VIEW-CASE") {
+			        else {
+
+								if (page == "IDO-VIEW" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE") {
 									  $("#successModal").modal("show");
 										$("#waitModal").modal("hide");
+
+										if (btnNum == "two") {
+											$("#two").attr('disabled', true).text("Submitted");
+											$('#responseUpload').click();
+											$('#checkingForms').click();
+										}
+
+										else if (btnNum == "three") {
+											$("#three").attr('disabled', true).text("Submitted");
+											$('#checkingForms').click();
+										}
+										else if (btnNum == "four") {
+											$("#four").attr('disabled', true).text("Submitted");
+											$('#checkingForms').click();
+										}
+										else if (btnNum == "five") {
+											$("#five").attr('disabled', true).text("Submitted");
+											$('#checkingForms').click();
+											$('#responseUpload').click();
+										}
+
+										else {
+											$("#one").attr('disabled', true).text("Submitted");
+											$('#checkingForms').click();
+											$('#incidentUpload').click();
+										}
+
+										$("#successModal").modal("show");
 								}
 
 								else {
@@ -770,7 +728,10 @@ $(function(){
 									console.log("SUCCESS");
 									$("#waitModal").modal("hide");
 									$("#uploadModal").modal("show");
+									$("#successModal").modal("show");
 								}
+
+								$("#successModal").modal("show");
 			        }
 			      },
 						onProgress: function(event) {

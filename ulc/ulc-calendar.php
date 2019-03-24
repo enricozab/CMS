@@ -34,6 +34,7 @@
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -94,6 +95,10 @@
     <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> //cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.1.9/jquery.datetimepicker.min.js -->
     <script src="../extra-css/jquery.datetimepicker.min.js"></script>
 
+    <!-- new  -->
+    <script src="../extra-css/chosen.jquery.min.js"></script>
+    <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
+
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
@@ -144,39 +149,27 @@
         	}
         });
 
+        //new
+        $('.chosen-select').chosen({width: '100%'});
+        $("#event-title").on('change', function(e) {
+          var usertype_id=$(this).val();
+
+          $.ajax({
+            url: '../ajax/calendar-get-emails.php',
+            type: 'POST',
+            data: {
+              usertype: usertype_id
+            },
+            success: function(response) {
+              $('#attendee').show();
+              $("#event-attendees").html(response);
+              $("#event-attendees").trigger("chosen:updated");
+            }
+          });
+        });
+
         // Send an ajax request to create event
         $("#create-event").on('click', function(e) {
-          /*var ids = ['input[name="caseDecision"]:checked','#reasonCase','input[name="violationDes"]:checked'];
-          var isEmpty = true;
-
-          if($('#dispOffense').is(":visible")){
-            ids.push('#violationDes');
-          }
-          else{
-            if($.inArray('#violationDes', ids) !== -1){
-              ids.splice(ids.indexOf('#violationDes'),1);
-            }
-          }
-
-          if($('#changeViolation').is(":visible")){
-            ids.push('#offenseSelect');
-          }
-          else{
-            if($.inArray('#offenseSelect', ids) !== -1){
-              ids.splice(ids.indexOf('#offenseSelect'),1);
-            }
-          }
-
-          for(var i = 0; i < ids.length; ++i ){
-            if($.trim($(ids[i]).val()).length == 0){
-              isEmpty = false;
-            }
-          }
-
-          if(isEmpty) {
-
-          }*/
-
         	if($("#create-event").attr('data-in-progress') == 1)
         		return;
 
@@ -227,10 +220,20 @@
         		}
         	}
 
+          //new
+          var title = '';
+          if ( $("#event-title").val() == '(1)')
+          {
+            title = 'Student Interview'
+          }
+          else {
+            title = 'Board Meeting'
+          }
         	// Event details that are pased in ajax
         	parameters =
           {
-            title: $("#event-title").val(),
+            //new
+            title: title,
             attendees: $("#event-attendees").val(),
             event_time:
             {

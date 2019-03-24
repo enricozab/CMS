@@ -43,12 +43,12 @@
 		//Loop per college
 		for($i=1; $i<=7; $i++){
 			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MAJORCASES FROM CASES C
-								LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
-								LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
-								LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
+								LEFT JOIN USERS U 										ON C.REPORTED_STUDENT_ID = U.USER_ID
+								LEFT JOIN REF_USER_OFFICE RUO 				ON U.OFFICE_ID = RUO.OFFICE_ID
+								LEFT JOIN REF_OFFENSES RO 						ON C.OFFENSE_ID = RO.OFFENSE_ID
 								LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
-								LEFT JOIN REF_STUDENTS RS				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
-								LEFT JOIN CASE_REFERRAL_FORMS CRF		ON C.CASE_ID = CRF.CASE_ID
+								LEFT JOIN REF_STUDENTS RS							ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
+								LEFT JOIN CASE_REFERRAL_FORMS CRF			ON C.CASE_ID = CRF.CASE_ID
 								LEFT JOIN REF_CASE_PROCEEDINGS RCP		ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 								WHERE U.OFFICE_ID = " .$i ."
 											&& RO.TYPE = 'Major'
@@ -143,12 +143,20 @@
 	}
 
 	//Generate exec command to run python
+	$exec = 'generate-major-spreadsheet-format.py ' .$sdfodrow['email'] .' ' .$ay .' ' .$term . ' ' .$reportNum;
+	foreach ($totalcases as $value){
+		$exec = $exec .' ' . $value;
+	}
+
+	//Create GSheets with Table Format
+	$output=shell_exec($exec);
+
+	//Generate exec command to run python
 	$exec = 'generate-major-report.py ' .$sdfodrow['email'] .' ' .$ay .' ' .$term . ' ' .$reportNum;
 	foreach ($totalcases as $value){
 		$exec = $exec .' ' . $value;
 	}
 
-	//Create GSheets
-	////echo "Exec: ", $exec;
+	//Insert Data to GSheets
 	$output=shell_exec($exec);
 ?>

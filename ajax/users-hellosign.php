@@ -6,8 +6,8 @@
 		$filename = $_POST['formT'];
 
 		//CHANGE SOURCEPATH TO YOUR OWN PC'S DOWNLOAD PATH + \\output.docx
-		$sourcepath = 'C:\\Users\\Enrico Zabayle\\Downloads\\'.$_POST['formT'];
-		$targetpath = getcwd().'\\'.$_POST['formT'];
+		$sourcepath = 'C:\\Users\\Enrico Zabayle\\Downloads\\'.$filename;
+		$targetpath = getcwd().'\\'.$filename;
 
 		rename($sourcepath,$targetpath);
 
@@ -19,6 +19,7 @@
 		  if(!$result){
 		    echo mysqli_error($dbc);
 		  }
+			echo $filename;
 		}
 		else{
 			$name = $_POST['fname'].' '.$_POST['lname'];

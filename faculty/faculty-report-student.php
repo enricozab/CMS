@@ -65,10 +65,10 @@
                         <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" value="11530022" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                       </div>
                     </div>
-                    <!--<div id="appendstudent">
+                    <!-- <div id="appendstudent">
                       <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another student</a></span>
                     </div>
-                    <br>-->
+                    <br> -->
                     <div class="form-group" style = "width: 300px;">
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="location" name="location" value="G211" class="form-control" placeholder="Enter Location"/>
@@ -76,7 +76,7 @@
                     <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <div class='input-group date'>
-                        <input  id='date' type='text' class="form-control" placeholder="Enter Date"/>
+                        <input  id='date' type='text' value="2019-03-08 06:19" class="form-control" placeholder="Enter Date"/>
                         <span id='cal' style="cursor: pointer;" class="input-group-addon">
                             <span class="fa fa-calendar"></span>
                         </span>
@@ -236,8 +236,7 @@
               },
               success: function(msg) {
                   generate();
-                  // $("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
-                  // $("#alertModal").modal("show");
+                  //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
                   $("#sendModal").modal("show");
               }
           });
@@ -254,7 +253,6 @@
           JSZipUtils.getBinaryContent(url,callback);
       }
       function generate(){
-
         for(var i = 0; i < studentlist.length; ++i ) {
           $.ajax({
               url: '../ajax/get-student-info.php',
@@ -282,17 +280,16 @@
                     var today = dd + '/' + mm + '/' + yyyy;
 
                     var formNumber;
-
                     <?php
                     if ($formres['MAX'] != null) { ?>
-                      formNumber = <?php echo $formres['MAX']; ?>
-                      // code...
+                      formNumber = <?php echo $formres['MAX'] ?>;
                     <?php }
                     else { ?>
                       formNumber = 1;
-                    <?php } ?>
-                    titleForm = "Incident Report Form #" + formNumber + ".docx";
+                    <?php }
+                    ?>
 
+                    titleForm = "Incident Report Form #" + formNumber + ".docx";
                     doc.setData({
                       <?php
                       if ($formres['MAX'] != null) { ?>
@@ -334,7 +331,7 @@
                         type:"blob",
                         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     }); //Output the document using Data-URI
-                    saveAs(out, titleForm,  {
+                    saveAs(out,titleForm,  {
                       locURL: "/localhost/CMS/ajax"
                     });
                 });
@@ -343,24 +340,28 @@
         }
       }
 
-      $('#otherOK').on('click', function() {
-    		$.ajax({
-              url: '../ajax/users-hellosign.php',
-              type: 'POST',
-              data: {
-                  formT : titleForm,
-        					title : "Incident Report",
-        					subject : "Incident Report Document Signature",
-        					message : "Please do sign this document.",
-  						    fname : "<?php echo $nameres['first_name'] ?>",
-        					lname : "<?php echo $nameres['last_name'] ?>",
-        					email : "<?php echo $nameres['email'] ?>",
-        					filename : $('#inputfile').val()
-              },
-              success: function(response) {
-                $('#form')[0].reset();
-    				}
-    		});
+      $('#sentOK').on('click', function() {
+
+
+          $.ajax({
+                url: '../ajax/users-hellosign.php',
+                type: 'POST',
+                data: {
+                    formT: titleForm,
+                    title : "Incident Report",
+                    subject : "Incident Report Document Signature",
+                    message : "Please do sign this document and forward it, along with your pieces of evidence, to hdo.cms@gmail.com",
+                    fname : "<?php echo $nameres['first_name'] ?>",
+                    lname : "<?php echo $nameres['last_name'] ?>",
+                    email : "<?php echo $nameres['email'] ?>",
+                    filename : $('#inputfile').val()
+                },
+                success: function(response) {
+                  $('#form')[0].reset();
+                  location.reload();
+              }
+          });
+
       });
     });
   	</script>
@@ -377,28 +378,28 @@
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
 					</div>
 					<div class="modal-footer">
-            <button type="submit" id = "modalOK" class="btn btn-default">Ok</button>
+            <button type="submit" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
 					</div>
 				</div>
 			</div>
     </div>
 
-    <!-- NEW DRIVE -->
-		<div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel"><b>Important Reminder</b></h4>
-					</div>
-					<div class="modal-body">
-						<p id="success">Your Incident Report Form has been sent to your email succesfully. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form to <b>hdo.cms@gmail.com</b> after signing. Attach your evidences as well.</p>
-					</div>
-					<div class="modal-footer">
-            <button type="submit" id="otherOK" class="btn btn-default" data-dismiss="modal">Ok</button>
-					</div>
-				</div>
-			</div>
+    <!-- Modal2 -->
+    <div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
+          </div>
+          <div class="modal-body">
+            <p id="message">Incident Report has been submitted and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" id = "sentOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
     </div>
 
 </body>

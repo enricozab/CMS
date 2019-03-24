@@ -268,6 +268,8 @@ if (!isset($_GET['cn']))
   <script>
   $(document).ready(function() {
 
+    var titleForm;
+
     //response form
     $("#form").click(function(){
 
@@ -300,7 +302,7 @@ if (!isset($_GET['cn']))
                   LEFT JOIN	USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
                   LEFT JOIN	REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
                   WHERE		  U.USER_ID = "'.$_SESSION['user_id'].'"
-                  AND       RO.TYPE = "'.$row['TYPE'].'"';
+                  AND       RO.TYPE = "'.$row['TYPE'].'" AND C.DATE_FILED <= "'.$row['DATE_FILED'].'"';
       $countres = mysqli_query($dbc,$countq);
       if(!$countres){
         echo mysqli_error($dbc);
@@ -334,6 +336,7 @@ if (!isset($_GET['cn']))
             },
             success: function(msg) {
                 $("#evidencediv").hide();
+                $("#form").attr("disabled", true);
 
                 loadFile("../templates/template-student-reponse-form.docx",function(error,content){
 
@@ -353,7 +356,6 @@ if (!isset($_GET['cn']))
                 }
                 var today = dd + '/' + mm + '/' + yyyy;
 
-                // new thea
                 var formNumber;
                 <?php
                 if ($formres['MAX'] != null) { ?>
@@ -364,8 +366,7 @@ if (!isset($_GET['cn']))
                 <?php }
                 ?>
 
-                var titleForm = "Student Response Form #" + formNumber + ".docx";
-                // end thea
+                titleForm = "Student Response Form #" + formNumber + ".docx";
 
                 doc.setData({
                   <?php
@@ -423,21 +424,19 @@ if (!isset($_GET['cn']))
                     type:"blob",
                     mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 }); //Output the document using Data-URI
-                saveAs(out, titleForm); // new drive
+                saveAs(out,titleForm);
 
                 });
-                //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+                // $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
                 $('#message').text('form');
+
                 <?php
                   if($countrow['CASE_COUNT'] > 1) { ?>
                     $("#parentModal").modal("show");
                 <?php }
                   else { ?>
-
-                    // $("#alertModal").modal("show");
-                    $('#message').hide();
-                    $('#appealMsg').show();
-                    document.getElementById('appealMsg').style.display = "none";
+                    //$("#alertModal").modal("show");
+                    //$('#appealMsg').show();
                     $("#newFormModal").modal("show");
                 <?php }
                 ?>
@@ -473,6 +472,7 @@ if (!isset($_GET['cn']))
               },
               success: function(msg) {
                   $("#evidencediv").hide();
+                  $("#form").attr("disabled", true);
 
                   loadFile("../templates/template-student-reponse-form.docx",function(error,content){
                     if (error) { throw error };
@@ -491,7 +491,6 @@ if (!isset($_GET['cn']))
                     }
                     var today = dd + '/' + mm + '/' + yyyy;
 
-                    // new thea
                     var formNumber;
                     <?php
                     if ($formres['MAX'] != null) { ?>
@@ -502,8 +501,7 @@ if (!isset($_GET['cn']))
                     <?php }
                     ?>
 
-                    var titleForm = "Student Response Form #" + formNumber + ".docx";
-                    // end thea
+                    titleForm = "Student Response Form #" + formNumber + ".docx";
 
                     doc.setData({
                       <?php
@@ -558,13 +556,16 @@ if (!isset($_GET['cn']))
                     saveAs(out,titleForm);
 
                   });
-                  //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
                   $('#message').text('form');
+                  //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+                  $("#newFormModal").modal("show");
               }
           });
         }
-        //$("#alertModal").modal("show");
-        $("#newFormModal").modal("show");
+        else {
+          $("#alertModal").modal("show");
+        }
+
     });
 
     function sendStudResponseFirst() {
@@ -572,6 +573,7 @@ if (!isset($_GET['cn']))
           url: '../ajax/users-hellosign.php',
           type: 'POST',
           data: {
+              formT: titleForm,
               title : "Student Response Form",
               subject : "Student Response Form Document Signature",
               message : "Please do sign this document.",
@@ -581,11 +583,11 @@ if (!isset($_GET['cn']))
               filename : $('#inputfile').val()
           },
           success: function(response) {
-            parentLetter()
-            // $("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
-            // $("#alertModal").modal("show");
+            parentLetter();
+            //$("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
+            //$("#alertModal").modal("show");
             $("#message").text('forms');
-            $("#newFormModal").modal("show");
+            $("#newFormsModal").modal("show");
           }
       });
     }
@@ -622,7 +624,6 @@ if (!isset($_GET['cn']))
           guardian: "<?php echo $studentres['guardian_name'] ?>",
           contact: "<?php echo $studentres['guardian_contact'] ?>",
           address: "<?php echo $studentres['address'] ?>"
-
         });
 
         try {
@@ -654,48 +655,45 @@ if (!isset($_GET['cn']))
       sendStudResponseFirst();
     });
 
-    $('#alertModal').on('click', function() {
-
-      if($('#message').text() == "form") { // new
-        $.ajax({
-            url: '../ajax/users-hellosign.php',
-            type: 'POST',
-            data: {
-                title : "Student Response Form",
-                subject : "Student Response Form Document Signature",
-                message : "Please do sign this document.",
-                fname : "<?php echo $nameres['first_name'] ?>",
-                lname : "<?php echo $nameres['last_name'] ?>",
-                email : "<?php echo $nameres['email'] ?>",
-                filename : $('#inputfile').val()
-            },
-            success: function(response) {
-              $('#form').attr('disabled',true);
-            }
-        });
-      }
-      else if($('#message').text() == "forms") { // new
-        $.ajax({
+    $('#form1').on('click', function() {
+      $.ajax({
           url: '../ajax/users-hellosign.php',
           type: 'POST',
           data: {
-    					title : "Parent Letter",
-    					subject : "Parent Letter Document Signature",
-    					message : "Please do sign this document.",
-  					  name : "<?php echo $studentres['guardian_name'] ?>",
-    					email : "enrico_zabayle@dlsu.edu.ph",
-    					filename : $('#inputfile').val(),
-              caseID : <?php echo $_GET['cn']; ?>
+              formT: titleForm,
+              title : "Student Response Form",
+              subject : "Student Response Form Document Signature",
+              message : "Please do sign this document.",
+              fname : "<?php echo $nameres['first_name'] ?>",
+              lname : "<?php echo $nameres['last_name'] ?>",
+              email : "<?php echo $nameres['email'] ?>",
+              filename : $('#inputfile').val()
           },
           success: function(response) {
-            <!-- <?php echo $studentres['guardian_email'] ?> -->
-            $("#form").attr('disabled',true);
-  				}
-    		});
-      }
-      else{
-        $('#alertModal').modal("hide");
-      }
+            $('#form').attr('disabled',true);
+          }
+      });
+    });
+
+    $('#form2').on('click', function() {
+      $.ajax({
+        url: '../ajax/users-hellosign.php',
+        type: 'POST',
+        data: {
+            formT: "Parent Letter.docx",
+  					title : "Parent Letter",
+  					subject : "Parent Letter Document Signature",
+  					message : "Please do sign this document.",
+					  name : "enrico_zabayle@dlsu.edu.ph",
+  					email : "enrico_zabayle@dlsu.edu.ph",
+  					filename : $('#inputfile').val(),
+            caseID : <?php echo $_GET['cn']; ?>
+        },
+        success: function(response) {
+          <!-- <?php echo $studentres['guardian_email'] ?> -->
+          $("#form").attr('disabled',true);
+				}
+  		});
     });
 
     $("#appendevidence").click(function(){
@@ -719,13 +717,6 @@ if (!isset($_GET['cn']))
           success: function(msg) {
               //$('#message').text('An appeal has been sent successfully!');
               $("#appeal").attr('disabled', true);
-
-              alert("hi");
-
-              // NEW DRIVE
-              $('#message').show();
-              $('#appealMsg').hide();
-              document.getElementById('appealMsg').style.display = "none";
               $("#newFormModal").modal("show");
               //$("#alertModal").modal("show");
           }
@@ -758,6 +749,9 @@ if (!isset($_GET['cn']))
         $('#letterlabel2').text("Please write an explanation");
       }
     });
+
+    $('.modal').attr('data-backdrop', "static");
+    $('.modal').attr('data-keyboard', false);
   });
 
   <?php include 'student-notif-scripts.php' ?>
@@ -976,7 +970,7 @@ if (!isset($_GET['cn']))
           <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="submit" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
@@ -991,16 +985,33 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
         </div>
         <div class="modal-body">
-          <p id="message">Student Response Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and evidences to <b>ido.cms1@gmail.com</b>.</p>
-          <p id = "appealMsg">An appeal has been sent successfully! A new Student Response Form has been sent to your email. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and evidences to <b>ido.cms1@gmail.com</b>.</p>
+          <p id = "thisMessage">Student Response Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and pieces of evidence to <b>ido.cms1@gmail.com</b>.</p>
+          <!-- <p id = "appealMsg">An appeal has been sent successfully! A new Student Response Form has been sent to your email. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and evidences to <b>ido.cms1@gmail.com</b>.</p> -->
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="submit" id="form1" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- New Modal -->
+  <div class="modal fade" id="newFormsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message">Student Response Form and Parent Letter have been submitted and sent to your email and to your Parent/Guardian's email respectively. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the Student Response Form. <br> <b>(2)</b> Inform your Parent/Guardian to sign the Parent Letter. <br> <b>(3)</b> Forward the forms and your pieces of evidence to <b>ido.cms1@gmail.com</b>.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="form2" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 

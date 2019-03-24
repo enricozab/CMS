@@ -54,7 +54,7 @@
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/addFolder4.js" type="text/javascript"></script>
+    <script src="../gdrive/hdo-addNewFolder.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js"
           onload="this.onload=function(){};handleClientLoad()"
           onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
@@ -95,11 +95,16 @@
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="offense" class="chosen-select">
                         <option value="" disabled selected>Select Offense</option>
+                        <!-- new - edited -->
+                        <option value="1">Cheating</option>
+                        <option value="2">Vandalism</option>
+                        <option value="33">Simple Acts of Disrespect</option>
+                        <option value="34">Acts Which Disturb Peace</option>
                         <?php
-                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                        /*while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
                           echo
                             "<option value=\"{$row2['OFFENSE_ID']}\">{$row2['DESCRIPTION']}</option>";
-                        }
+                        }*/
                         ?>
                       </select>
                     </div>
@@ -140,9 +145,11 @@
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <input id="location" value="G201" class="form-control">
                     </div>
-                    <div class="form-group">
+                    <!-- new - edited from previous -->
+                    <div id="detailarea" class="form-group" style='width: 300px;' hidden>
                       <label>Summary of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <textarea id="details" style="width:600px;" class="form-control" rows="3">MAMAMO</textarea>
+                      <select id="details" class="chosen-select">
+                      </select>
   				          </div>
                     <?php
                       $query2='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 4';
@@ -208,21 +215,13 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <!-- gmail -->
-    <?php // include '../gmail/send-email.php'; ?>
+    <?php //include '../gmail/send-email.php'; ?>
 
     <script>
     $(document).ready(function() {
-      // NEW DRIVE
-      var caseData;
-
-      $('#folderBtn').click(function() {
-        buttonAddfolder(caseData);
-      });
-      // END DRIVE
-
       <?php include 'hdo-notif-scripts.php'?>
 
-      $('.chosen-select').chosen();
+      $('.chosen-select').chosen({width: '100%'});
 
       $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, maxTime: 0, step: 1});
 
@@ -232,6 +231,12 @@
 
       $('.studentID').keypress(validateNumber);
       $('.comID').keypress(validateNumber);
+
+      $('#folderBtn').click(function() {
+        //buttonAddfolder(caseData);
+
+        newCaseFolder(caseData);
+      });
 
       function validateNumber(event) {
         var key = window.event ? event.keyCode : event.which;
@@ -264,6 +269,19 @@
         else{
           $('#cheat').hide();
         }
+
+        $.ajax({
+          url: 'hdo-get-details.php',
+          type: 'POST',
+          data: {
+            offense: offense_id
+          },
+          success: function(response) {
+            $('#detailarea').show();
+            $("#details").html(response);
+            $("#details").trigger("chosen:updated");
+          }
+        });
       });
 
       $('form').submit(function(e) {
@@ -271,8 +289,7 @@
       });
 
       $('#submit').click(function() {
-        $('#waitModal').modal("show"); // new drive
-        var ids = ['#studentID','#offense','#complainantID','#date','#location','#details','#ido'];
+        var ids = ['#studentID','#offense','#complainantID','#date','#location','#ido'];
         var isEmpty = true;
 
         if($('#cheat').is(":visible")){
@@ -284,12 +301,23 @@
           }
         }
 
+        if($('#detailarea').is(":visible")){
+          ids.push('#details');
+        }
+        else{
+          if($.inArray('#details', ids) !== -1){
+            ids.splice(ids.indexOf('#details'),1);
+          }
+        }
+
         for(var i = 0; i < ids.length; ++i ){
           if($.trim($(ids[i]).val()).length == 0){
             isEmpty = false;
           }
         }
         if(isEmpty) {
+          handleApprehend();
+          $('#waitModal').modal("show");
           $.ajax({
               url: '../ajax/hdo-insert-case.php',
               type: 'POST',
@@ -303,22 +331,22 @@
                   location: $('#location').val(),
                   details: $('#details').val(),
                   assignIDO: $('#ido').val(),
-                  page: "HDO-APPREHENSION" // NEW DRIVE
+                  page: "HDO-APPREHENSION"
               },
-
               success: function(response) {
 
                 data = response.split("/");
             		caseData = "Case #" + data[5];
                 loadData(response);
-              } // END NEW DRIVE
+                //$('#message').text('Submitted successfully!');
+              }
           });
-          //$('#message').text('Submitted successfully!');
-          $('#form')[0].reset();
-          $(".chosen-select").trigger("chosen:updated");
         }
 
-        //$("#alertModal").modal("show");
+        else {
+          $("#done").hide();
+          $("#alertModal").modal("show");
+        }
       });
 
       $('#modalOK').click(function() {
@@ -359,19 +387,21 @@
           }?>
 
           //sends emails
-          /*sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
-          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');*/
+          //sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          //sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
 
-          //hides modal
-          $("#alertModal").modal("hide");
           $('#form')[0].reset();
           $(".chosen-select").trigger("chosen:updated");
+          location.reload();
         }
         else{
           //hides modal
           $("#alertModal").modal("hide");
         }
       });
+
+      $('.modal').attr('data-backdrop', "static");
+      $('.modal').attr('data-keyboard', false);
 
     });
     </script>
@@ -385,7 +415,8 @@
 						<h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
 					</div>
 					<div class="modal-body">
-						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
+            <p id = "done">Case has been created and passed to the assigned IDO successfully!</p>
+            <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
 					</div>
 					<div class="modal-footer">
 						<button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
@@ -393,6 +424,8 @@
 				</div>
 			</div>
     </div>
+
+
     <!-- NEW DRIVE  -->
 
     <!-- Folder Modal -->
@@ -418,19 +451,18 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
             <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
           </div>
           <div class="modal-body">
             <p> Please wait. </p>
           </div>
           <div class="modal-footer">
-            <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+            <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
           </div>
         </div>
       </div>
     </div>
-
 </body>
 
 </html>

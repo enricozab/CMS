@@ -60,11 +60,9 @@
 				<li>
 					<a href="sdfod-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
-				<!-- new drive -->
 				<li>
 					<a href="sdfod-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
-				<!-- end drive -->
 				<li>
 					<a href="sdfod-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>

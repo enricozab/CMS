@@ -55,6 +55,9 @@
 					<!-- /input-group -->
 				</li>
 				<li>
+					<a href="cdo-dashboard.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+				</li>
+				<li>
 					<a href="cdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>

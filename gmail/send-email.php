@@ -2,26 +2,26 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> -->
 
 <script type="text/javascript">
-  var gmailClientId = '847418612593-8udibtfp8mt565n64vq8rv50qbdr4di4.apps.googleusercontent.com';
-  var gmailApiKey = 'AIzaSyAwmG6VqTGO9oYmMhYBGwNh6HSBMt021cg';
-  var gmailScopes =
+  var clientId = '847418612593-8udibtfp8mt565n64vq8rv50qbdr4di4.apps.googleusercontent.com';
+  var apiKey = 'AIzaSyAwmG6VqTGO9oYmMhYBGwNh6HSBMt021cg';
+  var scopes =
     'https://www.googleapis.com/auth/gmail.readonly '+
     'https://www.googleapis.com/auth/gmail.send';
   function handleClientLoad() {
-    gapi.client.setApiKey(gmailApiKey);
+    gapi.client.setApiKey(apiKey);
     window.setTimeout(checkAuth, 1);
   }
   function checkAuth() {
     gapi.auth.authorize({
-      client_id: gmailClientId,
-      scope: gmailScopes,
+      client_id: clientId,
+      scope: scopes,
       immediate: false
     }, handleAuthResult);
   }
   function handleAuthClick() {
     gapi.auth.authorize({
-      client_id: gmailClientId,
-      scope: gmailScopes,
+      client_id: clientId,
+      scope: scopes,
       immediate: false
     }, handleAuthResult);
     return false;

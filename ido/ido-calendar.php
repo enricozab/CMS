@@ -94,6 +94,10 @@
     <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
     <script src="../extra-css/jquery.datetimepicker.min.js"></script>
 
+    <!-- new  -->
+    <script src="../extra-css/chosen.jquery.min.js"></script>
+    <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
+
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
@@ -143,6 +147,25 @@
         		$("#datearea").hide();
         		$("#timearea").show();
         	}
+        });
+
+        //new
+        $('.chosen-select').chosen({width: '100%'});
+        $("#event-title").on('change', function(e) {
+          var usertype_id=$(this).val();
+
+          $.ajax({
+            url: '../ajax/calendar-get-emails.php',
+            type: 'POST',
+            data: {
+              usertype: usertype_id
+            },
+            success: function(response) {
+              $('#attendee').show();
+              $("#event-attendees").html(response);
+              $("#event-attendees").trigger("chosen:updated");
+            }
+          });
         });
 
         // Send an ajax request to create event
@@ -197,11 +220,22 @@
         		}
         	}
 
+          //new
+          var title = '';
+          if ( $("#event-title").val() == '(1)')
+          {
+            title = 'Student Interview'
+          }
+          else {
+            title = 'Board Meeting'
+          }
+
         	// Event details that are pased in ajax
         	parameters =
           {
-            title: $("#event-title").val(),
-            attendees: $("#event-attendees").val(),
+            //new
+            title: title,
+            attendees: $("#event-attendees").val(), // ['aaicragsolrac@gmail.com','carlos_martin_garcia@dlsu.edu.ph'],
             event_time:
             {
               start_time: $("#event-type").val() == 'FIXED-TIME' ? $("#event-start-time").val().replace(' ', 'T') + ':00' : null,

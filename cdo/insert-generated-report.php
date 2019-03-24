@@ -1,5 +1,9 @@
 <?php
+	// header('Location: http://localhost/CMS/cdo/cdo-reports.php');
 	//Insert report to DB
+	$ay = $_POST['ay'];
+	$term = $_POST['term'];
+	$type = $_POST['caseType'];
 
 	require_once('../mysql_connect.php');
 	$reportNum = 0;
@@ -35,15 +39,32 @@
 			$insertReportRes = mysqli_query($dbc,$insertReportQuery);
 
 			if(!$insertReportRes){
-				echo mysqli_error($dbc);
+				// echo mysqli_error($dbc);
 			}
+
 			else{
-				echo '<p hidden name="msg" id="msg">Success: Summary Report '. $type . ' Cases for AY '. $ay . ' Term ' . $term. ' generated!</p>';
+				// echo '<p hidden name="msg" id="msg">Success: Summary Report '. $type . ' Cases for AY '. $ay . ' Term ' . $term. ' generated!</p>';
+
+				if($type == "Minor" && $reportNum != 0){
+					//echo 'Minor', '<br>';
+					include 'cdo-generate-minor-report.php';
+				}
+
+				else if($type == "Major" && $reportNum != 0){
+					//echo 'Major', '<br>';
+					include 'cdo-generate-major-report.php';
+				}
+
+				echo 'Success: Summary Report ', $type , ' Cases for AY ', $ay , ' Term ' , $term, ' has been created and sent to the SDFO Director!';
+
 			}
 		}
 	}
 
 	else{
-		echo '<p hidden name="msg" id="msg">Error: Summary Report ', $type , ' Cases for AY ', $ay , ' Term ' , $term, ' exists already!</p>';
+
+		echo 'Error: Summary Report ', $type , ' Cases for AY ', $ay , ' Term ' , $term, ' exists already!';
 	}
+
+
 ?>

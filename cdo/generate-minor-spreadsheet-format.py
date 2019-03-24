@@ -5,9 +5,7 @@ import requests
 import json
 from oauth2client.service_account import ServiceAccountCredentials
 from django.http import HttpResponse
-import time
-time.sleep(5);
-
+from gspread_formatting import *
 
 email = str(sys.argv[1])
 ay = str(sys.argv[2])
@@ -15,6 +13,10 @@ term = str(sys.argv[3])
 reportnum = str(sys.argv[4])
 spreadsheetname = "Report No. " + reportnum + " Summary Report for Minor Cases for AY " + ay + " Term " + term
 
+"""
+file = open("C://xampp//htdocs//CMS//cdo//minorReport.txt", "a")
+file.write(str(sys.argv))
+"""
 
 # use creds to create a client to interact with the Google Drive API
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -23,9 +25,10 @@ client = gspread.authorize(creds)
 gc = gspread.authorize(creds)
 
 #Create new spreadsheet
-#new = gc.create(spreadsheetname)
+new = gc.create(spreadsheetname)
 open = gc.open(spreadsheetname)
 sheet = client.open(spreadsheetname).sheet1
+worksheet = open.get_worksheet(0)
 
 table = ["MINOR DISCIPLINE VIOLATIONS","","","","","","","","","","","",
 		"Discipline Processes","Campus/Level","Frequency of Offenses", "", "College of Computer Studies","College of Liberal Arts","College of Business","School of Economics","Gokongwei College of Engineering","College of Science","College of Education","SUB-TOTAL",
@@ -58,48 +61,25 @@ for cell in cell_list:
 
 sheet.update_cells(cell_list)
 
-cols = ["E","F","G","H","I","J","K","L"]
-rows = ["3","4","5","6","7","8","9","10","11","12",
-		"13","14","15","16","17","18","19","20"]
+#FORMAT TABLE
+header = cellFormat(
+    backgroundColor=color(0.878, 0.878, 0.878),
+    textFormat=textFormat(bold=True, foregroundColor=color(0.090, 0.090, 0.090)),
+    horizontalAlignment='CENTER',
+	wrapStrategy="WRAP"
+    )
+colorCell = cellFormat(
+	backgroundColor=color(0.878, 0.878, 0.878),
+    textFormat=textFormat(bold=True, foregroundColor=color(0.090, 0.090, 0.090))
+)
+boldCell = cellFormat(
+    textFormat=textFormat(bold=True)
+)
 
-###### BATCH PROCESSING OF DATA
-cell_list = sheet.range('E3:K8')
-argsnum = 5
-for cell in cell_list:
-	cell.value = (int(sys.argv[argsnum]));
-	argsnum=argsnum+1
-
-##Update in batch
-sheet.update_cells(cell_list)
-
-cell_list = sheet.range('E10:K19')
-for cell in cell_list:
-	cell.value = (int(sys.argv[argsnum]));
-	argsnum=argsnum+1
-
-##Update in batch
-sheet.update_cells(cell_list)
-
-##CALCULATING SUB-TOTALS
-for x in range(len(rows)):
-	for y in cols:
-		cell = (y+rows[x])
-
-		if y == "L":
-			sum = "=SUM(E" + rows[x] + ":K" + rows[x] + ")"
-			sheet.update_acell(cell, sum)
-
-		if rows[x]=="9":
-			sum = "=SUM(" + y + "3:" + y + "8)"
-			sheet.update_acell(cell, sum)
-
-		if rows[x]=="20":
-			sum = "=SUM(" + y + "10:" + y + "19)"
-			sheet.update_acell(cell, sum)
-
-##CALCULATE GRAND TOTAL
-grandtotal = "=SUM(E3:K8,E10:K19)"
-sheet.update_acell("B21", grandtotal)
-
-##Share sheets to sdfod. Change role='reader' for final
-open.share(email, perm_type='user', role='reader')
+format_cell_range(worksheet, 'A2:B2', header)
+format_cell_range(worksheet, 'E2:L2', header)
+format_cell_range(worksheet, 'C2:D2', colorCell)
+format_cell_range(worksheet, 'A1', boldCell)
+format_cell_range(worksheet, 'A9', boldCell)
+format_cell_range(worksheet, 'A20', boldCell)
+format_cell_range(worksheet, 'A21', boldCell)

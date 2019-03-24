@@ -5,12 +5,18 @@ import requests
 import json
 from oauth2client.service_account import ServiceAccountCredentials
 from django.http import HttpResponse
+from gspread_formatting import *
 
 email = str(sys.argv[1])
 ay = str(sys.argv[2])
 term = str(sys.argv[3])
 reportnum = str(sys.argv[4])
 spreadsheetname = "Report No. " + reportnum + " Summary Report for Major Cases for AY " + ay + " Term " + term
+
+"""
+file = open("C://xampp//htdocs//CMS//cdo//majorReport.txt", "a")
+file.write(str(sys.argv))
+"""
 
 # use creds to create a client to interact with the Google Drive API
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -19,9 +25,10 @@ client = gspread.authorize(creds)
 gc = gspread.authorize(creds)
 
 #Create new spreadsheet
-#new = gc.create(spreadsheetname)
+new = gc.create(spreadsheetname)
 open = gc.open(spreadsheetname)
 sheet = client.open(spreadsheetname).sheet1
+worksheet = open.get_worksheet(0)
 
 #Create Table First
 table = ["MAJOR DISCIPLINE VIOLATIONS","","","","","","","","","","",
@@ -50,48 +57,20 @@ for cell in cell_list:
 
 sheet.update_cells(cell_list)
 
-###### BATCH PROCESSING OF DATA - Input Data
-cell_list = sheet.range('D3:J6')
-argsnum = 5
-for cell in cell_list:
-	cell.value = (int(sys.argv[argsnum]));
-	argsnum=argsnum+1
+#FORMAT TABLE
+header = cellFormat(
+    backgroundColor=color(0.878, 0.878, 0.878),
+    textFormat=textFormat(bold=True, foregroundColor=color(0.090, 0.090, 0.090)),
+    horizontalAlignment='CENTER',
+	wrapStrategy="WRAP"
+    )
 
-##Update in batch
-sheet.update_cells(cell_list)
+boldCell = cellFormat(
+    textFormat=textFormat(bold=True)
+)
 
-cell_list = sheet.range('D10:J15')
-for cell in cell_list:
-	cell.value = (int(sys.argv[argsnum]));
-	argsnum=argsnum+1
-
-##Update in batch
-sheet.update_cells(cell_list)
-
-cols = ["D","E","F","G","H","I","J","K"]
-rows = ["3","4","5","6","7","8","9","10","11","12",
-		"13","14","15","16"]
-sum = ""
-##CALCULATING SUB-TOTALS
-for x in range(len(rows)):
-	for y in cols:
-		cell = (y+rows[x])
-
-		if y == "K":
-			sum = "=SUM(D" + rows[x] + ":J" + rows[x] + ")"
-			sheet.update_acell(cell, sum)
-
-		if rows[x]=="7":
-			sum = "=SUM(" + y + "3:" + y + "6)"
-			sheet.update_acell(cell, sum)
-
-		if rows[x]=="16":
-			sum = "=SUM(" + y + "10:" + y + "15)"
-			sheet.update_acell(cell, sum)
-
-##CALCULATE GRAND TOTAL
-#grandtotal = "=SUM(E3:K8,E10:K19)"
-#sheet.update_acell("B21", grandtotal)
-
-##Share sheets to sdfod. Change role='reader' for final
-open.share(email, perm_type='user', role='reader')
+format_cell_range(worksheet, 'A2:K2', header)
+format_cell_range(worksheet, 'A1', boldCell)
+format_cell_range(worksheet, 'A7', boldCell)
+format_cell_range(worksheet, 'A9', boldCell)
+format_cell_range(worksheet, 'A16', boldCell)

@@ -21,20 +21,13 @@
     $typerow=mysqli_fetch_array($typeres,MYSQLI_ASSOC);
   }
 
-  if($_POST['page'] == "HDO-APPREHENSION"){ //new thea
+  if($typerow['type'] == "Major") {
     $query="INSERT INTO CASES (INCIDENT_REPORT_ID,REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DATE_INCIDENT,LOCATION,DETAILS,HANDLED_BY_ID)
-               VALUES ($incidentReport,'{$_POST['studentID']}','{$_POST['offenseID']}',$cheatType,'{$_POST['complainantID']}','{$_POST['dateIncident']}','{$_POST['location']}','{$_POST['details']}','{$_POST['assignIDO']}')";
+              VALUES ($incidentReport,'{$_POST['studentID']}','{$_POST['offenseID']}',$cheatType,'{$_POST['complainantID']}','{$_POST['dateIncident']}','{$_POST['location']}','{$_POST['details']}','{$_POST['assignIDO']}')";
   }
-
   else {
-    if($typerow['type'] == "Major") {
-      $query="INSERT INTO CASES (INCIDENT_REPORT_ID,REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DATE_INCIDENT,LOCATION,DETAILS,HANDLED_BY_ID)
-                VALUES ($incidentReport,'{$_POST['studentID']}','{$_POST['offenseID']}',$cheatType,'{$_POST['complainantID']}','{$_POST['dateIncident']}','{$_POST['location']}','{$_POST['details']}','{$_POST['assignIDO']}')";
-    }
-    else {
-      $query="INSERT INTO CASES (INCIDENT_REPORT_ID,REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DATE_INCIDENT,LOCATION,DETAILS,HANDLED_BY_ID,REMARKS_ID)
-                VALUES ($incidentReport,'{$_POST['studentID']}','{$_POST['offenseID']}',$cheatType,'{$_POST['complainantID']}','{$_POST['dateIncident']}','{$_POST['location']}','{$_POST['details']}','{$_POST['assignIDO']}',3)";
-    }
+    $query="INSERT INTO CASES (INCIDENT_REPORT_ID,REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DATE_INCIDENT,LOCATION,DETAILS,HANDLED_BY_ID,REMARKS_ID)
+              VALUES ($incidentReport,'{$_POST['studentID']}','{$_POST['offenseID']}',$cheatType,'{$_POST['complainantID']}','{$_POST['dateIncident']}','{$_POST['location']}','{$_POST['details']}','{$_POST['assignIDO']}',3)";
   }
 
   $result=mysqli_query($dbc,$query);
@@ -85,5 +78,5 @@
     }
   }
 
-  // end thea new
+  //
 ?>

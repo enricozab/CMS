@@ -64,13 +64,11 @@
 					<a href="hdo-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
 				</li>
 				<li>
-					<a href="hdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
-				</li>
-				<!-- new drive -->
-				<li>
 					<a href="hdo-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
-				<!-- end new drive -->
+				<li>
+					<a href="hdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+				</li>
 				<li>
 					<a href="hdo-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>

@@ -62,14 +62,15 @@
 
 			if($x != 2 || $x != 5){
 				$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MINORCASES FROM CASES C
-										LEFT JOIN USERS U             			ON C.REPORTED_STUDENT_ID = U.USER_ID
-										LEFT JOIN REF_STUDENTS RS 				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
-										LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
-										LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
+										LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
+										LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
+										LEFT JOIN REF_USER_OFFICE RUO 				ON U.OFFICE_ID = RUO.OFFICE_ID
+										LEFT JOIN REF_OFFENSES RO 						ON C.OFFENSE_ID = RO.OFFENSE_ID
 										LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
+										LEFT JOIN DIRECTOR_REMARKS_LIST	DRL		ON C.CASE_ID = DRL.CASE_ID
 										WHERE U.OFFICE_ID = " .$i ."
 													&& RO.TYPE = 'Minor'
-													&& C.PENALTY_ID = 1
+													&& DRL.DIRECTOR_REMARKS_ID = 1
 													&& C.NEED_ACAD_SERVICE = " .$need_AS ."
 													&& SRF.TERM = ".$term ."
 													&& SRF.SCHOOL_YEAR = '" .$ay. "'" ."
@@ -77,14 +78,15 @@
 			}
 			else{
 				$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MINORCASES FROM CASES C
-									LEFT JOIN USERS U             			ON C.REPORTED_STUDENT_ID = U.USER_ID
-									LEFT JOIN REF_STUDENTS RS 				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
-									LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
-									LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
+									LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
+									LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
+									LEFT JOIN REF_USER_OFFICE RUO 				ON U.OFFICE_ID = RUO.OFFICE_ID
+									LEFT JOIN REF_OFFENSES RO 						ON C.OFFENSE_ID = RO.OFFENSE_ID
 									LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
+									LEFT JOIN DIRECTOR_REMARKS_LIST	DRL		ON C.CASE_ID = DRL.CASE_ID
 									WHERE U.OFFICE_ID = " .$i ."
 												&& RO.TYPE = 'Minor'
-												&& C.PENALTY_ID = 1
+												&& DRL.DIRECTOR_REMARKS_ID = 1
 												&& C.NEED_FORMS = " .$need_FORMS ."
 												&& SRF.TERM = ".$term ."
 												&& SRF.SCHOOL_YEAR = '" .$ay. "'" ."
@@ -123,24 +125,21 @@
 			$studentlevel = 'Undergraduate';
 		}
 
-		//echo 'Offense: ', $offense, '<br>';
 		//Loop per college
 		for($i=1; $i<=7; $i++){
-			//echo "Office ID: ", $i, "<br>";
-
 			$numcasesquery = "SELECT C.REPORTED_STUDENT_ID, COUNT(C.REPORTED_STUDENT_ID) CASES FROM CASES C
-				                LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
-												LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
-												LEFT JOIN REF_USER_OFFICE RUO 				ON U.OFFICE_ID = RUO.OFFICE_ID
-												LEFT JOIN REF_OFFENSES RO 						ON C.OFFENSE_ID = RO.OFFENSE_ID
-												LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
-												WHERE U.OFFICE_ID = ".$i."
-															&& RO.TYPE = 'Minor'
-															&& SRF.TERM = ".$term ."
-															&& SRF.SCHOOL_YEAR = '" .$ay ."'
-															&& RS.LEVEL = '" .$studentlevel ."'
-												GROUP BY C.REPORTED_STUDENT_ID
-												HAVING CASES = " .$offense;
+                LEFT JOIN USERS U             				ON C.REPORTED_STUDENT_ID = U.USER_ID
+								LEFT JOIN REF_STUDENTS RS 						ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
+								LEFT JOIN REF_USER_OFFICE RUO 				ON U.OFFICE_ID = RUO.OFFICE_ID
+								LEFT JOIN REF_OFFENSES RO 						ON C.OFFENSE_ID = RO.OFFENSE_ID
+								LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
+								WHERE U.OFFICE_ID = " .$i ."
+											&& RO.TYPE = 'Minor'
+											&& SRF.TERM = " .$term ."
+											&& SRF.SCHOOL_YEAR = " .$ay ."
+											&& RS.LEVEL = '" .$studentlevel ."'
+								GROUP BY C.REPORTED_STUDENT_ID
+								HAVING CASES = " .$offense;
 
 			$numcasesres = mysqli_query($dbc,$numcasesquery);
 
@@ -149,7 +148,6 @@
 			}
 			else{
 				$cases=mysqli_num_rows($numcasesres);
-				//echo "Cases: ", $cases, "<br>";
 				$totalcases[]= $cases;
 			}
 			//echo 'Data Num #', $z, '<br>';
@@ -158,12 +156,21 @@
 	}
 
 	//Generate exec command to run python
+	$exec = 'generate-minor-spreadsheet-format.py ' .$sdfodrow['email'] .' ' .$ay .' ' .$term . ' ' .$reportNum;
+	foreach ($totalcases as $value){
+		$exec = $exec .' ' . $value;
+	}
+
+	//Create GSheets with Table Format
+	$output=shell_exec($exec);
+
+	//Generate exec command to run python
 	$exec = 'generate-minor-report.py ' .$sdfodrow['email'] .' ' .$ay .' ' .$term . ' ' .$reportNum;
 	foreach ($totalcases as $value){
 		$exec = $exec .' ' . $value;
 	}
 
-	//Create GSheets
-	//echo "Exec: ", $exec;
+	//Insert Data to GSheets
+	////echo "Exec: ", $exec;
 	$output=shell_exec($exec);
 ?>

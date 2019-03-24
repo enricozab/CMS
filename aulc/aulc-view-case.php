@@ -64,6 +64,7 @@ if (!isset($_GET['cn']))
           onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
     </script>
     <script src="../gdrive/upload.js"></script>
+
 </head>
 
 <body>
@@ -119,6 +120,20 @@ if (!isset($_GET['cn']))
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
     }
 
+    $CollegeQ = 'SELECT *
+                          FROM CASES C
+                 JOIN     USERS U ON U.USER_ID = C.REPORTED_STUDENT_ID
+                 JOIN     REF_USER_OFFICE R ON R.OFFICE_ID = U.OFFICE_ID
+                 JOIN     REF_STUDENTS RS ON RS.STUDENT_ID = C.REPORTED_STUDENT_ID
+                 WHERE    C.CASE_ID = "'.$_GET['cn'].'"';
+    $CollegeQRes=mysqli_query($dbc,$CollegeQ);
+    if(!$CollegeQRes){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $CollegeQRow=mysqli_fetch_array($CollegeQRes,MYSQLI_ASSOC);
+    }
+
     //Gets list of offenses
     $query2='SELECT OFFENSE_ID, DESCRIPTION FROM REF_OFFENSES';
     $resultOffences=mysqli_query($dbc,$query2);
@@ -141,7 +156,6 @@ if (!isset($_GET['cn']))
       $rowStud=mysqli_fetch_array($resStud,MYSQLI_ASSOC);
     }
 
-    // NEW - DRIVE
     $queryStud2 = 'SELECT *
                     FROM CASES C
                     JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
@@ -158,16 +172,8 @@ if (!isset($_GET['cn']))
       $rowStud2 = mysqli_fetch_array($resultStud2,MYSQLI_ASSOC);
     }
 
-    if ($rowStud2['if_graduating'] == 1) {
-      $graduate = "Graduate";
-    }
-
-    else {
-      $graduate = "Undergraduate";
-    }
-
-    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "AULC-VIEW-CASE" . "/" . $_GET['cn'];
-    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
+    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $rowStud2['level'] . "/" . $rowStud2['reported_student_id'] . "/" . "AULC-VIEW-CASE" . "/" . $_GET['cn'];
+    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $rowStud2['level'] . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
 
     $queryForm = 'SELECT *
                     FROM CASE_REFERRAL_FORMS
@@ -180,8 +186,6 @@ if (!isset($_GET['cn']))
      else{
        $rowForm = mysqli_fetch_array($resForm,MYSQLI_ASSOC);
      }
-
-     // END NEW - DRIVE
   ?>
 
     <div id="wrapper">
@@ -232,7 +236,7 @@ if (!isset($_GET['cn']))
 
           <div id="viewevidence">
             <br>
-            <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+            <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
           </div>
         </div>
       </div>
@@ -242,7 +246,6 @@ if (!isset($_GET['cn']))
       <div class="row">
         <div class="col-sm-6">
           <button type="submit" id="forward" name="submit" class="btn btn-success">Forward Discipline Case Referral Form</button>
-          <!-- // NEW - DRIVE -->
           <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
         </div>
       </div>
@@ -316,122 +319,26 @@ if (!isset($_GET['cn']))
       $("#formModal").modal("show");
     });
 
+    $('#updateTable').click(function() {
+
+      <?php
+        $updateQry = 'UPDATE CASE_REFERRAL_FORMS
+                         SET IF_UPLOADED = 2
+                       WHERE CASE_ID = "'.$_GET['cn'].'"';
+
+        $update = mysqli_query($dbc,$updateQry);
+        if(!$update){
+          echo mysqli_error($dbc);
+        }
+      ?>
+    });
+
+
     // FORM GENERATOR
 
     function loadFile(url,callback){
         JSZipUtils.getBinaryContent(url,callback);
     }
-
-    $('').click(function() {
-
-      // REFERRAL FORM
-
-      loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
-
-        if (error) { throw error };
-        var zip = new JSZip(content);
-        var doc=new window.docxtemplater().loadZip(zip);
-        // date
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-        var yyyy = today.getFullYear();
-        if (dd < 10) {
-          dd = '0' + dd;
-        }
-        if (mm < 10) {
-          mm = '0' + mm;
-        }
-        var today = dd + '/' + mm + '/' + yyyy;
-        var change;
-
-        if (document.getElementById("caseDecision").value == "File Case") {
-
-          if (document.getElementById("violationDes").value == "Yes"){
-
-            change = document.getElementById("offenseSelect").value;
-          }
-
-          else {
-            change = "None";
-          }
-        }
-
-        if (document.getElementById("remark").value) {
-          remarks = "None";
-        }
-
-        doc.setData({
-
-          date: today,
-          casenum: <?php echo $_GET['cn']; ?>,
-          studentFirst: "<?php echo $rowStud['first_name']; ?>",
-          studentLast: "<?php echo $rowStud['last_name']; ?>",
-          idn: "<?php echo $row['REPORTED_STUDENT_ID']; ?>",
-          degree: "<?php echo $rowStud['degree']; ?>",
-          college: "<?php echo $rowStud['description']; ?>",
-          complainant: "<?php echo $row['COMPLAINANT']; ?>",
-          violation: "<?php echo $row["OFFENSE_DESCRIPTION"]; ?>",
-          section: "2.1",
-          changes: change,
-          nature: document.getElementById("proceedingType").value,
-          remark: remarks,
-          decision: document.getElementById("caseDecision").value,
-          reason: document.getElementById("reasonCase").value
-
-        });
-
-        try {
-            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render();
-        }
-
-        catch (error) {
-            var e = {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties,
-            }
-            console.log(JSON.stringify({error: e}));
-            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-            throw error;
-        }
-
-        var out=doc.getZip().generate({
-            type:"blob",
-            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        }); //Output the document using Data-URI
-        saveAs(out,"output.docx");
-      });
-
-      $.ajax({
-          url: '../ajax/aulc-forward-case.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>,
-          },
-          success: function(msg) {
-            $('#message').text('Case forwarded to ULC successfully!');
-            $("#penalty").attr('readonly', true);
-            $("#submit").attr('disabled', true).text('Submitted');
-            $("#dismiss").attr('disabled', true);
-
-            $("#alertModal").modal("show");
-          }
-      });
-    });
-
-    // NEW - DRIVE
-    $('#fileUpload').click(function() {
-      var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
-      btnSubmit(data);
-    });
-
-    $('#uploading').click(function() {
-      $("#waitModal").modal("show");
-    });
-    // END NEW - DRIVE
 
   	$('#submitRef').click(function() {
       var ids = ['input[name="caseDecision"]:checked','#reasonCase'];
@@ -484,6 +391,7 @@ if (!isset($_GET['cn']))
           cheat=$('#cheat-type').val();
         }
         $.ajax({
+          //../ajax/aulc-forward-case.php
             url: '../ajax/aulc-forward-case.php',
             type: 'POST',
             data: {
@@ -497,81 +405,131 @@ if (!isset($_GET['cn']))
                 proceeding: <?php echo $row['ADMISSION_TYPE_ID']; ?>
             },
             success: function(msg) {
-              $('#message').text('Case forwarded to ULC successfully!');
+
+              // $('#message').text('Case forwarded to ULC successfully!');
               $('#forward').attr('disabled', true);
+
+              loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
+
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc=new window.docxtemplater().loadZip(zip);
+                // date
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                  dd = '0' + dd;
+                }
+                if (mm < 10) {
+                  mm = '0' + mm;
+                }
+                var today = dd + '/' + mm + '/' + yyyy;
+
+                var admission;
+                if(<?php echo $row['ADMISSION_TYPE_ID']; ?> == 1){
+                  admission = "University Panel for Case Conference";
+                }
+                else if(<?php echo $row['ADMISSION_TYPE_ID']; ?> == 2){
+                  admission = "Summary Proceedings";
+                }
+                else {
+                  admission = "Formal Hearing";
+                }
+
+                if (changevio == null) {
+                  changevio = "";
+                }
+
+                doc.setData({
+
+                  date: today,
+                  casenum: <?php echo $_GET['cn']; ?>,
+                  name: "<?php echo $row['STUDENT']; ?>",
+                  idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+                  college: "<?php echo $CollegeQRow['description']; ?>",
+                  degree: "<?php echo $CollegeQRow['degree']; ?>",
+                  violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+                  complainant: "<?php echo $row['COMPLAINANT']; ?>",
+                  nature: admission,
+                  decision: $('input[name="caseDecision"]:checked').val(),
+                  reason: $('#reasonCase').val(),
+                  remark: $('#aulcRemarks').val(),
+                  changes: changevio,
+                  others: ""
+
+
+                });
+
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
+
+                catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
+
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out,"Discipline Case Referral Form.docx");
+
+              });
+              $('#newFormModal').modal("show");
             }
         });
       }
-      $("#alertModal").modal("show");
+      else {
+        $("#alertModal").modal("show");
+      }
   	});
 
-    function helloEndorse() {
+    $('#n1').on('click', function() {
       //HELLOSIGN API
   		$.ajax({
-  		  url: '../ajax/faculty-hellosign.php',
+  		  url: '../ajax/users-hellosign.php',
   		  type: 'POST',
   		  data: {
+            formT : "Discipline Case Referral Form.docx",
   					title : "Discipline Case Referral Form",
   					subject : "Discipline Case Referral Form Document Signature",
   					message : "Please do sign this document.",
-  					fname : "<?php echo $directorres['first_name'] ?>",
-  					lname : "<?php echo $directorres['last_name'] ?>",
-  					email : "<?php echo $directorres['email'] ?>",
+  					fname : "Mike",
+  					lname : "David",
+  					email : "aulc.cms1@gmail.com",
   					filename : $('#inputfile').val()
   				},
   				success: function(response) {
-  					alert("Discipline Case Referral Form sent to SDFO Director!");
+            location.reload();
   				}
   		});
   		//HELLOSIGN API
-    }
+    });
 
-    // NEW - DRIVE
+    $('#fileUpload').click(function() {
+      var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
+      btnSubmit(data);
+    });
+
     $('#uploading').click(function(){
         $("#waitModal").modal("show");
     });
 
-    $('input[name="caseDecision"]').click(function(){
-      if ($(this).val() == "File Case") {
-        $('#dispOffense').show();
-        $('#proceeding').show();
-      }
-      else {
-        $('#dispOffense').hide();
-        $('#proceeding').hide();
-        $('#changeViolation').hide();
-      }
+    $('#btnViewEvidence').click(function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='aulc-gdrive-case.php';
     });
-
-    $('input[name="violationDes"]').click(function(){
-      if ($(this).val() == 1) {
-        $('#changeViolation').show();
-      }
-      else {
-        $('#changeViolation').hide();
-      }
-    });
-  });
-
-  $('#btnViewEvidence').click(function() {
-    <?php $_SESSION['pass'] = $passCase; ?>
-    location.href='aulc-gdrive-case.php';
-  });
-
-  $('#updateTable').click(function() {
-
-    <?php
-      $updateQry = 'UPDATE CASE_REFERRAL_FORMS
-                       SET IF_UPLOADED = 2
-                     WHERE CASE_ID = "'.$_GET['cn'].'"';
-
-      $update = mysqli_query($dbc,$updateQry);
-      if(!$update){
-        echo mysqli_error($dbc);
-      }
-    ?>
-  });
-  // END NEW - DRIVE
 
     $('input[name="caseDecision"]').click(function(){
       if ($(this).val() == "File Case") {
@@ -593,6 +551,9 @@ if (!isset($_GET['cn']))
         $('#changeViolation').hide();
       }
     });
+
+    $('.modal').attr('data-backdrop', "static");
+    $('.modal').attr('data-keyboard', false);
   });
 
   <?php
@@ -605,15 +566,12 @@ if (!isset($_GET['cn']))
     if($row['REMARKS_ID'] > 7){ ?>
       $("#forward").hide();
   <?php } ?>
-
-  // NEW - DRIVE
   <?php
 
     if ($rowForm['if_uploaded'] == 1 AND $row['REMARKS_ID'] == 8){ ?>
       $("#uploading").show();
 <?php }
   ?>
-  // END NEW - DRIVE
 
   </script>
 
@@ -719,8 +677,6 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
-  <!-- // NEW - DRIVE -->
-
   <!-- New Modal -->
   <div class="modal fade" id="newFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -730,10 +686,10 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
         </div>
         <div class="modal-body">
-          <p id="message">Case successfully forwarded to the ULC! The Discipline Case Referral Form has been sent to your email. <br><br> <b>Next Steps: </b> <br>  <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
+          <p id="message">Case successfully forwarded to the ULC! The Discipline Case Referral Form has been sent to your email. <br><br> <b>Next Step: </b> <br>  Forward Discipline Case Referral Form to <b>ulc.cms2@dlsu.edu.ph</b>.</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="n1" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

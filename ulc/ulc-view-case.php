@@ -49,6 +49,12 @@ if (!isset($_GET['cn']))
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
+    <!-- Form Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.9.1/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.0.2/jszip-utils.js"></script>
+
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
@@ -58,7 +64,6 @@ if (!isset($_GET['cn']))
           onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
     </script>
     <script src="../gdrive/upload.js"></script>
-
 
 </head>
 
@@ -119,7 +124,20 @@ if (!isset($_GET['cn']))
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
     }
 
-    // NEW - DRIVE
+    $CollegeQ = 'SELECT *
+                          FROM CASES C
+                 JOIN     USERS U ON U.USER_ID = C.REPORTED_STUDENT_ID
+                 JOIN     REF_USER_OFFICE R ON R.OFFICE_ID = U.OFFICE_ID
+                 JOIN     REF_STUDENTS RS ON RS.STUDENT_ID = C.REPORTED_STUDENT_ID
+                 WHERE    C.CASE_ID = "'.$_GET['cn'].'"';
+    $CollegeQRes=mysqli_query($dbc,$CollegeQ);
+    if(!$CollegeQRes){
+      echo mysqli_error($dbc);
+    }
+    else{
+      $CollegeQRow=mysqli_fetch_array($CollegeQRes,MYSQLI_ASSOC);
+    }
+
     $queryStud2 = 'SELECT *
                     FROM CASES C
                     JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
@@ -136,16 +154,8 @@ if (!isset($_GET['cn']))
       $rowStud2 = mysqli_fetch_array($resultStud2,MYSQLI_ASSOC);
     }
 
-    if ($rowStud2['if_graduating'] == 1) {
-      $graduate = "Graduate";
-    }
-
-    else {
-      $graduate = "Undergraduate";
-    }
-
-    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "ULC-VIEW-CASE" . "/" . $_GET['cn'];
-    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
+    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $rowStud2['level'] . "/" . $rowStud2['reported_student_id'] . "/" . "ULC-VIEW-CASE" . "/" . $_GET['cn'];
+    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $rowStud2['level'] . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
 
     $refForm = 'SELECT *
                   FROM CASE_REFERRAL_FORMS
@@ -157,7 +167,6 @@ if (!isset($_GET['cn']))
     else{
        $rowRefForm = mysqli_fetch_array($resultRefForm,MYSQLI_ASSOC);
    }
-   // END NEW - DRIVE
   ?>
 
     <div id="wrapper">
@@ -181,8 +190,6 @@ if (!isset($_GET['cn']))
           					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
           					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                     <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-
-
                     <br><br>
                     <div class="form-group">
                       <label>Summary of the Incident</label>
@@ -211,7 +218,7 @@ if (!isset($_GET['cn']))
 
                     <br>
 
-                    <button type="button" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+                    <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
 
                     <br><br><br>
 
@@ -222,7 +229,7 @@ if (!isset($_GET['cn']))
                           <label>Verdict <span style="font-weight:normal; color:red;">*</span></label>
                           <div class="radio">
                               <label>
-                                  <input type="radio" name="verdict" id="Guilty" value="Guilty" checked>Guilty &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                  <input type="radio" name="verdict" id="Guilty" value="Guilty">Guilty &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                   <input type="radio" name="verdict" id="NotGuilty" value="Not Guilty">Not Guilty
                               </label>
                           </div>
@@ -231,10 +238,57 @@ if (!isset($_GET['cn']))
                         <br>
                       <?php }
                       ?>
-                      <div class="form-group" id="finalpenaltyarea">
-                        <label>Penalty <span style="color:red;">*</span></label>
-                        <textarea id="finalpenalty" style="height: 100px;" class="form-control" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
-                      </div>
+                      <?php
+                        if($row['PROCEEDING_DECISION'] == null) { ?>
+                          <?php
+                            $query2='SELECT PENALTY_ID, PENALTY_DESC FROM REF_PENALTIES WHERE PENALTY_ID >= 3 AND PENALTY_ID != 4';
+                            $result2=mysqli_query($dbc,$query2);
+                            if(!$result2){
+                              echo mysqli_error($dbc);
+                            } ?>
+
+                            <?php include 'ulc-suggested-penalty-queries.php';?>
+
+                            <div id="finpenaltyarea" class="form-group" hidden>
+                              <?php
+                                if($suggestrow['PROCEEDING_DECISION'] != null) { ?>
+                                  <label>Suggested Penalty <span style="font-weight:normal; font-style:italic; font-size:12px;">(This will be disregarded if other penalty is selected.)</span></label>
+                                  <input id="suggestedPD" class="form-control" value="<?php echo $suggestrow['PROCEEDING_DECISION']; ?>" readonly />
+                                  <br>
+                                  <label>Other(s) <span style="font-weight:normal; font-style:italic; font-size:12px;">(For corrective measures, choose 1 only. For formative interventions, choose 1 or more.)</span></label>
+                              <?php }
+                                else { ?>
+                                  <label>Penalty <span style="font-weight:normal; font-style:italic; font-size:12px;">(For corrective measures, choose 1 only. For formative interventions, choose 1 or more.)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                              <?php }
+                              ?>
+                                <div class="row">
+                                  <?php
+                                  while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                                    if($row2['PENALTY_ID'] == 3) {
+                                      echo "<div class='col-lg-8'>";
+                                      echo "Formative Interventions<br>";
+                                    }
+                                    if($row2['PENALTY_ID'] == 8) {
+                                      echo "<div class='col-lg-4'>";
+                                      echo "Corrective Measures<br>";
+                                    }
+                                    echo "<label>
+                                              <input type='checkbox' name='otherpens' value='{$row2['PENALTY_DESC']}'>&nbsp;&nbsp;&nbsp;{$row2['PENALTY_DESC']}
+                                          </label>
+                                          <br>";
+                                    if($row2['PENALTY_ID'] == 7 || $row2['PENALTY_ID'] == 12) {
+                                      echo "</div>";
+                                    }
+                                  }
+                                  ?>
+                                </div>
+        				          </div>
+                        <?php }
+                          else { ?>
+                            <label>Penalty</label>
+                            <textarea id="finalpenalty" style="height: 100px;" class="form-control" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                        <?php }
+                        ?>
                     <?php }
                     ?>
 
@@ -291,10 +345,8 @@ if (!isset($_GET['cn']))
 
       <div class="row">
         <div class="col-sm-6">
-          <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Referral Form</button>
-          <!-- // NEW - DRIVE -->
-          <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
-          <!-- // END NEW - DRIVE -->
+          <button type="submit" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Referral Form</button>
+
           <?php
             $signq = 'SELECT      *
                       FROM        CASE_REFERRAL_FORMS CRF
@@ -307,6 +359,12 @@ if (!isset($_GET['cn']))
               $signrow=mysqli_fetch_array($signr,MYSQLI_ASSOC);
             }
           ?>
+
+          <?php
+            if($signrow['if_signed'] && $row['REMARKS_ID'] == 8) { ?>
+              <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
+          <?php }
+           ?>
 
           <?php
             if((($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 15) && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
@@ -384,19 +442,12 @@ if (!isset($_GET['cn']))
       $("#revModal").modal("show");
     });*/
 
-    // NEW DRIVE
-
-    $('#fileUpload').click(function() {
-      alert("hello");
-      var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
-      btnSubmit(data);
-    });
-
-    //END NEW
 
     $('#sign').click(function() {
+
       if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
         $.ajax({
+          //../ajax/ulc-update-dcrf.php
             url: '../ajax/ulc-update-dcrf.php',
             type: 'POST',
             data: {
@@ -406,30 +457,31 @@ if (!isset($_GET['cn']))
             success: function(msg) {
               $("#sign").attr('disabled', true);
               if(<?php echo $row['PROCEEDING_ID']; ?> == 3) {
-
-                // new drive
-                $('hear').style.display = 'inline-block';
-                //$('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for formal hearing.');
+                $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for formal hearing.');
+                $('#upcc').hide();
+                $('#sumProceeding').hide();
+                $('#dismiss').hide();
               }
               else if(<?php echo $row['PROCEEDING_ID']; ?> == 2) {
-                // new drive
-                $('sumProceeding').style.display = 'inline-block';
-                //$('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for summary proceeding.');
+                $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for summary proceeding.');
+                $('#upcc').hide();
+                $('#hearing').hide();
+                $('#dismiss').hide();
               }
               else {
-                // new drive
-                $('upcc').style.display = 'inline-block';
-                //$('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for UPCC.');
+                $('#message').text('Updated Discipline Case Referral Form has been submitted and sent to your email successfully! Check your email to sign the form and schedule for UPCC.');
+                $('#hearing').hide();
+                $('#sumProceeding').hide();
+                $('#dismiss').hide();
               }
 
-              // new drive
               $("#newFormModal").modal("show");
-              //$("#alertModal").modal("show");
             }
         });
       }
       else {
         $.ajax({
+          //../ajax/ulc-return-to-sdfod.php
             url: '../ajax/ulc-return-to-sdfod.php',
             type: 'POST',
             data: {
@@ -439,44 +491,190 @@ if (!isset($_GET['cn']))
             success: function(msg) {
               $('#message').text('Case returned to SDFO Director successfully for dismissal.');
               $("#sign").attr('disabled', true);
+              $('#hearing').hide();
+              $('#sumProceeding').hide();
+              $('#upcc').hide();
 
-              $("#alertModal").modal("show");
+              $("#newFormModal").modal("show");
             }
         });
       }
+      loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
+
+        if (error) { throw error };
+        var zip = new JSZip(content);
+        var doc=new window.docxtemplater().loadZip(zip);
+        // date
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+          dd = '0' + dd;
+        }
+        if (mm < 10) {
+          mm = '0' + mm;
+        }
+        var today = dd + '/' + mm + '/' + yyyy;
+
+        <?php
+        $crfq='SELECT * FROM case_referral_forms
+                WHERE CASE_ID = '.$_GET['cn'];
+        $crfres=mysqli_query($dbc,$crfq);
+        if(!$crfres){
+          echo mysqli_error($dbc);
+        }
+        else{
+          $crfrow = mysqli_fetch_array($crfres,MYSQLI_ASSOC);
+        }
+         ?>
+
+         var admission;
+         if(<?php echo $crfrow['proceedings']; ?> == 1){
+           admission = "University Panel for Case Conference";
+         }
+         else if(<?php echo $crfrow['proceedings']; ?> == 2){
+           admission = "Summary Proceedings";
+         }
+         else {
+           admission = "Formal Hearing";
+         }
+
+        doc.setData({
+
+          date: today,
+          casenum: <?php echo $_GET['cn']; ?>,
+          name: "<?php echo $row['STUDENT']; ?>",
+          idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+          college: "<?php echo $CollegeQRow['description']; ?>",
+          degree: "<?php echo $CollegeQRow['degree']; ?>",
+          violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+          complainant: "<?php echo $row['COMPLAINANT']; ?>",
+          nature: admission,
+          decision: "<?php echo $crfrow['case_decision']; ?>",
+          reason: "<?php echo $crfrow['reason']; ?>",
+          remark: "<?php echo $crfrow['aulc_remarks']; ?>",
+          changes: "<?php echo $crfrow['change_offense']; ?>",
+          others: $('#ulcRemarks').val()
+
+
+        });
+
+        try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+        }
+
+        catch (error) {
+            var e = {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+                properties: error.properties,
+            }
+            console.log(JSON.stringify({error: e}));
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+            throw error;
+        }
+
+        var out=doc.getZip().generate({
+            type:"blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }); //Output the document using Data-URI
+        saveAs(out,"Discipline Case Referral Form.docx");
+
+      });
     });
 
-    // new drive
-    $('#btnViewEvidence').click(function() {
-      <?php $_SESSION['pass'] = $passCase; ?>
-      location.href='ulc-gdrive-case.php';
-    });
-    // end new
+    function loadFile(url,callback){
+        JSZipUtils.getBinaryContent(url,callback);
+    }
 
     $('#modalOK').click(function() {
       location.reload();
     });
 
-    $('#submit').click(function() {
-      if(<?php echo $row['PROCEEDING_ID']; ?> == 3) {
-        var verdict = $("input[name='verdict']:checked").val();
-        if(verdict == "Not Guilty") {
-          $.ajax({
-              url: '../ajax/ulc-verdict.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  verdict: verdict
-              },
-              success: function(msg) {
-                $('#message').text('Case returned to SDFO Directory successfully for final signature and dismissal.');
-                $("#submit").attr('disabled', true).text("Submitted");
-                $("#finalpenalty").attr('readonly', true);
-                $("input[type=radio]").attr('disabled', true);
+    $('#btnViewEvidence').click(function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='ulc-gdrive-case.php';
+    });
 
-                $("#alertModal").modal("show");
-              }
-          });
+    $('input[name="verdict"]').click(function(){
+      if ($(this).val() == "Guilty") {
+        $('#finpenaltyarea').show();
+      }
+      else {
+        $('#finpenaltyarea').hide();
+      }
+    });
+
+    $('#submit').click(function() {
+      var ids = ['input[name="verdict"]:checked'];
+      var remarks = [];
+      $.each($("input[name='otherpens']:checked"), function(){
+          remarks.push($(this).val());
+      });
+
+      var isEmpty = true;
+
+      for(var i = 0; i < ids.length; ++i ){
+        if($.trim($(ids[i]).val()).length == 0){
+          isEmpty = false;
+        }
+      }
+
+      if(remarks.length == 0 && $('#suggestedPD').val() == null) {
+        isEmpty = false;
+      }
+
+      if(isEmpty) {
+        var penalty;
+        if(remarks.length > 0) {
+          penalty = remarks;
+        }
+        else {
+          penalty = $('#suggestedPD').val();
+        }
+        if(<?php echo $row['PROCEEDING_ID']; ?> == 3) {
+          var verdict = $("input[name='verdict']:checked").val();
+          if(verdict == "Not Guilty") {
+            $.ajax({
+                url: '../ajax/ulc-verdict.php',
+                type: 'POST',
+                data: {
+                    caseID: <?php echo $_GET['cn']; ?>,
+                    verdict: verdict
+                },
+                success: function(msg) {
+                  $('#message').text('Case returned to SDFO Directory successfully for final signature and dismissal.');
+                  $("#submit").attr('disabled', true).text("Submitted");
+                  $("#finalpenalty").attr('readonly', true);
+                  $("input[type=radio]").attr('disabled', true);
+
+                  $("#alertModal").modal("show");
+                }
+            });
+          }
+          else {
+            $.ajax({
+                url: '../ajax/ulc-verdict.php',
+                type: 'POST',
+                data: {
+                    caseID: <?php echo $_GET['cn']; ?>,
+                    decision: penalty,
+                    verdict: verdict
+                },
+                success: function(msg) {
+                  $('#message').text('Case returned to SDFO Directory successfully for final signature and closing.');
+                  $("#submit").attr('disabled', true).text("Submitted");
+                  $("#finalpenalty").attr('readonly', true);
+                  $("input[type=radio]").attr('disabled', true);
+                  $("input[name='otherpens']").attr('disabled', true);
+
+                  $("#alertModal").modal("show");
+                }
+            });
+          }
         }
         else {
           $.ajax({
@@ -484,14 +682,14 @@ if (!isset($_GET['cn']))
               type: 'POST',
               data: {
                   caseID: <?php echo $_GET['cn']; ?>,
-                  decision: $('#finalpenalty').val(),
-                  verdict: verdict
+                  decision: penalty
               },
               success: function(msg) {
                 $('#message').text('Case returned to SDFO Directory successfully for final signature and closing.');
                 $("#submit").attr('disabled', true).text("Submitted");
                 $("#finalpenalty").attr('readonly', true);
                 $("input[type=radio]").attr('disabled', true);
+                $("input[name='otherpens']").attr('disabled', true);
 
                 $("#alertModal").modal("show");
               }
@@ -499,22 +697,7 @@ if (!isset($_GET['cn']))
         }
       }
       else {
-        $.ajax({
-            url: '../ajax/ulc-verdict.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                decision: $('#finalpenalty').val()
-            },
-            success: function(msg) {
-              $('#message').text('Case returned to SDFO Directory successfully for final signature and closing.');
-              $("#submit").attr('disabled', true).text("Submitted");
-              $("#finalpenalty").attr('readonly', true);
-              $("input[type=radio]").attr('disabled', true);
-
-              $("#alertModal").modal("show");
-            }
-        });
+        $("#alertModal").modal("show");
       }
     });
 
@@ -542,25 +725,9 @@ if (!isset($_GET['cn']))
       location.href='ulc-calendar.php';
     });
 
-    // NEW - DRIVE
     $('#uploading').click(function() {
       $("#waitModal").modal("show");
     });
-
-    $('#updateTable').click(function() {
-
-      <?php
-        $updateQry = 'UPDATE CASE_REFERRAL_FORMS
-                         SET IF_UPLOADED = 3
-                       WHERE CASE_ID = "'.$_GET['cn'].'"';
-
-        $update = mysqli_query($dbc,$updateQry);
-        if(!$update){
-          echo mysqli_error($dbc);
-        }
-      ?>
-    });
-    // END  NEW - DRIVE
 
     $('#viewCase').on('click', function() {
       $.ajax({
@@ -591,6 +758,36 @@ if (!isset($_GET['cn']))
           }
       });
     });
+
+    $('#n1').on('click', function() {
+      //HELLOSIGN API
+      $.ajax({
+        url: '../ajax/users-hellosign.php',
+        type: 'POST',
+        data: {
+            formT : "Discipline Case Referral Form.docx",
+            title : "Discipline Case Referral Form",
+            subject : "Discipline Case Referral Form Document Signature",
+            message : "Please do sign this document.",
+            fname : "Mike",
+            lname : "David",
+            email : "aulc.cms1@gmail.com",
+            filename : $('#inputfile').val()
+          },
+          success: function(response) {
+            location.reload();
+          }
+      });
+      //HELLOSIGN API
+    });
+
+    $('#fileUpload').click(function() {
+      var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
+      btnSubmit(data);
+    });
+
+    $('.modal').attr('data-backdrop', "static");
+    $('.modal').attr('data-keyboard', false);
 
   });
 
@@ -643,13 +840,11 @@ if (!isset($_GET['cn']))
       $("input[type=radio]").attr('disabled', false);
   <?php }
   ?>
-  // NEW - DRIVE
   <?php
     if($rowRefForm['if_uploaded'] == 2){ ?>
       $("#uploading").show();
   <?php }
   ?>
-  // NEW - DRIVE
 
   </script>
 
@@ -722,8 +917,6 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
-  <!-- // NEW - DRIVE -->
-
   <!-- New Modal -->
   <div class="modal fade" id="newFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -733,12 +926,13 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
         </div>
         <div class="modal-body">
-          <p style = "display: none" id="hear">The Discipline Case Referral Form has been updated and sent to your email successfully! <br><br> <b>Next Steps: </b>  <b>(1)</b> Check your email to sign the form. <br>  <b>(2)</b> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account. <br> <b>(4)</b> Schedule hearing date. </p>
-          <p style = "display: none" id="sumProceeding">The Discipline Case Referral Form has been updated and sent to your email successfully! <br><br> <b>Next Steps: </b>  <b>(1)</b> Check your email to sign the form. <br>  <b>(2)</b> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account. <br> <b>(4)</b> Schedule summary proceeding date. </p>
-          <p style = "display: none" id="upcc">The Discipline Case Referral Form has been updated and sent to your email successfully! <br><br> <b>Next Steps: </b>  <b>(1)</b> Check your email to sign the form. <br>  <b>(2)</b> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account. <br> <b>(4)</b> Schedule UPCC date. </p>
+          <p style id="hear">The Discipline Case Referral Form has been updated and sent to your email successfully! <br><br> <b>Next Steps: </b> <br>  <b>(1)</b> Check your email to sign the form. <br>  <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account. <br> <b>(4)</b> Schedule hearing date. </p>
+          <p style id="sumProceeding">The Discipline Case Referral Form has been updated and sent to your email successfully! <br><br> <b>Next Steps: </b> <br>  <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account. <br> <b>(4)</b> Schedule summary proceeding date. </p>
+          <p style id="upcc">The Discipline Case Referral Form has been updated and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account. <br> <b>(4)</b> Schedule UPCC date. </p>
+          <p style id="dismiss">Case returned to SDFO Director successfully for dismissal. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="n1" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

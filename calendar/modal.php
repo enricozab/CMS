@@ -7,8 +7,14 @@
         <h4 class="modal-title" id="myModalLabel"><b>Create New Event</b></h4>
       </div>
       <div class="modal-body">
+        <!-- new -->
         <label>Title <span style="font-weight:normal; color:red;"> *</span></label>
-        <input class="form-control" type="text" id="event-title" placeholder="Enter title" autocomplete="off" />
+        <!-- <input class="form-control" type="text" id="event-title" placeholder="Enter title" autocomplete="off" /> -->
+        <select class="form-control" id="event-title"  autocomplete="off">
+          <option value="" disabled selected>Select Event Title</option>
+          <option value="(1)">Student Interview</option>
+          <option value="(2,3,4,5,6,7,8,9)">Board Meeting</option>
+        </select>
         <br>
         <label>Event Type <span style="font-weight:normal; color:red;"> *</span></label>
         <select class="form-control" id="event-type"  autocomplete="off">
@@ -33,8 +39,14 @@
             </div>
           </div>
         </div>
-        <label>Attendee(s) <span style="font-weight:normal; color:red;"> *</span></label>
-        <input class="form-control" type="text" id="event-attendees" placeholder="Event Attendees" autocomplete="off" /><br><br>
+        <!-- new -->
+        <div id="attendee" class="form-group" hidden>
+          <label>Attendee(s) <span style="font-weight:normal; color:red;"> *</span></label>
+          <!-- <input class="form-control" type="text" id="event-attendees" placeholder="Event Attendees" autocomplete="off" /><br><br> -->
+          <select class="chosen-select" id="event-attendees"  autocomplete="off">
+            <option value="" disabled selected>Select Event Attendee</option>
+          </select>
+        </div>
 
       </div>
       <div class="modal-footer">

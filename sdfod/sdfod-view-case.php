@@ -94,7 +94,8 @@ if (!isset($_GET['cn']))
                         RCP.CASE_PROCEEDINGS_ID AS CASE_PROCEEDINGS_ID,
                         RCP.PROCEEDINGS_DESC AS PROCEEDING,
                         C.DATE_CLOSED AS DATE_CLOSED,
-                        C.IF_NEW AS IF_NEW
+                        C.IF_NEW AS IF_NEW,
+                        C.NEED_ACAD_SERVICE AS NEED_ACAD_SERVICE
             FROM 		    CASES C
             LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
             LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
@@ -129,7 +130,6 @@ if (!isset($_GET['cn']))
       $CollegeQRow=mysqli_fetch_array($CollegeQRes,MYSQLI_ASSOC);
     }
 
-    // NEW - DRIVE
     $queryStud2 = 'SELECT *
                     FROM CASES C
                     JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
@@ -146,16 +146,8 @@ if (!isset($_GET['cn']))
       $rowStud2 = mysqli_fetch_array($resultStud2,MYSQLI_ASSOC);
     }
 
-    if ($rowStud2['if_graduating'] == 1) {
-      $graduate = "Graduate";
-    }
-
-    else {
-      $graduate = "Undergraduate";
-    }
-
-    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "SDFOD-VIEW-CASE" . "/" . $_GET['cn'];
-    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $graduate . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
+    $passData = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $rowStud2['level'] . "/" . $rowStud2['reported_student_id'] . "/" . "SDFOD-VIEW-CASE" . "/" . $_GET['cn'];
+    $passCase = $rowStud2['description'] . "/" . $rowStud2['degree'] . "/" . $rowStud2['level'] . "/" . $rowStud2['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
 
     $queryForm = 'SELECT *
                     FROM CASE_REFERRAL_FORMS
@@ -221,7 +213,18 @@ if (!isset($_GET['cn']))
       else{
         $formres = mysqli_fetch_array($formq);
       }
-     // END NEW - DRIVE
+
+      $neewQry = 'SELECT REMARKS_ID AS REMARKS_ID
+                   FROM CASES
+                   WHERE CASE_ID = "'.$_GET['cn'].'"';
+       $neewQryq = mysqli_query($dbc,$neewQry);
+
+       if(!$neewQryq){
+         echo mysqli_error($dbc);
+       }
+       else{
+         $neewQryRes = mysqli_fetch_array($neewQryq);
+       }
   ?>
 
     <div id="wrapper">
@@ -425,13 +428,10 @@ if (!isset($_GET['cn']))
               </div>
           </div>-->
             <br>
-            <button type="button" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+            <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
         </div>
       </div>
         <br><br><br><br><br>
-        <!-- // NEW - DRIVE -->
-        <input type="file" id="fUpload" class="hide"/>
-        <!-- <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button> -->
         <?php
           if($row['TYPE'] == "Major" || ($row['REMARKS_ID'] == 5 && ($numSameMinorOffense > 2 || $numSameMinor > 4))) { ?>
             <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
@@ -451,11 +451,10 @@ if (!isset($_GET['cn']))
         <?php }
         ?>
         <?php
-          if($row['REMARKS_ID'] == 11) { ?>
+          if($row['REMARKS_ID'] == 11 && $row['NEED_ACAD_SERVICE']) { ?>
             <button type="button" id="sendAcad" class="btn btn-success" data-dismiss="modal">Send Academic Endorsement Service Form</button>
         <?php }
         ?>
-        <!-- // NEW - DRIVE -->
         <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
         <br><br><br><br><br>
       </div>
@@ -516,6 +515,154 @@ if (!isset($_GET['cn']))
 
     <?php include 'sdfod-notif-scripts.php' ?>
 
+    $('#submitHours').click(function() { // create referral form
+
+      loadFile("../templates/template-academic-service-endorsement-form.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          var formNumber;
+          <?php
+          if ($formres['MAX'] != null) { ?>
+            formNumber = <?php echo $formres['MAX'] ?>;
+          <?php }
+          else { ?>
+            formNumber = 1;
+          <?php }
+          ?>
+
+          var titleForm = "Academic Service Endorsement Form #" + formNumber + ".docx";
+
+          doc.setData({
+
+            date: today,
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            numHrs: document.getElementById("hours").value,
+            typeofidlost: totalID
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out, titleForm);
+
+      });
+
+      loadFile("../templates/template-academic-service-printable.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          var formNumber;
+          <?php
+          if ($formres['MAX'] != null) { ?>
+            formNumber = <?php echo $formres['MAX'] ?>;
+          <?php }
+          else { ?>
+            formNumber = 1;
+          <?php }
+          ?>
+
+          var titleForm = "Academic Service Form #" + formNumber + " (Students Copy).docx";
+
+          doc.setData({
+
+            date: today,
+            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+            idn: "<?php echo $rowClosure['user_id'] ?>",
+            firstName: "<?php echo $rowClosure['first_name'] ?>",
+            lastName: "<?php echo $rowClosure['last_name'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>",
+            numHrs: document.getElementById("hours").value,
+            typeofidlost: totalID
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out, titleForm);
+
+      });
+      $('#acadService').modal("hide");
+      $("#endorsement").attr('disabled', true).text("Sent");
+    });
+
+    $('#fileUpload').click(function() {
+      var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
+      btnSubmit(data);
+    });
+
     $('#endorse').click(function() {
       var remarks = [];
       var minor = true;
@@ -531,8 +678,7 @@ if (!isset($_GET['cn']))
 
       if(minor){
         $.ajax({
-          //../ajax/director-close-case.php
-            url: '',
+            url: '../ajax/director-close-case.php',
             type: 'POST',
             data: {
                 caseID: <?php echo $_GET['cn']; ?>,
@@ -595,12 +741,9 @@ if (!isset($_GET['cn']))
                 saveAs(out,"Discipline Case Feedback Form.docx");
               });
               $("#endorse").attr('disabled', true).text("Submitted");
-              // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
-              // NEW - DRIVE
-              document.getElementById('file-case').style.display = 'none';
-              document.getElementById('not-file').style.display = 'none';
-              document.getElementById('file-close').style.display = 'block';
+              $('#not-file').hide();
               $('#newFormModal').modal("show");
+              //location.reload();
             }
         });
       }
@@ -673,21 +816,78 @@ if (!isset($_GET['cn']))
                 }); //Output the document using Data-URI
                 saveAs(out,"Discipline Case Referral Form.docx");
               });
-              //$("input[type=radio]").attr('disabled', true);
               $('#penalty').attr("disabled", true);
               $("#endorse").attr('disabled', true).text("Endorsed");
-              // $('#message').text('Check your email to sign the Discipline Case Referral Form. Case is endorsed to AULC.');
-              //referralFile(pen);
-
-              // NEW - DRIVE
-              document.getElementById('file-case').style.display = 'none';
-              document.getElementById('not-file').style.display = 'none';
-              document.getElementById('file-close').style.display = 'block';
-              $("#newFormModal").modal("show");
+              $("#newFormModal2").modal("show");
             }
         });
       }
-      $("#alertModal").modal("show");
+      //$("#alertModal").modal("show");
+    });
+
+    $('#n1').on('click', function() {
+      $.ajax({
+            url: '../ajax/users-hellosign.php',
+            type: 'POST',
+            data: {
+                formT: "Discipline Case Feedback Form.docx",
+                title : "Discipline Case Feedback Form",
+                subject : "Discipline Case Feedback Document Signature",
+                message : "Please sign, download, and upload this form.",
+                fname : "Michael",
+                lname : "Millanes",
+                email : "sdfod.cms1@gmail.com",
+                filename : $('#inputfile').val()
+            },
+            success: function(response) {
+              location.reload();
+          }
+      });
+    });
+
+    $('#n2').on('click', function() {
+      $.ajax({
+            url: '../ajax/users-hellosign.php',
+            type: 'POST',
+            data: {
+                formT: "Discipline Case Referral Form.docx",
+                title : "Discipline Case Referral Form",
+                subject : "Discipline Case Referral Document Signature",
+                message : "Please sign the document and forward it to aulc.cms1@gmail.com.",
+                fname : "Michael",
+                lname : "Millanes",
+                email : "sdfod.cms1@gmail.com",
+                filename : $('#inputfile').val()
+            },
+            success: function(response) {
+              location.reload();
+          }
+      });
+    });
+
+    $('#n3').on('click', function() {
+      $.ajax({
+            url: '../ajax/users-hellosign.php',
+            type: 'POST',
+            data: {
+                formT: "Discipline Case Referral Form.docx",
+                title : "Discipline Case Referral Form",
+                subject : "Discipline Case Referral Document Signature",
+                message : "Please sign the document and forward it to aulc.cms1@gmail.com.",
+                fname : "Michael",
+                lname : "Millanes",
+                email : "sdfod.cms1@gmail.com",
+                filename : $('#inputfile').val()
+            },
+            success: function(response) {
+              location.reload();
+          }
+      });
+    });
+
+    $('#btnViewEvidence').click(function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='sdfod-gdrive-case.php';
     });
 
     function loadFile(url,callback){
@@ -701,6 +901,7 @@ if (!isset($_GET['cn']))
       });
 
       $.ajax({
+        //../ajax/director-return-to-ido.php
           url: '../ajax/director-return-to-ido.php',
           type: 'POST',
           data: {
@@ -709,27 +910,76 @@ if (!isset($_GET['cn']))
               dRemarks: remarks
           },
           success: function(response) {
-            if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
+            loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
+              if (error) { throw error };
+              var zip = new JSZip(content);
+              var doc=new window.docxtemplater().loadZip(zip);
+              // date
+              var today = new Date();
+              var dd = today.getDate();
+              var mm = today.getMonth() + 1; //January is 0!
+              var yyyy = today.getFullYear();
+              if (dd < 10) {
+                dd = '0' + dd;
+              }
+              if (mm < 10) {
+                mm = '0' + mm;
+              }
+              var today = dd + '/' + mm + '/' + yyyy;
 
-              // new drive
-              document.getElementById("file-case").style.display = 'none';
-              document.getElementById("not-file").style.display = 'none';
-              document.getElementById('file-close').style.display = 'block';
-              // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
+              doc.setData({
+
+                date: today,
+                name: "<?php echo $row['STUDENT']; ?>",
+                idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+                degree: "<?php echo $CollegeQRow['degree']; ?>",
+                college: "<?php echo $CollegeQRow['description']; ?>",
+                nature: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+                ido: "<?php echo $row['HANDLED_BY']; ?>",
+                dremark: response,
+                penalty: $('#finpenalty').val()
+
+              });
+
+              try {
+                  // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                  doc.render();
+              }
+
+              catch (error) {
+                  var e = {
+                      message: error.message,
+                      name: error.name,
+                      stack: error.stack,
+                      properties: error.properties,
+                  }
+                  console.log(JSON.stringify({error: e}));
+                  // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                  throw error;
+              }
+
+              var out=doc.getZip().generate({
+                  type:"blob",
+                  mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              }); //Output the document using Data-URI
+              saveAs(out,"Discipline Case Feedback Form.docx");
+            });
+
+            $("#endorse").attr('disabled', true).text("Submitted");
+
+            if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
+              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
+              $('#not-file').hide();
             }
             else {
-              // new drive
-              document.getElementById('file-case').style.display = 'none';
-              document.getElementById('not-file').style.display = 'block';
-              document.getElementById('file-close').style.display = 'none';
-              // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
+              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
+              $('#file-close').hide();
             }
             $("#sign").attr('disabled', true)
 
-            // NEW - DRIVE
+            //$("#alertModal").modal("show");
             $("#uploading").show();
             $("#newFormModal").modal("show");
-            // $("#alertModal").modal("show");
           }
       });
     });
@@ -753,44 +1003,49 @@ if (!isset($_GET['cn']))
                 pd: 1
             },
             success: function(msg) {
-              //$('#message').text('Case is ready for final signature and closing.');
+              $('#message').text('Case is ready for final signature and closing.');
               $("#finfinpenalty").attr('readonly', true);
               $("#submitPD").attr('disabled', true);
-
-              if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
-
-                // new drive
-                document.getElementById("file-case").style.display = 'none';
-                document.getElementById("not-file").style.display = 'none';
-                document.getElementById('file-close').style.display = 'block';
-                // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
-              }
-              else {
-                // new drive
-                document.getElementById('file-case').style.display = 'none';
-                document.getElementById('not-file').style.display = 'block';
-                document.getElementById('file-close').style.display = 'none';
-                // $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
-              }
-              $("#sign").attr('disabled', true)
-
-              // NEW - DRIVE
-              $("#uploading").show();
-              $("#newFormModal").modal("show");
             }
         });
       }
-      //$("#alertModal").modal("show");
+      else {
+        $("#alertModal").modal("show");
+      }
     });
 
-    // NEW - DRIVE
+    $('#sendAcad').on('click', function() {
+      $.ajax({
+          url: '../ajax/sdfod-academic-service.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+            $('#message').text('Academic Service Endorsement Form has been sent to student successfully!');
+            $("#sendAcad").attr('disabled', true);
+
+            $("#alertModal").modal("show");
+          }
+      });
+    });
+
+    $('#modalOK').on('click', function() {
+      location.reload();
+    });
+
     $('#uploading').click(function() {
       $("#waitModal").modal("show");
     });
 
-    $('#btnViewEvidence').click(function() {
-      <?php $_SESSION['pass'] = $passCase; ?>
-      location.href='sdfod-gdrive-case.php';
+    function calculateID() {
+      totalID = <?php echo intval($fiveplusRow)?> * 5;
+    }
+
+    $('#endorsement').click(function() {
+      calculateID();
+      $('#hourz').text('Student entered campus with lost or left ID for ' + totalID + ' times.');
+      $('#acadService').modal("show");
     });
 
     $('#updateTable').click(function() {
@@ -821,25 +1076,11 @@ if (!isset($_GET['cn']))
 
     });
 
-    // END DRIVE
-
-    $('#sendAcad').on('click', function() {
-      $.ajax({
-          url: '../ajax/sdfod-academic-service.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>
-          },
-          success: function(msg) {
-            $('#message').text('Academic Service Endorsement Form has been sent to student successfully!');
-            $("#sendAcad").attr('disabled', true);
-
-            $("#alertModal").modal("show");
-          }
-      });
-    });
-
+    $('.modal').attr('data-backdrop', "static");
+    $('.modal').attr('data-keyboard', false);
   });
+
+
 
   <?php
     if($row['TYPE'] == "Major"){ ?>
@@ -860,23 +1101,12 @@ if (!isset($_GET['cn']))
       //$("input[type=radio]").attr('disabled', true);
   <?php }
   ?>
-  // NEW - DRIVE
   <?php
-    if (($rowForm['if_uploaded'] == 0 AND $row['REMARKS_ID'] == 6) || $row['REMARKS_ID'] == 11){ ?>
+    if (($rowForm['if_uploaded'] == 1 AND $row['REMARKS_ID'] == 6) ||$neewQryRes['REMARKS_ID'] == 11){ ?>
 
       $("#uploading").show();
 <?php }
   ?>
-
-  <?php
-    if ($row['TYPE'] != "Minor"){
-      if ($row['REMARKS_ID'] == 11 || $row['REMARKS_ID'] == 10) {?>
-      $("#endorsement").hide();
-<?php
-      }
-    }
-  ?>
-  // END NEW - DRIVE
   </script>
 
   <!-- Modal -->
@@ -896,8 +1126,6 @@ if (!isset($_GET['cn']))
     </div>
   </div>
 
-  <!-- // NEW - DRIVE -->
-
   <!-- New Modal -->
   <div class="modal fade" id="newFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -908,12 +1136,29 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-body">
           <!-- <p id="message">Case succesfully endorsed to the AULC! Discipline Case Referral Form has been sent to your email. <br><br> <b>Next Steps: </b>  <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p> -->
-          <p id="file-case">Discipline Case Feedback Form was submitted succesfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
-          <p id="not-file">Case successfully returned to IDO! Discipline Case Feedback Form has been sent to your email. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
-          <p id="file-close"><b>Case is closed!</b><br> Discipline Case Feedback Form was submitted and has been sent to your email. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
+          <p id="not-file">Case successfully returned to IDO for closure letter! Discipline Case Feedback Form has been sent to your email. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
+          <p id="file-close">Case is closed. Discipline Case Feedback Form has been submitted and sent to your email. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Download the form after signing. <br> <b>(3)</b> Upload the file on this page using your DLSU email account.</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="n1" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal2 -->
+  <div class="modal fade" id="newFormModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message">Discipline Case Referral Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>aulc.cms1@gmail.com</b> for processing. </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "n2" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
@@ -961,14 +1206,14 @@ if (!isset($_GET['cn']))
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
           <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
         </div>
         <div class="modal-body">
           <p> Please wait. </p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
         </div>
       </div>
     </div>

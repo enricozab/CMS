@@ -244,8 +244,8 @@
                           C.HEARING_DATE AS HEARING_DATE,
                           C.DATE_CLOSED AS DATE_CLOSED,
                           C.IF_NEW AS IF_NEW
-              FROM 		    ULC_CASES ULC
-              LEFT JOIN   CASES C ON ULC.CASE_ID = C.CASE_ID
+              FROM 		    ulc_CASES ulc
+              LEFT JOIN   CASES C ON ulc.CASE_ID = C.CASE_ID
               LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
               LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
               LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID

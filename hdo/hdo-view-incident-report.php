@@ -50,9 +50,8 @@ if (!isset($_GET['irn']))
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
     <!-- GDRIVE -->
-
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/addFolder2.js" type="text/javascript"></script>
+    <script src="../gdrive/hdo-addNew.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js"
           onload="this.onload=function(){};handleClientLoad()"
           onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
@@ -103,7 +102,6 @@ if (!isset($_GET['irn']))
                       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
                     }
 
-                    // new drive
                     $queryStud = 'SELECT *
                                     FROM INCIDENT_REPORTS IR
                                     JOIN USERS U ON IR.REPORTED_STUDENT_ID = U.USER_ID
@@ -139,11 +137,16 @@ if (!isset($_GET['irn']))
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="offense" class="chosen-select">
                         <option value="" disabled selected>Select Offense</option>
+                        <!-- new - edited -->
+                        <option value="1">Cheating</option>
+                        <option value="2">Vandalism</option>
+                        <option value="33">Simple Acts of Disrespect</option>
+                        <option value="34">Acts Which Disturb Peace</option>
                         <?php
-                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                        /*while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
                           echo
                             "<option value=\"{$row2['OFFENSE_ID']}\">{$row2['DESCRIPTION']}</option>";
-                        }
+                        }*/
                         ?>
                       </select>
                     </div>
@@ -182,6 +185,28 @@ if (!isset($_GET['irn']))
                       <label>Summary of the Incident </label>
                       <textarea id="details" class="form-control" style="width:600px;" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
   				          </div>
+                    <!-- new (the div below)-->
+                    <div id="detailarea" class="form-group" style='width: 600px;' hidden>
+                      <label>Details <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="details2" class="chosen-select">
+                      </select>
+  				          </div>
+                    <?php
+                      $query2='SELECT DETAILS FROM CASES WHERE INCIDENT_REPORT_ID = '.$_GET['irn'].'';
+                      $result2=mysqli_query($dbc,$query2);
+                      if(!$result2){
+                        echo mysqli_error($dbc);
+                      }
+                      else{
+                        $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+                      }
+                      if($row2['DETAILS'] != null) { ?>
+                        <div class="form-group">
+                          <label>Details</label>
+                          <textarea class="form-control" style="width:600px;" readonly><?php echo $row2['DETAILS']; ?></textarea>
+      				          </div>
+                    <?php }
+                    ?>
                     <br>
                     <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
                     <br><br><br>
@@ -205,7 +230,7 @@ if (!isset($_GET['irn']))
                       </select>
                     </div>
                     <br><br>
-                    <button type="submit" id="submit" name="submit" class="btn btn-primary" onclick="handle('<?php echo $passData;?>')">Submit</button>
+                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
                   <?php
@@ -248,25 +273,18 @@ if (!isset($_GET['irn']))
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <!-- gmail -->
-    <?php // include '../gmail/send-email.php'; ?>
+    <?php //include '../gmail/send-email.php'; ?>
 
     <script type='text/javascript'>
     $(document).ready(function() {
-      // new drive
       var caseData;
 
-      $('#folderBtn').click(function() {
-        buttonAddfolder(caseData);
-      });
-
-      $("#evidence").click(function () {
-        $("#driveModal").modal("show");
-      });
-      // end drive
       <?php include 'hdo-notif-scripts.php' ?>
 
-      $('.chosen-select').chosen();
+      //new
+      $('.chosen-select').chosen({width: '100%'});
 
+      //new
       $('#offense').on('change',function() {
         var offense_id=$(this).val();
         if(offense_id==1) {
@@ -275,6 +293,19 @@ if (!isset($_GET['irn']))
         else{
           $('#cheat').hide();
         }
+
+        $.ajax({
+          url: 'hdo-get-details.php',
+          type: 'POST',
+          data: {
+            offense: offense_id
+          },
+          success: function(response) {
+            $('#detailarea').show();
+            $("#details2").html(response);
+            $("#details2").trigger("chosen:updated");
+          }
+        });
       });
 
       $('form').submit(function(e) {
@@ -282,11 +313,8 @@ if (!isset($_GET['irn']))
       });
 
       $('#submit').click(function(){
-        // new drive
-        $('#waitModal').modal("show");
-        // end drive
 
-        var ids = ['#offense','#details','#ido'];
+        var ids = ['#offense','#ido'];
         var isEmpty = true;
 
         if($('#cheat').is(":visible")){
@@ -298,6 +326,15 @@ if (!isset($_GET['irn']))
           }
         }
 
+        if($('#detailarea').is(":visible")){
+          ids.push('#details2');
+        }
+        else{
+          if($.inArray('#details2', ids) !== -1){
+            ids.splice(ids.indexOf('#details2'),1);
+          }
+        }
+
         for(var i = 0; i < ids.length; ++i ){
           if($.trim($(ids[i]).val()).length == 0){
             isEmpty = false;
@@ -305,6 +342,8 @@ if (!isset($_GET['irn']))
         }
 
         if(isEmpty) {
+          handle('<?php echo $passData;?>');
+          $('#waitModal').modal("show");
           $.ajax({
               url: '../ajax/hdo-insert-case.php',
               type: 'POST',
@@ -316,7 +355,7 @@ if (!isset($_GET['irn']))
                   complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
                   dateIncident: "<?php echo $row['DATE_INCIDENT']; ?>",
                   location: "<?php echo $row['LOCATION']; ?>",
-                  details: $('#details').val(),
+                  details: $('#details2').val(),
                   assignIDO: $('#ido').val(),
                   page: "HDO-VIEW-CASE"
               },
@@ -326,13 +365,16 @@ if (!isset($_GET['irn']))
                 caseData = string.concat(response);
               }
           });
-          // $('#message').text('Submitted successfully!');
+          $('#message').text('Submitted successfully!');
           $('#form').find('input, textarea, button, select').attr('disabled','disabled');
           $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
-          // $('#submit').text("Submitted"); // copy for fill out form
+          //$('#submit').text("Submitted"); // copy for fill out form
         }
 
-        // $("#alertModal").modal("show");
+        else{
+          $('#done').hide();
+          $("#alertModal").modal("show");
+        }
       });
 
       $('#modalOK').click(function() {
@@ -357,11 +399,11 @@ if (!isset($_GET['irn']))
           }?>
 
           //sets complainant and student emails
-          var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
+          /*var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
           var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
 
           //sends emails
-          /*sendEmail(complainantemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(complainantemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
           sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
           sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');*/
 
@@ -372,8 +414,10 @@ if (!isset($_GET['irn']))
           //hides modal
           $("#alertModal").modal("hide");
         }
+      });
 
-
+      $('#folderBtn').click(function() {
+        newCaseFolder(caseData);
       });
 
       //Changes button text and disabled
@@ -400,6 +444,8 @@ if (!isset($_GET['irn']))
         <?php }
         } ?>
 
+        $('.modal').attr('data-backdrop', "static");
+        $('.modal').attr('data-keyboard', false);
     });
 
     </script>
@@ -414,7 +460,10 @@ if (!isset($_GET['irn']))
 					</div>
 					<div class="modal-body">
 						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
-            <p id = "done">Case has been created and passed to the assigned IDO successfully!</p>
+            <div id = "done">
+              </p>Case has been created and passed to the assigned IDO successfully!</p>
+              <b>Next Step: </b> <br>  Forward the Incident Report Form #<?php echo $_GET['irn'];?>, along with the pieces of evidence, sent by the facutly to <b>ido.cms1@gmail.com</b> for processing.</p>
+            </div>
           </div>
 					<div class="modal-footer">
 						<button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
@@ -482,19 +531,18 @@ if (!isset($_GET['irn']))
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
             <h4 class="modal-title" id="myModalLabel"><b>Google Drive</b></h4>
           </div>
           <div class="modal-body">
             <p> Please wait. </p>
           </div>
           <div class="modal-footer">
-            <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+            <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
           </div>
         </div>
       </div>
     </div>
-
 </body>
 
 </html>

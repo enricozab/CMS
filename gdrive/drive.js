@@ -17,16 +17,17 @@ var cancel = 0;
 
 /******************** AUTHENTICATION ********************/
 
+function hi() {
+	handleClientLoad();
+}
+
 function handleAuthClick(event) {
-	console.log("hello authclick");
-
-
+	gapi.auth2.getAuthInstance().signIn();
 }
 
 function handleClientLoad() {
 	// Load the API client and auth2 library
 	gapi.load('client:auth2', initClient);
-	console.log("hello clientload");
 }
 
 function initClient() {
@@ -40,8 +41,6 @@ function initClient() {
    // Handle the initial sign-in state.
    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
  });
-
- console.log("hello initclient");
 }
 
 function updateSigninStatus(isSignedIn) {
