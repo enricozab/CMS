@@ -210,17 +210,9 @@ if (!isset($_GET['cn']))
          else{
            $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
          }
-
-         if ($rowStud['if_graduating']) {
-           $graduate = "Graduate";
-         }
-
-         else {
-           $graduate = "Undergraduate";
-         }
-
-         $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['reported_student_id'] . "/" . "IDO-VIEW-CASE" . "/" . $_GET['cn'];
-         $passCase = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
+         
+         $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['reported_student_id'] . "/" . "IDO-VIEW-CASE" . "/" . $_GET['cn'];
+         $passCase = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
 
           $uploadsq = 'SELECT   I.INCIDENT_REPORT_ID, I.IF_UPLOADED AS INCIDENT_UPLOADED,
   	                            S.STUDENT_RESPONSE_FORM_ID, S.IF_UPLOADED AS STUDENT_UPLOADED,

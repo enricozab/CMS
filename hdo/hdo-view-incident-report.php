@@ -118,15 +118,7 @@ if (!isset($_GET['irn']))
                       $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
                     }
 
-                    if ($rowStud['if_graduating'] == 1) {
-                      $graduate = "Graduate";
-                    }
-
-                    else {
-                      $graduate = "Undergraduate";
-                    }
-
-                    $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['reported_student_id'] .  "/" . "HDO-VIEW-INCIDENT";
+                    $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['reported_student_id'] .  "/" . "HDO-VIEW-INCIDENT";
                   ?>
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
