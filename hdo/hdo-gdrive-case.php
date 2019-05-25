@@ -53,20 +53,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="../gdrive/date.js" type="text/javascript"></script>
     <script src="../gdrive/lightbox.min.js" type="text/javascript"></script>
-    <script src="../gdrive/hellodrive.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-          onload="this.onload=function(){};handleClientLoad()"
-          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    <script src="../gdrive/hellodrive2.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
 
 </head>
 
 <body>
-
-  <?php
-    include 'hdo-notif-queries.php';
-  ?>
 
     <div id="wrapper">
 
@@ -219,60 +213,41 @@
 <!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-      $('#case-notif-table').DataTable({
-          "order": [[ 4, "desc" ]]
-      });
+    loadNotif();
 
-      <?php include 'hdo-notif-scripts.php'?>
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/hdo-notif-incident-reports.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#ir').text(response);
+            }
+            else {
+              $('#ir').text('');
+            }
+          }
+        });
 
-      <?php
-      $query2='SELECT 		C.CASE_ID AS CASE_ID,
-                          C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
-                          C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
-                          CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
-                          C.OFFENSE_ID AS OFFENSE_ID,
-                          RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
-                          C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
-                          RO.TYPE AS TYPE,
-                          C.COMPLAINANT_ID AS COMPLAINANT_ID,
-                          CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
-                          C.DETAILS AS DETAILS,
-                          C.ADMISSION_TYPE_ID AS ADMISSION_TYPE_ID,
-                          C.HANDLED_BY_ID AS HANDLED_BY_ID,
-                          CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS HANDLED_BY,
-                          C.DATE_FILED AS DATE_FILED,
-                          C.STATUS_ID AS STATUS_ID,
-                          S.DESCRIPTION AS STATUS_DESCRIPTION,
-                          C.REMARKS_ID AS REMARKS_ID,
-                          R.DESCRIPTION AS REMARKS_DESCRIPTION,
-                          C.LAST_UPDATE AS LAST_UPDATE,
-                          C.VERDICT AS VERDICT,
-                          C.HEARING_DATE AS HEARING_DATE,
-                          C.DATE_CLOSED AS DATE_CLOSED,
-                          C.IF_NEW AS IF_NEW
-              FROM 		    CASES C 
-              LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
-              LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
-              LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
-              LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
-              LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
-              LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
-              LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
-              ORDER BY	  C.LAST_UPDATE';
-      $result2=mysqli_query($dbc,$query2);
-      if(!$result2){
-        echo mysqli_error($dbc);
-      }
-      else{
-        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-          if($row2['IF_NEW']){ ?>
-            $('<?php echo "#".$row2['CASE_ID'] ?>').text('NEW');
-          <?php }
-          else{ ?>
-            $('<?php echo "#".$row2['CASE_ID'] ?>').text('');
-          <?php }
-        }
-      } ?>
+        $.ajax({
+          url: '../ajax/hdo-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
   });
   </script>
 

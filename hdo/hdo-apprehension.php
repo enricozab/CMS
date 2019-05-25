@@ -54,20 +54,14 @@
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/hdo-addNewFolder.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-          onload="this.onload=function(){};handleClientLoad()"
-          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    <script src="../gdrive/hdo-addNewFolder3.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
 
 </head>
 
 <body>
-
-  <?php
-    include 'hdo-notif-queries.php'
-  ?>
 
     <div id="wrapper">
 
@@ -89,22 +83,22 @@
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
                       <label>Student <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="studentID" name="studentID" value="11530022" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="offense" class="chosen-select">
                         <option value="" disabled selected>Select Offense</option>
                         <!-- new - edited -->
-                        <option value="1">Cheating</option>
+                        <!-- <option value="1">Cheating</option>
                         <option value="2">Vandalism</option>
                         <option value="33">Simple Acts of Disrespect</option>
-                        <option value="34">Acts Which Disturb Peace</option>
+                        <option value="34">Acts Which Disturb Peace</option> -->
                         <?php
-                        /*while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
                           echo
                             "<option value=\"{$row2['OFFENSE_ID']}\">{$row2['DESCRIPTION']}</option>";
-                        }*/
+                        }
                         ?>
                       </select>
                     </div>
@@ -130,7 +124,7 @@
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="complainantID" value="20171234" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
+                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
@@ -143,7 +137,7 @@
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="location" value="G201" class="form-control">
+                      <input id="location" class="form-control">
                     </div>
                     <!-- new - edited from previous -->
                     <div id="detailarea" class="form-group" style='width: 300px;' hidden>
@@ -158,19 +152,6 @@
                         echo mysqli_error($dbc);
                       }
                     ?>
-                    <div class="form-group">
-                      <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
-                      <br><br>
-                      <div id="evidencelist">
-                        <div class="form-group" style="width:300px;">
-                          <input type="file">
-                        </div>
-                      </div>
-                      <div id="appendevidence">
-                        <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
-                      </div>
-                    </div>
-                    <br>
                     <div class="form-group" style='width: 400px;'>
                       <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="ido" class="form-control">
@@ -219,7 +200,41 @@
 
     <script>
     $(document).ready(function() {
-      <?php include 'hdo-notif-scripts.php'?>
+      loadNotif();
+
+      function loadNotif () {
+          $.ajax({
+            url: '../ajax/hdo-notif-incident-reports.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#ir').text(response);
+              }
+              else {
+                $('#ir').text('');
+              }
+            }
+          });
+
+          $.ajax({
+            url: '../ajax/hdo-notif-cases.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#cn').text(response);
+              }
+              else {
+                $('#cn').text('');
+              }
+            }
+          });
+
+          setTimeout(loadNotif, 5000);
+      };
 
       $('.chosen-select').chosen({width: '100%'});
 
@@ -403,6 +418,11 @@
       $('.modal').attr('data-backdrop', "static");
       $('.modal').attr('data-keyboard', false);
 
+      $('#modalOK').on('click', function() {
+        if($('#done').is(":visible")) {
+          location.reload();
+        }
+      })
     });
     </script>
 

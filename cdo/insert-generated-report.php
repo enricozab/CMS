@@ -1,5 +1,4 @@
 <?php
-	// header('Location: http://localhost/CMS/cdo/cdo-reports.php');
 	//Insert report to DB
 	$ay = $_POST['ay'];
 	$term = $_POST['term'];
@@ -55,7 +54,7 @@
 					include 'cdo-generate-major-report.php';
 				}
 
-				echo 'Success: Summary Report ', $type , ' Cases for AY ', $ay , ' Term ' , $term, ' has been created and sent to the SDFO Director!';
+				echo 'Success: Summary Report ', $type , ' Cases for AY ', $ay , ' Term ' , $term, ' has been created and sent to your email and the SDFO Director! Check your email to view the report.';
 
 			}
 		}

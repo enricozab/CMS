@@ -45,8 +45,6 @@
 
 <body>
 
-    <?php include 'faculty-notif-queries.php'; ?>
-
     <?php $message = NULL ?>
     <div id="wrapper">
 
@@ -62,7 +60,7 @@
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
                         <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                        <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" value="11530022" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                        <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
                       </div>
                     </div>
                     <!-- <div id="appendstudent">
@@ -71,12 +69,12 @@
                     <br> -->
                     <div class="form-group" style = "width: 300px;">
                       <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="location" name="location" value="G211" class="form-control" placeholder="Enter Location"/>
+                      <input id="location" name="location" class="form-control" placeholder="Enter Location"/>
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <div class='input-group date'>
-                        <input  id='date' type='text' value="2019-03-08 06:19" class="form-control" placeholder="Enter Date"/>
+                        <input  id='date' type='text' class="form-control" placeholder="Enter Date"/>
                         <span id='cal' style="cursor: pointer;" class="input-group-addon">
                             <span class="fa fa-calendar"></span>
                         </span>
@@ -84,20 +82,7 @@
                     </div>
                     <div class="form-group">
                       <label>Please provide a summary of the incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5">HAHAHAHA</textarea>
-                    </div>
-                    <br>
-                    <div class="form-group">
-                      <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
-                      <br><br>
-                      <div id="evidencelist">
-                        <div class="form-group" style="width:300px;">
-                          <input type="file">
-                        </div>
-                      </div>
-                      <div id="appendevidence">
-                        <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
-                      </div>
+                      <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" placeholder="Enter Summary of the Incident"></textarea>
                     </div>
                     <br><br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
@@ -151,8 +136,26 @@
 
     <script>
     $(document).ready(function() {
+      loadNotif();
 
-      <?php include 'faculty-notif-scripts.php' ?>
+      function loadNotif () {
+          $.ajax({
+            url: '../ajax/faculty-notif-cases.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#cn').text(response);
+              }
+              else {
+                $('#cn').text('');
+              }
+            }
+          });
+
+          setTimeout(loadNotif, 5000);
+      };
 
       var titleForm;
 
@@ -341,8 +344,6 @@
       }
 
       $('#sentOK').on('click', function() {
-
-
           $.ajax({
                 url: '../ajax/users-hellosign.php',
                 type: 'POST',
@@ -357,12 +358,15 @@
                     filename : $('#inputfile').val()
                 },
                 success: function(response) {
-                  $('#form')[0].reset();
                   location.reload();
               }
           });
 
       });
+
+      $('.modal').attr('data-backdrop', "static");
+      $('.modal').attr('data-keyboard', false);
+
     });
   	</script>
 

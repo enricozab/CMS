@@ -44,10 +44,6 @@
 
 <body>
 
-  <?php
-    include 'hdo-notif-queries.php'
-  ?>
-
     <div id="wrapper">
 
         <?php include 'hdo-sidebar.php';?>
@@ -63,52 +59,12 @@
       			<div class="row">
                 <div class="col-lg-12">
                   <table width="100%" class="table table-striped table-bordered table-hover" id="incident-reports-table">
-                      <thead>
-                          <tr>
-                              <th>Incident Report No.</th>
-                              <th>Complainant</th>
-                              <th>Date Filed</th>
-                              <th>Remarks</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                        <?php
-                          $query='SELECT 	  		IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
-                                  				      CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
-                                  				      IR.DATE_FILED,
-                                  				      IR.IF_NEW AS IF_NEW,
-                                  				      C.CASE_ID AS CASE_ID
-                                  FROM 	    	  INCIDENT_REPORTS IR
-                                  LEFT JOIN	    USERS U ON IR.COMPLAINANT_ID = U.USER_ID
-                                  LEFT JOIN		  CASES C ON IR.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
-                                  ORDER BY  		IR.DATE_FILED, IR.INCIDENT_REPORT_ID DESC';
-                          $result=mysqli_query($dbc,$query);
-                          if(!$result){
-                            echo mysqli_error($dbc);
-                          }
-                          else{
-                            while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-                              if($row['CASE_ID'] != null){
-                                $caseid='Submitted/Assigned to IDO';
-                              }
-                              else{
-                                $caseid=null;
-                              }
-                              echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-incident-report.php?irn={$row['INCIDENT_REPORT_ID']}'\">
-                                    <td>{$row['INCIDENT_REPORT_ID']} <span id=\"{$row['INCIDENT_REPORT_ID']}\" class=\"badge\"></span></td>
-                                    <td>{$row['COMPLAINANT']}</td>
-                                    <td>{$row['DATE_FILED']}</td>
-                                    <td>{$caseid}</td>
-                                    </tr>";
-                            }
-                          }
-                        ?>
-                      </tbody>
                   </table>
                   <!-- /.table-responsive -->
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
+            <br><br><br><br><br>
         </div>
         <!-- /#page-wrapper -->
 
@@ -140,27 +96,72 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {
-        $('#incident-reports-table').DataTable({
-          "order": [[ 2, "desc" ]]
-        });
+        loadNotif();
 
-        <?php include 'hdo-notif-scripts.php' ?>
+        function loadNotif () {
+            $.ajax({
+              url: '../ajax/hdo-notif-incident-reports.php',
+              type: 'POST',
+              data: {
+              },
+              success: function(response) {
+                if(response > 0) {
+                  $('#ir').text(response);
+                }
+                else {
+                  $('#ir').text('');
+                }
+              }
+            });
 
-        <?php
-        $result=mysqli_query($dbc,$query);
-        if(!$result){
-          echo mysqli_error($dbc);
+            $.ajax({
+              url: '../ajax/hdo-notif-cases.php',
+              type: 'POST',
+              data: {
+              },
+              success: function(response) {
+                if(response > 0) {
+                  $('#cn').text(response);
+                }
+                else {
+                  $('#cn').text('');
+                }
+              }
+            });
+
+            setTimeout(loadNotif, 5000);
+        };
+
+        var timeTable;
+        normalTable();
+
+        function normalTable() {
+          $.ajax({
+            url: '../ajax/hdo-get-incident-reports.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              $('#incident-reports-table').html(response);
+              var curPage = $('#incident-reports-table').DataTable().page();
+              var curSearch = $('#incident-reports-table').DataTable().search();
+              if($('div.dataTables_filter input').is(':focus')) {
+                var focus = true;
+              }
+              $('#incident-reports-table').DataTable({
+                'destroy': true,
+                'aaSorting': []
+              });
+              $('#incident-reports-table').DataTable().page(curPage).draw('page');
+              $('#incident-reports-table').DataTable().search(curSearch).draw('page');
+              if(focus) {
+                $('div.dataTables_filter input').focus();
+              }
+            }
+          });
+
+          timeTable = setTimeout(normalTable, 5000);
         }
-        else{
-          while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-            if($row['IF_NEW']){ ?>
-              $('<?php echo "#".$row['INCIDENT_REPORT_ID'] ?>').text('NEW');
-            <?php }
-            else{ ?>
-              $('<?php echo "#".$row['INCIDENT_REPORT_ID'] ?>').text('');
-            <?php }
-          }
-        } ?>
     });
     </script>
 

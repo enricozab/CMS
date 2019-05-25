@@ -58,10 +58,8 @@ if (!isset($_GET['cn']))
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/ido-upload.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-          onload="this.onload=function(){};handleClientLoad()"
-          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    <script src="../gdrive/ido-upload2.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
 
@@ -210,7 +208,7 @@ if (!isset($_GET['cn']))
          else{
            $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
          }
-         
+
          $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['reported_student_id'] . "/" . "IDO-VIEW-CASE" . "/" . $_GET['cn'];
          $passCase = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['reported_student_id'] . "/" . "VIEW-FOLDER" . "/" . $_GET['cn'];
 
@@ -253,131 +251,132 @@ if (!isset($_GET['cn']))
     <?php include 'ido-sidebar.php';?>
 
         <div id="page-wrapper">
-            <div class="row">
-               <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
-                <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
-          					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
-                    <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
-          					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
-                    <br>
-          					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
-          					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
-                    <br>
-          					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-          					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
-                    <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-                </div>
+          <div class="row">
+              <div class="col-lg-8">
+                  <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-6">
+        					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
+        					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
+                  <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
+        					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
+                  <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
+        					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
+                  <br>
+        					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
+        					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
+                  <br>
+        					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
+        					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+                  <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+              </div>
 
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <b>Documents/Evidence</b> <button Ftype="submit" id = "first" name="evidence" class="btn btn-primary btn-sm" style = "margin-left: 220px;" onclick="handle('<?php echo $passData;?>')">Authenticate Google Drive</button>
-                        </div>
+              <div class="col-lg-6">
+                  <div class="panel panel-default">
+                      <div class="panel-heading">
+                          <b>Documents/Evidence</b> <button Ftype="submit" id = "first" name="evidence" class="btn btn-primary btn-sm" style = "margin-left: 220px;" onclick="handle('<?php echo $passData;?>')">Authenticate Google Drive</button>
+                      </div>
 
-                        <!-- // NEW - DRIVE -->
+                      <!-- // NEW - DRIVE -->
+                      <div id = "uploadPanel" class="panel-body" style = "display: none">
+                          <div class="table-responsive">
+                              <table class="table">
+                                  <thead>
+                                      <tr>
+                                          <th></th>
+                                          <th>File Type</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <?php
+                                          if ($uploadsrow['INCIDENT_UPLOADED']) { ?>
+                                            <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                   <?php  }
 
-                        <div id = "uploadPanel" class="panel-body" style = "display: none">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>File Type</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                          <?php
-                                            if ($uploadsrow['INCIDENT_UPLOADED']) { ?>
-                                              <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                     <?php  }
+                                          elseif ($uploadsrow['INCIDENT_UPLOADED'] == null) { ?>
+                                            <td><label id = "one" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
+                                   <?php  }
 
-                                            elseif ($uploadsrow['INCIDENT_UPLOADED'] == null) { ?>
-                                              <td><label style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
-                                     <?php  }
+                                          else { ?>
+                                            <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                   <?php  }
+                                        ?>
 
-                                            else { ?>
-                                              <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                     <?php  }
-                                          ?>
+                                        <td>Incident Report Form</td>
 
-                                          <td>Incident Report Form</td>
+                                      <tr>
 
-                                        <tr>
+                                        <?php
+                                          if ($uploadsrow['STUDENT_UPLOADED']) { ?>
+                                            <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                   <?php  }
 
-                                          <?php
-                                            if ($uploadsrow['STUDENT_UPLOADED']) { ?>
-                                              <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                     <?php  }
+                                          else { ?>
+                                            <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                   <?php  }
+                                        ?>
 
-                                            else { ?>
-                                              <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                     <?php  }
-                                          ?>
+                                        <td>Student Response Form</td>
 
-                                          <td>Student Response Form</td>
+                                      </tr>
 
-                                        </tr>
+                                    <?php
 
-                                      <?php
-
-                                        if ($row['IF_APPEAL']) { ?>
-                                          <tr>
-
-                                            <?php
-                                              if ($uploadsrow['STUDENT_UPLOADED'] == 2) { ?>
-                                                <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                       <?php  }
-
-                                              else { ?>
-                                                <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                       <?php  }
-                                            ?>
-
-                                            <td>Student Response Form for Appeal</td>
-
-                                          </tr>
-                                  <?php }
-
-                                      ?>
-
+                                      if ($row['IF_APPEAL']) { ?>
                                         <tr>
 
                                           <?php
-                                            if ($uploadsrow['PL_UPLOADED']) { ?>
-                                              <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                     <?php  }
-                                            elseif ($row['WITH_PARENT_LETTER'] == 0) { ?>
-                                              <td><label style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
+                                            if ($uploadsrow['STUDENT_UPLOADED'] == 2) { ?>
+                                              <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
                                      <?php  }
 
                                             else { ?>
-                                              <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                              <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
                                      <?php  }
                                           ?>
 
-                                          <td>Parent Letter</td>
+                                          <td>Student Response Form for Appeal</td>
 
                                         </tr>
+                                <?php }
 
-                                        <tr>
-                                          <td><button type="submit" id = "four" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                    ?>
 
-                                          <td>Evidence</td>
+                                      <tr>
 
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                        <?php
+                                          if ($uploadsrow['PL_UPLOADED']) { ?>
+                                            <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                   <?php  }
+                                          elseif ($row['WITH_PARENT_LETTER'] == 0) { ?>
+                                            <td><label id = "three" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
+                                   <?php  }
 
+                                          else { ?>
+                                            <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                   <?php  }
+                                        ?>
+
+                                        <td>Parent Letter</td>
+
+                                      </tr>
+
+                                      <tr>
+                                        <td><button type="submit" id = "four" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+
+                                        <td>Evidence</td>
+
+                                      </tr>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
                         <!-- //END NEW - DRIVE -->
                     </div>
-                  </div>
-
+                  </div>=
               </div>
 			<br><br>
       <div class="row">
@@ -451,8 +450,6 @@ if (!isset($_GET['cn']))
           }
         }
       }
-
-        include 'ido-notif-queries.php';
       ?>
     </div>
     <!-- /#wrapper -->
@@ -482,78 +479,95 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/ido-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
 
     $('#checkingForms').click();
 
     var totalID;
-    <?php include 'ido-notif-scripts.php' ?>
+
     <?php include "ido-form-queries.php" ?>
 
+    var myVar = setInterval(myTimer2, 1000);
+    function myTimer2() {
+      <?php
+        if($rowResp['student_response_form_id'] != null) { ?>
+          if($('#two').text() == 'Submitted') {
+              $.ajax({
+                  url: 'ido-response-upload.php',
+                  type: 'POST',
+                  data: {
+                      srf: <?php echo $rowResp['student_response_form_id']; ?>,
+                      appeal: <?php echo $row['IF_APPEAL']; ?>
+                  },
+                  success: function(msg) {
+                    clearInterval(myVar);
+                  }
+              });
 
-        var myVar = setInterval(myTimer2, 1000);
-        function myTimer2() {
-          <?php
-            if($rowResp['student_response_form_id'] != null) { ?>
-              if($('#two').text() == 'Submitted') {
-                  $.ajax({
-                      url: 'ido-response-upload.php',
-                      type: 'POST',
-                      data: {
-                          srf: <?php echo $rowResp['student_response_form_id']; ?>,
-                          appeal: <?php echo $row['IF_APPEAL']; ?>
-                      },
-                      success: function(msg) {
-                        clearInterval(myVar);
-                      }
-                  });
+            }
+      <?php }
+       ?>
+    }
 
+    var myVar2 = setInterval(myTimer1, 1000);
+    function myTimer1() {
+      <?php
+        if($rowResp['student_response_form_id'] != null) { ?>
+          if($('#five').text() == 'Submitted') {
+            $.ajax({
+                url: 'ido-response-upload.php',
+                type: 'POST',
+                data: {
+                    srf: <?php echo $rowResp['student_response_form_id']; ?>,
+                    appeal: <?php echo $row['IF_APPEAL']; ?>
+                },
+                success: function(msg) {
+                  clearInterval(myVar2);
                 }
-            <?php }
-             ?>
+            });
           }
+    <?php }
+     ?>
+    }
 
-
-          var myVar2 = setInterval(myTimer1, 1000);
-          function myTimer1() {
-            <?php
-              if($rowResp['student_response_form_id'] != null) { ?>
-                if($('#five').text() == 'Submitted') {
-                  $.ajax({
-                      url: 'ido-response-upload.php',
-                      type: 'POST',
-                      data: {
-                          srf: <?php echo $rowResp['student_response_form_id']; ?>,
-                          appeal: <?php echo $row['IF_APPEAL']; ?>
-                      },
-                      success: function(msg) {
-                        clearInterval(myVar2);
-                      }
-                  });
+    var myVar3 = setInterval(myTimer3, 1000);
+    function myTimer3() {
+      <?php
+        if($row['INCIDENT_REPORT_ID'] != null) { ?>
+          if($('#one').text() == 'Submitted') {
+            $.ajax({
+                url: 'ido-incident-upload.php',
+                type: 'POST',
+                data: {
+                    irn: <?php echo $row['INCIDENT_REPORT_ID']; ?>
+                },
+                success: function(msg) {
+                  clearInterval(myVar3);
                 }
-            <?php }
-             ?>
+            });
           }
-
-        var myVar3 = setInterval(myTimer3, 1000);
-        function myTimer3() {
-          <?php
-            if($row['INCIDENT_REPORT_ID'] != null) { ?>
-              if($('#one').text() == 'Submitted') {
-                $.ajax({
-                    url: 'ido-incident-upload.php',
-                    type: 'POST',
-                    data: {
-                        irn: <?php echo $row['INCIDENT_REPORT_ID']; ?>
-                    },
-                    success: function(msg) {
-                      clearInterval(myVar3);
-                    }
-                });
-              }
-        <?php }
-         ?>
-        }
-
+    <?php }
+     ?>
+    }
 
     var myVar4 = setInterval(myTimer4, 1000);
     function myTimer4() {
@@ -575,25 +589,13 @@ if (!isset($_GET['cn']))
 
     var submitTime = setInterval(mySubmitTimer, 100);
     function mySubmitTimer() {
-      <?php
-      if ($uploadsrow['STUDENT_UPLOADED'] == 1) {
 
-          if ($uploadsrow['INCIDENT_UPLOADED'] == null || $uploadsrow['INCIDENT_UPLOADED'] == 1) {
-
-              if ($uploadsrow['WITH_PARENT_LETTER'] == 1 && $uploadsrow['PL_UPLOADED'] == 1) { ?>
-
-                  document.getElementById("submit").disabled = false;
-
-        <?php }
-              elseif ($uploadsrow['WITH_PARENT_LETTER'] == 0) { ?>
-
-                  document.getElementById("submit").disabled = false;
-        <?php }
-          }
-      }
-      ?>
-      if (!$("#submit").attr('disabled')) {
-        clearInterval(submitTime);
+      if(($('#one').text() == "Submitted" || $('#one').text() == "Not Applicable") && ($('#two').text() == "Submitted") && ($('#three').text() == "Submitted" || $('#three').text() == "Not Applicable")) {
+        document.getElementById("submit").disabled = false;
+        $('#successOK').on('click', function() {
+          $("#submitModal").modal('show');
+          clearInterval(submitTime);
+        });
       }
     }
 
@@ -662,7 +664,7 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
-              $('#message').text('Case forwarded to SDFO Director successfully!');
+              $('#message').text('Case is forwarded to SDFO Director successfully!');
               $("#submit").attr('disabled', true).text("Submitted");
               $("#return").attr('disabled', true);
               $("#penalty").attr('readonly', true);
@@ -671,6 +673,12 @@ if (!isset($_GET['cn']))
               $("#alertModal").modal("show");
           }
       });
+    });
+
+    $('#mamamo').on('click', function() {
+      if(('#message').text() == "Case is forwarded to SDFO Director successfully!") {
+        location.reload();
+      }
     });
 
     $('#first').on('click',function() {
@@ -811,83 +819,68 @@ if (!isset($_GET['cn']))
 
       });
 
-      loadFile("../templates/template-academic-service-printable.docx",function(error,content){
-
-          if (error) { throw error };
-          var zip = new JSZip(content);
-          var doc=new window.docxtemplater().loadZip(zip);
-          // date
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth() + 1; //January is 0!
-          var yyyy = today.getFullYear();
-          if (dd < 10) {
-            dd = '0' + dd;
-          }
-          if (mm < 10) {
-            mm = '0' + mm;
-          }
-          var today = dd + '/' + mm + '/' + yyyy;
-
-          doc.setData({
-
-            date: today,
-            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
-            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
-            idn: "<?php echo $rowClosure['user_id'] ?>",
-            firstName: "<?php echo $rowClosure['first_name'] ?>",
-            lastName: "<?php echo $rowClosure['last_name'] ?>",
-            degree: "<?php echo $rowClosure['degree'] ?>",
-            numHrs: document.getElementById("hours").value,
-            typeofidlost: totalID
-
-          });
-
-          try {
-              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-              doc.render();
-          }
-
-          catch (error) {
-              var e = {
-                  message: error.message,
-                  name: error.name,
-                  stack: error.stack,
-                  properties: error.properties,
-              }
-              console.log(JSON.stringify({error: e}));
-              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-              throw error;
-          }
-
-          var out=doc.getZip().generate({
-              type:"blob",
-              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          }); //Output the document using Data-URI
-          saveAs(out,"output.docx");
-
-      });
+      // loadFile("../templates/template-academic-service-printable.docx",function(error,content){
+      //
+      //     if (error) { throw error };
+      //     var zip = new JSZip(content);
+      //     var doc=new window.docxtemplater().loadZip(zip);
+      //     // date
+      //     var today = new Date();
+      //     var dd = today.getDate();
+      //     var mm = today.getMonth() + 1; //January is 0!
+      //     var yyyy = today.getFullYear();
+      //     if (dd < 10) {
+      //       dd = '0' + dd;
+      //     }
+      //     if (mm < 10) {
+      //       mm = '0' + mm;
+      //     }
+      //     var today = dd + '/' + mm + '/' + yyyy;
+      //
+      //     doc.setData({
+      //
+      //       date: today,
+      //       idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
+      //       idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
+      //       idn: "<?php echo $rowClosure['user_id'] ?>",
+      //       firstName: "<?php echo $rowClosure['first_name'] ?>",
+      //       lastName: "<?php echo $rowClosure['last_name'] ?>",
+      //       degree: "<?php echo $rowClosure['degree'] ?>",
+      //       numHrs: document.getElementById("hours").value,
+      //       typeofidlost: totalID
+      //
+      //     });
+      //
+      //     try {
+      //         // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+      //         doc.render();
+      //     }
+      //
+      //     catch (error) {
+      //         var e = {
+      //             message: error.message,
+      //             name: error.name,
+      //             stack: error.stack,
+      //             properties: error.properties,
+      //         }
+      //         console.log(JSON.stringify({error: e}));
+      //         // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+      //         throw error;
+      //     }
+      //
+      //     var out=doc.getZip().generate({
+      //         type:"blob",
+      //         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      //     }); //Output the document using Data-URI
+      //     saveAs(out,"output.docx");
+      //
+      // });
 
       $("#endorsement").attr('disabled', true).text("Sent");
 
 		//NOT DONE
 		//HELLOSIGN API
-    		// $.ajax({
-        //       url: '../ajax/users-hellosign.php',
-        //       type: 'POST',
-        //       data: {
-    		// 			title : "Incident Report",
-    		// 			subject : "Incident Report Document Signature",
-    		// 			message : "Please do sign this document.",
-        //                 fname : "<?php echo $rowClosure['first_name'] ?>",
-    		// 			lname : "<?php echo $rowClosure['last_name'] ?>",
-    		// 			email : "<?php echo $rowClosure['email'] ?>",
-    		// 			filename : $('#inputfile').val()
-        //             },
-        //             success: function(response) {
-    		// 			alert("Incident Report sent to your email! Check your email to sign the form.");
-    		// 		}
-    		// })
+
 		//HELLOSIGN API
     });
 
@@ -920,7 +913,7 @@ if (!isset($_GET['cn']))
     $('#sendcl').on('click',function() {
       $('#closureModal').modal('show');
 
-      /*loadFile("../templates/template-closure-letter.docx",function(error,content){
+      loadFile("../templates/template-closure-letter.docx",function(error,content){
 
           if (error) { throw error };
           var zip = new JSZip(content);
@@ -945,18 +938,14 @@ if (!isset($_GET['cn']))
             lastName: "<?php echo $rowClosure['last_name'] ?>",
             year: "<?php echo $rowClosure['year_level'] ?>",
             idn: "<?php echo $rowClosure['user_id'] ?>",
-            college: "<?php echo $rowClosure['description'] ?>",
-            degree: "<?php echo $rowClosure['degree'] ?>",
-            offense: "<?php echo $rowClosure['description'] ?>",
-            dateApp: "<?php echo $rowClosure['date_filed'] ?>",
-            comFirst: "<?php echo $rowClosure['first_name'] ?>",
-            comLast: "<?php echo $rowClosure['last_name'] ?>",
-            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
-            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
-            term: "<?php echo $rowClosure['term'] ?>",
-            schoolYr: "<?php echo $rowClosure['school_year'] ?>",
-            verdict: "<?php echo $rowClosure['verdict'] ?>",
-            actions: "<?php echo $rowClosure['penalty_desc'] ?>",
+            College: "<?php echo $nameres["description"] ?>",
+            Degree: "<?php echo $studentres["degree"] ?>",
+            offense: "<?php echo $row["OFFENSE_DESCRIPTION"] ?>",
+            dateApp: "<?php echo $row["DATE_FILED"] ?>",
+            comName: "<?php echo $row["COMPLAINANT"] ?>",
+            idoName: "<?php echo $row["HANDLED_BY"] ?>",
+            term: "<?php echo $formres2["term"] ?>",
+            schoolYr: "<?php echo $formres2["school_year"] ?>"
 
           });
 
@@ -981,9 +970,9 @@ if (!isset($_GET['cn']))
               type:"blob",
               mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           }); //Output the document using Data-URI
-          saveAs(out,"output.docx");
+          saveAs(out,"Closure Letter.docx");
 
-      });*/
+      });
     });
 
     $('#submitClosure').on('click',function() {
@@ -994,10 +983,25 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
-              $("#message").text('Case dismissed. Closure Letter has been sent to the student successfully.');
-              $("#sendcl").attr('disabled', true);
-
-              $("#alertModal").modal("show");
+              $.ajax({
+                    url: '../ajax/users-hellosign.php',
+                    type: 'POST',
+                    data: {
+                        formT: "Closure Letter.docx",
+              					title : "Closure Letter",
+              					subject : "Incident Report Document Signature",
+              					message : "Please do sign this document.",
+                        fname : "Dennis",
+              					lname : "Trillo",
+              					email : "ido.cms1@gmail.com",
+              					filename : $('#inputfile').val()
+                    },
+                    success: function(response) {
+                        $("#message").text('Case dismissed. Check your email to sign the Closure Letter and forward it to the student.');
+                        $("#sendcl").attr('disabled', true);
+                        $("#alertModal").modal("show");
+          				}
+          		});
           }
       });
     });
@@ -1156,7 +1160,7 @@ if (!isset($_GET['cn']))
           <p id="message"></p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="mamamo" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
@@ -1195,7 +1199,7 @@ if (!isset($_GET['cn']))
           <p> File was uploaded successfully!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="successOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
@@ -1214,6 +1218,24 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Can Submit Modal -->
+  <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> Case can now be submitted to SDFO Director. </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

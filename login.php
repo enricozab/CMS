@@ -140,10 +140,10 @@
             header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/ulc/ulc-home.php");
           }
           else if($_SESSION['user_type_id']==9){
-            header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/sdfod/sdfod-home.php");
+            header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/sdfod/sdfod-dashboard.php");
           }
           else if($_SESSION['user_type_id']==8){
-            header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/cdo/cdo-home.php");
+            header("Location: http://".$_SERVER['HTTP_HOST'].  dirname($_SERVER['PHP_SELF'])."/cdo/cdo-dashboard.php");
           }
         }
         else {

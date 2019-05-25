@@ -12,8 +12,10 @@
         <!-- <input class="form-control" type="text" id="event-title" placeholder="Enter title" autocomplete="off" /> -->
         <select class="form-control" id="event-title"  autocomplete="off">
           <option value="" disabled selected>Select Event Title</option>
-          <option value="(1)">Student Interview</option>
-          <option value="(2,3,4,5,6,7,8,9)">Board Meeting</option>
+          <option value="1">Student Interview</option>
+          <option value="2">Formal Hearing</option>
+          <option value="3">Summary Proceeding</option>
+          <option value="4">University Panel for Case Conference</option>
         </select>
         <br>
         <label>Event Type <span style="font-weight:normal; color:red;"> *</span></label>

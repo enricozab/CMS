@@ -9,10 +9,11 @@ import time
 time.sleep(5);
 
 
-email = str(sys.argv[1])
-ay = str(sys.argv[2])
-term = str(sys.argv[3])
-reportnum = str(sys.argv[4])
+sdfod = str(sys.argv[1])
+cdo = str(sys.argv[2])
+ay = str(sys.argv[3])
+term = str(sys.argv[4])
+reportnum = str(sys.argv[5])
 spreadsheetname = "Report No. " + reportnum + " Summary Report for Minor Cases for AY " + ay + " Term " + term
 
 
@@ -49,14 +50,14 @@ table = ["MINOR DISCIPLINE VIOLATIONS","","","","","","","","","","","",
 		"Sub-Total", "","","","","","","","","","","",
 		"GRAND TOTAL", "","","","","","","","","","","",]
 
-tableIndex=0
-cell_list = sheet.range('A1:L21')
-
-for cell in cell_list:
-	cell.value = (table[tableIndex]);
-	tableIndex=tableIndex+1
-
-sheet.update_cells(cell_list)
+# tableIndex=0
+# cell_list = sheet.range('A1:L21')
+#
+# for cell in cell_list:
+# 	cell.value = (table[tableIndex]);
+# 	tableIndex=tableIndex+1
+#
+# sheet.update_cells(cell_list)
 
 cols = ["E","F","G","H","I","J","K","L"]
 rows = ["3","4","5","6","7","8","9","10","11","12",
@@ -64,7 +65,7 @@ rows = ["3","4","5","6","7","8","9","10","11","12",
 
 ###### BATCH PROCESSING OF DATA
 cell_list = sheet.range('E3:K8')
-argsnum = 5
+argsnum = 6
 for cell in cell_list:
 	cell.value = (int(sys.argv[argsnum]));
 	argsnum=argsnum+1
@@ -102,4 +103,5 @@ grandtotal = "=SUM(E3:K8,E10:K19)"
 sheet.update_acell("B21", grandtotal)
 
 ##Share sheets to sdfod. Change role='reader' for final
-open.share(email, perm_type='user', role='reader')
+open.share(sdfod, perm_type='user', role='reader')
+open.share(cdo, perm_type='user', role='reader')

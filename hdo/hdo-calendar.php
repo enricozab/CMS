@@ -45,22 +45,17 @@
 
 <body>
 
-  <?php
-    include 'hdo-notif-queries.php'
-  ?>
-
     <div id="wrapper">
 
         <?php include 'hdo-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-8">
                     <h3 class="page-header">Calendar</h3>
                 </div>
-                <?php include '../calendar/button_and_calendar.php' ?>
-                <!-- /.col-lg-12 -->
             </div>
+            <?php include '../calendar/button_and_calendar.php' ?>
         </div>
         <!-- /#page-wrapper -->
 
@@ -95,9 +90,44 @@
   //function that runs once the page is loaded
 
   $(document).ready(function() {
-      <?php include 'hdo-notif-scripts.php'?>
-      $("#login").hide();
-      $("#create").hide();
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/hdo-notif-incident-reports.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#ir').text(response);
+            }
+            else {
+              $('#ir').text('');
+            }
+          }
+        });
+
+        $.ajax({
+          url: '../ajax/hdo-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
+
+    $("#login").hide();
+    $("#create").hide();
   });
   </script>
 

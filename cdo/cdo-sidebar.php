@@ -11,7 +11,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="cdo-home.php">
+		<a class="navbar-brand" href="cdo-dashboard.php">
 			<div class="row">
 				&nbsp; <img src="../images/newlogo.png" style="width: 30px; height: 30px;">&nbsp; Case Management System
 			</div>
@@ -31,7 +31,7 @@
 				<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
 				</li>
 				<li class="divider"></li>
-				<li><a href="../login.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+				<li><a href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/CMS"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 				</li>
 			</ul>
 			<!-- /.dropdown-user -->
@@ -65,6 +65,9 @@
 				</li>
 				<li>
 					<a href="cdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+				</li>
+				<li>
+					<a href="cdo-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
 				<li>
 					<a href="cdo-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>

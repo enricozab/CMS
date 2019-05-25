@@ -106,7 +106,11 @@ if (!isset($_GET['cn']))
 
       <div id="page-wrapper">
         <div class="row">
-          <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+            <div class="col-lg-8">
+                <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-lg-6">
     					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
     					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
@@ -178,8 +182,6 @@ if (!isset($_GET['cn']))
             }
           }
         }
-
-        include 'faculty-notif-queries.php';
       ?>
     </div>
     <!-- /#wrapper -->
@@ -209,11 +211,29 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-    <?php include 'faculty-notif-scripts.php' ?>
+    loadNotif();
 
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/faculty-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
   });
 
-  <?php 
+  <?php
     if($row['PROCEEDING'] != null ){ ?>
       $("#proceedingarea").show();
   <?php } ?>

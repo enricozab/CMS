@@ -44,22 +44,17 @@
 
 <body>
 
-  <?php
-    include 'aulc-notif-queries.php'
-  ?>
-
     <div id="wrapper">
 
         <?php include 'aulc-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-8">
                     <h3 class="page-header">Calendar</h3>
                 </div>
-                <?php include '../calendar/button_and_calendar.php' ?>
-                <!-- /.col-lg-12 -->
             </div>
+            <?php include '../calendar/button_and_calendar.php' ?>
         </div>
         <!-- /#page-wrapper -->
 
@@ -91,9 +86,29 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-      <?php include 'aulc-notif-scripts.php'?>
-      $("#login").hide();
-      $("#create").hide();
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/aulc-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
+
+    $("#login").hide();
+    $("#create").hide();
   });
   </script>
 

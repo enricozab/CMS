@@ -58,10 +58,8 @@ if (!isset($_GET['cn']))
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/ah.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-          onload="this.onload=function(){};handleClientLoad()"
-          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    <script src="../gdrive/ah2.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
 
@@ -193,24 +191,28 @@ if (!isset($_GET['cn']))
     <?php include 'aulc-sidebar.php';?>
 
         <div id="page-wrapper">
-            <div class="row">
-               <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
-                <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
-          					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
-                    <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
-          					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
-                    <br>
-          					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
-          					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
-                    <br>
-          					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-          					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
-                    <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-                </div>
-              </div>
+          <div class="row">
+            <div class="col-lg-8">
+              <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+    					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
+    					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
+              <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
+    					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
+              <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
+    					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
+              <br>
+    					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
+    					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
+              <br>
+    					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
+    					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+              <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+            </div>
+          </div>
 			<br><br>
       <div class="row">
         <div class="col-lg-6">
@@ -246,7 +248,6 @@ if (!isset($_GET['cn']))
       <div class="row">
         <div class="col-sm-6">
           <button type="submit" id="forward" name="submit" class="btn btn-success">Forward Discipline Case Referral Form</button>
-          <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
         </div>
       </div>
 
@@ -273,7 +274,6 @@ if (!isset($_GET['cn']))
           }
         }
 
-        include 'aulc-notif-queries.php';
 		    include 'aulc-form-queries.php';
       ?>
     </div>
@@ -301,7 +301,26 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-    <?php include 'aulc-notif-scripts.php' ?>
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/aulc-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
 
     $('.chosen-select').chosen({width: '100%'});
 
@@ -319,19 +338,19 @@ if (!isset($_GET['cn']))
       $("#formModal").modal("show");
     });
 
-    $('#updateTable').click(function() {
-
-      <?php
-        $updateQry = 'UPDATE CASE_REFERRAL_FORMS
-                         SET IF_UPLOADED = 2
-                       WHERE CASE_ID = "'.$_GET['cn'].'"';
-
-        $update = mysqli_query($dbc,$updateQry);
-        if(!$update){
-          echo mysqli_error($dbc);
-        }
-      ?>
-    });
+    // $('#updateTable').click(function() {
+    //
+    //   <?php
+    //     $updateQry = 'UPDATE CASE_REFERRAL_FORMS
+    //                      SET IF_UPLOADED = 2
+    //                    WHERE CASE_ID = "'.$_GET['cn'].'"';
+    //
+    //     $update = mysqli_query($dbc,$updateQry);
+    //     if(!$update){
+    //       echo mysqli_error($dbc);
+    //     }
+    //   ?>
+    // });
 
 
     // FORM GENERATOR
@@ -638,14 +657,16 @@ if (!isset($_GET['cn']))
 
           <div id="proceeding" class="form-group" hidden>
             <?php
-              if($row['ADMISSION_TYPE_ID'] == 1) {
-                echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>University Panel for Case Conference";
-              }
-              else if($row['ADMISSION_TYPE_ID'] == 2) {
-                echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>Summary Proceeding&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-              }
-              else {
-                echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>Formal Hearing";
+              if($row['TYPE'] = "Major") {
+                if($row['ADMISSION_TYPE_ID'] == 1) {
+                  echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>University Panel for Case Conference";
+                }
+                else if($row['ADMISSION_TYPE_ID'] == 2) {
+                  echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>Summary Proceeding&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                }
+                else {
+                  echo "<label>Nature of Proceedings: &nbsp;&nbsp; </label>Formal Hearing";
+                }
               }
             ?>
         </div>
@@ -686,7 +707,7 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
         </div>
         <div class="modal-body">
-          <p id="message">Case successfully forwarded to the ULC! The Discipline Case Referral Form has been sent to your email. <br><br> <b>Next Step: </b> <br>  Forward Discipline Case Referral Form to <b>ulc.cms2@dlsu.edu.ph</b>.</p>
+          <p id="message">Case successfully forwarded to the ULC! The Discipline Case Referral Form has been sent to your email. <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward Discipline Case Referral Form to <b>ulc.cms2@dlsu.edu.ph</b>.</p>
         </div>
         <div class="modal-footer">
           <button type="button" id="n1" class="btn btn-default" data-dismiss="modal">Ok</button>

@@ -46,22 +46,17 @@
 
 <body>
 
-  <?php
-    include 'ulc-notif-queries.php'
-  ?>
-
     <div id="wrapper">
 
         <?php include 'ulc-sidebar.php';?>
 
         <div id="page-wrapper">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-8">
                     <h3 class="page-header">Calendar</h3>
                 </div>
-                <?php include '../calendar/button_and_calendar.php' ?>
-                <!-- /.col-lg-12 -->
             </div>
+            <?php include '../calendar/button_and_calendar.php' ?>
         </div>
         <!-- /#page-wrapper -->
 
@@ -102,183 +97,210 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-      <?php include 'ulc-notif-scripts.php'?>
-      //logs user in through gmail
-      $('#login').click(function() {
-        <?php $login_url = 'https://accounts.google.com/o/oauth2/auth?scope=' . urlencode('https://www.googleapis.com/auth/calendar') . '&redirect_uri=' . urlencode(CLIENT_REDIRECT_URL) . '&response_type=code&client_id=' . CLIENT_ID . '&access_type=online'; ?>
-      	location.href= '<?php echo $login_url; ?>';
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/ulc-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
+
+    //logs user in through gmail
+    $('#login').click(function() {
+      <?php $login_url = 'https://accounts.google.com/o/oauth2/auth?scope=' . urlencode('https://www.googleapis.com/auth/calendar') . '&redirect_uri=' . urlencode(CLIENT_REDIRECT_URL) . '&response_type=code&client_id=' . CLIENT_ID . '&access_type=online'; ?>
+    	location.href= '<?php echo $login_url; ?>';
+    });
+
+
+    <?php
+    //checks if the user is logged in an hides the login button and shoes the create event button
+    if (isset($_SESSION['access_token_calendar'])) { ?>
+      $("#create").show();
+      $("#login").hide();
+
+      //functions of the calendar api
+      // Selected time should not be less than current time
+      function AdjustMinTime(ct) {
+      	var dtob = new Date(),
+        		current_date = dtob.getDate(),
+        		current_month = dtob.getMonth() + 1,
+        		current_year = dtob.getFullYear();
+
+      	var full_date = current_year + '-' +
+      					( current_month < 10 ? '0' + current_month : current_month ) + '-' +
+      		  			( current_date < 10 ? '0' + current_date : current_date );
+
+      	if(ct.dateFormat('Y-m-d') == full_date)
+      		this.setOptions({ minTime: 0 });
+      	else
+      		this.setOptions({ minTime: false });
+      }
+
+      // DateTimePicker plugin : http://xdsoft.net/jqplugins/datetimepicker/
+      $("#event-start-time, #event-end-time").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
+      $("#event-date").datetimepicker({ format: 'Y-m-d', timepicker: false, minDate: 0 });
+
+      $("#event-type").on('change', function(e) {
+      	if($(this).val() == 'ALL-DAY') {
+      		$("#datearea").show();
+      		$("#timearea").hide();
+      	}
+      	else {
+      		$("#datearea").hide();
+      		$("#timearea").show();
+      	}
       });
 
+      //new
+      $('.chosen-select').chosen({width: '100%'});
+      $("#event-title").on('change', function(e) {
+        var usertype_id=$(this).val();
 
-      <?php
-      //checks if the user is logged in an hides the login button and shoes the create event button
-      if (isset($_SESSION['access_token_calendar'])) { ?>
-        $("#create").show();
-        $("#login").hide();
-
-        //functions of the calendar api
-        // Selected time should not be less than current time
-        function AdjustMinTime(ct) {
-        	var dtob = new Date(),
-          		current_date = dtob.getDate(),
-          		current_month = dtob.getMonth() + 1,
-          		current_year = dtob.getFullYear();
-
-        	var full_date = current_year + '-' +
-        					( current_month < 10 ? '0' + current_month : current_month ) + '-' +
-        		  			( current_date < 10 ? '0' + current_date : current_date );
-
-        	if(ct.dateFormat('Y-m-d') == full_date)
-        		this.setOptions({ minTime: 0 });
-        	else
-        		this.setOptions({ minTime: false });
-        }
-
-        // DateTimePicker plugin : http://xdsoft.net/jqplugins/datetimepicker/
-        $("#event-start-time, #event-end-time").datetimepicker({ format: 'Y-m-d H:i', minDate: 0, minTime: 0, step: 5, onShow: AdjustMinTime, onSelectDate: AdjustMinTime });
-        $("#event-date").datetimepicker({ format: 'Y-m-d', timepicker: false, minDate: 0 });
-
-        $("#event-type").on('change', function(e) {
-        	if($(this).val() == 'ALL-DAY') {
-        		$("#datearea").show();
-        		$("#timearea").hide();
-        	}
-        	else {
-        		$("#datearea").hide();
-        		$("#timearea").show();
-        	}
+        $.ajax({
+          url: '../ajax/calendar-get-emails.php',
+          type: 'POST',
+          data: {
+            usertype: usertype_id
+          },
+          success: function(response) {
+            $('#attendee').show();
+            $("#event-attendees").html(response);
+            $("#event-attendees").trigger("chosen:updated");
+          }
         });
+      });
+
+      // Send an ajax request to create event
+      $("#create-event").on('click', function(e) {
+      	if($("#create-event").attr('data-in-progress') == 1)
+      		return;
+
+      	var blank_reg_exp = /^([\s]{0,}[^\s]{1,}[\s]{0,}){1,}$/,
+      		error = 0,
+      		parameters;
+
+      	$(".input-error").removeClass('input-error');
+
+      	if(!blank_reg_exp.test($("#event-title").val())) {
+      		$("#event-title").addClass('input-error');
+      		error = 1;
+      	}
+
+      	// added
+      	if(!blank_reg_exp.test($("#event-attendees").val())) {
+      		$("#event-attendees").addClass('input-error');
+      		error = 1;
+      	}
+
+      	if($("#event-type").val() == 'FIXED-TIME') {
+      		if(!blank_reg_exp.test($("#event-start-time").val())) {
+      			$("#event-start-time").addClass('input-error');
+      			error = 1;
+      		}
+
+      		if(!blank_reg_exp.test($("#event-end-time").val())) {
+      			$("#event-end-time").addClass('input-error');
+      			error = 1;
+      		}
+      	}
+      	else if($("#event-type").val() == 'ALL-DAY') {
+      		if(!blank_reg_exp.test($("#event-date").val())) {
+      			$("#event-date").addClass('input-error');
+      			error = 1;
+      		}
+      	}
+
+      	if(error == 1)
+      		return false;
+
+      	if($("#event-type").val() == 'FIXED-TIME') {
+      		// If end time is earlier than start time, then interchange them
+      		if($("#event-end-time").datetimepicker('getValue') < $("#event-start-time").datetimepicker('getValue')) {
+      			var temp = $("#event-end-time").val();
+      			$("#event-end-time").val($("#event-start-time").val());
+      			$("#event-start-time").val(temp);
+      		}
+      	}
 
         //new
-        $('.chosen-select').chosen({width: '100%'});
-        $("#event-title").on('change', function(e) {
-          var usertype_id=$(this).val();
-
-          $.ajax({
-            url: '../ajax/calendar-get-emails.php',
-            type: 'POST',
-            data: {
-              usertype: usertype_id
-            },
-            success: function(response) {
-              $('#attendee').show();
-              $("#event-attendees").html(response);
-              $("#event-attendees").trigger("chosen:updated");
-            }
-          });
-        });
-
-        // Send an ajax request to create event
-        $("#create-event").on('click', function(e) {
-        	if($("#create-event").attr('data-in-progress') == 1)
-        		return;
-
-        	var blank_reg_exp = /^([\s]{0,}[^\s]{1,}[\s]{0,}){1,}$/,
-        		error = 0,
-        		parameters;
-
-        	$(".input-error").removeClass('input-error');
-
-        	if(!blank_reg_exp.test($("#event-title").val())) {
-        		$("#event-title").addClass('input-error');
-        		error = 1;
-        	}
-
-        	// added
-        	if(!blank_reg_exp.test($("#event-attendees").val())) {
-        		$("#event-attendees").addClass('input-error');
-        		error = 1;
-        	}
-
-        	if($("#event-type").val() == 'FIXED-TIME') {
-        		if(!blank_reg_exp.test($("#event-start-time").val())) {
-        			$("#event-start-time").addClass('input-error');
-        			error = 1;
-        		}
-
-        		if(!blank_reg_exp.test($("#event-end-time").val())) {
-        			$("#event-end-time").addClass('input-error');
-        			error = 1;
-        		}
-        	}
-        	else if($("#event-type").val() == 'ALL-DAY') {
-        		if(!blank_reg_exp.test($("#event-date").val())) {
-        			$("#event-date").addClass('input-error');
-        			error = 1;
-        		}
-        	}
-
-        	if(error == 1)
-        		return false;
-
-        	if($("#event-type").val() == 'FIXED-TIME') {
-        		// If end time is earlier than start time, then interchange them
-        		if($("#event-end-time").datetimepicker('getValue') < $("#event-start-time").datetimepicker('getValue')) {
-        			var temp = $("#event-end-time").val();
-        			$("#event-end-time").val($("#event-start-time").val());
-        			$("#event-start-time").val(temp);
-        		}
-        	}
-
-          //new
-          var title = '';
-          if ( $("#event-title").val() == '(1)')
-          {
-            title = 'Student Interview'
-          }
-          else {
-            title = 'Board Meeting'
-          }
-        	// Event details that are pased in ajax
-        	parameters =
-          {
-            //new
-            title: title,
-            attendees: $("#event-attendees").val(),
-            event_time:
-            {
-              start_time: $("#event-type").val() == 'FIXED-TIME' ? $("#event-start-time").val().replace(' ', 'T') + ':00' : null,
-              end_time: $("#event-type").val() == 'FIXED-TIME' ? $("#event-end-time").val().replace(' ', 'T') + ':00' : null,
-              event_date: $("#event-type").val() == 'ALL-DAY' ? $("#event-date").val() : null
-            },
-            all_day: $("#event-type").val() == 'ALL-DAY' ? 1 : 0,
-            access_token: '<?php echo $_SESSION['access_token_calendar']; ?>'
-          };
-
-        	$("#create-event").attr('disabled', 'disabled');
-        	$.ajax({
-              type: 'POST',
-              url: '../ajax/calendar-create-event.php',
-              data: {
-                event_details: parameters,
-                <?php
-                  if(isset($_SESSION['caseID'])) { ?>
-                    caseID: <?php echo $_SESSION['caseID']; ?>
-                <?php }
-                ?>
-              },
-              dataType: 'json',
-              success: function(response) {
-              	//$("#create-event").removeAttr('disabled');
-                $("#message").text("An event has been created successfully!");
-              	$("#alertModal").modal("show");
-              },
-              error: function(response) {
-                //$("#create-event").removeAttr('disabled');
-                console.log(response);
-              }
-          });
-        });
-
-        $("#modalOK").on("click", function() {
-          replaceURL();
-        });
-
-        function replaceURL() {
-          //change
-        	location.replace('ulc-calendar.php')
-          <?php //unset($_SESSION['access_token_calendar']); ?>
+        var title = '';
+        if ( $("#event-title").val() == '1')
+        {
+          title = 'Student Interview'
         }
+        else if ( $("#event-title").val() == '2'){
+          title = 'Formal Hearing'
+        }
+        else if ( $("#event-title").val() == '3'){
+          title = 'Summary Proceeding'
+        }
+        else if ( $("#event-title").val() == '4'){
+          title = 'University Panel for Case Invitation'
+        }
+
+      	// Event details that are pased in ajax
+      	parameters =
+        {
+          //new
+          title: title,
+          attendees: $("#event-attendees").val(),
+          event_time:
+          {
+            start_time: $("#event-type").val() == 'FIXED-TIME' ? $("#event-start-time").val().replace(' ', 'T') + ':00' : null,
+            end_time: $("#event-type").val() == 'FIXED-TIME' ? $("#event-end-time").val().replace(' ', 'T') + ':00' : null,
+            event_date: $("#event-type").val() == 'ALL-DAY' ? $("#event-date").val() : null
+          },
+          all_day: $("#event-type").val() == 'ALL-DAY' ? 1 : 0,
+          access_token: '<?php echo $_SESSION['access_token_calendar']; ?>'
+        };
+
+      	$("#create-event").attr('disabled', 'disabled');
+      	$.ajax({
+            type: 'POST',
+            url: '../ajax/calendar-create-event.php',
+            data: {
+              event_details: parameters,
+              <?php
+                if(isset($_SESSION['caseID'])) { ?>
+                  caseID: <?php echo $_SESSION['caseID']; ?>
+              <?php }
+              ?>
+            },
+            dataType: 'json',
+            success: function(response) {
+            	//$("#create-event").removeAttr('disabled');
+              $("#message").text("An event has been created successfully!");
+            	$("#alertModal").modal("show");
+            },
+            error: function(response) {
+              //$("#create-event").removeAttr('disabled');
+              console.log(response);
+            }
+        });
+      });
+
+      $("#modalOK").on("click", function() {
+        replaceURL();
+      });
+
+      function replaceURL() {
+        //change
+      	location.replace('ulc-calendar.php')
+        <?php //unset($_SESSION['access_token_calendar']); ?>
+      }
     <?php
     }
 
@@ -293,6 +315,8 @@
       $("#eventModal").modal("show");
     });
 
+    $('.modal').attr('data-backdrop', "static");
+    $('.modal').attr('data-keyboard', false);
 
   });
   </script>

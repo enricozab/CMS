@@ -51,10 +51,8 @@ if (!isset($_GET['irn']))
 
     <!-- GDRIVE -->
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/hdo-addNew.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-          onload="this.onload=function(){};handleClientLoad()"
-          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    <script src="../gdrive/hdo-addNew6.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
 
@@ -130,15 +128,15 @@ if (!isset($_GET['irn']))
                       <select id="offense" class="chosen-select">
                         <option value="" disabled selected>Select Offense</option>
                         <!-- new - edited -->
-                        <option value="1">Cheating</option>
+                        <!-- <option value="1">Cheating</option>
                         <option value="2">Vandalism</option>
                         <option value="33">Simple Acts of Disrespect</option>
-                        <option value="34">Acts Which Disturb Peace</option>
+                        <option value="34">Acts Which Disturb Peace</option> -->
                         <?php
-                        /*while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
                           echo
                             "<option value=\"{$row2['OFFENSE_ID']}\">{$row2['DESCRIPTION']}</option>";
-                        }*/
+                        }
                         ?>
                       </select>
                     </div>
@@ -200,8 +198,6 @@ if (!isset($_GET['irn']))
                     <?php }
                     ?>
                     <br>
-                    <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-                    <br><br><br>
                     <?php
                       $query2='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 4';
                       $result2=mysqli_query($dbc,$query2);
@@ -228,14 +224,12 @@ if (!isset($_GET['irn']))
                   <?php
                     //Removes 'new' badge and reduces notif's count
                     if($row['IF_NEW']){
-                      $query2='UPDATE INCIDENT_REPORTS SET IF_NEW=0 WHERE INCIDENT_REPORT_ID="'.$_GET['irn'].'"';
+                      $query2='UPDATE INCIDENT_REPORTS SET IF_NEW=0 WHERE INCIDENT_REPORT_ID='.$_GET['irn'];
                       $result2=mysqli_query($dbc,$query2);
                       if(!$result2){
                         echo mysqli_error($dbc);
                       }
                     }
-
-                    include 'hdo-notif-queries.php';
                   ?>
                 </div>
             </div>
@@ -269,9 +263,43 @@ if (!isset($_GET['irn']))
 
     <script type='text/javascript'>
     $(document).ready(function() {
-      var caseData;
+      loadNotif();
 
-      <?php include 'hdo-notif-scripts.php' ?>
+      function loadNotif () {
+          $.ajax({
+            url: '../ajax/hdo-notif-incident-reports.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#ir').text(response);
+              }
+              else {
+                $('#ir').text('');
+              }
+            }
+          });
+
+          $.ajax({
+            url: '../ajax/hdo-notif-cases.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#cn').text(response);
+              }
+              else {
+                $('#cn').text('');
+              }
+            }
+          });
+
+          setTimeout(loadNotif, 5000);
+      };
+
+      var caseData;
 
       //new
       $('.chosen-select').chosen({width: '100%'});

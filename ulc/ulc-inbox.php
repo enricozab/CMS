@@ -54,10 +54,6 @@
 
 <body>
 
-  <?php
-    include 'ulc-notif-queries.php'
-  ?>
-
     <div id="wrapper">
 
         <?php include 'ulc-sidebar.php';?>
@@ -109,9 +105,29 @@
   //function that runs once the page is loaded
 
   $(document).ready(function() {
-      <?php include 'ulc-notif-scripts.php'?>
-      $("#login").hide();
-      $("#create").hide();
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/ulc-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
+    
+    $("#login").hide();
+    $("#create").hide();
   });
   </script>
 

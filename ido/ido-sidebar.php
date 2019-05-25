@@ -31,7 +31,7 @@
 				<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
 				</li>
 				<li class="divider"></li>
-				<li><a href="../login.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+				<li><a href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/CMS"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 				</li>
 			</ul>
 			<!-- /.dropdown-user -->
@@ -58,33 +58,13 @@
 					<a href="ido-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
+					<a href="ido-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
+				</li>
+				<li>
 					<a href="ido-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
 					<a href="ido-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
-				</li>
-				<li>
-					<a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="../pages/panels-wells.html">Panels and Wells</a>
-						</li>
-						<li>
-							<a href="../pages/buttons.html">Buttons</a>
-						</li>
-						<li>
-							<a href="../pages/notifications.html">Notifications</a>
-						</li>
-						<li>
-							<a href="../pages/typography.html">Typography</a>
-						</li>
-						<li>
-							<a href="../pages/icons.html"> Icons</a>
-						</li>
-						<li>
-							<a href="../pages/grid.html">Grid</a>
-						</li>
-					</ul>
 				</li>
 			</ul>
 		</div>

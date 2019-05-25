@@ -7,10 +7,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 from django.http import HttpResponse
 from gspread_formatting import *
 
-email = str(sys.argv[1])
-ay = str(sys.argv[2])
-term = str(sys.argv[3])
-reportnum = str(sys.argv[4])
+sdfod = str(sys.argv[1])
+cdo = str(sys.argv[2])
+ay = str(sys.argv[3])
+term = str(sys.argv[4])
+reportnum = str(sys.argv[5])
 spreadsheetname = "Report No. " + reportnum + " Summary Report for Major Cases for AY " + ay + " Term " + term
 
 """

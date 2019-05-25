@@ -61,15 +61,7 @@
         $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
       }
 
-      if ($rowStud['if_graduating'] == 1) {
-        $graduate = "Graduate";
-      }
-
-      else {
-        $graduate = "Undergraduate";
-      }
-
-      $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $graduate . "/" . $rowStud['user_id'] .  "/" . "HDO-APPREHENSION" . "/" . $newRow['LATEST'];
+      $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['user_id'] .  "/" . "HDO-APPREHENSION" . "/" . $newRow['LATEST'];
       echo $passData;
     }
 

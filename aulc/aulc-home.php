@@ -44,10 +44,6 @@
 
 <body>
 
-  <?php
-    include 'aulc-notif-queries.php';
-  ?>
-
   <div id="wrapper">
 
     <?php include 'aulc-sidebar.php'; ?>
@@ -64,12 +60,13 @@
           <br>
           <div class="btn-group">
             <button type="button" class="tableButton btn btn-default" id="all">All Cases</button>
+            <button type="button" class="tableButton btn btn-default" id="priority">Priority Cases</button>
             <button type="button" class="tableButton btn btn-default" id="active">Active</button>
             <button type="button" class="tableButton btn btn-default" id="closed">Closed</button>
           </div>
           <style>
               .tableButton {
-                width: 100px;
+                width: 120px;
               }
               #all {border-radius: 3px 0px 0px 3px;}
               #active {border-radius: 0px;}
@@ -77,84 +74,10 @@
           </style>
           <br><br>
           <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
-              <thead>
-                  <tr>
-                      <th>Case No.</th>
-                      <th>Offense</th>
-                      <th>Type</th>
-                      <th>Date Filed</th>
-                      <th>Last Update</th>
-                      <th>Status</th>
-                      <th>Remarks</th>
-                      <th>Graduating?</th>
-                  </tr>
-              </thead>
-              <tbody>
-                <?php
-                $query='SELECT 		  C.CASE_ID AS CASE_ID,
-                                    C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
-                                    C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
-                                    CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
-                                    C.OFFENSE_ID AS OFFENSE_ID,
-                                    RO.DESCRIPTION AS OFFENSE_DESCRIPTION,
-                                    C.CHEATING_TYPE_ID AS CHEATING_TYPE_ID,
-                                    RO.TYPE AS TYPE,
-                                    RS.IF_GRADUATING AS IF_GRADUATING,
-                                    C.COMPLAINANT_ID AS COMPLAINANT_ID,
-                                    CONCAT(U1.FIRST_NAME," ",U1.LAST_NAME) AS COMPLAINANT,
-                                    C.DETAILS AS DETAILS,
-                                    C.ADMISSION_TYPE_ID AS ADMISSION_TYPE_ID,
-                                    C.HANDLED_BY_ID AS HANDLED_BY_ID,
-                                    CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS HANDLED_BY,
-                                    C.DATE_FILED AS DATE_FILED,
-                                    C.STATUS_ID AS STATUS_ID,
-                                    S.DESCRIPTION AS STATUS_DESCRIPTION,
-                                    C.REMARKS_ID AS REMARKS_ID,
-                                    R.DESCRIPTION AS REMARKS_DESCRIPTION,
-                                    C.LAST_UPDATE AS LAST_UPDATE,
-                                    C.VERDICT AS VERDICT,
-                                    C.PROCEEDING_DATE AS PROCEEDING_DATE,
-                                    C.DATE_CLOSED AS DATE_CLOSED,
-                                    C.IF_NEW AS IF_NEW
-                        FROM 		    AULC_CASES AU
-                        LEFT JOIN   CASES C ON AU.CASE_ID = C.CASE_ID
-                        LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
-                        LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
-                        LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
-                        LEFT JOIN   REF_STUDENTS RS ON U.USER_ID = RS.STUDENT_ID
-                        LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
-                        LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
-                        LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
-                        LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
-                        ORDER BY	  C.LAST_UPDATE';
-                        $result=mysqli_query($dbc,$query);
-                  if(!$result){
-                    echo mysqli_error($dbc);
-                  }
-                  else{
-                    while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-                      $grad;
-                      if($row['IF_GRADUATING']) {
-                        $grad = "Yes";
-                      }
-                      else {
-                        $grad = "No";
-                      }
-                      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='aulc-view-case.php?cn={$row['CASE_ID']}'\">
-                            <td>{$row['CASE_ID']} <span id=\"{$row['CASE_ID']}\" class=\"badge\"></span></td>
-                            <td>{$row['OFFENSE_DESCRIPTION']}</td>
-                            <td>{$row['TYPE']}</td>
-                            <td>{$row['DATE_FILED']}</td>
-                            <td>{$row['LAST_UPDATE']}</td>
-                            <td>{$row['STATUS_DESCRIPTION']}</td>
-                            <td>{$row['REMARKS_DESCRIPTION']}</td>
-                            <td>{$grad}</td>
-                            </tr>";
-                    }
-                  }
-                ?>
-              </tbody>
           </table>
+          <span style="font-weight:normal; color:red;">*</span>Cases can be prioritized by filtering: 1) Graduating Students  2) Major Cases  3) Minor Cases
+
+          <br><br><br><br><br>
           <!-- /.table-responsive -->
         </div>
         <!-- /.col-lg-12 -->
@@ -189,57 +112,236 @@
 <!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-      $('#case-notif-table').DataTable({
-          "order": [[ 4, "desc" ]]
-      });
+    loadNotif();
 
-      $('#all').css("background-color", "#e6e6e6");
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/aulc-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
 
-      $('#all').on('click', function () {
-          $('#case-notif-table').DataTable().columns(5).search("").draw();
-          $('#all').focus();
-          $(this).css("background-color", "#e6e6e6");
-          $('#active').css("background-color", "white");
-          $('#closed').css("background-color", "white");
-      });
+        setTimeout(loadNotif, 5000);
+    };
 
-      $('#active').on('click', function () {
-          $('#case-notif-table').DataTable().columns(5).search("Opened|On Going", true, false).draw();
-          $('#active').focus();
-          $(this).css("background-color", "#e6e6e6");
-          $('#all').css("background-color", "white");
-          $('#closed').css("background-color", "white");
-      });
+    var timeTable;
+    var temCurPage = null;
+    normalTable();
 
-      $('#closed').on('click', function () {
-          $('#case-notif-table').DataTable().columns(5).search("Closed|Dismissed", true, false).draw();
-          $('#closed').focus();
-          $(this).css("background-color", "#e6e6e6");
-          $('#active').css("background-color", "white");
-          $('#all').css("background-color", "white");
-      });
-
-      <?php include 'aulc-notif-scripts.php'?>
-
-      <?php
-      //Removes 'new' badge and reduces notif's count
-      $query2='SELECT 		AU.CASE_ID AS CASE_ID,
-                          AU.IF_NEW AS IF_NEW
-              FROM 		    AULC_CASES AU';
-      $result2=mysqli_query($dbc,$query2);
-      if(!$result2){
-        echo mysqli_error($dbc);
-      }
-      else{
-        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-          if($row2['IF_NEW']){ ?>
-            $('<?php echo "#".$row2['CASE_ID'] ?>').text('NEW');
-          <?php }
-          else{ ?>
-            $('<?php echo "#".$row2['CASE_ID'] ?>').text('');
-          <?php }
+    function normalTable() {
+      $.ajax({
+        url: '../ajax/aulc-get-cases.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          $('#case-notif-table').html(response);
+          var curPage = $('#case-notif-table').DataTable().page();
+          var curSearch = $('#case-notif-table').DataTable().search();
+          if($('div.dataTables_filter input').is(':focus')) {
+            var focus = true;
+          }
+          $('#case-notif-table').DataTable({
+            'destroy': true,
+            'aaSorting': []
+          });
+          $('#case-notif-table').DataTable().page(curPage).draw('page');
+          $('#case-notif-table').DataTable().search(curSearch).draw('page');
+          if(focus) {
+            $('div.dataTables_filter input').focus();
+          }
         }
-      } ?>
+      });
+
+      timeTable = setTimeout(normalTable, 5000);
+    }
+
+    $('#all').css("background-color", "#e6e6e6");
+
+    $('#all').on('click', function () {
+      $('#all').focus();
+      $('#all').css("background-color", "#e6e6e6");
+      $('#active').css("background-color", "white");
+      $('#closed').css("background-color", "white");
+      $('#priority').css("background-color", "white");
+
+      clearTimeout(timeTable);
+      temCurPage = $('#case-notif-table').DataTable().page();
+      allTable();
+
+      function allTable() {
+        $.ajax({
+          url: '../ajax/aulc-get-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            $('#case-notif-table').html(response);
+            if(temCurPage != null) {
+              $('#case-notif-table').DataTable().page(0).draw('page');
+              temCurPage = null;
+            }
+            var curPage = $('#case-notif-table').DataTable().page();
+            var curSearch = $('#case-notif-table').DataTable().search();
+            if($('div.dataTables_filter input').is(':focus')) {
+              var focus = true;
+            }
+            $('#case-notif-table').DataTable({
+              'destroy': true,
+              'aaSorting': []
+            });
+            $('#case-notif-table').DataTable().page(curPage).draw('page');
+            $('#case-notif-table').DataTable().search(curSearch).draw('page');
+            if(focus) {
+              $('div.dataTables_filter input').focus();
+            }
+          }
+        });
+
+        timeTable = setTimeout(allTable, 5000);
+      }
+    });
+
+    $('#active').on('click', function () {
+      $('#active').focus();
+      $('#active').css("background-color", "#e6e6e6");
+      $('#all').css("background-color", "white");
+      $('#closed').css("background-color", "white");
+      $('#priority').css("background-color", "white");
+
+      clearTimeout(timeTable);
+      temCurPage = $('#case-notif-table').DataTable().page();
+      activeTable();
+
+      function activeTable() {
+        $.ajax({
+          url: '../ajax/aulc-get-cases-active.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            $('#case-notif-table').html(response);
+            if(temCurPage != null) {
+              $('#case-notif-table').DataTable().page(0).draw('page');
+              temCurPage = null;
+            }
+            var curPage = $('#case-notif-table').DataTable().page();
+            var curSearch = $('#case-notif-table').DataTable().search();
+            if($('div.dataTables_filter input').is(':focus')) {
+              var focus = true;
+            }
+            $('#case-notif-table').DataTable({
+              'destroy': true,
+              'aaSorting': []
+            });
+            $('#case-notif-table').DataTable().page(curPage).draw('page');
+            $('#case-notif-table').DataTable().search(curSearch).draw('page');
+            if(focus) {
+              $('div.dataTables_filter input').focus();
+            }
+          }
+        });
+
+        timeTable = setTimeout(activeTable, 5000);
+      }
+    });
+
+    $('#closed').on('click', function () {
+      $('#closed').focus();
+      $('#closed').css("background-color", "#e6e6e6");
+      $('#active').css("background-color", "white");
+      $('#all').css("background-color", "white");
+      $('#priority').css("background-color", "white");
+
+      clearTimeout(timeTable);
+      temCurPage = $('#case-notif-table').DataTable().page();
+      closedTable();
+
+      function closedTable() {
+        $.ajax({
+          url: '../ajax/aulc-get-cases-closed.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            $('#case-notif-table').html(response);
+            if(temCurPage != null) {
+              $('#case-notif-table').DataTable().page(0).draw('page');
+              temCurPage = null;
+            }
+            var curPage = $('#case-notif-table').DataTable().page();
+            var curSearch = $('#case-notif-table').DataTable().search();
+            if($('div.dataTables_filter input').is(':focus')) {
+              var focus = true;
+            }
+            $('#case-notif-table').DataTable({
+              'destroy': true,
+              'aaSorting': []
+            });
+            $('#case-notif-table').DataTable().page(curPage).draw('page');
+            $('#case-notif-table').DataTable().search(curSearch).draw('page');
+            if(focus) {
+              $('div.dataTables_filter input').focus();
+            }
+          }
+        });
+
+        timeTable = setTimeout(closedTable, 5000);
+      }
+    });
+
+    $('#priority').on('click', function () {
+      $('#priority').focus();
+      $('#priority').css("background-color", "#e6e6e6");
+      $('#active').css("background-color", "white");
+      $('#all').css("background-color", "white");
+      $('#closed').css("background-color", "white");
+
+      clearTimeout(timeTable);
+      temCurPage = $('#case-notif-table').DataTable().page();
+      priorityTable();
+
+      function priorityTable() {
+        $.ajax({
+          url: '../ajax/aulc-get-cases-priority.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            $('#case-notif-table').html(response);
+            if(temCurPage != null) {
+              $('#case-notif-table').DataTable().page(0).draw('page');
+              temCurPage = null;
+            }
+            var curPage = $('#case-notif-table').DataTable().page();
+            var curSearch = $('#case-notif-table').DataTable().search();
+            if($('div.dataTables_filter input').is(':focus')) {
+              var focus = true;
+            }
+            $('#case-notif-table').DataTable({
+              'destroy': true,
+              'aaSorting': []
+            });
+            $('#case-notif-table').DataTable().page(curPage).draw('page');
+            $('#case-notif-table').DataTable().search(curSearch).draw('page');
+            if(focus) {
+              $('div.dataTables_filter input').focus();
+            }
+          }
+        });
+
+        timeTable = setTimeout(priorityTable, 5000);
+      }
+    });
   });
   </script>
 

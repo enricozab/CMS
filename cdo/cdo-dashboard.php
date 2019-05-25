@@ -36,6 +36,20 @@
     <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src = "https://code.highcharts.com/highcharts.js"></script>
 
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../dist/js/sb-admin-2.js"></script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -47,186 +61,6 @@
 
 <body>
 
-  <?php
-    include 'cdo-notif-queries.php';
-  ?>
-
-  <?php
-  //MAJOR CASES
-  require_once('../mysql_connect.php');
-  $topOffensesDescriptionMajor = array();
-  $topOffensesIDMajor = array();
-  $totalOffensesMajor = array();
-  $dataMajor = array();
-
-   $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
-                 FROM CASES C
-                   LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
-                   WHERE RO.TYPE = 'Major'
-                   GROUP BY C.OFFENSE_ID
-                   ORDER BY COUNT(C.CASE_ID), C.OFFENSE_ID DESC
-                   LIMIT 3";
-
-   $sqlRes = mysqli_query($dbc, $sqlQuery);
-   while ($row = $sqlRes->fetch_assoc()){
-     $topOffensesDescriptionMajor[] = $row['DESCRIPTION'];
-     $topOffensesIDMajor[] = $row['OFFENSE_ID'];
-     $totalOffensesMajor[] = $row['NUMCASES'];
-     //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
-     //echo "NUMCASES: ", $topOffenses[0], "<br>";
-   }
-
-   $queryNum=0;
-   $offenseIndex=0;
-
-   for($x=0; $x<3; $x++){
-
-     echo "Offense Index: ", $offenseIndex, "<br";
-
-     for($i=1; $i<=7; $i++){
-       echo "I: " , $i, "<br>";
-       $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
-                          FROM CASES C
-                           LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
-                           LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
-                           WHERE U.OFFICE_ID = " .$i ."
-                           && C.OFFENSE_ID = " .$topOffensesIDMajor[$offenseIndex];
-
-       echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
-       $numcasesres = mysqli_query($dbc,$numcasesquery);
-       if(!$numcasesres){
-
-         echo mysqli_error($dbc);
-       }
-       else{
-         $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
-         $cases = $casesrow['NUMCASES'];
-         $dataMajor[]= $cases;
-       }
-       echo 'Data Num #', $z, '<br>';
-       $queryNum++;
-     }
-
-     $offenseIndex++;
-   }
-
-   //MINOR CASES
-   $topOffensesDescriptionMinor = array();
-   $topOffensesIDMinor = array();
-   $totalOffensesMinor = array();
-   $dataMinor = array();
-
-    $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
-                  FROM CASES C
-                    LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
-                    WHERE RO.TYPE = 'Minor'
-                    GROUP BY C.OFFENSE_ID
-                    ORDER BY COUNT(C.CASE_ID), C.OFFENSE_ID DESC
-                    LIMIT 3";
-
-    $sqlRes = mysqli_query($dbc, $sqlQuery);
-    while ($row = $sqlRes->fetch_assoc()){
-      $topOffensesDescriptionMinor[] = $row['DESCRIPTION'];
-      $topOffensesIDMinor[] = $row['OFFENSE_ID'];
-      $totalOffensesMinor[] = $row['NUMCASES'];
-      //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
-      //echo "NUMCASES: ", $topOffenses[0], "<br>";
-    }
-
-    $queryNum=0;
-    $offenseIndex=0;
-
-    for($x=0; $x<3; $x++){
-
-      //echo "Offense Index: ", $offenseIndex, "<br";
-
-      for($i=1; $i<=7; $i++){
-        //echo "I: " , $i, "<br>";
-        $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
-                           FROM CASES C
-                            LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
-                            LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
-                            WHERE U.OFFICE_ID = " .$i ."
-                            && C.OFFENSE_ID = " .$topOffensesIDMinor[$offenseIndex];
-
-        //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
-        $numcasesres = mysqli_query($dbc,$numcasesquery);
-        if(!$numcasesres){
-
-          echo mysqli_error($dbc);
-        }
-        else{
-          $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
-          $cases = $casesrow['NUMCASES'];
-          $dataMinor[]= $cases;
-        }
-        //echo 'Data Num #', $z, '<br>';
-        $queryNum++;
-      }
-
-      $offenseIndex++;
-    }
-  ?>
-
-  <?php
-  ////////////////////////GET REASONS FOR MAJOR CASES
-  $topDetailsMajor = array();
-  $totalOffensesMajor = array();
-
-  for($i=0; $i < sizeOf($topOffensesIDMajor); $i++){
-    // echo "Offense ID: ", $topOffensesIDMajor[$i], "<br>";
-    $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
-                  FROM CASES C
-                  LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
-                    LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
-                    WHERE C.OFFENSE_ID = " .$topOffensesIDMajor[$i] ."
-                    GROUP BY C.DETAILS
-                    ORDER BY 1 DESC
-                    LIMIT 3";
-
-    $sqlRes = mysqli_query($dbc, $sqlQuery);
-    while ($row = $sqlRes->fetch_assoc()){
-      $topDetailsMajor[] = $row['DETAILS'];
-    }
-
-    if(mysqli_num_rows($sqlRes)==1){
-      $topDetailsMajor[] ='';
-      $topDetailsMajor[] ='';
-    }
-    else if(mysqli_num_rows($sqlRes)==2){
-      $topDetailsMajor[] ='';
-    }
-  }
-
-  ////////////////////////GET REASONS FOR MINOR CASES
-  $topDetailsMinor = array();
-
-  for($i=0; $i < sizeOf($topOffensesIDMinor); $i++){
-    $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
-                  FROM CASES C
-                  LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
-                    LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
-                    WHERE C.OFFENSE_ID = " .$topOffensesIDMinor[$i] ."
-                    GROUP BY C.DETAILS
-                    ORDER BY 1 DESC
-                    LIMIT 3";
-
-    $sqlRes = mysqli_query($dbc, $sqlQuery);
-    while ($row = $sqlRes->fetch_assoc()){
-      $topDetailsMinor[] = $row['DETAILS'];
-    }
-
-    if(mysqli_num_rows($sqlRes)==1){
-      $topDetailsMinor[] ='';
-      $topDetailsMinor[] ='';
-    }
-    else if(mysqli_num_rows($sqlRes)==2){
-      $topDetailsMinor[] ='';
-    }
-
-  }
-  ?>
-
   <div id="wrapper">
 
     <?php include 'cdo-sidebar.php'; ?>
@@ -237,6 +71,184 @@
               <h3 class="page-header">Dashboard</h3>
           </div>
       </div>
+
+      <?php
+      //MAJOR CASES
+      require_once('../mysql_connect.php');
+      $topOffensesDescriptionMajor = array();
+      $topOffensesIDMajor = array();
+      $totalOffensesMajor = array();
+      $dataMajor = array();
+
+       $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
+                     FROM CASES C
+                       LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
+                       WHERE RO.TYPE = 'Major'
+                       GROUP BY C.OFFENSE_ID
+                       ORDER BY COUNT(C.CASE_ID) DESC
+                       LIMIT 3";
+
+       $sqlRes = mysqli_query($dbc, $sqlQuery);
+       while ($row = $sqlRes->fetch_assoc()){
+         $topOffensesDescriptionMajor[] = $row['DESCRIPTION'];
+         $topOffensesIDMajor[] = $row['OFFENSE_ID'];
+         $totalOffensesMajor[] = $row['NUMCASES'];
+         //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
+         //echo "NUMCASES: ", $topOffenses[0], "<br>";
+       }
+
+       $queryNum=0;
+       $offenseIndex=0;
+
+       // echo "topOffensesIDMajor Size: " , sizeOf($topOffensesIDMajor), "<br>";
+       for($x=0; $x<3; $x++){
+
+         //echo "Offense Index: ", $offenseIndex, "<br";
+
+         for($i=1; $i<=7; $i++){
+           //echo "I: " , $i, "<br>";
+           $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
+                              FROM CASES C
+                               LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
+                               LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
+                               WHERE U.OFFICE_ID = " .$i ."
+                               && C.OFFENSE_ID = " .$topOffensesIDMajor[$offenseIndex];
+
+           //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
+           $numcasesres = mysqli_query($dbc,$numcasesquery);
+           if(!$numcasesres){
+
+             echo mysqli_error($dbc);
+           }
+           else{
+             $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
+             $cases = $casesrow['NUMCASES'];
+             $dataMajor[]= $cases;
+           }
+           //echo 'Data Num #', $z, '<br>';
+           $queryNum++;
+         }
+
+         $offenseIndex++;
+       }
+
+       //MINOR CASES
+       $topOffensesDescriptionMinor = array();
+       $topOffensesIDMinor = array();
+       $totalOffensesMinor = array();
+       $dataMinor = array();
+
+        $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
+                      FROM CASES C
+                        LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
+                        WHERE RO.TYPE = 'Minor'
+                        GROUP BY C.OFFENSE_ID
+                        ORDER BY COUNT(C.CASE_ID) DESC
+                        LIMIT 3";
+
+        $sqlRes = mysqli_query($dbc, $sqlQuery);
+        while ($row = $sqlRes->fetch_assoc()){
+          $topOffensesDescriptionMinor[] = $row['DESCRIPTION'];
+          $topOffensesIDMinor[] = $row['OFFENSE_ID'];
+          $totalOffensesMinor[] = $row['NUMCASES'];
+          //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
+          //echo "NUMCASES: ", $topOffenses[0], "<br>";
+        }
+
+        $queryNum=0;
+        $offenseIndex=0;
+
+        for($x=0; $x<3; $x++){
+
+          //echo "Offense Index: ", $offenseIndex, "<br";
+
+          for($i=1; $i<=7; $i++){
+            //echo "I: " , $i, "<br>";
+            $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
+                               FROM CASES C
+                                LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
+                                LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
+                                WHERE U.OFFICE_ID = " .$i ."
+                                && C.OFFENSE_ID = " .$topOffensesIDMinor[$offenseIndex];
+
+            //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
+            $numcasesres = mysqli_query($dbc,$numcasesquery);
+            if(!$numcasesres){
+
+              echo mysqli_error($dbc);
+            }
+            else{
+              $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
+              $cases = $casesrow['NUMCASES'];
+              $dataMinor[]= $cases;
+            }
+            //echo 'Data Num #', $z, '<br>';
+            $queryNum++;
+          }
+
+          $offenseIndex++;
+        }
+      ?>
+
+      <?php
+      ////////////////////////GET REASONS FOR MAJOR CASES
+      $topDetailsMajor = array();
+      $totalOffensesMajor = array();
+
+      for($i=0; $i < sizeOf($topOffensesIDMajor); $i++){
+        // echo "Offense ID: ", $topOffensesIDMajor[$i], "<br>";
+        $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
+                      FROM CASES C
+                      LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
+                        LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
+                        WHERE C.OFFENSE_ID = " .$topOffensesIDMajor[$i] ."
+                        GROUP BY C.DETAILS
+                        ORDER BY 1 DESC
+                        LIMIT 3";
+
+        $sqlRes = mysqli_query($dbc, $sqlQuery);
+        while ($row = $sqlRes->fetch_assoc()){
+          $topDetailsMajor[] = $row['DETAILS'];
+        }
+
+        if(mysqli_num_rows($sqlRes)==1){
+          $topDetailsMajor[] ='';
+          $topDetailsMajor[] ='';
+        }
+        else if(mysqli_num_rows($sqlRes)==2){
+          $topDetailsMajor[] ='';
+        }
+      }
+
+      ////////////////////////GET REASONS FOR MINOR CASES
+      $topDetailsMinor = array();
+
+      for($i=0; $i < sizeOf($topOffensesIDMinor); $i++){
+        $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
+                      FROM CASES C
+                      LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
+                        LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
+                        WHERE C.OFFENSE_ID = " .$topOffensesIDMinor[$i] ."
+                        GROUP BY C.DETAILS
+                        ORDER BY 1 DESC
+                        LIMIT 3";
+
+        $sqlRes = mysqli_query($dbc, $sqlQuery);
+        while ($row = $sqlRes->fetch_assoc()){
+          $topDetailsMinor[] = $row['DETAILS'];
+        }
+
+        if(mysqli_num_rows($sqlRes)==1){
+          $topDetailsMinor[] ='';
+          $topDetailsMinor[] ='';
+        }
+        else if(mysqli_num_rows($sqlRes)==2){
+          $topDetailsMinor[] ='';
+        }
+
+      }
+      ?>
+
 			<!-- CHARTS -->
 			<div class="row">
         <div class="col-lg-6">
@@ -259,14 +271,14 @@
           <br><br>
 
           <!--HIGHCHARTS style = "width: 600px; height: 400px; margin: 0 auto"-->
-          <div id = "majorCase" class="majorCase" align="center" style = "width: 950px; height: 400px; margin: 0 auto"></div>
+          <div id = "majorCase" class="majorCase" align="center" style = "width: 950px; height: 500px; margin: 0 auto"></div>
           <script language = "JavaScript">
              $(document).ready(function() {
                 var chart = {
                    type: 'bar'
                 };
                 var title = {
-                   text: 'Major Cases per College',
+                   text: 'Top 3 Major Cases in DLSU',
                    style: {
                         fontFamily: 'Arial'
                     }
@@ -288,6 +300,7 @@
                 };
                 var yAxis = {
                    min: 0,
+                   allowDecimals: false,
                    title: {
                       text: 'Total',
                       align: 'high'
@@ -369,14 +382,14 @@
           </script>
 
           <!--MINOR BAR CHART-->
-          <div id = "minorCase" class="minorCase" style = "width: 950px; height: 400px; margin: 0 auto; display: none;" align="center"></div>
+          <div id = "minorCase" class="minorCase" style = "width: 950px; height: 500px; margin: 0 auto; display: none;" align="center"></div>
           <script language = "JavaScript">
              $(document).ready(function() {
                 var chart = {
                    type: 'bar'
                 };
                 var title = {
-                   text: 'Minor Cases per College',
+                   text: 'Top 3 Minor Cases in DLSU',
                    style: {
                         fontFamily: 'Arial'
                     }
@@ -398,6 +411,7 @@
                 };
                 var yAxis = {
                    min: 0,
+                   allowDecimals: false,
                    title: {
                       text: 'Total',
                       align: 'high'
@@ -481,13 +495,11 @@
           <br>
         </div>
         <!-- /.col-lg-12 -->
-      </div>
 
-      <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-6" style="position: relative; padding-top: 70px; left: -15%">
           <!-- <label for="majorTable">Common Reasons for committing such violations</label> style="display:none;"-->
           <table id="majorTable" align="center">
-            <caption style="font-size: 18px; color: black;">Top Reasons for Committing Such Offenses</caption>
+            <caption style="font-size: 18px; color: black;">Top Ways for Committing Such Offenses</caption>
             <tr>
               <th>Offense</th>
               <th>Reason</th>
@@ -516,12 +528,10 @@
           </table>
           <script> var majorTable = document.getElementById("majorTable"); majorTable.style.display = "block"; </script>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-6" style="position: relative; padding-top: 0px; left: -15%">
           <table id="minorTable" style="display: none;" align="center">
-            <caption style="font-size: 18px; color: black;">Top Reasons for Commiting Such Offenses</caption>
+            <caption style="font-size: 18px; color: black;">Top Ways for Commiting Such Offenses</caption>
             <tr>
               <th>Offense</th>
               <th>Reason</th>
@@ -551,6 +561,7 @@
           </table>
         </div>
       </div>
+
       <br><br><br><br><br>
     </div>
     <!-- /#page-wrapper -->
@@ -559,13 +570,34 @@
 
 <!-- Page-Level Demo Scripts - Tables - Use for reference -->
 <script>
+  loadNotif();
+
+  function loadNotif () {
+      $.ajax({
+        url: '../ajax/cdo-notif-cases.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          if(response > 0) {
+            $('#cn').text(response);
+          }
+          else {
+            $('#cn').text('');
+          }
+        }
+      });
+
+      setTimeout(loadNotif, 5000);
+  };
+
   function majorBtn(){
     $(document).ready(function() {
        var chart = {
           type: 'bar'
        };
        var title = {
-          text: 'Major Cases per College',
+          text: 'Top 3 Major Cases in DLSU',
           style: {
                fontFamily: 'Arial'
            }
@@ -587,6 +619,7 @@
        };
        var yAxis = {
           min: 0,
+          allowDecimals: false,
           title: {
              text: 'Total',
              align: 'high'
@@ -674,6 +707,9 @@
     var majorTable = document.getElementById("majorTable");
       majorTable.style.display = "block";
       minorTable.style.display = "none";
+
+    $("#majorBtn").css("background-color", "#256092");
+    $('#minorBtn').css("background-color", "#337ab7");
   }
 
   function minorBtn(){
@@ -682,7 +718,7 @@
           type: 'bar'
        };
        var title = {
-          text: 'Minor Cases per College',
+          text: 'Top 3 Minor Cases in DLSU',
           style: {
                fontFamily: 'Arial'
            }
@@ -704,6 +740,7 @@
        };
        var yAxis = {
           min: 0,
+          allowDecimals: false,
           title: {
              text: 'Total',
              align: 'high'
@@ -790,18 +827,21 @@
     var majorTable = document.getElementById("majorTable");
       minorTable.style.display = "block";
       majorTable.style.display = "none";
+
+    $("#minorBtn").css("background-color", "#256092");
+    $('#majorBtn').css("background-color", "#337ab7");
   }
 
 </script>
 
 <style>
-  .majorCase{
+  /* .majorCase{
     position: absolute;
   }
 
   .minorCase{
     position: absolute;
-  }
+  } */
 
   table {
   font-family: arial, sans-serif;

@@ -104,25 +104,27 @@ if (!isset($_GET['cn']))
     <?php include 'cdo-sidebar.php';?>
 
         <div id="page-wrapper">
-            <div class="row">
-               <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
-                <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $row2['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row2['TYPE'];; ?><br>
-                    <b>Location of the Incident:</b> <?php echo $row2['LOCATION']; ?><br>
-          					<b>Date Filed:</b> <?php echo $row2['DATE_FILED']; ?><br>
-                    <b>Last Update:</b> <?php echo $row2['LAST_UPDATE']; ?><br>
-          					<b>Status:</b> <?php echo $row2['STATUS_DESCRIPTION']; ?><br>
-                    <br>
-          					<b>Student ID No.:</b> <?php echo $row2['REPORTED_STUDENT_ID']; ?><br>
-          					<b>Student Name:</b> <?php echo $row2['STUDENT']; ?><br>
-                    <br>
-          					<b>Complainant:</b> <?php echo $row2['COMPLAINANT']; ?><br>
-          					<b>Investigated by:</b> <?php echo $row2['HANDLED_BY']; ?><br>
-                    <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-                </div>
-
-
+          <div class="row">
+              <div class="col-lg-8">
+                  <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-6">
+        					<b>Offense:</b> <?php echo $row2['OFFENSE_DESCRIPTION']; ?><br>
+        					<b>Type:</b> <?php echo $row2['TYPE'];; ?><br>
+                  <b>Location of the Incident:</b> <?php echo $row2['LOCATION']; ?><br>
+        					<b>Date Filed:</b> <?php echo $row2['DATE_FILED']; ?><br>
+                  <b>Last Update:</b> <?php echo $row2['LAST_UPDATE']; ?><br>
+        					<b>Status:</b> <?php echo $row2['STATUS_DESCRIPTION']; ?><br>
+                  <br>
+        					<b>Student ID No.:</b> <?php echo $row2['REPORTED_STUDENT_ID']; ?><br>
+        					<b>Student Name:</b> <?php echo $row2['STUDENT']; ?><br>
+                  <br>
+        					<b>Complainant:</b> <?php echo $row2['COMPLAINANT']; ?><br>
+        					<b>Investigated by:</b> <?php echo $row2['HANDLED_BY']; ?><br>
+                  <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+              </div>
           </div>
   			<br><br>
         <div class="row">
@@ -180,8 +182,6 @@ if (!isset($_GET['cn']))
             }
           }
         }
-
-        include 'cdo-notif-queries.php';
       ?>
     </div>
     <!-- /#wrapper -->
@@ -211,7 +211,26 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
-    <?php include 'cdo-notif-scripts.php' ?>
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/cdo-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
   });
 
   <?php

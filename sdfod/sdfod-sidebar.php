@@ -11,7 +11,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="sdfod-home.php">
+		<a class="navbar-brand" href="sdfod-dashboard.php">
 			<div class="row">
 				&nbsp; <img src="../images/newlogo.png" style="width: 30px; height: 30px;">&nbsp; Case Management System
 			</div>
@@ -31,7 +31,7 @@
 				<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
 				</li>
 				<li class="divider"></li>
-				<li><a href="../login.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+				<li><a href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/CMS"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 				</li>
 			</ul>
 			<!-- /.dropdown-user -->
@@ -53,6 +53,9 @@
 					</span>
 					</div>
 					<!-- /input-group -->
+				</li>
+				<li>
+					<a href="sdfod-dashboard.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</span></a>
 				</li>
 				<li>
 					<a href="sdfod-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>

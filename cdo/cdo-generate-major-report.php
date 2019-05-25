@@ -2,7 +2,7 @@
 //////////////MAJOR CASES
 	require_once('../mysql_connect.php');
 
-	//Get director's email
+	//Get SDFOD email
 	  $sdfodquery = 'SELECT * FROM CMS.USERS WHERE USER_TYPE_ID = 9;';
 	  $sdfodres = mysqli_query($dbc,$sdfodquery);
 
@@ -11,6 +11,17 @@
 	  }
 	  else{
 		$sdfodrow=mysqli_fetch_array($sdfodres,MYSQLI_ASSOC);
+	  }
+
+		//Get CDO email
+	  $cdoquery = 'SELECT * FROM CMS.USERS WHERE USER_TYPE_ID = 8';
+	  $cdodres = mysqli_query($dbc,$cdoquery);
+
+	  if(!$cdodres){
+		echo mysqli_error($dbc);
+	  }
+	  else{
+		$cdorow=mysqli_fetch_array($cdodres,MYSQLI_ASSOC);
 	  }
 
 	//Get number of students that commited minor offenses per college
@@ -84,11 +95,11 @@
 
 		switch ($x){
 					case	0:
-								$proceedings = 3;
+								$proceedings = 1;
 								$studentlevel = 'Graduate';
 								break;
 					case	1:
-								$proceedings = 3;
+								$proceedings = 1;
 								$studentlevel = 'Undergraduate';
 								break;
 					case	2:
@@ -100,11 +111,11 @@
 								$studentlevel = 'Undergraduate';
 								break;
 					case	4:
-								$proceedings = 1;
+								$proceedings = 3;
 								$studentlevel = 'Graduate';
 								break;
 					case	5:
-								$proceedings = 1;
+								$proceedings = 3;
 								$studentlevel = 'Undergraduate';
 								break;
 		}
@@ -113,12 +124,12 @@
 		for($i=1; $i<=7; $i++){
 
 			$numcasesquery = "SELECT COUNT(C.REPORTED_STUDENT_ID) AS MAJORCASES FROM CASES C
-								LEFT JOIN USERS U 						ON C.REPORTED_STUDENT_ID = U.USER_ID
-								LEFT JOIN REF_USER_OFFICE RUO 			ON U.OFFICE_ID = RUO.OFFICE_ID
-								LEFT JOIN REF_OFFENSES RO 				ON C.OFFENSE_ID = RO.OFFENSE_ID
+								LEFT JOIN USERS U 										ON C.REPORTED_STUDENT_ID = U.USER_ID
+								LEFT JOIN REF_USER_OFFICE RUO 				ON U.OFFICE_ID = RUO.OFFICE_ID
+								LEFT JOIN REF_OFFENSES RO 						ON C.OFFENSE_ID = RO.OFFENSE_ID
 								LEFT JOIN STUDENT_RESPONSE_FORMS SRF 	ON C.CASE_ID = SRF.CASE_ID
-								LEFT JOIN REF_STUDENTS RS				ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
-								LEFT JOIN CASE_REFERRAL_FORMS CRF		ON C.CASE_ID = CRF.CASE_ID
+								LEFT JOIN REF_STUDENTS RS							ON C.REPORTED_STUDENT_ID = RS.STUDENT_ID
+								LEFT JOIN CASE_REFERRAL_FORMS CRF			ON C.CASE_ID = CRF.CASE_ID
 								LEFT JOIN REF_CASE_PROCEEDINGS RCP		ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 								WHERE U.OFFICE_ID = " .$i ."
 											&& RO.TYPE = 'Major'
@@ -143,7 +154,7 @@
 	}
 
 	//Generate exec command to run python
-	$exec = 'generate-major-spreadsheet-format.py ' .$sdfodrow['email'] .' ' .$ay .' ' .$term . ' ' .$reportNum;
+	$exec = 'generate-major-spreadsheet-format.py ' .$sdfodrow['email'] .' ' .$cdorow['email'] . ' '.$ay .' ' .$term . ' ' .$reportNum;
 	foreach ($totalcases as $value){
 		$exec = $exec .' ' . $value;
 	}
@@ -152,7 +163,7 @@
 	$output=shell_exec($exec);
 
 	//Generate exec command to run python
-	$exec = 'generate-major-report.py ' .$sdfodrow['email'] .' ' .$ay .' ' .$term . ' ' .$reportNum;
+	$exec = 'generate-major-report.py ' .$sdfodrow['email'] .' ' .$cdorow['email'] . ' ' .$ay .' ' .$term . ' ' .$reportNum;
 	foreach ($totalcases as $value){
 		$exec = $exec .' ' . $value;
 	}

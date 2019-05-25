@@ -53,10 +53,8 @@ if (!isset($_GET['cn']))
     <!-- GDRIVE -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/ah.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-          onload="this.onload=function(){};handleClientLoad()"
-          onreadystatechange="if (thigoogle-s.readyState === 'complete') this.onload()">
+    <script src="../gdrive/ah2.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
 
@@ -165,11 +163,11 @@ if (!isset($_GET['cn']))
 
      $qClosure = 'SELECT *
                     FROM CASES C
-                    JOIN STUDENT_RESPONSE_FORMS S ON S.CASE_ID = C.CASE_ID
-                    JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
-                    JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
-                    JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
-                    JOIN REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+                    LEFT JOIN STUDENT_RESPONSE_FORMS S ON S.CASE_ID = C.CASE_ID
+                    LEFT JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                    LEFT JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
+                    LEFT JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
+                    LEFT JOIN REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
                    WHERE C.CASE_ID = "'.$_GET['cn'].'"';
 
       $qClosureRes=mysqli_query($dbc,$qClosure);
@@ -225,6 +223,25 @@ if (!isset($_GET['cn']))
        else{
          $neewQryRes = mysqli_fetch_array($neewQryq);
        }
+
+       $uploadsq = 'SELECT   I.INCIDENT_REPORT_ID, I.IF_UPLOADED AS INCIDENT_UPLOADED,
+                             S.STUDENT_RESPONSE_FORM_ID, S.IF_UPLOADED AS STUDENT_UPLOADED,
+                             C.IF_APPEAL   AS IF_APPEAL,
+                             C.WITH_PARENT_LETTER AS WITH_PARENT_LETTER,
+                             F.PL_UPLOADED AS PL_UPLOADED,
+                             F.FEEDBACK_UPLOADED AS FEEDBACK_UPLOADED
+                   FROM      CASES C
+                   LEFT JOIN STUDENT_RESPONSE_FORMS S ON S.CASE_ID = C.CASE_ID
+                   LEFT JOIN INCIDENT_REPORTS I ON I.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
+                   LEFT JOIN FORM_UPLOADING F ON F.CASE_ID = C.CASE_ID
+                   WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+       $uploadsres=mysqli_query($dbc,$uploadsq);
+       if(!$uploadsres){
+         echo mysqli_error($dbc);
+       }
+       else{
+         $uploadsrow = mysqli_fetch_array($uploadsres,MYSQLI_ASSOC);
+       }
   ?>
 
     <div id="wrapper">
@@ -232,23 +249,27 @@ if (!isset($_GET['cn']))
     <?php include 'sdfod-sidebar.php';?>
 
         <div id="page-wrapper">
-            <div class="row">
-               <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
-                <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
-          					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
-                    <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
-          					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
-                    <br>
-          					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
-          					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
-                    <br>
-          					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-          					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
-                    <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-                </div>
+          <div class="row">
+              <div class="col-lg-8">
+                  <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-6">
+        					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
+        					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
+                  <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
+        					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
+                  <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
+        					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
+                  <br>
+        					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
+        					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
+                  <br>
+        					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
+        					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+                  <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+              </div>
           </div>
   			<br><br>
         <div class="row">
@@ -451,11 +472,16 @@ if (!isset($_GET['cn']))
         <?php }
         ?>
         <?php
-          if($row['REMARKS_ID'] == 11 && $row['NEED_ACAD_SERVICE']) { ?>
+          if($row['REMARKS_ID'] == 11 && $row['NEED_ACAD_SERVICE'] && $uploadsrow['FEEDBACK_UPLOADED']) { ?>
             <button type="button" id="sendAcad" class="btn btn-success" data-dismiss="modal">Send Academic Endorsement Service Form</button>
         <?php }
         ?>
-        <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
+
+        <?php
+          if(($row['REMARKS_ID'] == 10 || $row['REMARKS_ID'] == 11 || $row['REMARKS_ID'] == 7) && !$uploadsrow['FEEDBACK_UPLOADED']) { ?>
+            <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')">Upload Discipline Case Feedback Form</button>
+        <?php }
+        ?>
         <br><br><br><br><br>
       </div>
 
@@ -479,8 +505,6 @@ if (!isset($_GET['cn']))
           }
         }
       }
-
-      include 'sdfod-notif-queries.php';
 
       ?>
     </div>
@@ -512,151 +536,26 @@ if (!isset($_GET['cn']))
   <script>
   var remarks;
   $(document).ready(function() {
+    loadNotif();
 
-    <?php include 'sdfod-notif-scripts.php' ?>
-
-    $('#submitHours').click(function() { // create referral form
-
-      loadFile("../templates/template-academic-service-endorsement-form.docx",function(error,content){
-
-          if (error) { throw error };
-          var zip = new JSZip(content);
-          var doc=new window.docxtemplater().loadZip(zip);
-          // date
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth() + 1; //January is 0!
-          var yyyy = today.getFullYear();
-          if (dd < 10) {
-            dd = '0' + dd;
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/sdfod-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
           }
-          if (mm < 10) {
-            mm = '0' + mm;
-          }
-          var today = dd + '/' + mm + '/' + yyyy;
+        });
 
-          var formNumber;
-          <?php
-          if ($formres['MAX'] != null) { ?>
-            formNumber = <?php echo $formres['MAX'] ?>;
-          <?php }
-          else { ?>
-            formNumber = 1;
-          <?php }
-          ?>
-
-          var titleForm = "Academic Service Endorsement Form #" + formNumber + ".docx";
-
-          doc.setData({
-
-            date: today,
-            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
-            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
-            idn: "<?php echo $rowClosure['user_id'] ?>",
-            firstName: "<?php echo $rowClosure['first_name'] ?>",
-            lastName: "<?php echo $rowClosure['last_name'] ?>",
-            degree: "<?php echo $rowClosure['degree'] ?>",
-            numHrs: document.getElementById("hours").value,
-            typeofidlost: totalID
-
-          });
-
-          try {
-              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-              doc.render();
-          }
-
-          catch (error) {
-              var e = {
-                  message: error.message,
-                  name: error.name,
-                  stack: error.stack,
-                  properties: error.properties,
-              }
-              console.log(JSON.stringify({error: e}));
-              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-              throw error;
-          }
-
-          var out=doc.getZip().generate({
-              type:"blob",
-              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          }); //Output the document using Data-URI
-          saveAs(out, titleForm);
-
-      });
-
-      loadFile("../templates/template-academic-service-printable.docx",function(error,content){
-
-          if (error) { throw error };
-          var zip = new JSZip(content);
-          var doc=new window.docxtemplater().loadZip(zip);
-          // date
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth() + 1; //January is 0!
-          var yyyy = today.getFullYear();
-          if (dd < 10) {
-            dd = '0' + dd;
-          }
-          if (mm < 10) {
-            mm = '0' + mm;
-          }
-          var today = dd + '/' + mm + '/' + yyyy;
-
-          var formNumber;
-          <?php
-          if ($formres['MAX'] != null) { ?>
-            formNumber = <?php echo $formres['MAX'] ?>;
-          <?php }
-          else { ?>
-            formNumber = 1;
-          <?php }
-          ?>
-
-          var titleForm = "Academic Service Form #" + formNumber + " (Students Copy).docx";
-
-          doc.setData({
-
-            date: today,
-            idoFirst: "<?php echo $qComplainantRow['first_name'] ?>",
-            idoLast: "<?php echo $qComplainantRow['last_name'] ?>",
-            idn: "<?php echo $rowClosure['user_id'] ?>",
-            firstName: "<?php echo $rowClosure['first_name'] ?>",
-            lastName: "<?php echo $rowClosure['last_name'] ?>",
-            degree: "<?php echo $rowClosure['degree'] ?>",
-            numHrs: document.getElementById("hours").value,
-            typeofidlost: totalID
-
-          });
-
-          try {
-              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-              doc.render();
-          }
-
-          catch (error) {
-              var e = {
-                  message: error.message,
-                  name: error.name,
-                  stack: error.stack,
-                  properties: error.properties,
-              }
-              console.log(JSON.stringify({error: e}));
-              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-              throw error;
-          }
-
-          var out=doc.getZip().generate({
-              type:"blob",
-              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          }); //Output the document using Data-URI
-          saveAs(out, titleForm);
-
-      });
-      $('#acadService').modal("hide");
-      $("#endorsement").attr('disabled', true).text("Sent");
-    });
+        setTimeout(loadNotif, 5000);
+    };
 
     $('#fileUpload').click(function() {
       var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
@@ -885,6 +784,31 @@ if (!isset($_GET['cn']))
       });
     });
 
+    $('#modalOK').on('click', function() {
+      if($('#message').text() == "Academic Service Endorsement Form has been sent to your email. Please sign the form and sent it to the student.") {
+        $.ajax({
+              url: '../ajax/users-hellosign.php',
+              type: 'POST',
+              data: {
+                  formT: "Academic Service Endorsement Form.docx",
+                  title : "Academic Service Endorsement Form",
+                  subject : "Academic Service Endorsement Form Signature",
+                  message : "Please sign and send to student.",
+                  fname : "Michael",
+                  lname : "Millanes",
+                  email : "sdfod.cms1@gmail.com",
+                  filename : $('#inputfile').val()
+              },
+              success: function(response) {
+                location.reload();
+            }
+        });
+      }
+      else {
+        location.reload();
+      }
+    });
+
     $('#btnViewEvidence').click(function() {
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='sdfod-gdrive-case.php';
@@ -968,11 +892,11 @@ if (!isset($_GET['cn']))
             $("#endorse").attr('disabled', true).text("Submitted");
 
             if('<?php echo $row['CASE_DECISION']; ?>' == "File Case") {
-              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
+              //$('#message').text('Check your email to sign the Discipline Case Feedback Form. Case closed.');
               $('#not-file').hide();
             }
             else {
-              $('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
+              //$('#message').text('Check your email to sign the Discipline Case Feedback Form. Case returned to IDO for Closure Letter');
               $('#file-close').hide();
             }
             $("#sign").attr('disabled', true)
@@ -1006,6 +930,7 @@ if (!isset($_GET['cn']))
               $('#message').text('Case is ready for final signature and closing.');
               $("#finfinpenalty").attr('readonly', true);
               $("#submitPD").attr('disabled', true);
+              $("#alertModal").modal("show");
             }
         });
       }
@@ -1015,6 +940,57 @@ if (!isset($_GET['cn']))
     });
 
     $('#sendAcad').on('click', function() {
+      loadFile("../templates/template-academic-service-endorsement-form - Copy.docx",function(error,content){
+
+          if (error) { throw error };
+          var zip = new JSZip(content);
+          var doc=new window.docxtemplater().loadZip(zip);
+          // date
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd;
+          }
+          if (mm < 10) {
+            mm = '0' + mm;
+          }
+          var today = dd + '/' + mm + '/' + yyyy;
+
+          doc.setData({
+
+            date: today,
+            idoName: "<?php echo $row['HANDLED_BY'] ?>",
+            idn: "<?php echo $row['REPORTED_STUDENT_ID'] ?>",
+            studName: "<?php echo $row['STUDENT'] ?>",
+            degree: "<?php echo $rowClosure['degree'] ?>"
+
+          });
+
+          try {
+              // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+              doc.render();
+          }
+
+          catch (error) {
+              var e = {
+                  message: error.message,
+                  name: error.name,
+                  stack: error.stack,
+                  properties: error.properties,
+              }
+              console.log(JSON.stringify({error: e}));
+              // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+              throw error;
+          }
+
+          var out=doc.getZip().generate({
+              type:"blob",
+              mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }); //Output the document using Data-URI
+          saveAs(out, "Academic Service Endorsement Form.docx");
+      });
       $.ajax({
           url: '../ajax/sdfod-academic-service.php',
           type: 'POST',
@@ -1022,16 +998,11 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
-            $('#message').text('Academic Service Endorsement Form has been sent to student successfully!');
+            $('#message').text('Academic Service Endorsement Form has been sent to your email. Please sign the form and sent it to the student.');
             $("#sendAcad").attr('disabled', true);
-
             $("#alertModal").modal("show");
           }
       });
-    });
-
-    $('#modalOK').on('click', function() {
-      location.reload();
     });
 
     $('#uploading').click(function() {
@@ -1048,32 +1019,45 @@ if (!isset($_GET['cn']))
       $('#acadService').modal("show");
     });
 
-    $('#updateTable').click(function() {
+    // $('#updateTable').click(function() {
+    //
+    //   <?php
+    //      if ($row['REMARKS_ID'] == 6){
+    //       $updateQry = 'UPDATE CASE_REFERRAL_FORMS
+    //                        SET IF_UPLOADED = 1
+    //                      WHERE CASE_ID = "'.$_GET['cn'].'"';
+    //
+    //       $update = mysqli_query($dbc,$updateQry);
+    //       if(!$update){
+    //         echo mysqli_error($dbc);
+    //       }
+    //     }
+    //
+    //     else if ($row['REMARKS_ID'] == 11) {
+    //       $updateQry = 'UPDATE CASE_REFERRAL_FORMS
+    //                        SET IF_UPLOADED = 4
+    //                      WHERE CASE_ID = "'.$_GET['cn'].'"';
+    //
+    //       $update = mysqli_query($dbc,$updateQry);
+    //       if(!$update){
+    //         echo mysqli_error($dbc);
+    //       }
+    //     }
+    //   ?>
+    //
+    // });
 
-      <?php
-         if ($row['REMARKS_ID'] == 6){
-          $updateQry = 'UPDATE CASE_REFERRAL_FORMS
-                           SET IF_UPLOADED = 1
-                         WHERE CASE_ID = "'.$_GET['cn'].'"';
-
-          $update = mysqli_query($dbc,$updateQry);
-          if(!$update){
-            echo mysqli_error($dbc);
+    $('#successOK').on('click', function() {
+      $.ajax({
+          url: '../ajax/sdfod-update-feedback.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
+            location.reload();
           }
-        }
-
-        else if ($row['REMARKS_ID'] == 11) {
-          $updateQry = 'UPDATE CASE_REFERRAL_FORMS
-                           SET IF_UPLOADED = 4
-                         WHERE CASE_ID = "'.$_GET['cn'].'"';
-
-          $update = mysqli_query($dbc,$updateQry);
-          if(!$update){
-            echo mysqli_error($dbc);
-          }
-        }
-      ?>
-
+      });
     });
 
     $('.modal').attr('data-backdrop', "static");
@@ -1100,12 +1084,6 @@ if (!isset($_GET['cn']))
       //$("#<?php echo $row['CASE_PROCEEDINGS_ID']; ?>").prop("checked", true);
       //$("input[type=radio]").attr('disabled', true);
   <?php }
-  ?>
-  <?php
-    if (($rowForm['if_uploaded'] == 1 AND $row['REMARKS_ID'] == 6) ||$neewQryRes['REMARKS_ID'] == 11){ ?>
-
-      $("#uploading").show();
-<?php }
   ?>
   </script>
 
@@ -1195,7 +1173,7 @@ if (!isset($_GET['cn']))
           <p> File was uploaded successfully!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="successOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
@@ -1231,7 +1209,7 @@ if (!isset($_GET['cn']))
           <p> File was uploaded successfully!</p>
         </div>
         <div class="modal-footer">
-          <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="button" id="successOK" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
@@ -1280,7 +1258,7 @@ if (!isset($_GET['cn']))
               <option value="Incident/Violation is recorded but without any offense">Incident/Violation is recorded but without any offense</option>
               <option value="Incident/Violation is recorded as first minor offense">Incident/Violation is recorded as first minor offense</option>
               <option value="Will be processed as a major discipline offense">Will be processed as a major discipline offense</option>
-              <option value="Student is referred to University Councelor">Student is referred to University Councelor</option>
+              <option value="Student is referred to University Councelor">Proceed to University Councelor</option>
               <option value="Warning is given">Warning is given</option>
               <option value="Reprimand is given">Reprimand is given</option>
               <option value="Presented a letter from the parent/guardian">Presented a letter from the parent/guardian</option>

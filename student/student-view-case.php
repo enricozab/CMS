@@ -106,6 +106,23 @@ if (!isset($_GET['cn']))
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
     }
 
+    $qClosure = 'SELECT *
+                   FROM CASES C
+                   LEFT JOIN STUDENT_RESPONSE_FORMS S ON S.CASE_ID = C.CASE_ID
+                   LEFT JOIN USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
+                   LEFT JOIN REF_STUDENTS R ON R.STUDENT_ID = U.USER_ID
+                   LEFT JOIN REF_USER_OFFICE RO ON RO.OFFICE_ID = U.OFFICE_ID
+                   LEFT JOIN REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+                  WHERE C.CASE_ID = "'.$_GET['cn'].'"';
+
+     $qClosureRes=mysqli_query($dbc,$qClosure);
+     if(!$qClosureRes){
+       echo mysqli_error($dbc);
+     }
+     else{
+       $rowClosure=mysqli_fetch_array($qClosureRes,MYSQLI_ASSOC);
+     }
+
     $queryForm = 'SELECT 		*
                     FROM		STUDENT_RESPONSE_FORMS S
                     JOIN    CASES C ON C.CASE_ID = S.CASE_ID
@@ -127,26 +144,28 @@ if (!isset($_GET['cn']))
     <?php include 'student-sidebar.php';?>
 
         <div id="page-wrapper">
-            <div class="row">
-               <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
-                <div class="col-lg-6">
-          					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
-          					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
-                    <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
-          					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
-                    <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
-          					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
-                    <br>
-          					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
-          					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
-                    <br>
-          					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-          					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
-                    <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-                </div>
-
-
-            </div>
+          <div class="row">
+              <div class="col-lg-8">
+                  <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-6">
+        					<b>Offense:</b> <?php echo $row['OFFENSE_DESCRIPTION']; ?><br>
+        					<b>Type:</b> <?php echo $row['TYPE']; ?><br>
+                  <b>Location of the Incident:</b> <?php echo $row['LOCATION']; ?><br>
+        					<b>Date Filed:</b> <?php echo $row['DATE_FILED']; ?><br>
+                  <b>Last Update:</b> <?php echo $row['LAST_UPDATE']; ?><br>
+        					<b>Status:</b> <?php echo $row['STATUS_DESCRIPTION']; ?><br>
+                  <br>
+        					<b>Student ID No.:</b> <?php echo $row['REPORTED_STUDENT_ID']; ?><br>
+        					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
+                  <br>
+        					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
+        					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+                  <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+              </div>
+          </div>
   			<br><br>
         <div class="row">
           <div class="col-lg-6">
@@ -180,24 +199,11 @@ if (!isset($_GET['cn']))
               </div>
             <?php }
             ?>
-
-            <div class="form-group" id="evidencediv">
-              <label>Evidence <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. Document/Photo)</label>
-              <br><br>
-              <div id="evidencelist">
-                <div class="form-group" style="width:300px;">
-                  <input type="file">
-                </div>
-              </div>
-              <div id="appendevidence">
-                <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another file</a></span>
-              </div>
-            </div>
           </div>
         </div>
         <br><br><br><br><br>
         <?php
-          if(($row['TYPE'] == "Major" || $row['PENALTY_DESC'] == "Will be processed as a major discipline offense") && $row['VERDICT'] == "Guilty") {
+          if(($row['TYPE'] == "Major" || $row['PROCEEDING_DATE'] != null) && $row['VERDICT'] == "Guilty" && $row['REMARKS_ID'] == 11) {
             echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button><br>';
           }
         ?>
@@ -229,8 +235,6 @@ if (!isset($_GET['cn']))
               }
             }
           }
-
-          include 'student-notif-queries.php';
         ?>
       </div>
     </div>
@@ -267,6 +271,26 @@ if (!isset($_GET['cn']))
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/student-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
 
     var titleForm;
 
@@ -587,6 +611,7 @@ if (!isset($_GET['cn']))
             //$("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
             //$("#alertModal").modal("show");
             $("#message").text('forms');
+            $('#waitModal').modal('hide');
             $("#newFormsModal").modal("show");
           }
       });
@@ -653,6 +678,7 @@ if (!isset($_GET['cn']))
 
     $("#submitParent").click(function(){
       sendStudResponseFirst();
+      $('#waitModal').modal('show');
     });
 
     $('#form1').on('click', function() {
@@ -671,6 +697,7 @@ if (!isset($_GET['cn']))
           },
           success: function(response) {
             $('#form').attr('disabled',true);
+            location.reload();
           }
       });
     });
@@ -715,9 +742,9 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
-              //$('#message').text('An appeal has been sent successfully!');
+              $('#message').text('An appeal has been sent to ULC successfully!');
               $("#appeal").attr('disabled', true);
-              $("#newFormModal").modal("show");
+              $("#alertModal").modal("show");
               //$("#alertModal").modal("show");
           }
       });
@@ -750,11 +777,77 @@ if (!isset($_GET['cn']))
       }
     });
 
+    $('#downloadAS').on('click', function() {
+      loadFile("../templates/template-academic-service-form.docx",function(error,content){
+
+        if (error) { throw error };
+        var zip = new JSZip(content);
+        var doc=new window.docxtemplater().loadZip(zip);
+        // date
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+          dd = '0' + dd;
+        }
+        if (mm < 10) {
+          mm = '0' + mm;
+        }
+        var today = dd + '/' + mm + '/' + yyyy;
+
+        var formNumber;
+        <?php
+        if ($formres['MAX'] != null) { ?>
+          formNumber = <?php echo $formres['MAX'] ?>;
+        <?php }
+        else { ?>
+          formNumber = 1;
+        <?php }
+        ?>
+
+        doc.setData({
+
+          date: today,
+          idoName: "<?php echo $row['HANDLED_BY'] ?>",
+          idn: "<?php echo $row['REPORTED_STUDENT_ID'] ?>",
+          studName: "<?php echo $row['STUDENT'] ?>",
+          degree: "<?php echo $rowClosure['degree'] ?>"
+
+        });
+
+        try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+        }
+
+        catch (error) {
+            var e = {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+                properties: error.properties,
+            }
+            console.log(JSON.stringify({error: e}));
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+            throw error;
+        }
+
+        var out=doc.getZip().generate({
+            type:"blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        }); //Output the document using Data-URI
+        saveAs(out, "Academic Service Form.docx");
+        $('#myModalLabel1').text('Academic Service');
+        $('#message').text("Academic Service Form has been downloaded. Please proceed to your respective College Department Secretary for further instructions.");
+        $('#downloadAS').attr('disabled', true);
+        $('#alertModal').modal("show");
+      });
+    });
+
     $('.modal').attr('data-backdrop', "static");
     $('.modal').attr('data-keyboard', false);
   });
-
-  <?php include 'student-notif-scripts.php' ?>
 
   <?php
     if($row['REMARKS_ID'] < 3 or $row['REMARKS_ID'] > 4){ ?>
@@ -766,7 +859,7 @@ if (!isset($_GET['cn']))
     if($row['PROCEEDING'] != null ){ ?>
       $("#proceedingarea").show();
   <?php }
-    if($row['REMARKS_ID'] != 11 or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL']) { ?>
+    if($row['REMARKS_ID'] != 11 or $row['CAN_APPEAL'] > 5 or $row['CAN_APPEAL'] == null or $row['IF_APPEAL'] or $row['IF_APPEAL']) { ?>
       $("#appeal").hide();
   <?php }
     if($row['REMARKS_ID'] < 3 or $row['REMARKS_ID'] > 4) { ?>
@@ -777,9 +870,6 @@ if (!isset($_GET['cn']))
   <?php }
     if($row['REMARKS_ID'] > 4) { ?>
       $("#commentarea").hide();
-  <?php }
-    if($row['REMARKS_ID'] > 11) { ?>
-      $("#appeal").attr('disabled', true);
   <?php } ?>
   </script>
 
@@ -964,7 +1054,7 @@ if (!isset($_GET['cn']))
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
+          <h4 class="modal-title" id="myModalLabel1"><b>Alleged Case</b></h4>
         </div>
         <div class="modal-body">
           <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
@@ -1008,6 +1098,24 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <button type="button" id="form2" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wait Modal -->
+  <div class="modal fade" id="waitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+          <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
+        </div>
+        <div class="modal-body">
+          <p> Please wait. </p>
+        </div>
+        <div class="modal-footer">
+          <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
         </div>
       </div>
     </div>

@@ -54,10 +54,6 @@
 
 <body>
 
-  <?php
-    include 'hdo-notif-queries.php'
-  ?>
-
     <div id="wrapper">
 
         <?php include 'hdo-sidebar.php';?>
@@ -109,9 +105,44 @@
   //function that runs once the page is loaded
 
   $(document).ready(function() {
-      <?php include 'hdo-notif-scripts.php'?>
-      $("#login").hide();
-      $("#create").hide();
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/hdo-notif-incident-reports.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#ir').text(response);
+            }
+            else {
+              $('#ir').text('');
+            }
+          }
+        });
+
+        $.ajax({
+          url: '../ajax/hdo-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
+
+    $("#login").hide();
+    $("#create").hide();
   });
   </script>
 

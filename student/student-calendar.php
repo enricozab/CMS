@@ -49,12 +49,12 @@
       <?php include 'student-sidebar.php';?>
 
       <div id="page-wrapper">
-        <div class="row">
-          <div class="col-lg-12">
-            <h3 class="page-header">Calendar</h3>
+          <div class="row">
+              <div class="col-lg-8">
+                  <h3 class="page-header">Calendar</h3>
+              </div>
           </div>
           <?php include '../calendar/button_and_calendar.php' ?>
-        </div>
       </div>
     <!-- /#wrapper -->
 
@@ -83,11 +83,29 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {
-        $('#dataTables-example').DataTable({
-            responsive: true
-        });
-        $("#login").hide();
-        $("#create").hide();
+      loadNotif();
+
+      function loadNotif () {
+          $.ajax({
+            url: '../ajax/student-notif-cases.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#cn').text(response);
+              }
+              else {
+                $('#cn').text('');
+              }
+            }
+          });
+
+          setTimeout(loadNotif, 5000);
+      };
+
+      $("#login").hide();
+      $("#create").hide();
     });
     </script>
 

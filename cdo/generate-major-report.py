@@ -6,10 +6,11 @@ import json
 from oauth2client.service_account import ServiceAccountCredentials
 from django.http import HttpResponse
 
-email = str(sys.argv[1])
-ay = str(sys.argv[2])
-term = str(sys.argv[3])
-reportnum = str(sys.argv[4])
+sdfod = str(sys.argv[1])
+cdo = str(sys.argv[2])
+ay = str(sys.argv[3])
+term = str(sys.argv[4])
+reportnum = str(sys.argv[5])
 spreadsheetname = "Report No. " + reportnum + " Summary Report for Major Cases for AY " + ay + " Term " + term
 
 # use creds to create a client to interact with the Google Drive API
@@ -41,18 +42,18 @@ table = ["MAJOR DISCIPLINE VIOLATIONS","","","","","","","","","","",
 		"", "","Undergraduate","","","","","","","","",
 		"TOTAL", "","","","","","","","","",""]
 
-tableIndex=0
-cell_list = sheet.range('A1:K16')
-
-for cell in cell_list:
-	cell.value = (table[tableIndex]);
-	tableIndex=tableIndex+1
-
-sheet.update_cells(cell_list)
+# tableIndex=0
+# cell_list = sheet.range('A1:K16')
+#
+# for cell in cell_list:
+# 	cell.value = (table[tableIndex]);
+# 	tableIndex=tableIndex+1
+#
+# sheet.update_cells(cell_list)
 
 ###### BATCH PROCESSING OF DATA - Input Data
 cell_list = sheet.range('D3:J6')
-argsnum = 5
+argsnum = 6
 for cell in cell_list:
 	cell.value = (int(sys.argv[argsnum]));
 	argsnum=argsnum+1
@@ -69,7 +70,7 @@ for cell in cell_list:
 sheet.update_cells(cell_list)
 
 cols = ["D","E","F","G","H","I","J","K"]
-rows = ["3","4","5","6","7","8","9","10","11","12",
+rows = ["3","4","5","6","7","10","11","12",
 		"13","14","15","16"]
 sum = ""
 ##CALCULATING SUB-TOTALS
@@ -94,4 +95,5 @@ for x in range(len(rows)):
 #sheet.update_acell("B21", grandtotal)
 
 ##Share sheets to sdfod. Change role='reader' for final
-open.share(email, perm_type='user', role='reader')
+open.share(sdfod, perm_type='user', role='reader')
+open.share(cdo, perm_type='user', role='reader')

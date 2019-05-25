@@ -32,7 +32,7 @@
 				<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
 				</li>
 				<li class="divider"></li>
-				<li><a href="../login.php" ><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+				<li><a href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/CMS"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 				</li>
 			</ul>
 			<!-- /.dropdown-user -->
@@ -66,9 +66,6 @@
 				</li>
 				<li>
 					<a href="faculty-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
-				</li>
-				<li>
-					<a href="faculty-reports.php"><i class="fa fa-file fa-fw"></i> Reports</a>
 				</li>
 			</ul>
 		</div>

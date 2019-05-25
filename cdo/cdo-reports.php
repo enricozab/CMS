@@ -49,13 +49,13 @@
       border: 16px solid #f3f3f3;
       border-radius: 50%;
       border-top: 16px solid #3498db;
-      width: 120px;
-      height: 120px;
+      width: 80px;
+      height: 80px;
       -webkit-animation: spin 2s linear infinite; /* Safari */
       animation: spin 2s linear infinite;
       position: relative;
       top: 50%;
-      left: 40%;
+      left: 43%;
     }
 
     /* Safari */
@@ -74,7 +74,6 @@
 
 <body>
 
-    <?php include 'cdo-notif-queries.php'?>
     <div id="wrapper">
 
         <?php include 'cdo-sidebar.php';?>
@@ -99,7 +98,7 @@
           								require_once('../mysql_connect.php');
           								$sqlQuery = "SELECT DISTINCT(SRF.SCHOOL_YEAR)
           												FROM CMS.STUDENT_RESPONSE_FORMS SRF
-          												ORDER BY SRF.SCHOOL_YEAR ASC";
+          												ORDER BY SRF.SCHOOL_YEAR DESC";
           								$sqlRes = mysqli_query($dbc, $sqlQuery);
           								while ($row = $sqlRes->fetch_assoc()){
           									echo '<option value="' .$row['SCHOOL_YEAR'] .'">' . $row['SCHOOL_YEAR'] . '</option>';
@@ -160,7 +159,27 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
 
   <script>
-  <?php include 'cdo-notif-scripts.php'?>
+    loadNotif();
+
+    function loadNotif () {
+        $.ajax({
+          url: '../ajax/cdo-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
+
     function submitForm(){
       var ay = document.getElementById('academicyear').value;
       var term = document.getElementById('term').value;
@@ -193,6 +212,9 @@
         });
 
     }
+
+    $('.modal').attr('data-backdrop', "static");
+    $('.modal').attr('data-keyboard', false);
   </script>
 
   <!-- Notification Modal -->
@@ -204,10 +226,10 @@
           <h4 class="modal-title" id="myModalLabel" align="center"><b>Report Generation</b></h4>
         </div>
         <div class="modal-body">
-          <p id="modalMessage">Report has been generated and sent to the SDFO Director!</p><br>
+          <p id="modalMessage">Report has been generated and sent to your email and the SDFO Director! Check your email to view the spreadsheet.</p><br>
         </div>
         <div class="modal-footer">
-          <button type="submit" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="submit" id = "modalOK" onclick="location.reload()" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>
