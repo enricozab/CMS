@@ -43,7 +43,6 @@
     }
   }
 
-
   if($changevio == 1) {
     $query="UPDATE CASES SET OFFENSE_ID={$changevio}, CHEATING_TYPE_ID={$cheat} WHERE CASE_ID={$_POST['caseID']}";
     $result=mysqli_query($dbc,$query);
