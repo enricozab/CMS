@@ -164,78 +164,121 @@ if (!isset($_GET['cn']))
         					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
         					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                   <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+                  <br><br>
+                  <div class="form-group">
+                    <label>Summary of the Incident</label>
+                    <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+                  </div>
+
+                  <div class="form-group" id="commentarea" hidden>
+                    <label>Comment</label>
+                    <textarea id="comment" name="comment" class="form-control" rows="3" readonly><?php echo $row['COMMENT']; ?></textarea>
+                  </div>
+
+                  <div class="form-group" id="proceedingarea" hidden>
+                    <label>Nature of Proceedings</label>
+                    <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+                  </div>
+
+                  <?php
+                  if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
+                    <div class="form-group" id="penaltyarea">
+                      <label>Penalty</label>
+                      <?php
+                        if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                          <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+                      <?php }
+                        else if($row['PROCEEDING_DECISION'] != null) { ?>
+                          <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                      <?php }
+                      ?>
+                    </div>
+                  <?php }
+                  ?>
+                  <br><br><br>
+                  <?php
+                    if(($row['TYPE'] == "Major" || $row['PROCEEDING_DATE'] != null) && $row['VERDICT'] == "Guilty" && $row['REMARKS_ID'] == 11) {
+                      echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button><br>';
+                    }
+                  ?>
+                  <?php
+                    if($row['REMARKS_ID'] == 17) {
+                      echo '<button type="submit" id="downloadAS" name="downloadAS" class="btn btn-success">Download Academic Service Form</button><br>';
+                    }
+                  ?>
+                  <button type="submit" id="form" name="form" class="btn btn-success">Send Student Response Letter</button>
+                  <br><br><br>
+
+                  <?php
+                    //Removes 'new' badge and reduces notif's count
+                    $query2='SELECT 		SC.CASE_ID AS CASE_ID,
+                                        SC.IF_NEW AS IF_NEW
+                            FROM 		    STUDENT_CASES SC
+                            WHERE   	  SC.USER_ID = "'.$_SESSION['user_id'].'" AND SC.CASE_ID = "'.$_GET['cn'].'"';
+                    $result2=mysqli_query($dbc,$query2);
+                    if(!$result2){
+                      echo mysqli_error($dbc);
+                    }
+                    else{
+                      $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+                      if($row2['IF_NEW']){
+                        $query2='UPDATE STUDENT_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
+                        $result2=mysqli_query($dbc,$query2);
+                        if(!$result2){
+                          echo mysqli_error($dbc);
+                        }
+                      }
+                    }
+                  ?>
               </div>
-          </div>
-  			<br><br>
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="form-group">
-              <label>Summary of the Incident</label>
-              <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-            </div>
-
-            <div class="form-group" id="commentarea" hidden>
-              <label>Comment</label>
-              <textarea id="comment" name="comment" class="form-control" rows="3" readonly><?php echo $row['COMMENT']; ?></textarea>
-            </div>
-
-            <div class="form-group" id="proceedingarea" hidden>
-              <label>Nature of Proceedings</label>
-              <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
-            </div>
-
-            <?php
-            if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
-              <div class="form-group" id="penaltyarea">
-                <label>Penalty</label>
-                <?php
-                  if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-                <?php }
-                  else if($row['PROCEEDING_DECISION'] != null) { ?>
-                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
-                <?php }
-                ?>
+              <?php include "student-case-audit.php" ?>
+              <div class="col-lg-6">
+                  <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <b style = "font-size: 17px;">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#caseHistory" style="color: black;">Case History</a>
+                        </b>
+                      </div>
+                      <!-- /.panel-heading -->
+                      <div id="caseHistory" class="panel-collapse collapse">
+                        <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
+                            <div class="table-responsive table-bordered">
+                              <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Action Done</th>
+                                        <th>By Whom</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  <?php
+                                    if ($caseAuditRes->num_rows > 0) {
+                                      while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
+                                        echo "<tr>
+                                                <td>{$caseAuditRow['date']}</td>
+                                                <td>{$caseAuditRow['action_done']}</td>
+                                                <td>{$caseAuditRow['action_done_by']}</td>
+                                              </tr>";
+                                      }
+                                    }
+                                    else {
+                                      echo "<p style='margin-right: 20px; margin-left: -20px;'>No case history</p>";
+                                    }
+                                  ?>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                            <br>
+                        </div>
+                        <!-- /.panel-body -->
+                      </div>
+                  </div>
+                  <!-- /.panel -->
               </div>
-            <?php }
-            ?>
+              <!-- /.col-lg-6 -->
           </div>
-        </div>
-        <br><br><br><br><br>
-        <?php
-          if(($row['TYPE'] == "Major" || $row['PROCEEDING_DATE'] != null) && $row['VERDICT'] == "Guilty" && $row['REMARKS_ID'] == 11) {
-            echo '<button type="submit" id="appeal" name="appeal" class="btn btn-warning">Appeal</button><br>';
-          }
-        ?>
-        <?php
-          if($row['REMARKS_ID'] == 17) {
-            echo '<button type="submit" id="downloadAS" name="downloadAS" class="btn btn-success">Download Academic Service Form</button><br>';
-          }
-        ?>
-        <button type="submit" id="form" name="form" class="btn btn-success">Send Student Response Letter</button>
-        <br><br><br>
-
-        <?php
-          //Removes 'new' badge and reduces notif's count
-          $query2='SELECT 		SC.CASE_ID AS CASE_ID,
-                              SC.IF_NEW AS IF_NEW
-                  FROM 		    STUDENT_CASES SC
-                  WHERE   	  SC.USER_ID = "'.$_SESSION['user_id'].'" AND SC.CASE_ID = "'.$_GET['cn'].'"';
-          $result2=mysqli_query($dbc,$query2);
-          if(!$result2){
-            echo mysqli_error($dbc);
-          }
-          else{
-            $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
-            if($row2['IF_NEW']){
-              $query2='UPDATE STUDENT_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
-              $result2=mysqli_query($dbc,$query2);
-              if(!$result2){
-                echo mysqli_error($dbc);
-              }
-            }
-          }
-        ?>
       </div>
     </div>
     <!-- /#wrapper -->
