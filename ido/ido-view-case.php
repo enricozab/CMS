@@ -21,7 +21,7 @@ if (!isset($_GET['cn']))
 
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-
+  
 	  <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
