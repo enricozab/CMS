@@ -472,6 +472,10 @@ if (!isset($_GET['cn']))
       }
     });
 
+    $("#submitTwoF").click(function(){
+      $("#twoFactorModal").show();
+    });
+
     $("#submitFormAgain").click(function(){
         var ids = ['#schoolyr2','#term2','#letter2','#admissionType2'];
         var isEmpty = true;
@@ -728,6 +732,14 @@ if (!isset($_GET['cn']))
       '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
       '<input type="file">'+
       '</div>');
+    });
+
+    $('#modalYes').on('click', function() {
+      $("#submitFormAgain").click();
+    });
+
+    $('#modalNo').on('click', function() {
+      
     });
 
     $(document).on('click', '#removeevidence', function(){
@@ -996,7 +1008,7 @@ if (!isset($_GET['cn']))
 
         </div>
         <div class="modal-footer">
-          <button type="submit" id = "submitFormAgain" class="btn btn-primary" data-dismiss="modal">Submit</button>
+          <button type="submit" id = "submitTwoF" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>
@@ -1120,6 +1132,25 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
+  <!-- Two Factor Authentication Modal -->
+  <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
+            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
+          </div>
+				</div>
+			</div>
+    </div>
 
 </body>
 
