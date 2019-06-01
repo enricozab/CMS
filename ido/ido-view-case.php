@@ -283,7 +283,8 @@ if (!isset($_GET['cn']))
               <div class="col-lg-6">
                   <div class="panel panel-default">
                       <div class="panel-heading">
-                          <b>Documents/Evidence</b> <button Ftype="submit" id = "first" name="evidence" class="btn btn-primary btn-sm" style = "margin-left: 220px;" onclick="handle('<?php echo $passData;?>')">Authenticate Google Drive</button>
+                          <b>Documents/Evidence</b>
+                          <button Ftype="submit" id = "first" name="evidence" class="btn btn-primary btn-sm" style = "margin-left: 20px;" onclick="handle('<?php echo $passData;?>')">Authenticate Google Drive</button>
                       </div>
 
                       <!-- // NEW - DRIVE -->

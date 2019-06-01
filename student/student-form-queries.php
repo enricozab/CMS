@@ -1,5 +1,4 @@
 <?php
-
 $case = 'SELECT *
            FROM cases c
            JOIN users u ON u.user_id = c.complainant_id
