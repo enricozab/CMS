@@ -240,7 +240,9 @@
               success: function(msg) {
                   generate();
                   //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
-                  $("#sendModal").modal("show");
+                  $("#twoFactorModal").modal("show");
+
+                  /////INSERT SENDMODAL
               }
           });
         }
@@ -343,6 +345,25 @@
         }
       }
 
+      $('#modalYes').on('click', function() {
+          $.ajax({
+                url: '../ajax/users-hellosign.php',
+                type: 'POST',
+                data: {
+                    formT: titleForm,
+                    title : "Incident Report",
+                    subject : "Incident Report Document Signature",
+                    message : "Please do sign this document and forward it, along with your pieces of evidence, to hdo.cms@gmail.com",
+                    fname : "<?php echo $nameres['first_name'] ?>",
+                    lname : "<?php echo $nameres['last_name'] ?>",
+                    email : "<?php echo $nameres['email'] ?>",
+                    filename : $('#inputfile').val()
+                },
+                success: function(response) {
+                  $("#sendModal").modal("show");
+              }
+          });
+      });
       $('#sentOK').on('click', function() {
           $.ajax({
                 url: '../ajax/users-hellosign.php',
@@ -404,6 +425,25 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Modal3 -->
+		<div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
+            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
+          </div>
+				</div>
+			</div>
     </div>
 
 </body>
