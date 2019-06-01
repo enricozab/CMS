@@ -263,19 +263,22 @@
 				
 				<div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">
+                        <!-- <div class="panel-heading">
                             User
-                        </div>
+                        </div> -->
                         <!-- .panel-heading -->
                         <div class="panel-body">
                             <div class="panel-group" id="accordion">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
+                                            <!-- change the href to the id when you create a new collapse -->
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Create User</a>
                                         </h4>
                                     </div>
-                                    <div id="collapseOne" class="panel-collapse collapse in">
+                                    <!-- include 'in' at the end of class to have it collapsed when you load the screen ----  class="panel-collapse collapse in" -->
+                                    <!-- change the id when you create a new collapse -->
+                                    <div id="collapseOne" class="panel-collapse collapse">
                                         <div class="panel-body">
 											<label>First Name</label>
                                             <input class="form-control">
@@ -288,16 +291,20 @@
 											<br>
 											<label>User Type</label>
                                             <select class="form-control">
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                                <option>Student</option>
+                                                <option>Faculty</option>
                                             </select>
 											<br>
 											<label>Phone Number</label>
                                             <input class="form-control">
 											<br>
+                                            <label>Office</label>
+                                            <select class="form-control">
+                                                <option>CCS</option>
+                                                <option>COS</option>
+                                                <option>COB</option>
+                                            </select>
+                                            <br>
 											<button type="submit" class="btn btn-default">Create User</button>
 											<br>
 										</div>
@@ -332,19 +339,46 @@
 											<br>
 											<label>User Type</label>
                                             <select class="form-control">
+                                                <option>Student</option>
+                                                <option>Faculty</option>
+                                            </select>
+											<br>
+											<label>Phone Number</label>
+                                            <input class="form-control">
+											<br>
+                                            <label>Office</label>
+                                            <select class="form-control">
+                                                <option>CCS</option>
+                                                <option>COS</option>
+                                                <option>COB</option>
+                                            </select>
+                                            <br>
+											<button type="submit" class="btn btn-default">Edit User</button>
+											<br><br>
+											Notes: after selecting a user in the first dropdown select, the information will update in the other text inputs
+										</div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Manage User</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse">
+                                        <div class="panel-body">
+											<label>Select User</label>
+                                            <select class="form-control">
                                                 <option>1</option>
                                                 <option>2</option>
                                                 <option>3</option>
                                                 <option>4</option>
                                                 <option>5</option>
                                             </select>
+                                            <br>
+                                            <button type="submit" class="btn btn-default">Disable User</button>
 											<br>
-											<label>Phone Number</label>
-                                            <input class="form-control">
-											<br>
-											<button type="submit" class="btn btn-default">Edit User</button>
-											<br><br>
-											Notes: after selecting a user in the first dropdown select, the information will update in the other text inputs
 										</div>
                                     </div>
                                 </div>
