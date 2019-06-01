@@ -346,24 +346,13 @@
       }
 
       $('#modalYes').on('click', function() {
-          $.ajax({
-                url: '../ajax/users-hellosign.php',
-                type: 'POST',
-                data: {
-                    formT: titleForm,
-                    title : "Incident Report",
-                    subject : "Incident Report Document Signature",
-                    message : "Please do sign this document and forward it, along with your pieces of evidence, to hdo.cms@gmail.com",
-                    fname : "<?php echo $nameres['first_name'] ?>",
-                    lname : "<?php echo $nameres['last_name'] ?>",
-                    email : "<?php echo $nameres['email'] ?>",
-                    filename : $('#inputfile').val()
-                },
-                success: function(response) {
-                  $("#sendModal").modal("show");
-              }
-          });
+        $("#sendModal").modal("show");
       });
+
+      $('#modalNo').on('click', function() {
+        $("#twoFactorModal").modal("hide");
+      });
+
       $('#sentOK').on('click', function() {
           $.ajax({
                 url: '../ajax/users-hellosign.php',
@@ -427,7 +416,7 @@
       </div>
     </div>
 
-    <!-- Modal3 -->
+    <!-- Two Factor Authentication Modal -->
 		<div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">

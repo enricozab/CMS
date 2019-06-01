@@ -296,7 +296,12 @@ if (!isset($_GET['cn']))
 
     //response form
     $("#form").click(function(){
+      
+      $("#twoFactorModal").modal("show");
 
+    });
+
+    $('#modalYes').on('click', function() {
       var remark = <?php echo $row['REMARKS_ID']; ?>;
       var stat = <?php echo $row['STATUS_ID']; ?>;
 
@@ -311,7 +316,10 @@ if (!isset($_GET['cn']))
         //parentLetter();
 
       }
+    });
 
+    $('#modalNo').on('click', function() {
+      $("#twoFactorModal").modal("hide");
     });
 
     function loadFile(url,callback){
@@ -1120,6 +1128,25 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
+  <!-- Two Factor Authentication Modal -->
+  <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
+            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
+          </div>
+				</div>
+			</div>
+    </div>
 
 </body>
 

@@ -383,6 +383,7 @@ if (!isset($_GET['irn']))
               success: function(response) {
                 var string = "Case #";
                 caseData = string.concat(response);
+                $("#twoFactorModal").modal("show");
               }
           });
           $('#message').text('Submitted successfully!');
@@ -395,6 +396,14 @@ if (!isset($_GET['irn']))
           $('#done').hide();
           $("#alertModal").modal("show");
         }
+      });
+
+      $('#modalYes').on('click', function() {
+        $("#alertModal").modal("show");
+      });
+
+      $('#modalNo').on('click', function() {
+        $("#twoFactorModal").modal("hide");
       });
 
       $('#modalOK').click(function() {
@@ -562,6 +571,25 @@ if (!isset($_GET['irn']))
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Two Factor Authentication Modal -->
+		<div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
+            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
+          </div>
+				</div>
+			</div>
     </div>
 </body>
 
