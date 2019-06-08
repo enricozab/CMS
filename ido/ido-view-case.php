@@ -684,9 +684,10 @@ if (!isset($_GET['cn']))
     });
 
     $('#mamamo').on('click', function() {
-      if(('#message').text() == "Case is forwarded to SDFO Director successfully!") {
-        location.reload();
-      }
+      location.reload();
+      // if(('#message').text() == "Case is forwarded to SDFO Director successfully!") {
+      //   location.reload();
+      // }
     });
 
     $('#first').on('click',function() {
@@ -730,24 +731,39 @@ if (!isset($_GET['cn']))
       btnSubmit(data);
     });
 
-    //new
     $('#six').on('click',function(data) {
+
       $("#uploadModal").modal("hide");
-      //$("#waitModal").modal("show");
 
       var e = document.getElementById("uploadSelect");
       var selectedUser = e.options[e.selectedIndex].value;
+      var com = document.getElementById("desc_input").value;
+      var check = 1;
 
-      console.log(selectedUser);
+      $.ajax({
+          url: '../ajax/ido-insert-evi.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>
+          },
+          success: function(msg) {
 
-      // need to change DB, add new table
+            document.getElementById("uploadSelect").value = "";
+            document.getElementById("desc_input").value = "";
 
-      // $query="INSERT INTO CASES (INCIDENT_REPORT_ID,REPORTED_STUDENT_ID,OFFENSE_ID,CHEATING_TYPE_ID,COMPLAINANT_ID,DATE_INCIDENT,LOCATION,DETAILS,HANDLED_BY_ID)
-      //           VALUES ($incidentReport,'{$_POST['studentID']}','{$_POST['offenseID']}',$cheatType,'{$_POST['complainantID']}','{$_POST['dateIncident']}','{$_POST['location']}','{$_POST['details']}','{$_POST['assignIDO']}')";
+          },
+          error: function(msg) {
+            check = NULL;
+          }
+      });
 
-      var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
-      btnSubmit(data);
+      if(check != null) {
+        var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+        btnSubmit(data);
+      }
+
     });
+
 
     $('#btnViewEvidence').on('click',function() {
       <?php $_SESSION['pass'] = $passCase; ?>
