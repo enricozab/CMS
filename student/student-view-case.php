@@ -278,6 +278,95 @@ if (!isset($_GET['cn']))
                   <!-- /.panel -->
               </div>
               <!-- /.col-lg-6 -->
+
+              <!--FAQ-->
+              <div class="col-lg-6">
+                  <div class="panel panel-default">
+                      <!-- .panel-heading -->
+                      <div class="panel-heading">
+                        <b style="color: black; font-size: 17px;"> FAQ </b>
+                       </div>
+                      <div class="panel-body">
+                          <div class="panel-group" id="accordion">
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Possible Evidences</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseOne" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                        <div class="form-group">
+                                          <table align="center" style="width:90%">
+                                            <tr>
+                                              <th>Offense</th>
+                                              <th>Type of Evidence</th> 
+                                            </tr>
+
+                                            <?php
+                                                $ctr=0;
+                                                $evidenceQuery= "SELECT * FROM cms.evidence_suggestion;";
+                                                $evidenceRes = $dbc->query($evidenceQuery);
+                                                while($evidence = $evidenceRes->fetch_assoc()){
+                                                  echo 
+                                                    '<tr> ';
+
+                                                      if($ctr==0){
+                                                        echo '<td>' . $row['OFFENSE_DESCRIPTION'] . '</td>';
+                                                        $ctr = $ctr+1;
+                                                      }
+                                                      else{
+                                                        echo '<td> </td>';
+                                                      }
+
+                                                  echo
+                                                      '<td>' . $evidence['suggested_evidence_desc'] . '</td>
+                                                    </tr>';
+                                                }
+                                            ?>  
+
+                                            <!--<tr>
+                                              <td> </td>
+                                              <td> Kodigo </td>
+                                            </tr>-->
+
+                                          </table>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Possible Interview Questions</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseTwo" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                        <div class="form-group">
+                                          <table align="center" style="width:90%">
+                                            <?php
+                                                $interviewQuery= "SELECT * FROM cms.interview_faq;";
+                                                $interviewRes = $dbc->query($interviewQuery);
+                                                while($questions = $interviewRes->fetch_assoc())
+                                                echo 
+                                                  '<tr>
+                                                    <td>' . $questions['question_desc'] .'</td>
+                                                   </tr>';
+                                            ?>  
+                                            </table>
+                                        </div>    
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- .panel-body -->
+                  </div>
+                  <!-- /.panel -->
+              </div>
+              <!-- FAQ -->
+
           </div>
       </div>
     </div>
@@ -1196,6 +1285,14 @@ if (!isset($_GET['cn']))
 </html>
 
 <style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+tr.noBorder td {
+  border: 0;
+}
 
 p{ margin: 0; }
 

@@ -129,9 +129,6 @@ if (!isset($_GET['cn']))
               <!--RE-ROUTE & RE-ASSIGN-->
               <div class="col-lg-4">
                   <div class="panel panel-default">
-                      <div class="panel-heading">
-                          Collapsible Accordion Panel Group
-                      </div>
                       <!-- .panel-heading -->
                       <div class="panel-body">
                           <div class="panel-group" id="accordion">
@@ -141,16 +138,18 @@ if (!isset($_GET['cn']))
                                           <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Re-route This Case</a>
                                       </h4>
                                   </div>
-                                  <div id="collapseOne" class="panel-collapse collapse in">
+                                  <div id="collapseOne" class="panel-collapse collapse">
                                       <div class="panel-body">
                                         <div class="form-group">
                                             <select class="form-control">
                                               <option value="" disabled selected>Select a Stage</option>
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                              <?php
+                                                $remarksQuery= "SELECT * FROM cms.ref_remarks;";
+                                                $remarksRes = $dbc->query($remarksQuery);
+                                                while($remarks = $remarksRes->fetch_assoc())
+                                                echo 
+                                                  '<option value="' .$remarks['description']. '">' . $remarks['description'] . '</option>';
+                                              ?>
                                             </select>
                                         </div>
                                       </div>
@@ -167,11 +166,14 @@ if (!isset($_GET['cn']))
                                         <div class="form-group">
                                             <select class="form-control">
                                                 <option value="" disabled selected>Select an IDO</option>
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                                <?php
+                                                  $hdoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 3;";
+                                                  $HDORes = $dbc->query($hdoQuery);
+                                                  while($hdo = $HDORes->fetch_assoc())
+                                                  $hdoName = $hdo['first_name'] . ' ' . $hdo['last_name'];
+                                                  echo 
+                                                    '<option value="' .$hdoName. '">' . $hdoName . '</option>';
+                                                ?>
                                             </select>
                                         </div>    
                                       </div>
