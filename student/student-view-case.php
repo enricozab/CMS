@@ -305,8 +305,11 @@ if (!isset($_GET['cn']))
 
                                             <?php
                                                 $ctr=0;
-                                                $evidenceQuery= "SELECT * FROM cms.evidence_suggestion;";
+                                                $evidenceQuery= "SELECT * FROM cms.evidence_suggestion ES
+                                                                  LEFT JOIN cms.ref_offenses RO ON ES.offense_id = RO.offense_id
+                                                                  WHERE RO.description = '" . $row['OFFENSE_DESCRIPTION'] ."';";
                                                 $evidenceRes = $dbc->query($evidenceQuery);
+                                                
                                                 while($evidence = $evidenceRes->fetch_assoc()){
                                                   echo 
                                                     '<tr> ';
@@ -324,11 +327,6 @@ if (!isset($_GET['cn']))
                                                     </tr>';
                                                 }
                                             ?>  
-
-                                            <!--<tr>
-                                              <td> </td>
-                                              <td> Kodigo </td>
-                                            </tr>-->
 
                                           </table>
                                         </div>
