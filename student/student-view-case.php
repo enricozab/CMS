@@ -297,42 +297,48 @@ if (!isset($_GET['cn']))
                                   <div id="collapseOne" class="panel-collapse collapse">
                                       <div class="panel-body">
                                         <div class="form-group">
-                                          <table align="center" style="width:90%">
-                                            <tr>
-                                              <th>Offense</th>
-                                              <th>Type of Evidence</th> 
-                                            </tr>
-
                                             <?php
                                                 $ctr=0;
                                                 $evidenceQuery= "SELECT * FROM cms.evidence_suggestion ES
                                                                   LEFT JOIN cms.ref_offenses RO ON ES.offense_id = RO.offense_id
                                                                   WHERE RO.description = '" . $row['OFFENSE_DESCRIPTION'] ."';";
                                                 $evidenceRes = $dbc->query($evidenceQuery);
-                                                
-                                                while($evidence = $evidenceRes->fetch_assoc()){
+
+                                                if ($evidenceRes->num_rows > 0) {
                                                   echo 
-                                                    '<tr> ';
-
-                                                      if($ctr==0){
-                                                        echo '<td>' . $row['OFFENSE_DESCRIPTION'] . '</td>';
-                                                        $ctr = $ctr+1;
-                                                      }
-                                                      else{
-                                                        echo '<td> </td>';
-                                                      }
-
-                                                  echo
-                                                      '<td>' . $evidence['suggested_evidence_desc'] . '</td>
+                                                    '<table align="center" style="width:90%; text-align:center">
+                                                    <tr>
+                                                      <th style="text-align: center;">Offense</th>
+                                                      <th style="text-align: center;">Type of Evidence</th> 
                                                     </tr>';
+
+                                                  while($evidence = $evidenceRes->fetch_assoc()){
+                                                    echo 
+                                                      '<tr> ';
+
+                                                        if($ctr==0){
+                                                          echo '<td>' . $row['OFFENSE_DESCRIPTION'] . '</td>';
+                                                          $ctr = $ctr+1;
+                                                        }
+                                                        else{
+                                                          echo '<td> </td>';
+                                                        }
+
+                                                    echo
+                                                        '<td>' . $evidence['suggested_evidence_desc'] . '</td>
+                                                      </tr>';
+                                                  }
+                                                  echo '</table>';
+                                                }
+                                                else{
+                                                  echo 'No evidence available for this violation.';
                                                 }
                                             ?>  
-
-                                          </table>
                                         </div>
                                       </div>
                                   </div>
                               </div>
+
                               <div class="panel panel-default">
                                   <div class="panel-heading">
                                       <h4 class="panel-title">
@@ -1283,13 +1289,10 @@ if (!isset($_GET['cn']))
 </html>
 
 <style>
-table, th, td {
+table, tr, th, td {
   border: 1px solid black;
   border-collapse: collapse;
-}
-
-tr.noBorder td {
-  border: 0;
+  align: center;
 }
 
 p{ margin: 0; }
