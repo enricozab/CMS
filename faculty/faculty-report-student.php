@@ -60,7 +60,19 @@
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
                         <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                        <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                        <select class="form-control">
+                          <option value="" disabled selected>Select student</option>
+                          <?php
+                            $studentQ= "SELECT * FROM cms.users u WHERE u.user_type_id = 1;";
+                            $studentRes = $dbc->query($studentQ);
+                            while($student = $studentRes->fetch_assoc()){
+                              $studentName = $student['first_name'] . ' ' . $student['last_name'];
+                              echo 
+                                '<option value=' .$student['user_id']. '>' . $student['user_id'] . ' : ' . $studentName . '</option>';
+                            }
+                          ?>
+                        </select>
+                        <!--<input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>-->
                       </div>
                     </div>
                     <!-- <div id="appendstudent">

@@ -83,7 +83,18 @@
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
                       <label>Student <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                      <select class="form-control">
+                          <option value="" disabled selected>Select student</option>
+                          <?php
+                            $studentQ= "SELECT * FROM cms.users u WHERE u.user_type_id = 1 ORDER BY 5;";
+                            $studentRes = $dbc->query($studentQ);
+                            while($student = $studentRes->fetch_assoc()){
+                              $studentName = $student['first_name'] . ' ' . $student['last_name'];
+                              echo 
+                                '<option value=' .$student['user_id']. '>' . $student['user_id'] . ' : ' . $studentName . '</option>';
+                            }
+                          ?>
+                      </select>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
@@ -124,7 +135,20 @@
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="complainantID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="comID form-control" placeholder="Enter ID No."/>
+                      
+                      <select class="form-control">
+                          <option value="" disabled selected>Select complainant</option>
+                          <?php
+                            $complainantQ= "SELECT * FROM cms.users WHERE user_type_id != 1 ORDER BY 5;";
+                            $complaiantRes = $dbc->query($complainantQ);
+                            while($complainant = $complaiantRes->fetch_assoc()){
+                              $complainantName = $complainant['first_name'] . ' ' . $complainant['last_name'];
+                              echo 
+                                '<option value=' .$complainant['user_id']. '>' . $complainant['user_id'] . ' : ' . $complainantName . '</option>';
+                            }
+                          ?>
+                        </select>
+
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>

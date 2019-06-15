@@ -167,12 +167,13 @@ if (!isset($_GET['cn']))
                                             <select class="form-control">
                                                 <option value="" disabled selected>Select an IDO</option>
                                                 <?php
-                                                  $hdoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 3;";
-                                                  $HDORes = $dbc->query($hdoQuery);
-                                                  while($hdo = $HDORes->fetch_assoc())
-                                                  $hdoName = $hdo['first_name'] . ' ' . $hdo['last_name'];
-                                                  echo 
-                                                    '<option value="' .$hdoName. '">' . $hdoName . '</option>';
+                                                  $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
+                                                  $IDORes = $dbc->query($idoQuery);
+                                                  while($ido = $IDORes->fetch_assoc()){
+                                                    $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
+                                                    echo 
+                                                      '<option value="' .$idoName. '">' . $idoName . '</option>';
+                                                  }
                                                 ?>
                                             </select>
                                         </div>    
