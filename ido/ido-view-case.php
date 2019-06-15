@@ -738,13 +738,16 @@ if (!isset($_GET['cn']))
       var e = document.getElementById("uploadSelect");
       var selectedUser = e.options[e.selectedIndex].value;
       var com = document.getElementById("desc_input").value;
-      var check = 1;
+      var check = 1; 
 
       $.ajax({
           url: '../ajax/ido-insert-evi.php',
           type: 'POST',
           data: {
-              caseID: <?php echo $_GET['cn']; ?>
+              caseID: <?php echo $_GET['cn']; ?>,
+              submittedBy: selectedUser,
+              idoID: <?php echo $row['COMPLAINANT_ID']; ?>,
+              comment: com
           },
           success: function(msg) {
 
