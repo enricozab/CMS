@@ -21,7 +21,7 @@ if (!isset($_GET['cn']))
 
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
-
+  
 	  <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
@@ -243,6 +243,13 @@ if (!isset($_GET['cn']))
           else{
             $rowResp = mysqli_fetch_array($resultResp,MYSQLI_ASSOC);
           }
+
+          $qSelect = 'SELECT 	U.FIRST_NAME, U.LAST_NAME, U.USER_ID
+                        FROM	USERS U
+                   LEFT JOIN	CASES C ON U.USER_ID = C.REPORTED_STUDENT_ID OR U.USER_ID = C.COMPLAINANT_ID
+                       WHERE	C.CASE_ID = "'.$_GET['cn'].'"';
+
+          $qSelectRes = mysqli_query($dbc,$qSelect);
 
   ?>
 
@@ -677,9 +684,10 @@ if (!isset($_GET['cn']))
     });
 
     $('#mamamo').on('click', function() {
-      if(('#message').text() == "Case is forwarded to SDFO Director successfully!") {
-        location.reload();
-      }
+      location.reload();
+      // if(('#message').text() == "Case is forwarded to SDFO Director successfully!") {
+      //   location.reload();
+      // }
     });
 
     $('#first').on('click',function() {
@@ -708,11 +716,12 @@ if (!isset($_GET['cn']))
       btnSubmit(data);
     });
 
+    //new
     $('#four').on('click',function(data) {
-      $("#waitModal").modal("show");
+      $("#uploadModal").modal("show");
 
-      var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
-      btnSubmit(data);
+      // var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+      // btnSubmit(data);
     });
 
     $('#five').on('click',function(data) {
@@ -721,6 +730,43 @@ if (!isset($_GET['cn']))
       var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
       btnSubmit(data);
     });
+
+    $('#six').on('click',function(data) {
+
+      $("#uploadModal").modal("hide");
+
+      var e = document.getElementById("uploadSelect");
+      var selectedUser = e.options[e.selectedIndex].value;
+      var com = document.getElementById("desc_input").value;
+      var check = 1; 
+
+      $.ajax({
+          url: '../ajax/ido-insert-evi.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              submittedBy: selectedUser,
+              idoID: <?php echo $row['COMPLAINANT_ID']; ?>,
+              comment: com
+          },
+          success: function(msg) {
+
+            document.getElementById("uploadSelect").value = "";
+            document.getElementById("desc_input").value = "";
+
+          },
+          error: function(msg) {
+            check = NULL;
+          }
+      });
+
+      if(check != null) {
+        var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+        btnSubmit(data);
+      }
+
+    });
+
 
     $('#btnViewEvidence').on('click',function() {
       <?php $_SESSION['pass'] = $passCase; ?>
@@ -1216,6 +1262,48 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-body">
           <p> Please wait. </p>
+        </div>
+        <div class="modal-footer">
+          <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- NEW Upload Modal -->
+  <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Upload Evidence</b></h4>
+        </div>
+        <div class="modal-body">
+
+          <p> Submitted By:
+
+            <select id = "uploadSelect" class = "form-control">
+
+            <?php
+
+              while($qSelectRow = mysqli_fetch_array($qSelectRes,MYSQLI_ASSOC)) {
+
+                $first = $qSelectRow['FIRST_NAME'];
+                $last = $qSelectRow['LAST_NAME'];
+                $id = $qSelectRow['USER_ID'];
+
+                echo "<option value ='".$id."'> ".$first." ".$last."</option>";
+
+              }
+
+            ?> </select>
+
+          </p><br>
+
+          <p> Description: <textarea class="form-control" rows="3" id = "desc_input"></textarea></p><br>
+
+          <button type="submit" id = "six" name="evidence" class="btn btn-primary ">Upload</button>
         </div>
         <div class="modal-footer">
           <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->

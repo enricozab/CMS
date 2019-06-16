@@ -719,6 +719,12 @@ $(function(){
 											//$('#responseUpload').click();
 										}
 
+										else if (btnNum == "six") {
+											//$("#five").attr('disabled', true).text("Submitted");
+											//$('#checkingForms').click();
+											//$('#responseUpload').click();
+										}
+
 										else {
 											$("#one").attr('disabled', true).text("Submitted");
 											//$('#checkingForms').click();

@@ -85,7 +85,7 @@
                       <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" placeholder="Enter Summary of the Incident"></textarea>
                     </div>
                     <br><br><br>
-                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" id="2factor" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
                 </div>
@@ -209,7 +209,16 @@
 
       var studentlist = [];
 
-      $('#submit').click(function() {
+      $('#2factor').click(function() {
+        $("#twoFactorModal").modal("show");
+      });
+
+      $('#modalYes').click(function() {
+        // $("#sendModal").modal("show");
+        // $('#submit').click();
+
+        $("#twoFactorModal").modal("hide");
+
         var ids = ['#location','#date','textarea'];
         var isEmpty = true;
 
@@ -247,6 +256,50 @@
         else {
           $("#alertModal").modal("show");
         }
+      });
+
+      $('#modalNo').click(function() {
+        $("#twoFactorModal").modal("hide");
+      });
+
+      $('#submit').click(function() {
+        // var ids = ['#location','#date','textarea'];
+        // var isEmpty = true;
+
+        // $('.studentID').each(function(i, obj){
+        //   if(obj.value.length == 0){
+        //     isEmpty = false;
+        //   }
+        //   studentlist.push(parseInt(obj.value));
+        // });
+
+        // for(var i = 0; i < ids.length; ++i ) {
+        //   if($.trim($(ids[i]).val()).length == 0) {
+        //     isEmpty = false;
+        //   }
+        // }
+
+        // <?php  include 'faculty-form-queries.php'  ?>
+        // if(isEmpty) {
+        //   $.ajax({
+        //       url: '../ajax/faculty-insert-incident-report.php',
+        //       type: 'POST',
+        //       data: {
+        //           studentID: studentlist,
+        //           location: $('#location').val(),
+        //           date: $('#date').val(),
+        //           details: $('#details').val()
+        //       },
+        //       success: function(msg) {
+        //           generate();
+        //           //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
+        //           $("#sendModal").modal("show");
+        //       }
+        //   });
+        // }
+        // else {
+        //   $("#alertModal").modal("show");
+        // }
       });
 
       <?php  include 'faculty-form-queries.php'  ?>
@@ -397,13 +450,34 @@
             <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
           </div>
           <div class="modal-body">
-            <p id="message">Incident Report has been submitted and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p>
+            <p id="message">Incident Report has been submitted and sent to your email successfully! 
+            <!-- <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p> -->
+            <br><br> <b>Next Step: </b> Send your pieces of evidence to <b>hdo.cms@gmail.com</b> for processing. </p>
           </div>
           <div class="modal-footer">
             <button type="submit" id = "sentOK" class="btn btn-default" data-dismiss="modal">Ok</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Two Factor Authentication Modal -->
+		<div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure about your inputs? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalYes" class="btn btn-outline btn-success">Yes</button>
+            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger">No</button>
+          </div>
+				</div>
+			</div>
     </div>
 
 </body>

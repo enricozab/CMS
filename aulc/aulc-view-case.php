@@ -359,7 +359,16 @@ if (!isset($_GET['cn']))
         JSZipUtils.getBinaryContent(url,callback);
     }
 
-  	$('#submitRef').click(function() {
+    $('#submitRef').click(function() {
+      $('#twoFactorModal').modal("show");
+    });
+
+    $('#modalYes').on('click', function() {
+
+      $('#formModal').modal("hide");
+
+      $('#twoFactorModal').modal("hide");
+
       var ids = ['input[name="caseDecision"]:checked','#reasonCase'];
       var isEmpty = true;
 
@@ -512,7 +521,12 @@ if (!isset($_GET['cn']))
       else {
         $("#alertModal").modal("show");
       }
-  	});
+    }); 
+
+    $('#modalNo').on('click', function() {
+      $('#formModal').modal("show");
+      $('#twoFactorModal').modal("hide");
+    }); 
 
     $('#n1').on('click', function() {
       //HELLOSIGN API
@@ -770,6 +784,25 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
+  <!-- Two Factor Authentication Modal -->
+  <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalYes" class="btn btn-outline btn-success">Yes</button>
+            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger">No</button>
+          </div>
+				</div>
+			</div>
+    </div>
 
 </body>
 

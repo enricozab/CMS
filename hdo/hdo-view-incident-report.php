@@ -479,10 +479,10 @@ if (!isset($_GET['irn']))
 						<h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
 					</div>
 					<div class="modal-body">
-						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
+						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
             <div id = "done">
               </p>Case has been created and passed to the assigned IDO successfully!</p>
-              <b>Next Step: </b> <br>  Forward the Incident Report Form #<?php echo $_GET['irn'];?>, along with the pieces of evidence, sent by the facutly to <b>ido.cms1@gmail.com</b> for processing.</p>
+              <b>Next Step: </b> <br>  Forward the received pieces of evidence sent by the facutly to <b>ido.cms1@gmail.com</b> for processing.</p>
             </div>
           </div>
 					<div class="modal-footer">
