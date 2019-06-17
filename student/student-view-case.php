@@ -31,9 +31,6 @@ if (!isset($_GET['cn']))
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -139,7 +136,7 @@ if (!isset($_GET['cn']))
     }
   ?>
 
-    <div id="wrapper">
+  <div id="wrapper">
 
     <?php include 'student-sidebar.php';?>
 
@@ -162,9 +159,10 @@ if (!isset($_GET['cn']))
         					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
                   <br>
         					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-        					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
-                  <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+                  <b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+                  
                   <br><br>
+
                   <div class="form-group">
                     <label>Summary of the Incident</label>
                     <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
@@ -231,7 +229,9 @@ if (!isset($_GET['cn']))
                     }
                   ?>
               </div>
-              <?php include "student-case-audit.php" ?>
+
+              <?php include "../ajax/user-case-audit.php" ?>
+
               <div class="col-lg-6">
                   <div class="panel panel-default">
                       <div class="panel-heading">
@@ -242,18 +242,19 @@ if (!isset($_GET['cn']))
                       <!-- /.panel-heading -->
                       <div id="caseHistory" class="panel-collapse collapse">
                         <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
-                            <div class="table-responsive table-bordered">
-                              <table class="table">
-                                <thead>
+                          <?php
+                            if ($caseAuditRes->num_rows > 0) { ?>
+                              <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                  <thead>
                                     <tr>
                                         <th>Date</th>
                                         <th>Action Done</th>
                                         <th>By Whom</th>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                  <?php
-                                    if ($caseAuditRes->num_rows > 0) {
+                                  </thead>
+                                  <tbody>
+                                    <?php
                                       while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
                                         echo "<tr>
                                                 <td>{$caseAuditRow['date']}</td>
@@ -261,80 +262,82 @@ if (!isset($_GET['cn']))
                                                 <td>{$caseAuditRow['action_done_by']}</td>
                                               </tr>";
                                       }
-                                    }
-                                    else {
-                                      echo "<p style='margin-right: 20px; margin-left: -20px;'>No case history</p>";
-                                    }
-                                  ?>
-                                </tbody>
-                              </table>
-                            </div>
-                            <!-- /.table-responsive -->
-                            <br>
+                                    ?>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <!-- /.table-responsive -->
+                          <?php }
+                            else {
+                              echo "No case history";
+                            }
+                          ?>
+                          <br>
                         </div>
                         <!-- /.panel-body -->
                       </div>
+                      <!-- </div> -->
                   </div>
                   <!-- /.panel -->
-              </div>
-              <!-- /.col-lg-6 -->
-
-              <!--FAQ-->
-              <div class="col-lg-6">
+                  <br>
+                  <!-- FAQ -->
                   <div class="panel panel-default">
                       <!-- .panel-heading -->
                       <div class="panel-heading">
-                        <b style="color: black; font-size: 17px;"> FAQ </b>
+                        <b style="color: black; font-size: 17px;">FAQ</b>
                        </div>
                       <div class="panel-body">
                           <div class="panel-group" id="accordion">
                               <div class="panel panel-default">
                                   <div class="panel-heading">
                                       <h4 class="panel-title">
-                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Possible Evidences</a>
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Possible Evidence</a>
                                       </h4>
                                   </div>
                                   <div id="collapseOne" class="panel-collapse collapse">
                                       <div class="panel-body">
-                                        <div class="form-group">
-                                            <?php
-                                                $ctr=0;
-                                                $evidenceQuery= "SELECT * FROM cms.evidence_suggestion ES
-                                                                  LEFT JOIN cms.ref_offenses RO ON ES.offense_id = RO.offense_id
-                                                                  WHERE RO.description = '" . $row['OFFENSE_DESCRIPTION'] ."';";
-                                                $evidenceRes = $dbc->query($evidenceQuery);
+                                          <?php
+                                              $ctr=0;
+                                              $evidenceQuery= "SELECT * FROM cms.evidence_suggestion ES
+                                                                LEFT JOIN cms.ref_offenses RO ON ES.offense_id = RO.offense_id
+                                                                WHERE RO.description = '" . $row['OFFENSE_DESCRIPTION'] ."';";
+                                              $evidenceRes = $dbc->query($evidenceQuery);
 
-                                                if ($evidenceRes->num_rows > 0) {
+                                              if ($evidenceRes->num_rows > 0) {
+                                                echo 
+                                                  '<div class="table-responsive">
+                                                  <table class="table table-striped table-bordered table-hover">
+                                                  <thead>
+                                                  <tr>
+                                                    <th style="text-align: center;">Offense</th>
+                                                    <th style="text-align: center;">Type of Evidence</th> 
+                                                  </tr>
+                                                  </thead>
+                                                  <tbody>';
+
+                                                while($evidence = $evidenceRes->fetch_assoc()){
                                                   echo 
-                                                    '<table align="center" style="width:90%; text-align:center">
-                                                    <tr>
-                                                      <th style="text-align: center;">Offense</th>
-                                                      <th style="text-align: center;">Type of Evidence</th> 
+                                                    '<tr> ';
+
+                                                      if($ctr==0){
+                                                        echo '<td>' . $row['OFFENSE_DESCRIPTION'] . '</td>';
+                                                        $ctr = $ctr+1;
+                                                      }
+                                                      else{
+                                                        echo '<td></td>';
+                                                      }
+                                                  echo
+                                                      '<td>' . $evidence['suggested_evidence_desc'] . '</td>
                                                     </tr>';
-
-                                                  while($evidence = $evidenceRes->fetch_assoc()){
-                                                    echo 
-                                                      '<tr> ';
-
-                                                        if($ctr==0){
-                                                          echo '<td>' . $row['OFFENSE_DESCRIPTION'] . '</td>';
-                                                          $ctr = $ctr+1;
-                                                        }
-                                                        else{
-                                                          echo '<td> </td>';
-                                                        }
-
-                                                    echo
-                                                        '<td>' . $evidence['suggested_evidence_desc'] . '</td>
-                                                      </tr>';
-                                                  }
-                                                  echo '</table>';
                                                 }
-                                                else{
-                                                  echo 'No evidence available for this violation.';
-                                                }
-                                            ?>  
-                                        </div>
+                                                echo '</tbody>
+                                                      </table>
+                                                      </div>';
+                                              }
+                                              else{
+                                                echo 'No available evidence suggestions';
+                                              }
+                                          ?>
                                       </div>
                                   </div>
                               </div>
@@ -347,19 +350,28 @@ if (!isset($_GET['cn']))
                                   </div>
                                   <div id="collapseTwo" class="panel-collapse collapse">
                                       <div class="panel-body">
-                                        <div class="form-group">
-                                          <table align="center" style="width:90%">
-                                            <?php
-                                                $interviewQuery= "SELECT * FROM cms.interview_faq;";
-                                                $interviewRes = $dbc->query($interviewQuery);
-                                                while($questions = $interviewRes->fetch_assoc())
-                                                echo 
-                                                  '<tr>
-                                                    <td>' . $questions['question_desc'] .'</td>
-                                                   </tr>';
-                                            ?>  
-                                            </table>
-                                        </div>    
+                                        <?php
+                                          $interviewQuery= "SELECT * FROM cms.interview_faq;";
+                                          $interviewRes = $dbc->query($interviewQuery);
+                                          if ($interviewRes->num_rows > 0) {
+                                            echo 
+                                              '<div class="table-responsive">
+                                              <table class="table table-striped table-bordered table-hover">
+                                              <tbody>';
+                                            while($questions = $interviewRes->fetch_assoc())
+                                              echo 
+                                                '<tr>
+                                                <td>' . $questions['question_desc'] .'</td>
+                                                </tr>';
+                                            echo 
+                                              '</tbody>
+                                              </table>
+                                              </div>';
+                                          }
+                                          else{
+                                            echo 'No available interview questions';
+                                          }
+                                        ?> 
                                       </div>
                                   </div>
                               </div>
@@ -368,43 +380,35 @@ if (!isset($_GET['cn']))
                       <!-- .panel-body -->
                   </div>
                   <!-- /.panel -->
+                  <!-- /.FAQ -->
               </div>
-              <!-- FAQ -->
-
+              <!-- /.col-lg-6 -->
           </div>
+          <br><br><br><br><br>
       </div>
-    </div>
-    <!-- /#wrapper -->
+  </div>
+  <!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <!-- Metis Menu Plugin JavaScript -->
+  <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+  <!-- DataTables JavaScript -->
+  <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+  <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+  <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
 
-    <!-- Morris Charts JavaScript -->
-    <script src="../vendor/raphael/raphael.min.js"></script>
-    <script src="../vendor/morrisjs/morris.min.js"></script>
-    <script src="../data/morris-data.js"></script>
+  <!-- Custom Theme JavaScript -->
+  <script src="../dist/js/sb-admin-2.js"></script>
 
-	<!-- DataTables JavaScript -->
-    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
-    <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
+  <!-- Form Generation -->
+  <script src="../form-generation/docxtemplater.js"></script>
+  <script src="../form-generation/jszip.js"></script>
+  <script src="../form-generation/FileSaver.js"></script>
+  <script src="../form-generation/jszip-utils.js"></script>
 
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-
-    <!-- Form Generation -->
-    <script src="../form-generation/docxtemplater.js"></script>
-    <script src="../form-generation/jszip.js"></script>
-    <script src="../form-generation/FileSaver.js"></script>
-    <script src="../form-generation/jszip-utils.js"></script>
-
-	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
     loadNotif();
@@ -432,12 +436,6 @@ if (!isset($_GET['cn']))
 
     //response form
     $("#form").click(function(){
-      
-      $("#twoFactorModal").modal("show");
-
-    });
-
-    $('#modalYes').on('click', function() {
       var remark = <?php echo $row['REMARKS_ID']; ?>;
       var stat = <?php echo $row['STATUS_ID']; ?>;
 
@@ -485,7 +483,7 @@ if (!isset($_GET['cn']))
     });
 
     $("#submitTwoF").click(function(){
-      $("#twoFactorModal").show();
+      $("#twoFactorModal").modal("show");
     });
 
     $("#submitFormAgain").click(function(){
@@ -1124,7 +1122,7 @@ if (!isset($_GET['cn']))
 
           <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
           <select id="admissionType2" class="form-control">
-            <option value="<?php echo $rowForm['description']; ?>"><?php echo $rowForm['description']; ?></option>
+            <option value="<?php echo $rowForm['admission_type_id']; ?>"><?php echo $rowForm['description']; ?></option>
             <?php
               if ($rowForm['admission_type_id'] == 1) { ?>
                 <option value="2">Partial Admission/Denial (Apology/Explanation)</option>
@@ -1158,7 +1156,7 @@ if (!isset($_GET['cn']))
 
         </div>
         <div class="modal-footer">
-          <button type="submit" id = "submitTwoF" class="btn btn-primary" data-dismiss="modal">Submit</button>
+          <button type="submit" id = "submitFormAgain" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>
@@ -1286,33 +1284,33 @@ if (!isset($_GET['cn']))
 
   <!-- Two Factor Authentication Modal -->
   <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
-					</div>
-					<div class="modal-body">
-						<p id="message"> Are you sure you want to proceed? </p>
-					</div>
-					<div class="modal-footer">
-            <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
-            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
-          </div>
-				</div>
-			</div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message"> Are you sure you want to proceed? </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
+          <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
+        </div>
+      </div>
     </div>
+  </div>
 
 </body>
 
 </html>
 
 <style>
-table, tr, th, td {
+/* table, tr, th, td {
   border: 1px solid black;
   border-collapse: collapse;
   align: center;
-}
+} */
 
 p{ margin: 0; }
 

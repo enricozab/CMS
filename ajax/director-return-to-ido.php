@@ -19,12 +19,28 @@
     if(!$result){
       echo mysqli_error($dbc);
     }
+    else {
+      $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+              VALUES ({$_POST['caseID']},16,'{$_SESSION['user_id']}')";
+      $result2=mysqli_query($dbc,$query2);
+      if(!$result2){
+        echo mysqli_error($dbc);
+      }
+    }
   }
   else {
     $query="UPDATE CASES SET IF_NEW=1, STATUS_ID=2, REMARKS_ID=7 WHERE CASE_ID = {$_POST['caseID']}";
     $result=mysqli_query($dbc,$query);
     if(!$result){
       echo mysqli_error($dbc);
+    }
+    else {
+      $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+              VALUES ({$_POST['caseID']},9,'{$_SESSION['user_id']}')";
+      $result2=mysqli_query($dbc,$query2);
+      if(!$result2){
+        echo mysqli_error($dbc);
+      }
     }
   }
 

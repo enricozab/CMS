@@ -27,9 +27,6 @@
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -82,8 +79,8 @@
                   ?>
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
-                      <label>Student <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      <select class="form-control">
+                      <label>Student <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="studentID" class="form-control">
                           <option value="" disabled selected>Select student</option>
                           <?php
                             $studentQ= "SELECT * FROM cms.users u WHERE u.user_type_id = 1 ORDER BY 5;";
@@ -134,9 +131,8 @@
                       </select>
                     </div>
                     <div class="form-group" style = "width: 300px;">
-                      <label>Complainant <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 20151234)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                      
-                      <select class="form-control">
+                      <label>Complainant <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="complainantID" class="form-control">
                           <option value="" disabled selected>Select complainant</option>
                           <?php
                             $complainantQ= "SELECT * FROM cms.users WHERE user_type_id != 1 ORDER BY 5;";
@@ -153,7 +149,7 @@
                     <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
                       <div class='input-group date'>
-                        <input  id='date' type='text' class="form-control" placeholder="Enter Date"/>
+                        <input id='date' type='text' class="form-control" placeholder="Enter Date"/>
                         <span id='cal' style="cursor: pointer;" class="input-group-addon">
                             <span class="fa fa-calendar"></span>
                         </span>
@@ -205,11 +201,6 @@
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Morris Charts JavaScript -->
-    <script src="../vendor/raphael/raphael.min.js"></script>
-    <script src="../vendor/morrisjs/morris.min.js"></script>
-    <script src="../data/morris-data.js"></script>
 
 	  <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>

@@ -31,9 +31,6 @@ if (!isset($_GET['cn']))
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -269,87 +266,28 @@ if (!isset($_GET['cn']))
         					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
         					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                   <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-              </div>
-          </div>
-  			<br><br>
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="form-group">
-              <label>Summary of the Incident</label>
-              <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-            </div>
-            <!--<div class="form-group" id="penaltyarea" hidden>
-              <label>Penalty</label>
-              <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-            </div>-->
-            <?php
-              if($row['PROCEEDING'] != null) {
-                echo "<div class='form-group' id='proceedingarea'>
-                        <label>Nature of Proceedings</label>
-                        <textarea id='proceeding' name='proceeding' class='form-control' rows='3' readonly>{$row['PROCEEDING']}</textarea>
-                      </div>";
-              }
-            ?>
 
-            <?php include 'sdfod-count-minor.php' ?>
+                  <br><br>
 
-            <?php
-              $query2='SELECT DIRECTOR_REMARKS_ID, DIRECTOR_REMARKS FROM REF_DIRECTOR_REMARKS';
-              $result2=mysqli_query($dbc,$query2);
-              if(!$result2){
-                echo mysqli_error($dbc);
-              }
-            ?>
+                  <div class="form-group">
+                    <label>Summary of the Incident</label>
+                    <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+                  </div>
+                  <!--<div class="form-group" id="penaltyarea" hidden>
+                    <label>Penalty</label>
+                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+                  </div>-->
+                  <?php
+                    if($row['PROCEEDING'] != null) {
+                      echo "<div class='form-group' id='proceedingarea'>
+                              <label>Nature of Proceedings</label>
+                              <textarea id='proceeding' name='proceeding' class='form-control' rows='3' readonly>{$row['PROCEEDING']}</textarea>
+                            </div>";
+                    }
+                  ?>
 
-            <br>
+                  <?php include 'sdfod-count-minor.php' ?>
 
-            <div class="form-group">
-              <label>Remarks</label>
-              <?php
-              while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-                if ($row2['DIRECTOR_REMARKS_ID'] == 1 && $currentMinorOffense == 62 && $numSameMinor < 3 && $row['TYPE'] == "Minor") {
-                  echo "<div class='checkbox'>
-                            <label>
-                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
-                            </label>
-                        </div>";
-                }
-                if ($row2['DIRECTOR_REMARKS_ID'] == 2 && $numSameMinor == 1 && $currentMinorOffense != 62 && $row['TYPE'] == "Minor") {
-                  echo "<div class='checkbox'>
-                            <label>
-                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
-                            </label>
-                        </div>";
-                }
-                if ($row2['DIRECTOR_REMARKS_ID'] == 3 && ((($numSameMinorOffense > 2 || $numSameMinor > 4) && $currentMinorOffense != 62) || $row['TYPE'] == "Major")) {
-                  echo "<div class='checkbox'>
-                            <label>
-                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
-                            </label>
-                        </div>";
-                }
-                if ($row2['DIRECTOR_REMARKS_ID'] == 4 && $numSameMinorOffense > 1 && $currentMinorOffense != 62  && $row['TYPE'] == "Minor") {
-                  echo "<div class='checkbox'>
-                            <label>
-                                <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']} <b><i>$numSameMinorOffense time(s)</i></b>
-                            </label>
-                        </div>";
-                }
-                  if ($row2['DIRECTOR_REMARKS_ID'] == 5 && $numSameMinor > 1 && $currentMinorOffense != 62  && $row['TYPE'] == "Minor") {
-                    echo "<div class='checkbox'>
-                              <label>
-                                  <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']} <b><i>$numSameMinor time(s)</i></b>
-                              </label>
-                          </div>";
-                  }
-                }
-                ?>
-            </div>
-
-            <?php
-              if($row['TYPE'] == "Minor") {?>
-              <?php
-                if($row['REMARKS_ID'] < 6) { ?>
                   <?php
                     $query2='SELECT DIRECTOR_REMARKS_ID, DIRECTOR_REMARKS FROM REF_DIRECTOR_REMARKS';
                     $result2=mysqli_query($dbc,$query2);
@@ -358,130 +296,240 @@ if (!isset($_GET['cn']))
                     }
                   ?>
 
-                  <?php
+                  <br>
+
+                  <div class="form-group">
+                    <label>Remarks</label>
+                    <?php
                     while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-                      if ($row2['DIRECTOR_REMARKS_ID'] == 1 && $currentMinorOffense == 62 && $numSameMinor < 3) {
-                        echo "<br>
-                              <div class='form-group'>
-                                <label>Penalty</label>
-                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>No penalty will be given</textarea>
+                      if ($row2['DIRECTOR_REMARKS_ID'] == 1 && $currentMinorOffense == 62 && $numSameMinor < 3 && $row['TYPE'] == "Minor") {
+                        echo "<div class='checkbox'>
+                                  <label>
+                                      <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
+                                  </label>
                               </div>";
                       }
-                      elseif ($row2['DIRECTOR_REMARKS_ID'] == 2 && $numSameMinor == 1 && $currentMinorOffense != 62) {
-                        echo "<br>
-                              <div class='form-group'>
-                                <label>Penalty</label>
-                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Warning will be given</textarea>
+                      if ($row2['DIRECTOR_REMARKS_ID'] == 2 && $numSameMinor == 1 && $currentMinorOffense != 62 && $row['TYPE'] == "Minor") {
+                        echo "<div class='checkbox'>
+                                  <label>
+                                      <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
+                                  </label>
                               </div>";
                       }
-                      elseif ($row2['DIRECTOR_REMARKS_ID'] == 4 && $numSameMinor == 2 && $currentMinorOffense != 62) {
-                        echo "<br>
-                              <div class='form-group'>
-                                <label>Penalty</label>
-                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Reprimand will be given</textarea>
+                      if ($row2['DIRECTOR_REMARKS_ID'] == 3 && ((($numSameMinorOffense > 2 || $numSameMinor > 4) && $currentMinorOffense != 62) || $row['TYPE'] == "Major")) {
+                        echo "<div class='checkbox'>
+                                  <label>
+                                      <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']}
+                                  </label>
                               </div>";
                       }
-                      elseif ($row2['DIRECTOR_REMARKS_ID'] == 5 && $numSameMinor > 2 && $numSameMinor < 5 && $currentMinorOffense != 62) {
-                        echo "<br>
-                              <div class='form-group'>
-                                <label>Penalty</label>
-                                <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Student will be referred to University Councelor</textarea>
+                      if ($row2['DIRECTOR_REMARKS_ID'] == 4 && $numSameMinorOffense > 1 && $currentMinorOffense != 62  && $row['TYPE'] == "Minor") {
+                        echo "<div class='checkbox'>
+                                  <label>
+                                      <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']} <b><i>$numSameMinorOffense time(s)</i></b>
+                                  </label>
                               </div>";
                       }
-                    }
+                        if ($row2['DIRECTOR_REMARKS_ID'] == 5 && $numSameMinor > 1 && $currentMinorOffense != 62  && $row['TYPE'] == "Minor") {
+                          echo "<div class='checkbox'>
+                                    <label>
+                                        <input type='checkbox' name='remarks' value='{$row2['DIRECTOR_REMARKS_ID']}' checked disabled>&nbsp;&nbsp;&nbsp;{$row2['DIRECTOR_REMARKS']} <b><i>$numSameMinor time(s)</i></b>
+                                    </label>
+                                </div>";
+                        }
+                      }
+                      ?>
+                  </div>
+
+                  <?php
+                    if($row['TYPE'] == "Minor") {?>
+                    <?php
+                      if($row['REMARKS_ID'] < 6) { ?>
+                        <?php
+                          $query2='SELECT DIRECTOR_REMARKS_ID, DIRECTOR_REMARKS FROM REF_DIRECTOR_REMARKS';
+                          $result2=mysqli_query($dbc,$query2);
+                          if(!$result2){
+                            echo mysqli_error($dbc);
+                          }
+                        ?>
+
+                        <?php
+                          while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+                            if ($row2['DIRECTOR_REMARKS_ID'] == 1 && $currentMinorOffense == 62 && $numSameMinor < 3) {
+                              echo "<br>
+                                    <div class='form-group'>
+                                      <label>Penalty</label>
+                                      <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>No penalty will be given</textarea>
+                                    </div>";
+                            }
+                            elseif ($row2['DIRECTOR_REMARKS_ID'] == 2 && $numSameMinor == 1 && $currentMinorOffense != 62) {
+                              echo "<br>
+                                    <div class='form-group'>
+                                      <label>Penalty</label>
+                                      <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Warning will be given</textarea>
+                                    </div>";
+                            }
+                            elseif ($row2['DIRECTOR_REMARKS_ID'] == 4 && $numSameMinor == 2 && $currentMinorOffense != 62) {
+                              echo "<br>
+                                    <div class='form-group'>
+                                      <label>Penalty</label>
+                                      <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Reprimand will be given</textarea>
+                                    </div>";
+                            }
+                            elseif ($row2['DIRECTOR_REMARKS_ID'] == 5 && $numSameMinor > 2 && $numSameMinor < 5 && $currentMinorOffense != 62) {
+                              echo "<br>
+                                    <div class='form-group'>
+                                      <label>Penalty</label>
+                                      <textarea id='finpenalty' name='finpenalty' class='form-control' rows='3' readonly>Student will be referred to University Councelor</textarea>
+                                    </div>";
+                            }
+                          }
+                        ?>
+                    <?php }
+                    ?>
+                  <?php }
                   ?>
-              <?php }
-              ?>
-            <?php }
-            ?>
 
-            <?php
-            if($row['PENALTY_DESC'] != null) { ?>
-              <br>
-              <div class="form-group" id="penaltyarea">
-                <label>Penalty</label>
-                <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+                  <?php
+                  if($row['PENALTY_DESC'] != null) { ?>
+                    <br>
+                    <div class="form-group" id="penaltyarea">
+                      <label>Penalty</label>
+                      <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+                    </div>
+                  <?php }
+                  ?>
+
+                  <?php
+                  if($row['PROCEEDING_DECISION'] != null) { ?>
+                    <br>
+                    <div class="form-group" id="penaltyarea">
+                      <label>Penalty</label>
+                      <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                    </div>
+                  <?php }
+                  ?>
+
+                  <?php
+                    if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16 && $row['PROCEEDING_DECISION'] == null) { ?>
+                      <br>
+                      <div class="form-group" id="penpenaltyarea">
+                        <label>Penalty <span style="color:red;">*</span></label>
+                        <textarea id="finfinpenalty" name="finfinpenalty" class="form-control" rows="3" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                      </div>
+                  <?php }
+                  ?>
+
+                  <!--<div id="proceedingsList" class="form-group" hidden>
+                    <label>Nature of Proceedings</label>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="proceedings" id="1" value="1" checked>Formal Hearing
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="proceedings" id="2" value="2">Summary Proceeding
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="proceedings" id="3" value="3">University Panel for Case Conference
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="proceedings" id="4" value="4">Case Conference with DO Director
+                        </label>
+                    </div>
+                </div>-->
+                  <br>
+                  <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+                  
+                  <br><br><br><br>
+        
+                  <?php
+                    if($row['TYPE'] == "Major" || ($row['REMARKS_ID'] == 5 && ($numSameMinorOffense > 2 || $numSameMinor > 4))) { ?>
+                      <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
+                  <?php }
+                    elseif ($row['REMARKS_ID'] == 5) { ?>
+                      <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
+                  <?php  }
+                  ?>
+                  <?php
+                    if($row['REMARKS_ID'] == 14) { ?>
+                      <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Feedback Form</button>
+                  <?php }
+                  ?>
+                  <?php
+                    if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16 && $row['PROCEEDING_DECISION'] == null) { ?>
+                      <button type="button" id="submitPD" class="btn btn-primary" data-dismiss="modal">Submit</button>
+                  <?php }
+                  ?>
+                  <?php
+                    if($row['REMARKS_ID'] == 11 && $row['NEED_ACAD_SERVICE'] && $uploadsrow['FEEDBACK_UPLOADED']) { ?>
+                      <button type="button" id="sendAcad" class="btn btn-success" data-dismiss="modal">Send Academic Endorsement Service Form</button>
+                  <?php }
+                  ?>
+
+                  <?php
+                    if(($row['REMARKS_ID'] == 10 || $row['REMARKS_ID'] == 11 || $row['REMARKS_ID'] == 7) && !$uploadsrow['FEEDBACK_UPLOADED']) { ?>
+                      <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')">Upload Discipline Case Feedback Form</button>
+                  <?php }
+                  ?>
               </div>
-            <?php }
-            ?>
 
-            <?php
-            if($row['PROCEEDING_DECISION'] != null) { ?>
-              <br>
-              <div class="form-group" id="penaltyarea">
-                <label>Penalty</label>
-                <textarea id="finpenalty" name="finpenalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
-              </div>
-            <?php }
-            ?>
+              <?php include "../ajax/user-case-audit.php" ?>
 
-            <?php
-              if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16 && $row['PROCEEDING_DECISION'] == null) { ?>
-                <br>
-                <div class="form-group" id="penpenaltyarea">
-                  <label>Penalty <span style="color:red;">*</span></label>
-                  <textarea id="finfinpenalty" name="finfinpenalty" class="form-control" rows="3" placeholder="Enter Penalty"><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+              <div class="col-lg-6">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <b style = "font-size: 17px;">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#caseHistory" style="color: black;">Case History</a>
+                    </b>
+                  </div>
+                  <!-- /.panel-heading -->
+                  <div id="caseHistory" class="panel-collapse collapse">
+                    <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
+                      <?php
+                        if ($caseAuditRes->num_rows > 0) { ?>
+                          <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                              <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Action Done</th>
+                                    <th>By Whom</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <?php
+                                  while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
+                                    echo "<tr>
+                                            <td>{$caseAuditRow['date']}</td>
+                                            <td>{$caseAuditRow['action_done']}</td>
+                                            <td>{$caseAuditRow['action_done_by']}</td>
+                                          </tr>";
+                                  }
+                                ?>
+                              </tbody>
+                            </table>
+                          </div>
+                          <!-- /.table-responsive -->
+                      <?php }
+                        else {
+                          echo "No case history";
+                        }
+                      ?>
+                      <br>
+                    </div>
+                    <!-- /.panel-body -->
+                  </div>
+                  <!-- </div> -->
                 </div>
-            <?php }
-            ?>
-
-            <!--<div id="proceedingsList" class="form-group" hidden>
-              <label>Nature of Proceedings</label>
-              <div class="radio">
-                  <label>
-                      <input type="radio" name="proceedings" id="1" value="1" checked>Formal Hearing
-                  </label>
+                <!-- /.panel -->
               </div>
-              <div class="radio">
-                  <label>
-                      <input type="radio" name="proceedings" id="2" value="2">Summary Proceeding
-                  </label>
-              </div>
-              <div class="radio">
-                  <label>
-                      <input type="radio" name="proceedings" id="3" value="3">University Panel for Case Conference
-                  </label>
-              </div>
-              <div class="radio">
-                  <label>
-                      <input type="radio" name="proceedings" id="4" value="4">Case Conference with DO Director
-                  </label>
-              </div>
-          </div>-->
-            <br>
-            <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-        </div>
-      </div>
-        <br><br><br><br><br>
-        <?php
-          if($row['TYPE'] == "Major" || ($row['REMARKS_ID'] == 5 && ($numSameMinorOffense > 2 || $numSameMinor > 4))) { ?>
-            <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse</button>
-        <?php }
-          elseif ($row['REMARKS_ID'] == 5) { ?>
-            <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Submit</button>
-        <?php  }
-        ?>
-        <?php
-          if($row['REMARKS_ID'] == 14) { ?>
-            <button type="button" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Feedback Form</button>
-        <?php }
-        ?>
-        <?php
-          if(($row['PROCEEDING_DATE'] != null && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) && $row['REMARKS_ID'] == 16 && $row['PROCEEDING_DECISION'] == null) { ?>
-            <button type="button" id="submitPD" class="btn btn-primary" data-dismiss="modal">Submit</button>
-        <?php }
-        ?>
-        <?php
-          if($row['REMARKS_ID'] == 11 && $row['NEED_ACAD_SERVICE'] && $uploadsrow['FEEDBACK_UPLOADED']) { ?>
-            <button type="button" id="sendAcad" class="btn btn-success" data-dismiss="modal">Send Academic Endorsement Service Form</button>
-        <?php }
-        ?>
-
-        <?php
-          if(($row['REMARKS_ID'] == 10 || $row['REMARKS_ID'] == 11 || $row['REMARKS_ID'] == 7) && !$uploadsrow['FEEDBACK_UPLOADED']) { ?>
-            <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')">Upload Discipline Case Feedback Form</button>
-        <?php }
-        ?>
+          </div>
         <br><br><br><br><br>
       </div>
 
@@ -507,30 +555,25 @@ if (!isset($_GET['cn']))
       }
 
       ?>
-    </div>
-    <!-- #wrapper -->
+  </div>
+  <!-- #wrapper -->
 
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
+  <!-- jQuery -->
+  <script src="../vendor/jquery/jquery.min.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+  <!-- Metis Menu Plugin JavaScript -->
+  <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
-    <!-- Morris Charts JavaScript -->
-    <script src="../vendor/raphael/raphael.min.js"></script>
-    <script src="../vendor/morrisjs/morris.min.js"></script>
-    <script src="../data/morris-data.js"></script>
+  <!-- DataTables JavaScript -->
+  <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+  <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+  <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
 
-	<!-- DataTables JavaScript -->
-    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
-    <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
+  <!-- Custom Theme JavaScript -->
+  <script src="../dist/js/sb-admin-2.js"></script>
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
