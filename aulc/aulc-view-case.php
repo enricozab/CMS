@@ -407,16 +407,7 @@ if (!isset($_GET['cn']))
         JSZipUtils.getBinaryContent(url,callback);
     }
 
-    $('#submitRef').click(function() {
-      $('#twoFactorModal').modal("show");
-    });
-
-    $('#modalYes').on('click', function() {
-
-      $('#formModal').modal("hide");
-
-      $('#twoFactorModal').modal("hide");
-
+    $('#submitRef').on('click', function() {
       var ids = ['input[name="caseDecision"]:checked','#reasonCase'];
       var isEmpty = true;
 
@@ -454,126 +445,128 @@ if (!isset($_GET['cn']))
       }
 
       if(isEmpty) {
-        var changeoff = null;
-        var changevio = null;
-        var cheat = null;
-        if($('#dispOffense').is(":visible")){
-          changeoff=$('input[name="violationDes"]:checked').val();
-        }
-        if($('#changeViolation').is(":visible")){
-          changevio=$('#offenseSelect').val();
-        }
-        if($('#cheat').is(":visible")){
-          cheat=$('#cheat-type').val();
-        }
-        $.ajax({
-          //../ajax/aulc-forward-case.php
-            url: '../ajax/aulc-forward-case.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                decision: $('input[name="caseDecision"]:checked').val(),
-                reason: $('#reasonCase').val(),
-                aulc_remarks: $('#aulcRemarks').val(),
-                changeoff: changeoff,
-                changevio: changevio,
-                cheat: cheat,
-                proceeding: <?php echo $row['ADMISSION_TYPE_ID']; ?>
-            },
-            success: function(msg) {
-
-              // $('#message').text('Case forwarded to ULC successfully!');
-              $('#forward').attr('disabled', true);
-
-              loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
-
-                if (error) { throw error };
-                var zip = new JSZip(content);
-                var doc=new window.docxtemplater().loadZip(zip);
-                // date
-                var today = new Date();
-                var dd = today.getDate();
-                var mm = today.getMonth() + 1; //January is 0!
-                var yyyy = today.getFullYear();
-                if (dd < 10) {
-                  dd = '0' + dd;
-                }
-                if (mm < 10) {
-                  mm = '0' + mm;
-                }
-                var today = dd + '/' + mm + '/' + yyyy;
-
-                var admission;
-                if(<?php echo $row['ADMISSION_TYPE_ID']; ?> == 1){
-                  admission = "University Panel for Case Conference";
-                }
-                else if(<?php echo $row['ADMISSION_TYPE_ID']; ?> == 2){
-                  admission = "Summary Proceedings";
-                }
-                else {
-                  admission = "Formal Hearing";
-                }
-
-                if (changevio == null) {
-                  changevio = "";
-                }
-
-                doc.setData({
-
-                  date: today,
-                  casenum: <?php echo $_GET['cn']; ?>,
-                  name: "<?php echo $row['STUDENT']; ?>",
-                  idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
-                  college: "<?php echo $CollegeQRow['description']; ?>",
-                  degree: "<?php echo $CollegeQRow['degree']; ?>",
-                  violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
-                  complainant: "<?php echo $row['COMPLAINANT']; ?>",
-                  nature: admission,
-                  decision: $('input[name="caseDecision"]:checked').val(),
-                  reason: $('#reasonCase').val(),
-                  remark: $('#aulcRemarks').val(),
-                  changes: changevio,
-                  others: ""
-
-
-                });
-
-                try {
-                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                    doc.render();
-                }
-
-                catch (error) {
-                    var e = {
-                        message: error.message,
-                        name: error.name,
-                        stack: error.stack,
-                        properties: error.properties,
-                    }
-                    console.log(JSON.stringify({error: e}));
-                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                    throw error;
-                }
-
-                var out=doc.getZip().generate({
-                    type:"blob",
-                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                }); //Output the document using Data-URI
-                saveAs(out,"Discipline Case Referral Form.docx");
-
-              });
-              $('#newFormModal').modal("show");
-            }
-        });
+        $('#twoFactorModal').modal("show");
       }
       else {
         $("#alertModal").modal("show");
       }
-    }); 
+    });
+
+    $('#modalYes').click(function() {
+      var changeoff = null;
+      var changevio = null;
+      var cheat = null;
+      if($('#dispOffense').is(":visible")){
+        changeoff=$('input[name="violationDes"]:checked').val();
+      }
+      if($('#changeViolation').is(":visible")){
+        changevio=$('#offenseSelect').val();
+      }
+      if($('#cheat').is(":visible")){
+        cheat=$('#cheat-type').val();
+      }
+      $.ajax({
+        url: '../ajax/aulc-forward-case.php',
+        type: 'POST',
+        data: {
+            caseID: <?php echo $_GET['cn']; ?>,
+            decision: $('input[name="caseDecision"]:checked').val(),
+            reason: $('#reasonCase').val(),
+            aulc_remarks: $('#aulcRemarks').val(),
+            changeoff: changeoff,
+            changevio: changevio,
+            cheat: cheat,
+            proceeding: <?php echo $row['ADMISSION_TYPE_ID']; ?>
+        },
+        success: function(msg) {
+
+          // $('#message').text('Case forwarded to ULC successfully!');
+          $('#forward').attr('disabled', true);
+
+          loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
+
+            if (error) { throw error };
+            var zip = new JSZip(content);
+            var doc=new window.docxtemplater().loadZip(zip);
+            // date
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1; //January is 0!
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+              dd = '0' + dd;
+            }
+            if (mm < 10) {
+              mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+
+            var admission;
+            if(<?php echo $row['ADMISSION_TYPE_ID']; ?> == 1){
+              admission = "University Panel for Case Conference";
+            }
+            else if(<?php echo $row['ADMISSION_TYPE_ID']; ?> == 2){
+              admission = "Summary Proceedings";
+            }
+            else {
+              admission = "Formal Hearing";
+            }
+
+            if (changevio == null) {
+              changevio = "";
+            }
+
+            doc.setData({
+
+              date: today,
+              casenum: <?php echo $_GET['cn']; ?>,
+              name: "<?php echo $row['STUDENT']; ?>",
+              idn: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+              college: "<?php echo $CollegeQRow['description']; ?>",
+              degree: "<?php echo $CollegeQRow['degree']; ?>",
+              violation: "<?php echo $row['OFFENSE_DESCRIPTION']; ?>",
+              complainant: "<?php echo $row['COMPLAINANT']; ?>",
+              nature: admission,
+              decision: $('input[name="caseDecision"]:checked').val(),
+              reason: $('#reasonCase').val(),
+              remark: $('#aulcRemarks').val(),
+              changes: changevio,
+              others: ""
+
+
+            });
+
+            try {
+                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                doc.render();
+            }
+
+            catch (error) {
+                var e = {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack,
+                    properties: error.properties,
+                }
+                console.log(JSON.stringify({error: e}));
+                // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                throw error;
+            }
+
+            var out=doc.getZip().generate({
+                type:"blob",
+                mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            }); //Output the document using Data-URI
+            saveAs(out,"Discipline Case Referral Form.docx");
+
+          });
+          $('#newFormModal').modal("show");
+        }
+      });
+    });
 
     $('#modalNo').on('click', function() {
       $('#formModal').modal("show");
-      $('#twoFactorModal').modal("hide");
     }); 
 
     $('#n1').on('click', function() {
@@ -839,14 +832,14 @@ if (!isset($_GET['cn']))
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+						<h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
 					</div>
 					<div class="modal-body">
 						<p id="message"> Are you sure you want to proceed? </p>
 					</div>
 					<div class="modal-footer">
-            <button type="submit" id = "modalYes" class="btn btn-outline btn-success">Yes</button>
-            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger">No</button>
+            <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
           </div>
 				</div>
 			</div>

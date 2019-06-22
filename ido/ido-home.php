@@ -69,7 +69,6 @@
                 width: 120px;
               }
               #all {border-radius: 3px 0px 0px 3px;}
-              #active {border-radius: 0px;}
               #closed {border-radius: 0px 3px 3px 0px;}
           </style>
           <br><br>

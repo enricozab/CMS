@@ -62,6 +62,7 @@
             <button type="button" class="tableButton btn btn-default" id="all">All Cases</button>
             <button type="button" class="tableButton btn btn-default" id="priority">Priority Cases</button>
             <button type="button" class="tableButton btn btn-default" id="active">Active</button>
+            <button type="button" class="tableButton btn btn-default" id="inactive">Inactive</button>
             <button type="button" class="tableButton btn btn-default" id="closed">Closed</button>
           </div>
           <style>
@@ -69,7 +70,6 @@
                 width: 120px;
               }
               #all {border-radius: 3px 0px 0px 3px;}
-              #active {border-radius: 0px;}
               #closed {border-radius: 0px 3px 3px 0px;}
           </style>
           <br><br>
@@ -187,6 +187,7 @@
       $('#all').focus();
       $('#all').css("background-color", "#e6e6e6");
       $('#active').css("background-color", "white");
+      $('#inactive').css("background-color", "white");
       $('#closed').css("background-color", "white");
       $('#priority').css("background-color", "white");
 
@@ -230,6 +231,7 @@
     $('#active').on('click', function () {
       $('#active').focus();
       $('#active').css("background-color", "#e6e6e6");
+      $('#inactive').css("background-color", "white");
       $('#all').css("background-color", "white");
       $('#closed').css("background-color", "white");
       $('#priority').css("background-color", "white");
@@ -271,10 +273,56 @@
       }
     });
 
+    $('#inactive').on('click', function () {
+      $('#inactive').focus();
+      $('#inactive').css("background-color", "#e6e6e6");
+      $('#active').css("background-color", "white");
+      $('#all').css("background-color", "white");
+      $('#closed').css("background-color", "white");
+      $('#priority').css("background-color", "white");
+
+      clearTimeout(timeTable);
+      temCurPage = $('#case-notif-table').DataTable().page();
+      activeTable();
+
+      function activeTable() {
+        $.ajax({
+          url: '../ajax/hdo-get-cases-inactive.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            $('#case-notif-table').html(response);
+            if(temCurPage != null) {
+              $('#case-notif-table').DataTable().page(0).draw('page');
+              temCurPage = null;
+            }
+            var curPage = $('#case-notif-table').DataTable().page();
+            var curSearch = $('#case-notif-table').DataTable().search();
+            if($('div.dataTables_filter input').is(':focus')) {
+              var focus = true;
+            }
+            $('#case-notif-table').DataTable({
+              'destroy': true,
+              'aaSorting': []
+            });
+            $('#case-notif-table').DataTable().page(curPage).draw('page');
+            $('#case-notif-table').DataTable().search(curSearch).draw('page');
+            if(focus) {
+              $('div.dataTables_filter input').focus();
+            }
+          }
+        });
+
+        timeTable = setTimeout(activeTable, 5000);
+      }
+    });
+
     $('#closed').on('click', function () {
       $('#closed').focus();
       $('#closed').css("background-color", "#e6e6e6");
       $('#active').css("background-color", "white");
+      $('#inactive').css("background-color", "white");
       $('#all').css("background-color", "white");
       $('#priority').css("background-color", "white");
 
@@ -319,6 +367,7 @@
       $('#priority').focus();
       $('#priority').css("background-color", "#e6e6e6");
       $('#active').css("background-color", "white");
+      $('#inactive').css("background-color", "white");
       $('#all').css("background-color", "white");
       $('#closed').css("background-color", "white");
 

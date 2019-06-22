@@ -80,7 +80,7 @@
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
                       <label>Student <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="studentID" class="form-control">
+                      <select id="studentID" class="chosen-select">
                           <option value="" disabled selected>Select student</option>
                           <?php
                             $studentQ= "SELECT * FROM cms.users u WHERE u.user_type_id = 1 ORDER BY 5;";
@@ -132,7 +132,7 @@
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Complainant <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="complainantID" class="form-control">
+                      <select id="complainantID" class="chosen-select">
                           <option value="" disabled selected>Select complainant</option>
                           <?php
                             $complainantQ= "SELECT * FROM cms.users WHERE user_type_id != 1 ORDER BY 5;";
@@ -346,37 +346,41 @@
           }
         }
         if(isEmpty) {
-          handleApprehend();
-          $('#waitModal').modal("show");
-          $.ajax({
-              url: '../ajax/hdo-insert-case.php',
-              type: 'POST',
-              data: {
-                  incidentreportID: null,
-                  studentID: $('#studentID').val(),
-                  offenseID: $('#offense').val(),
-                  cheatingType: $('#cheat-type').val(),
-                  complainantID: $('#complainantID').val(),
-                  dateIncident: $('#date').val(),
-                  location: $('#location').val(),
-                  details: $('#details').val(),
-                  assignIDO: $('#ido').val(),
-                  page: "HDO-APPREHENSION"
-              },
-              success: function(response) {
-
-                data = response.split("/");
-            		caseData = "Case #" + data[5];
-                loadData(response);
-                //$('#message').text('Submitted successfully!');
-              }
-          });
+          $('#twoFactorModal').modal('show');
         }
 
         else {
           $("#done").hide();
           $("#alertModal").modal("show");
         }
+      });
+
+      $('#modalYes').on('click', function() {
+        handleApprehend();
+        $('#waitModal').modal("show");
+        $.ajax({
+            url: '../ajax/hdo-insert-case.php',
+            type: 'POST',
+            data: {
+                incidentreportID: null,
+                studentID: $('#studentID').val(),
+                offenseID: $('#offense').val(),
+                cheatingType: $('#cheat-type').val(),
+                complainantID: $('#complainantID').val(),
+                dateIncident: $('#date').val(),
+                location: $('#location').val(),
+                details: $('#details').val(),
+                assignIDO: $('#ido').val(),
+                page: "HDO-APPREHENSION"
+            },
+            success: function(response) {
+
+              data = response.split("/");
+              caseData = "Case #" + data[5];
+              loadData(response);
+              //$('#message').text('Submitted successfully!');
+            }
+        });
       });
 
       $('#modalOK').click(function() {
@@ -498,6 +502,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Two Factor Authentication Modal -->
+    <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
+          </div>
+            <div class="modal-body">
+              <p id="message"> Are you sure you want to proceed? </p>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+              <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
 </body>
 
 </html>

@@ -413,6 +413,8 @@ if (!isset($_GET['cn']))
   $(document).ready(function() {
     loadNotif();
 
+    var form = "submitForm";
+
     function loadNotif () {
         $.ajax({
           url: '../ajax/student-notif-cases.php',
@@ -452,10 +454,6 @@ if (!isset($_GET['cn']))
       }
     });
 
-    $('#modalNo').on('click', function() {
-      $("#twoFactorModal").modal("hide");
-    });
-
     function loadFile(url,callback){
         JSZipUtils.getBinaryContent(url,callback);
     }
@@ -478,14 +476,6 @@ if (!isset($_GET['cn']))
       }
     ?>
 
-    $("#submitForm").click(function(){
-      $("#twoFactorModal").modal("show");
-    });
-
-    $("#submitTwoF").click(function(){
-      $("#twoFactorModal").modal("show");
-    });
-
     $("#submitFormAgain").click(function(){
         var ids = ['#schoolyr2','#term2','#letter2','#admissionType2'];
         var isEmpty = true;
@@ -497,113 +487,249 @@ if (!isset($_GET['cn']))
         }
 
         if(isEmpty) {
-          $.ajax({
-              url: '../ajax/student-submit-forms.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  remarks: <?php echo $row['REMARKS_ID']; ?>,
-                  admission: document.getElementById("admissionType2").value,
-                  term: document.getElementById("term2").value,
-                  schoolyr: document.getElementById("schoolyr2").value,
-                  response: document.getElementById("letter2").value
-              },
-              success: function(msg) {
-                  $("#evidencediv").hide();
-                  $("#form").attr("disabled", true);
-
-                  loadFile("../templates/template-student-reponse-form.docx",function(error,content){
-                    if (error) { throw error };
-                    var zip = new JSZip(content);
-                    var doc=new window.docxtemplater().loadZip(zip);
-                    // date
-                    var today = new Date();
-                    var dd = today.getDate();
-                    var mm = today.getMonth() + 1; //January is 0!
-                    var yyyy = today.getFullYear();
-                    if (dd < 10) {
-                      dd = '0' + dd;
-                    }
-                    if (mm < 10) {
-                      mm = '0' + mm;
-                    }
-                    var today = dd + '/' + mm + '/' + yyyy;
-
-                    var formNumber;
-                    <?php
-                    if ($formres['MAX'] != null) { ?>
-                      formNumber = <?php echo $formres['MAX'] ?>;
-                    <?php }
-                    else { ?>
-                      formNumber = 1;
-                    <?php }
-                    ?>
-
-                    titleForm = "Student Response Form #" + formNumber + ".docx";
-
-                    doc.setData({
-                      <?php
-                      if ($formres2['student_response_form_id'] != null) { ?>
-                        formNum: <?php echo $formres2['student_response_form_id'] ?>,
-                      <?php }
-                      else { ?>
-                        formNum: 1,
-                      <?php } ?>
-                      firstIDO: "<?php echo $idores['first_name'] ?>",
-                      lastIDO: "<?php echo $idores['last_name'] ?>",
-                      firstComplainant: "<?php echo $nameres['first_name'] ?>",
-                      lastComplainant: "<?php echo $nameres['last_name'] ?>",
-                      nature: "<?php echo $caseres['description'] ?>",
-                      section: '2.1??',
-                      date: today,
-                      dateApp: "<?php echo $caseres['date_filed'] ?>",
-                      term: document.getElementById("term2").value,
-                      year: document.getElementById("schoolyr2").value,
-                      admission: document.getElementById("admissionType2").value,
-                      letter: document.getElementById("letter2").value,
-                      firstStudent: "<?php echo $caseres['first_name'] ?>",
-                      lastStudent: "<?php echo $caseres['last_name'] ?>",
-                      yearLvl: "<?php echo $studentres['year_level'] ?>",
-                      idn: "<?php echo $nameres['user_id'] ?>",
-                      college: "<?php echo $nameres['description'] ?>",
-                      degree: "<?php echo $studentres['degree'] ?>"
-
-                    });
-
-                    try {
-                        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                        doc.render();
-                    }
-
-                    catch (error) {
-                        var e = {
-                            message: error.message,
-                            name: error.name,
-                            stack: error.stack,
-                            properties: error.properties,
-                        }
-                        console.log(JSON.stringify({error: e}));
-                        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                        throw error;
-                    }
-
-                    var out=doc.getZip().generate({
-                        type:"blob",
-                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    }); //Output the document using Data-URI
-                    saveAs(out,titleForm);
-
-                  });
-                  $('#message').text('form');
-                  //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
-                  $("#newFormModal").modal("show");
-              }
-          });
+          form = "submitFormAgain";
+          $("#twoFactorModal").modal('show');
         }
         else {
           $("#alertModal").modal("show");
         }
+    });
 
+    $("#modalYes").click(function(){
+      if (form == "submitForm") {
+        $.ajax({
+          url: '../ajax/student-submit-forms.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              remarks: <?php echo $row['REMARKS_ID']; ?>,
+              admission: document.getElementById("admissionType").value,
+              term: document.getElementById("term").value,
+              schoolyr: document.getElementById("schoolyr").value,
+              response: document.getElementById("letter").value
+          },
+          success: function(msg) {
+              $("#evidencediv").hide();
+              $("#form").attr("disabled", true);
+
+              loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+
+              if (error) { throw error };
+              var zip = new JSZip(content);
+              var doc=new window.docxtemplater().loadZip(zip);
+              // date
+              var today = new Date();
+              var dd = today.getDate();
+              var mm = today.getMonth() + 1; //January is 0!
+              var yyyy = today.getFullYear();
+              if (dd < 10) {
+                dd = '0' + dd;
+              }
+              if (mm < 10) {
+                mm = '0' + mm;
+              }
+              var today = dd + '/' + mm + '/' + yyyy;
+
+              var formNumber;
+              <?php
+              if ($formres['MAX'] != null) { ?>
+                formNumber = <?php echo $formres['MAX'] ?>;
+              <?php }
+              else { ?>
+                formNumber = 1;
+              <?php }
+              ?>
+
+              titleForm = "Student Response Form #" + formNumber + ".docx";
+
+              doc.setData({
+                <?php
+                if ($formres2['student_response_form_id'] != null) { ?>
+                  formNum: <?php echo $formres2['student_response_form_id'] ?>,
+                <?php }
+                else {
+                  if ($formres['MAX'] != null) { ?>
+                    formNum: <?php echo $formres['MAX'] ?>,
+                  <?php }
+                  else { ?>
+                    formNum: 1,
+                  <?php }
+                }
+                ?>
+                firstIDO: "<?php echo $idores['first_name'] ?>",
+                lastIDO: "<?php echo $idores['last_name'] ?>",
+                firstComplainant: "<?php echo $nameres['first_name'] ?>",
+                lastComplainant: "<?php echo $nameres['last_name'] ?>",
+                nature: "<?php echo $caseres['description'] ?>",
+                section: '2.1??',
+                date: today,
+                dateApp: "<?php echo $caseres['date_filed'] ?>",
+                term: document.getElementById("term").value,
+                year: document.getElementById("schoolyr").value,
+                admission: document.getElementById("admissionType").value,
+                letter: document.getElementById("letter").value,
+                firstStudent: "<?php echo $caseres['first_name'] ?>",
+                lastStudent: "<?php echo $caseres['last_name'] ?>",
+                yearLvl: "<?php echo $studentres['year_level'] ?>",
+                idn: "<?php echo $nameres['user_id'] ?>",
+                college: "<?php echo $nameres['description'] ?>",
+                degree: "<?php echo $studentres['degree'] ?>"
+
+              });
+
+              try {
+                  // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                  doc.render();
+              }
+
+              catch (error) {
+                  var e = {
+                      message: error.message,
+                      name: error.name,
+                      stack: error.stack,
+                      properties: error.properties,
+                  }
+                  console.log(JSON.stringify({error: e}));
+                  // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                  throw error;
+              }
+
+              var out=doc.getZip().generate({
+                  type:"blob",
+                  mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              }); //Output the document using Data-URI
+              saveAs(out,titleForm);
+
+              });
+              // $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+              $('#message').text('form');
+
+              <?php
+                if($countrow['CASE_COUNT'] > 1) { ?>
+                  $("#parentModal").modal("show");
+              <?php }
+                else { ?>
+                  //$("#alertModal").modal("show");
+                  //$('#appealMsg').show();
+                  $("#newFormModal").modal("show");
+              <?php }
+              ?>
+          }
+        });
+      }
+      else if (form == "submitFormAgain") {
+        $.ajax({
+          url: '../ajax/student-submit-forms.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              remarks: <?php echo $row['REMARKS_ID']; ?>,
+              admission: document.getElementById("admissionType2").value,
+              term: document.getElementById("term2").value,
+              schoolyr: document.getElementById("schoolyr2").value,
+              response: document.getElementById("letter2").value
+          },
+          success: function(msg) {
+              $("#evidencediv").hide();
+              $("#form").attr("disabled", true);
+
+              loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc=new window.docxtemplater().loadZip(zip);
+                // date
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                  dd = '0' + dd;
+                }
+                if (mm < 10) {
+                  mm = '0' + mm;
+                }
+                var today = dd + '/' + mm + '/' + yyyy;
+
+                var formNumber;
+                <?php
+                if ($formres['MAX'] != null) { ?>
+                  formNumber = <?php echo $formres['MAX'] ?>;
+                <?php }
+                else { ?>
+                  formNumber = 1;
+                <?php }
+                ?>
+
+                titleForm = "Student Response Form #" + formNumber + ".docx";
+
+                doc.setData({
+                  <?php
+                  if ($formres2['student_response_form_id'] != null) { ?>
+                    formNum: <?php echo $formres2['student_response_form_id'] ?>,
+                  <?php }
+                  else { ?>
+                    formNum: 1,
+                  <?php } ?>
+                  firstIDO: "<?php echo $idores['first_name'] ?>",
+                  lastIDO: "<?php echo $idores['last_name'] ?>",
+                  firstComplainant: "<?php echo $nameres['first_name'] ?>",
+                  lastComplainant: "<?php echo $nameres['last_name'] ?>",
+                  nature: "<?php echo $caseres['description'] ?>",
+                  section: '2.1??',
+                  date: today,
+                  dateApp: "<?php echo $caseres['date_filed'] ?>",
+                  term: document.getElementById("term2").value,
+                  year: document.getElementById("schoolyr2").value,
+                  admission: document.getElementById("admissionType2").value,
+                  letter: document.getElementById("letter2").value,
+                  firstStudent: "<?php echo $caseres['first_name'] ?>",
+                  lastStudent: "<?php echo $caseres['last_name'] ?>",
+                  yearLvl: "<?php echo $studentres['year_level'] ?>",
+                  idn: "<?php echo $nameres['user_id'] ?>",
+                  college: "<?php echo $nameres['description'] ?>",
+                  degree: "<?php echo $studentres['degree'] ?>"
+
+                });
+
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
+
+                catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
+
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out,titleForm);
+
+              });
+              $('#message').text('form');
+              //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+              $("#newFormModal").modal("show");
+          }
+        });
+      }
+    });
+
+    $("#modalNo").click(function(){
+      if (form == "submitForm") {
+        $('#formModal').modal('show');
+      }
+      else if (form == "submitFormAgain") {
+        $('#formModalDetails').modal('show');
+      }
     });
 
     function sendStudResponseFirst() {
@@ -744,12 +870,7 @@ if (!isset($_GET['cn']))
       '</div>');
     });
 
-    $('#modalYes').on('click', function() {
-      // $("#truSubmitForm").click();
-
-      $("#formModal").modal("hide");
-      $("#twoFactorModal").modal("hide");
-
+    $('#submitForm').on('click', function() {
       var ids = ['#schoolyr','#term','#letter','#admissionType'];
       var isEmpty = true;
 
@@ -760,134 +881,12 @@ if (!isset($_GET['cn']))
       }
 
       if(isEmpty){
-        $.ajax({
-            url: '../ajax/student-submit-forms.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                remarks: <?php echo $row['REMARKS_ID']; ?>,
-                admission: document.getElementById("admissionType").value,
-                term: document.getElementById("term").value,
-                schoolyr: document.getElementById("schoolyr").value,
-                response: document.getElementById("letter").value
-            },
-            success: function(msg) {
-                $("#evidencediv").hide();
-                $("#form").attr("disabled", true);
-
-                loadFile("../templates/template-student-reponse-form.docx",function(error,content){
-
-                if (error) { throw error };
-                var zip = new JSZip(content);
-                var doc=new window.docxtemplater().loadZip(zip);
-                // date
-                var today = new Date();
-                var dd = today.getDate();
-                var mm = today.getMonth() + 1; //January is 0!
-                var yyyy = today.getFullYear();
-                if (dd < 10) {
-                  dd = '0' + dd;
-                }
-                if (mm < 10) {
-                  mm = '0' + mm;
-                }
-                var today = dd + '/' + mm + '/' + yyyy;
-
-                var formNumber;
-                <?php
-                if ($formres['MAX'] != null) { ?>
-                  formNumber = <?php echo $formres['MAX'] ?>;
-                <?php }
-                else { ?>
-                  formNumber = 1;
-                <?php }
-                ?>
-
-                titleForm = "Student Response Form #" + formNumber + ".docx";
-
-                doc.setData({
-                  <?php
-                  if ($formres2['student_response_form_id'] != null) { ?>
-                    formNum: <?php echo $formres2['student_response_form_id'] ?>,
-                  <?php }
-                  else {
-                    if ($formres['MAX'] != null) { ?>
-                      formNum: <?php echo $formres['MAX'] ?>,
-                    <?php }
-                    else { ?>
-                      formNum: 1,
-                    <?php }
-                  }
-                  ?>
-                  firstIDO: "<?php echo $idores['first_name'] ?>",
-                  lastIDO: "<?php echo $idores['last_name'] ?>",
-                  firstComplainant: "<?php echo $nameres['first_name'] ?>",
-                  lastComplainant: "<?php echo $nameres['last_name'] ?>",
-                  nature: "<?php echo $caseres['description'] ?>",
-                  section: '2.1??',
-                  date: today,
-                  dateApp: "<?php echo $caseres['date_filed'] ?>",
-                  term: document.getElementById("term").value,
-                  year: document.getElementById("schoolyr").value,
-                  admission: document.getElementById("admissionType").value,
-                  letter: document.getElementById("letter").value,
-                  firstStudent: "<?php echo $caseres['first_name'] ?>",
-                  lastStudent: "<?php echo $caseres['last_name'] ?>",
-                  yearLvl: "<?php echo $studentres['year_level'] ?>",
-                  idn: "<?php echo $nameres['user_id'] ?>",
-                  college: "<?php echo $nameres['description'] ?>",
-                  degree: "<?php echo $studentres['degree'] ?>"
-
-                });
-
-                try {
-                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                    doc.render();
-                }
-
-                catch (error) {
-                    var e = {
-                        message: error.message,
-                        name: error.name,
-                        stack: error.stack,
-                        properties: error.properties,
-                    }
-                    console.log(JSON.stringify({error: e}));
-                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                    throw error;
-                }
-
-                var out=doc.getZip().generate({
-                    type:"blob",
-                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                }); //Output the document using Data-URI
-                saveAs(out,titleForm);
-
-                });
-                // $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
-                $('#message').text('form');
-
-                <?php
-                  if($countrow['CASE_COUNT'] > 1) { ?>
-                    $("#parentModal").modal("show");
-                <?php }
-                  else { ?>
-                    //$("#alertModal").modal("show");
-                    //$('#appealMsg').show();
-                    $("#newFormModal").modal("show");
-                <?php }
-                ?>
-            }
-        });
+        form = "submitForm";
+        $("#twoFactorModal").modal('show');
       }
       else{
         $("#alertModal").modal("show");
       }
-    });
-
-    $('#modalNo').on('click', function() {
-      $("#twoFactorModal").modal("hide");
-      $("#formModal").modal("show");
     });
 
     $(document).on('click', '#removeevidence', function(){
@@ -1288,15 +1287,15 @@ if (!isset($_GET['cn']))
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
-        </div>
-        <div class="modal-body">
-          <p id="message"> Are you sure you want to proceed? </p>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
-          <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
-        </div>
+          <h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
+				</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
+          </div>
       </div>
     </div>
   </div>

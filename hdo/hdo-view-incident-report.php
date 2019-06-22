@@ -333,7 +333,6 @@ if (!isset($_GET['irn']))
       });
 
       $('#submit').click(function(){
-
         var ids = ['#offense','#ido'];
         var isEmpty = true;
 
@@ -362,34 +361,7 @@ if (!isset($_GET['irn']))
         }
 
         if(isEmpty) {
-          handle('<?php echo $passData;?>');
-          $('#waitModal').modal("show");
-          $.ajax({
-              url: '../ajax/hdo-insert-case.php',
-              type: 'POST',
-              data: {
-                  incidentreportID: <?php echo $_GET['irn']; ?>,
-                  studentID: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
-                  offenseID: $('#offense').val(),
-                  cheatingType: $('#cheat-type').val(),
-                  complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
-                  dateIncident: "<?php echo $row['DATE_INCIDENT']; ?>",
-                  location: "<?php echo $row['LOCATION']; ?>",
-                  details: $('#details2').val(),
-                  assignIDO: $('#ido').val(),
-                  page: "HDO-VIEW-CASE"
-              },
-
-              success: function(response) {
-                var string = "Case #";
-                caseData = string.concat(response);
-                $("#twoFactorModal").modal("show");
-              }
-          });
-          $('#message').text('Submitted successfully!');
-          $('#form').find('input, textarea, button, select').attr('disabled','disabled');
-          $(".chosen-select").attr('disabled', true).trigger("chosen:updated")
-          //$('#submit').text("Submitted"); // copy for fill out form
+          $('#twoFactorModal').modal('show');
         }
 
         else{
@@ -399,11 +371,33 @@ if (!isset($_GET['irn']))
       });
 
       $('#modalYes').on('click', function() {
-        $("#alertModal").modal("show");
-      });
+        handle('<?php echo $passData;?>');
+        $('#waitModal').modal("show");
+        $.ajax({
+          url: '../ajax/hdo-insert-case.php',
+          type: 'POST',
+          data: {
+              incidentreportID: <?php echo $_GET['irn']; ?>,
+              studentID: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+              offenseID: $('#offense').val(),
+              cheatingType: $('#cheat-type').val(),
+              complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
+              dateIncident: "<?php echo $row['DATE_INCIDENT']; ?>",
+              location: "<?php echo $row['LOCATION']; ?>",
+              details: $('#details2').val(),
+              assignIDO: $('#ido').val(),
+              page: "HDO-VIEW-CASE"
+          },
 
-      $('#modalNo').on('click', function() {
-        $("#twoFactorModal").modal("hide");
+          success: function(response) {
+            var string = "Case #";
+            caseData = string.concat(response);
+          }
+        });
+        $('#message').text('Submitted successfully!');
+        $('#form').find('input, textarea, button, select').attr('disabled','disabled');
+        $(".chosen-select").attr('disabled', true).trigger("chosen:updated");
+        $('#submit').text("Submitted");
       });
 
       $('#modalOK').click(function() {
@@ -579,14 +573,14 @@ if (!isset($_GET['irn']))
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
+						<h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
 					</div>
 					<div class="modal-body">
 						<p id="message"> Are you sure you want to proceed? </p>
 					</div>
 					<div class="modal-footer">
-            <button type="submit" id = "modalYes" class="btn btn-outline btn-success" data-dismiss="modal">Yes</button>
-            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
           </div>
 				</div>
 			</div>
