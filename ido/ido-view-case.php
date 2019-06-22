@@ -957,6 +957,28 @@ if (!isset($_GET['cn']))
         JSZipUtils.getBinaryContent(url,callback);
     }
 
+    $('#uploadSelect').on('change',function() {
+        var offense_id=$(this).val();
+        if(offense_id==1) {
+          $('#cheat').show();
+        }
+        else{
+          $('#cheat').hide();
+        }
+
+        $.ajax({
+          url: 'hdo-get-details.php',
+          type: 'POST',
+          data: {
+            offense: offense_id
+          },
+          success: function(response) {
+
+            
+          }
+        });
+      });
+
     $('#sendcl').on('click',function() {
       $('#closureModal').modal('show');
 
@@ -1303,7 +1325,14 @@ if (!isset($_GET['cn']))
 
           </p><br>
 
-          <p> Description: <textarea class="form-control" rows="3" id = "desc_input"></textarea></p><br>
+          <div id="witness" class="form-group" style='width: 300px;' hidden>
+            <label>Witness Name</label>
+            <input id="witnessName" class="form-control">
+          </div>
+
+          <!-- make this select, gets suggested desc of evidence from new table in db -->
+
+          <!-- <p> Description: <textarea class="form-control" rows="3" id = "desc_input"></textarea></p><br> -->
 
           <button type="submit" id = "six" name="evidence" class="btn btn-primary ">Upload</button>
         </div>
