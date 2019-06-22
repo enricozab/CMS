@@ -1296,6 +1296,8 @@ if (!isset($_GET['cn']))
                 echo "<option value ='".$id."'> ".$first." ".$last."</option>";
 
               }
+              
+              echo "<option value ='witness'> Witness </option>";
 
             ?> </select>
 
