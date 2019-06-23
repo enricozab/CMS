@@ -271,7 +271,7 @@
         }
 
         $.ajax({
-          url: 'hdo-get-details.php',
+          url: 'ido-get-details.php',
           type: 'POST',
           data: {
             offense: offense_id
