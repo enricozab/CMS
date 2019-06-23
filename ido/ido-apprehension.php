@@ -54,7 +54,7 @@
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/hdo-addNewFolder2.js" type="text/javascript"></script>
+    <script src="../gdrive/hdo-addNewFolder3.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>

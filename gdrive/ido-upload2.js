@@ -467,34 +467,68 @@ function getCMSFiles()  {
 
 function addCaseFolder() {
 	console.log("addCaseFolder");
-		var access_token =  gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
-		var request = gapi.client.request({
-			 'path': '/drive/v2/files/',
-			 'method': 'POST',
-			 'headers': {
-				 'Content-Type': 'application/json',
-				 'Authorization': 'Bearer ' + access_token,
-			 },
-			 'body':{
-				 "title" : folderData,
-				 "mimeType" : "application/vnd.google-apps.folder",
-				 "parents": [{
-					"kind": "drive#file",
-					"id": FOLDER_ID
-				}]
-			 }
-		});
+	
+	var access_token =  gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+	var request = gapi.client.request({
+			'path': '/drive/v2/files/',
+			'method': 'POST',
+			'headers': {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + access_token,
+			},
+			'body':{
+				"title" : folderData,
+				"mimeType" : "application/vnd.google-apps.folder",
+				"parents": [{
+				"kind": "drive#file",
+				"id": FOLDER_ID
+			}]
+			}
+	});
 
-		request.execute(function(resp) {
-			 if (!resp.error) {
-				 console.log("CASE FOLDER DONE");
-				 $('#waitModal').modal("hide");
-			 }else{
-				hideStatus();
-				hideLoading();
-				showErrorMessage("Error: " + resp.error.message);
-			 }
-		});
+	request.execute(function(resp) {
+			if (!resp.error) {
+				console.log("CASE FOLDER DONE");
+				$('#waitModal').modal("hide");
+			}else{
+			hideStatus();
+			hideLoading();
+			showErrorMessage("Error: " + resp.error.message);
+			}
+	});
+}
+
+function addEvidenceFolder() {
+	console.log("addEvidenceFolder");
+
+	var access_token =  gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+	var request = gapi.client.request({
+			'path': '/drive/v2/files/',
+			'method': 'POST',
+			'headers': {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + access_token,
+			},
+			'body':{
+				"title" : "Evidence",
+				"mimeType" : "application/vnd.google-apps.folder",
+				"parents": [{
+				"kind": "drive#file",
+				"id": FOLDER_ID
+			}]
+			}
+	});
+
+	request.execute(function(resp) {
+			if (!resp.error) {
+				console.log("CASE FOLDER DONE");
+				$('#waitModal').modal("hide");
+			}else{
+			hideStatus();
+			hideLoading();
+			showErrorMessage("Error: " + resp.error.message);
+			}
+	});
 }
 
 function showProgressPercentage(percentageValue) {
