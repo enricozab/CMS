@@ -309,6 +309,7 @@ if (!isset($_GET['cn']))
                     </div>
                   <?php }
                   ?>
+<<<<<<< HEAD
 
                   <br>
 
@@ -333,6 +334,32 @@ if (!isset($_GET['cn']))
                   </div>
               </div>
 
+=======
+
+                  <br>
+
+                  <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+                  <input type="file" id="fUpload" class="hide"/>
+
+                  <br><br><br><br>
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <button type="submit" id="return" name="return" class="btn btn-warning">Return to Student</button>
+                      <?php
+                        if ($row['TYPE'] == 'Major') { ?>
+                          <button type="button" class="btn btn-success" id="schedule"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
+                      <?php }
+                      ?>
+                      <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+                      <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
+                      <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
+                      <!--<button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>-->
+                    </div>
+                  </div>
+              </div>
+
+>>>>>>> origin/ico-dev
               <?php include "../ajax/user-case-audit.php" ?>
 
               <div class="col-lg-6">
@@ -454,6 +481,7 @@ if (!isset($_GET['cn']))
                               <?php }
 
                                   ?>
+<<<<<<< HEAD
 
                                     <tr>
 
@@ -472,6 +500,26 @@ if (!isset($_GET['cn']))
 
                                       <td>Parent Letter</td>
 
+=======
+
+                                    <tr>
+
+                                      <?php
+                                        if ($uploadsrow['PL_UPLOADED']) { ?>
+                                          <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                  <?php  }
+                                        elseif ($row['WITH_PARENT_LETTER'] == 0) { ?>
+                                          <td><label id = "three" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
+                                  <?php  }
+
+                                        else { ?>
+                                          <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                  <?php  }
+                                      ?>
+
+                                      <td>Parent Letter</td>
+
+>>>>>>> origin/ico-dev
                                     </tr>
 
                                     <tr>
