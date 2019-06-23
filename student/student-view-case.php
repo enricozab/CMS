@@ -31,9 +31,6 @@ if (!isset($_GET['cn']))
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -139,7 +136,7 @@ if (!isset($_GET['cn']))
     }
   ?>
 
-    <div id="wrapper">
+  <div id="wrapper">
 
     <?php include 'student-sidebar.php';?>
 
@@ -162,9 +159,10 @@ if (!isset($_GET['cn']))
         					<b>Student Name:</b> <?php echo $row['STUDENT']; ?><br>
                   <br>
         					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
-        					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
-                  <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
+                  <b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
+                  
                   <br><br>
+
                   <div class="form-group">
                     <label>Summary of the Incident</label>
                     <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
@@ -231,7 +229,9 @@ if (!isset($_GET['cn']))
                     }
                   ?>
               </div>
-              <?php include "student-case-audit.php" ?>
+
+              <?php include "../ajax/user-case-audit.php" ?>
+
               <div class="col-lg-6">
                   <div class="panel panel-default">
                       <div class="panel-heading">
@@ -242,18 +242,19 @@ if (!isset($_GET['cn']))
                       <!-- /.panel-heading -->
                       <div id="caseHistory" class="panel-collapse collapse">
                         <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
-                            <div class="table-responsive table-bordered">
-                              <table class="table">
-                                <thead>
+                          <?php
+                            if ($caseAuditRes->num_rows > 0) { ?>
+                              <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                  <thead>
                                     <tr>
                                         <th>Date</th>
                                         <th>Action Done</th>
                                         <th>By Whom</th>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                  <?php
-                                    if ($caseAuditRes->num_rows > 0) {
+                                  </thead>
+                                  <tbody>
+                                    <?php
                                       while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
                                         echo "<tr>
                                                 <td>{$caseAuditRow['date']}</td>
@@ -261,60 +262,158 @@ if (!isset($_GET['cn']))
                                                 <td>{$caseAuditRow['action_done_by']}</td>
                                               </tr>";
                                       }
-                                    }
-                                    else {
-                                      echo "<p style='margin-right: 20px; margin-left: -20px;'>No case history</p>";
-                                    }
-                                  ?>
-                                </tbody>
-                              </table>
-                            </div>
-                            <!-- /.table-responsive -->
-                            <br>
+                                    ?>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <!-- /.table-responsive -->
+                          <?php }
+                            else {
+                              echo "No case history";
+                            }
+                          ?>
+                          <br>
                         </div>
                         <!-- /.panel-body -->
                       </div>
+                      <!-- </div> -->
                   </div>
                   <!-- /.panel -->
+                  <br>
+                  <!-- FAQ -->
+                  <div class="panel panel-default">
+                      <!-- .panel-heading -->
+                      <div class="panel-heading">
+                        <b style="color: black; font-size: 17px;">FAQ</b>
+                       </div>
+                      <div class="panel-body">
+                          <div class="panel-group" id="accordion">
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Possible Evidence</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseOne" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                          <?php
+                                              $ctr=0;
+                                              $evidenceQuery= "SELECT * FROM cms.evidence_suggestion ES
+                                                                LEFT JOIN cms.ref_offenses RO ON ES.offense_id = RO.offense_id
+                                                                WHERE RO.description = '" . $row['OFFENSE_DESCRIPTION'] ."';";
+                                              $evidenceRes = $dbc->query($evidenceQuery);
+
+                                              if ($evidenceRes->num_rows > 0) {
+                                                echo 
+                                                  '<div class="table-responsive">
+                                                  <table class="table table-striped table-bordered table-hover">
+                                                  <thead>
+                                                  <tr>
+                                                    <th style="text-align: center;">Offense</th>
+                                                    <th style="text-align: center;">Type of Evidence</th> 
+                                                  </tr>
+                                                  </thead>
+                                                  <tbody>';
+
+                                                while($evidence = $evidenceRes->fetch_assoc()){
+                                                  echo 
+                                                    '<tr> ';
+
+                                                      if($ctr==0){
+                                                        echo '<td>' . $row['OFFENSE_DESCRIPTION'] . '</td>';
+                                                        $ctr = $ctr+1;
+                                                      }
+                                                      else{
+                                                        echo '<td></td>';
+                                                      }
+                                                  echo
+                                                      '<td>' . $evidence['suggested_evidence_desc'] . '</td>
+                                                    </tr>';
+                                                }
+                                                echo '</tbody>
+                                                      </table>
+                                                      </div>';
+                                              }
+                                              else{
+                                                echo 'No available evidence suggestions';
+                                              }
+                                          ?>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Possible Interview Questions</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseTwo" class="panel-collapse collapse">
+                                      <div class="panel-body">
+                                        <?php
+                                          $interviewQuery= "SELECT * FROM cms.interview_faq;";
+                                          $interviewRes = $dbc->query($interviewQuery);
+                                          if ($interviewRes->num_rows > 0) {
+                                            echo 
+                                              '<div class="table-responsive">
+                                              <table class="table table-striped table-bordered table-hover">
+                                              <tbody>';
+                                            while($questions = $interviewRes->fetch_assoc())
+                                              echo 
+                                                '<tr>
+                                                <td>' . $questions['question_desc'] .'</td>
+                                                </tr>';
+                                            echo 
+                                              '</tbody>
+                                              </table>
+                                              </div>';
+                                          }
+                                          else{
+                                            echo 'No available interview questions';
+                                          }
+                                        ?> 
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- .panel-body -->
+                  </div>
+                  <!-- /.panel -->
+                  <!-- /.FAQ -->
               </div>
               <!-- /.col-lg-6 -->
           </div>
+          <br><br><br><br><br>
       </div>
-    </div>
-    <!-- /#wrapper -->
+  </div>
+  <!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <!-- Metis Menu Plugin JavaScript -->
+  <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+  <!-- DataTables JavaScript -->
+  <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+  <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+  <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
 
-    <!-- Morris Charts JavaScript -->
-    <script src="../vendor/raphael/raphael.min.js"></script>
-    <script src="../vendor/morrisjs/morris.min.js"></script>
-    <script src="../data/morris-data.js"></script>
+  <!-- Custom Theme JavaScript -->
+  <script src="../dist/js/sb-admin-2.js"></script>
 
-	<!-- DataTables JavaScript -->
-    <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
-    <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
+  <!-- Form Generation -->
+  <script src="../form-generation/docxtemplater.js"></script>
+  <script src="../form-generation/jszip.js"></script>
+  <script src="../form-generation/FileSaver.js"></script>
+  <script src="../form-generation/jszip-utils.js"></script>
 
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-
-    <!-- Form Generation -->
-    <script src="../form-generation/docxtemplater.js"></script>
-    <script src="../form-generation/jszip.js"></script>
-    <script src="../form-generation/FileSaver.js"></script>
-    <script src="../form-generation/jszip-utils.js"></script>
-
-	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
   $(document).ready(function() {
     loadNotif();
+
+    var form = "submitForm";
 
     function loadNotif () {
         $.ajax({
@@ -339,7 +438,6 @@ if (!isset($_GET['cn']))
 
     //response form
     $("#form").click(function(){
-
       var remark = <?php echo $row['REMARKS_ID']; ?>;
       var stat = <?php echo $row['STATUS_ID']; ?>;
 
@@ -354,7 +452,6 @@ if (!isset($_GET['cn']))
         //parentLetter();
 
       }
-
     });
 
     function loadFile(url,callback){
@@ -379,14 +476,6 @@ if (!isset($_GET['cn']))
       }
     ?>
 
-    $("#submitForm").click(function(){
-      $("#twoFactorModal").modal("show");
-    });
-
-    $("#submitTwoF").click(function(){
-      $("#twoFactorModal").show();
-    });
-
     $("#submitFormAgain").click(function(){
         var ids = ['#schoolyr2','#term2','#letter2','#admissionType2'];
         var isEmpty = true;
@@ -398,113 +487,249 @@ if (!isset($_GET['cn']))
         }
 
         if(isEmpty) {
-          $.ajax({
-              url: '../ajax/student-submit-forms.php',
-              type: 'POST',
-              data: {
-                  caseID: <?php echo $_GET['cn']; ?>,
-                  remarks: <?php echo $row['REMARKS_ID']; ?>,
-                  admission: document.getElementById("admissionType2").value,
-                  term: document.getElementById("term2").value,
-                  schoolyr: document.getElementById("schoolyr2").value,
-                  response: document.getElementById("letter2").value
-              },
-              success: function(msg) {
-                  $("#evidencediv").hide();
-                  $("#form").attr("disabled", true);
-
-                  loadFile("../templates/template-student-reponse-form.docx",function(error,content){
-                    if (error) { throw error };
-                    var zip = new JSZip(content);
-                    var doc=new window.docxtemplater().loadZip(zip);
-                    // date
-                    var today = new Date();
-                    var dd = today.getDate();
-                    var mm = today.getMonth() + 1; //January is 0!
-                    var yyyy = today.getFullYear();
-                    if (dd < 10) {
-                      dd = '0' + dd;
-                    }
-                    if (mm < 10) {
-                      mm = '0' + mm;
-                    }
-                    var today = dd + '/' + mm + '/' + yyyy;
-
-                    var formNumber;
-                    <?php
-                    if ($formres['MAX'] != null) { ?>
-                      formNumber = <?php echo $formres['MAX'] ?>;
-                    <?php }
-                    else { ?>
-                      formNumber = 1;
-                    <?php }
-                    ?>
-
-                    titleForm = "Student Response Form #" + formNumber + ".docx";
-
-                    doc.setData({
-                      <?php
-                      if ($formres2['student_response_form_id'] != null) { ?>
-                        formNum: <?php echo $formres2['student_response_form_id'] ?>,
-                      <?php }
-                      else { ?>
-                        formNum: 1,
-                      <?php } ?>
-                      firstIDO: "<?php echo $idores['first_name'] ?>",
-                      lastIDO: "<?php echo $idores['last_name'] ?>",
-                      firstComplainant: "<?php echo $nameres['first_name'] ?>",
-                      lastComplainant: "<?php echo $nameres['last_name'] ?>",
-                      nature: "<?php echo $caseres['description'] ?>",
-                      section: '2.1??',
-                      date: today,
-                      dateApp: "<?php echo $caseres['date_filed'] ?>",
-                      term: document.getElementById("term2").value,
-                      year: document.getElementById("schoolyr2").value,
-                      admission: document.getElementById("admissionType2").value,
-                      letter: document.getElementById("letter2").value,
-                      firstStudent: "<?php echo $caseres['first_name'] ?>",
-                      lastStudent: "<?php echo $caseres['last_name'] ?>",
-                      yearLvl: "<?php echo $studentres['year_level'] ?>",
-                      idn: "<?php echo $nameres['user_id'] ?>",
-                      college: "<?php echo $nameres['description'] ?>",
-                      degree: "<?php echo $studentres['degree'] ?>"
-
-                    });
-
-                    try {
-                        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                        doc.render();
-                    }
-
-                    catch (error) {
-                        var e = {
-                            message: error.message,
-                            name: error.name,
-                            stack: error.stack,
-                            properties: error.properties,
-                        }
-                        console.log(JSON.stringify({error: e}));
-                        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                        throw error;
-                    }
-
-                    var out=doc.getZip().generate({
-                        type:"blob",
-                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    }); //Output the document using Data-URI
-                    saveAs(out,titleForm);
-
-                  });
-                  $('#message').text('form');
-                  //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
-                  $("#newFormModal").modal("show");
-              }
-          });
+          form = "submitFormAgain";
+          $("#twoFactorModal").modal('show');
         }
         else {
           $("#alertModal").modal("show");
         }
+    });
 
+    $("#modalYes").click(function(){
+      if (form == "submitForm") {
+        $.ajax({
+          url: '../ajax/student-submit-forms.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              remarks: <?php echo $row['REMARKS_ID']; ?>,
+              admission: document.getElementById("admissionType").value,
+              term: document.getElementById("term").value,
+              schoolyr: document.getElementById("schoolyr").value,
+              response: document.getElementById("letter").value
+          },
+          success: function(msg) {
+              $("#evidencediv").hide();
+              $("#form").attr("disabled", true);
+
+              loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+
+              if (error) { throw error };
+              var zip = new JSZip(content);
+              var doc=new window.docxtemplater().loadZip(zip);
+              // date
+              var today = new Date();
+              var dd = today.getDate();
+              var mm = today.getMonth() + 1; //January is 0!
+              var yyyy = today.getFullYear();
+              if (dd < 10) {
+                dd = '0' + dd;
+              }
+              if (mm < 10) {
+                mm = '0' + mm;
+              }
+              var today = dd + '/' + mm + '/' + yyyy;
+
+              var formNumber;
+              <?php
+              if ($formres['MAX'] != null) { ?>
+                formNumber = <?php echo $formres['MAX'] ?>;
+              <?php }
+              else { ?>
+                formNumber = 1;
+              <?php }
+              ?>
+
+              titleForm = "Student Response Form #" + formNumber + ".docx";
+
+              doc.setData({
+                <?php
+                if ($formres2['student_response_form_id'] != null) { ?>
+                  formNum: <?php echo $formres2['student_response_form_id'] ?>,
+                <?php }
+                else {
+                  if ($formres['MAX'] != null) { ?>
+                    formNum: <?php echo $formres['MAX'] ?>,
+                  <?php }
+                  else { ?>
+                    formNum: 1,
+                  <?php }
+                }
+                ?>
+                firstIDO: "<?php echo $idores['first_name'] ?>",
+                lastIDO: "<?php echo $idores['last_name'] ?>",
+                firstComplainant: "<?php echo $nameres['first_name'] ?>",
+                lastComplainant: "<?php echo $nameres['last_name'] ?>",
+                nature: "<?php echo $caseres['description'] ?>",
+                section: '2.1??',
+                date: today,
+                dateApp: "<?php echo $caseres['date_filed'] ?>",
+                term: document.getElementById("term").value,
+                year: document.getElementById("schoolyr").value,
+                admission: document.getElementById("admissionType").value,
+                letter: document.getElementById("letter").value,
+                firstStudent: "<?php echo $caseres['first_name'] ?>",
+                lastStudent: "<?php echo $caseres['last_name'] ?>",
+                yearLvl: "<?php echo $studentres['year_level'] ?>",
+                idn: "<?php echo $nameres['user_id'] ?>",
+                college: "<?php echo $nameres['description'] ?>",
+                degree: "<?php echo $studentres['degree'] ?>"
+
+              });
+
+              try {
+                  // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                  doc.render();
+              }
+
+              catch (error) {
+                  var e = {
+                      message: error.message,
+                      name: error.name,
+                      stack: error.stack,
+                      properties: error.properties,
+                  }
+                  console.log(JSON.stringify({error: e}));
+                  // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                  throw error;
+              }
+
+              var out=doc.getZip().generate({
+                  type:"blob",
+                  mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              }); //Output the document using Data-URI
+              saveAs(out,titleForm);
+
+              });
+              // $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+              $('#message').text('form');
+
+              <?php
+                if($countrow['CASE_COUNT'] > 1) { ?>
+                  $("#parentModal").modal("show");
+              <?php }
+                else { ?>
+                  //$("#alertModal").modal("show");
+                  //$('#appealMsg').show();
+                  $("#newFormModal").modal("show");
+              <?php }
+              ?>
+          }
+        });
+      }
+      else if (form == "submitFormAgain") {
+        $.ajax({
+          url: '../ajax/student-submit-forms.php',
+          type: 'POST',
+          data: {
+              caseID: <?php echo $_GET['cn']; ?>,
+              remarks: <?php echo $row['REMARKS_ID']; ?>,
+              admission: document.getElementById("admissionType2").value,
+              term: document.getElementById("term2").value,
+              schoolyr: document.getElementById("schoolyr2").value,
+              response: document.getElementById("letter2").value
+          },
+          success: function(msg) {
+              $("#evidencediv").hide();
+              $("#form").attr("disabled", true);
+
+              loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc=new window.docxtemplater().loadZip(zip);
+                // date
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                  dd = '0' + dd;
+                }
+                if (mm < 10) {
+                  mm = '0' + mm;
+                }
+                var today = dd + '/' + mm + '/' + yyyy;
+
+                var formNumber;
+                <?php
+                if ($formres['MAX'] != null) { ?>
+                  formNumber = <?php echo $formres['MAX'] ?>;
+                <?php }
+                else { ?>
+                  formNumber = 1;
+                <?php }
+                ?>
+
+                titleForm = "Student Response Form #" + formNumber + ".docx";
+
+                doc.setData({
+                  <?php
+                  if ($formres2['student_response_form_id'] != null) { ?>
+                    formNum: <?php echo $formres2['student_response_form_id'] ?>,
+                  <?php }
+                  else { ?>
+                    formNum: 1,
+                  <?php } ?>
+                  firstIDO: "<?php echo $idores['first_name'] ?>",
+                  lastIDO: "<?php echo $idores['last_name'] ?>",
+                  firstComplainant: "<?php echo $nameres['first_name'] ?>",
+                  lastComplainant: "<?php echo $nameres['last_name'] ?>",
+                  nature: "<?php echo $caseres['description'] ?>",
+                  section: '2.1??',
+                  date: today,
+                  dateApp: "<?php echo $caseres['date_filed'] ?>",
+                  term: document.getElementById("term2").value,
+                  year: document.getElementById("schoolyr2").value,
+                  admission: document.getElementById("admissionType2").value,
+                  letter: document.getElementById("letter2").value,
+                  firstStudent: "<?php echo $caseres['first_name'] ?>",
+                  lastStudent: "<?php echo $caseres['last_name'] ?>",
+                  yearLvl: "<?php echo $studentres['year_level'] ?>",
+                  idn: "<?php echo $nameres['user_id'] ?>",
+                  college: "<?php echo $nameres['description'] ?>",
+                  degree: "<?php echo $studentres['degree'] ?>"
+
+                });
+
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
+
+                catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
+
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out,titleForm);
+
+              });
+              $('#message').text('form');
+              //$('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+              $("#newFormModal").modal("show");
+          }
+        });
+      }
+    });
+
+    $("#modalNo").click(function(){
+      if (form == "submitForm") {
+        $('#formModal').modal('show');
+      }
+      else if (form == "submitFormAgain") {
+        $('#formModalDetails').modal('show');
+      }
     });
 
     function sendStudResponseFirst() {
@@ -645,12 +870,7 @@ if (!isset($_GET['cn']))
       '</div>');
     });
 
-    $('#modalYes').on('click', function() {
-      // $("#truSubmitForm").click();
-
-      $("#formModal").modal("hide");
-      $("#twoFactorModal").modal("hide");
-
+    $('#submitForm').on('click', function() {
       var ids = ['#schoolyr','#term','#letter','#admissionType'];
       var isEmpty = true;
 
@@ -661,134 +881,12 @@ if (!isset($_GET['cn']))
       }
 
       if(isEmpty){
-        $.ajax({
-            url: '../ajax/student-submit-forms.php',
-            type: 'POST',
-            data: {
-                caseID: <?php echo $_GET['cn']; ?>,
-                remarks: <?php echo $row['REMARKS_ID']; ?>,
-                admission: document.getElementById("admissionType").value,
-                term: document.getElementById("term").value,
-                schoolyr: document.getElementById("schoolyr").value,
-                response: document.getElementById("letter").value
-            },
-            success: function(msg) {
-                $("#evidencediv").hide();
-                $("#form").attr("disabled", true);
-
-                loadFile("../templates/template-student-reponse-form.docx",function(error,content){
-
-                if (error) { throw error };
-                var zip = new JSZip(content);
-                var doc=new window.docxtemplater().loadZip(zip);
-                // date
-                var today = new Date();
-                var dd = today.getDate();
-                var mm = today.getMonth() + 1; //January is 0!
-                var yyyy = today.getFullYear();
-                if (dd < 10) {
-                  dd = '0' + dd;
-                }
-                if (mm < 10) {
-                  mm = '0' + mm;
-                }
-                var today = dd + '/' + mm + '/' + yyyy;
-
-                var formNumber;
-                <?php
-                if ($formres['MAX'] != null) { ?>
-                  formNumber = <?php echo $formres['MAX'] ?>;
-                <?php }
-                else { ?>
-                  formNumber = 1;
-                <?php }
-                ?>
-
-                titleForm = "Student Response Form #" + formNumber + ".docx";
-
-                doc.setData({
-                  <?php
-                  if ($formres2['student_response_form_id'] != null) { ?>
-                    formNum: <?php echo $formres2['student_response_form_id'] ?>,
-                  <?php }
-                  else {
-                    if ($formres['MAX'] != null) { ?>
-                      formNum: <?php echo $formres['MAX'] ?>,
-                    <?php }
-                    else { ?>
-                      formNum: 1,
-                    <?php }
-                  }
-                  ?>
-                  firstIDO: "<?php echo $idores['first_name'] ?>",
-                  lastIDO: "<?php echo $idores['last_name'] ?>",
-                  firstComplainant: "<?php echo $nameres['first_name'] ?>",
-                  lastComplainant: "<?php echo $nameres['last_name'] ?>",
-                  nature: "<?php echo $caseres['description'] ?>",
-                  section: '2.1??',
-                  date: today,
-                  dateApp: "<?php echo $caseres['date_filed'] ?>",
-                  term: document.getElementById("term").value,
-                  year: document.getElementById("schoolyr").value,
-                  admission: document.getElementById("admissionType").value,
-                  letter: document.getElementById("letter").value,
-                  firstStudent: "<?php echo $caseres['first_name'] ?>",
-                  lastStudent: "<?php echo $caseres['last_name'] ?>",
-                  yearLvl: "<?php echo $studentres['year_level'] ?>",
-                  idn: "<?php echo $nameres['user_id'] ?>",
-                  college: "<?php echo $nameres['description'] ?>",
-                  degree: "<?php echo $studentres['degree'] ?>"
-
-                });
-
-                try {
-                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                    doc.render();
-                }
-
-                catch (error) {
-                    var e = {
-                        message: error.message,
-                        name: error.name,
-                        stack: error.stack,
-                        properties: error.properties,
-                    }
-                    console.log(JSON.stringify({error: e}));
-                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                    throw error;
-                }
-
-                var out=doc.getZip().generate({
-                    type:"blob",
-                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                }); //Output the document using Data-URI
-                saveAs(out,titleForm);
-
-                });
-                // $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
-                $('#message').text('form');
-
-                <?php
-                  if($countrow['CASE_COUNT'] > 1) { ?>
-                    $("#parentModal").modal("show");
-                <?php }
-                  else { ?>
-                    //$("#alertModal").modal("show");
-                    //$('#appealMsg').show();
-                    $("#newFormModal").modal("show");
-                <?php }
-                ?>
-            }
-        });
+        form = "submitForm";
+        $("#twoFactorModal").modal('show');
       }
       else{
         $("#alertModal").modal("show");
       }
-    });
-
-    $('#modalNo').on('click', function() {
-      $("#twoFactorModal").modal("hide");
-      $("#formModal").modal("show");
     });
 
     $(document).on('click', '#removeevidence', function(){
@@ -1023,7 +1121,7 @@ if (!isset($_GET['cn']))
 
           <b>Type of Admission:</b><span style="font-weight:normal; color:red;"> *</span>
           <select id="admissionType2" class="form-control">
-            <option value="<?php echo $rowForm['description']; ?>"><?php echo $rowForm['description']; ?></option>
+            <option value="<?php echo $rowForm['admission_type_id']; ?>"><?php echo $rowForm['description']; ?></option>
             <?php
               if ($rowForm['admission_type_id'] == 1) { ?>
                 <option value="2">Partial Admission/Denial (Apology/Explanation)</option>
@@ -1057,7 +1155,7 @@ if (!isset($_GET['cn']))
 
         </div>
         <div class="modal-footer">
-          <button type="submit" id = "submitTwoF" class="btn btn-primary" data-dismiss="modal">Submit</button>
+          <button type="submit" id = "submitFormAgain" class="btn btn-primary" data-dismiss="modal">Submit</button>
         </div>
       </div>
     </div>
@@ -1185,28 +1283,33 @@ if (!isset($_GET['cn']))
 
   <!-- Two Factor Authentication Modal -->
   <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel"><b>Two-factor Authentication</b></h4>
-					</div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
+				</div>
 					<div class="modal-body">
 						<p id="message"> Are you sure you want to proceed? </p>
 					</div>
 					<div class="modal-footer">
-            <button type="submit" id = "modalYes" class="btn btn-outline btn-success">Yes</button>
-            <button type="submit" id = "modalNo" class="btn btn-outline btn-danger">No</button>
+            <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
           </div>
-				</div>
-			</div>
+      </div>
     </div>
+  </div>
 
 </body>
 
 </html>
 
 <style>
+/* table, tr, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  align: center;
+} */
 
 p{ margin: 0; }
 

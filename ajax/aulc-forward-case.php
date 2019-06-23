@@ -50,4 +50,11 @@
       echo mysqli_error($dbc);
     }
   }
+
+  $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+              VALUES ({$_POST['caseID']},10,'{$_SESSION['user_id']}')";
+  $result2=mysqli_query($dbc,$query2);
+  if(!$result2){
+    echo mysqli_error($dbc);
+  }
 ?>

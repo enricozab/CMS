@@ -30,6 +30,18 @@
         echo mysqli_error($dbc);
       }
     }
+    $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+                  VALUES ({$_POST['caseID']},17,'{$_SESSION['user_id']}')";
+    $result2=mysqli_query($dbc,$query2);
+    if(!$result2){
+      echo mysqli_error($dbc);
+    }
+    $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+                  VALUES ({$_POST['caseID']},20,'{$_SESSION['user_id']}')";
+    $result2=mysqli_query($dbc,$query2);
+    if(!$result2){
+      echo mysqli_error($dbc);
+    }
   }
   else {
     if(isset($_POST['pd'])) {
@@ -37,6 +49,14 @@
       $result=mysqli_query($dbc,$query);
       if(!$result){
         echo mysqli_error($dbc);
+      }
+      else {
+        $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+                      VALUES ({$_POST['caseID']},14,'{$_SESSION['user_id']}')";
+        $result2=mysqli_query($dbc,$query2);
+        if(!$result2){
+          echo mysqli_error($dbc);
+        }
       }
     }
     else {
@@ -53,6 +73,14 @@
     $result=mysqli_query($dbc,$query);
     if(!$result){
       echo mysqli_error($dbc);
+    }
+    else {
+      $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+              			VALUES ({$_POST['caseID']},16,'{$_SESSION['user_id']}')";
+			$result2=mysqli_query($dbc,$query2);
+			if(!$result2){
+				echo mysqli_error($dbc);
+			}
     }
   }
 

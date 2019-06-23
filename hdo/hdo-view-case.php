@@ -98,68 +98,174 @@ if (!isset($_GET['cn']))
       $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
     }
   ?>
-
+  
     <div id="wrapper">
 
     <?php include 'hdo-sidebar.php';?>
 
         <div id="page-wrapper">
           <div class="row">
-              <div class="col-lg-8">
-                  <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
-              </div>
+            <div class="col-lg-8">
+              <h3 class="page-header"><b>Alleged Case No.: <?php echo $_GET['cn']; ?></b></h3>
+            </div>
           </div>
           <div class="row">
-              <div class="col-lg-6">
-        					<b>Offense:</b> <?php echo $row2['OFFENSE_DESCRIPTION']; ?><br>
-        					<b>Type:</b> <?php echo $row2['TYPE'];; ?><br>
-                  <b>Location of the Incident:</b> <?php echo $row2['LOCATION']; ?><br>
-        					<b>Date Filed:</b> <?php echo $row2['DATE_FILED']; ?><br>
-                  <b>Last Update:</b> <?php echo $row2['LAST_UPDATE']; ?><br>
-        					<b>Status:</b> <?php echo $row2['STATUS_DESCRIPTION']; ?><br>
-                  <br>
-        					<b>Student ID No.:</b> <?php echo $row2['REPORTED_STUDENT_ID']; ?><br>
-        					<b>Student Name:</b> <?php echo $row2['STUDENT']; ?><br>
-                  <br>
-        					<b>Complainant:</b> <?php echo $row2['COMPLAINANT']; ?><br>
-        					<b>Investigated by:</b> <?php echo $row2['HANDLED_BY']; ?><br>
-                  <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-              </div>
-          </div>
-  			<br><br>
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="form-group">
-              <label>Summary of the Incident</label>
-              <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row2['DETAILS']; ?></textarea>
-            </div>
+            <div class="col-lg-6">
+                <b>Offense:</b> <?php echo $row2['OFFENSE_DESCRIPTION']; ?><br>
+                <b>Type:</b> <?php echo $row2['TYPE'];; ?><br>
+                <b>Location of the Incident:</b> <?php echo $row2['LOCATION']; ?><br>
+                <b>Date Filed:</b> <?php echo $row2['DATE_FILED']; ?><br>
+                <b>Last Update:</b> <?php echo $row2['LAST_UPDATE']; ?><br>
+                <b>Status:</b> <?php echo $row2['STATUS_DESCRIPTION']; ?><br>
+                <br>
+                <b>Student ID No.:</b> <?php echo $row2['REPORTED_STUDENT_ID']; ?><br>
+                <b>Student Name:</b> <?php echo $row2['STUDENT']; ?><br>
+                <br>
+                <b>Complainant:</b> <?php echo $row2['COMPLAINANT']; ?><br>
+                <b>Investigated by:</b> <?php echo $row2['HANDLED_BY']; ?><br>
+                <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
 
-            <div class="form-group" id="proceedingarea" hidden>
-              <label>Nature of Proceedings</label>
-              <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row2['PROCEEDING']; ?></textarea>
-            </div>
+                <br><br>
 
-            <?php
-            if($row2['PENALTY_DESC'] != null || $row2['PROCEEDING_DECISION'] != null) { ?>
-              <div class="form-group" id="penaltyarea">
-                <label>Penalty</label>
+                <div class="form-group">
+                  <label>Summary of the Incident</label>
+                  <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row2['DETAILS']; ?></textarea>
+                </div>
+
+                <div class="form-group" id="proceedingarea" hidden>
+                  <label>Nature of Proceedings</label>
+                  <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row2['PROCEEDING']; ?></textarea>
+                </div>
+
                 <?php
-                  if($row2['PENALTY_DESC'] != null and $row2['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row2['PENALTY_DESC']; ?></textarea>
-                <?php }
-                  else if($row2['PROCEEDING_DECISION'] != null) { ?>
-                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row2['PROCEEDING_DECISION']; ?></textarea>
+                if($row2['PENALTY_DESC'] != null || $row2['PROCEEDING_DECISION'] != null) { ?>
+                  <div class="form-group" id="penaltyarea">
+                    <label>Penalty</label>
+                    <?php
+                      if($row2['PENALTY_DESC'] != null and $row2['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                        <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row2['PENALTY_DESC']; ?></textarea>
+                    <?php }
+                      else if($row2['PROCEEDING_DECISION'] != null) { ?>
+                        <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row2['PROCEEDING_DECISION']; ?></textarea>
+                    <?php }
+                    ?>
+                  </div>
                 <?php }
                 ?>
-              </div>
-            <?php }
-            ?>
+                <br>
+                <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+            </div>
+            
+            <?php include "../ajax/user-case-audit.php" ?>
 
-            <br>
-            <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-            <br><br><br><br><br>
-          </div>
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <b style = "font-size: 17px;">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#caseHistory" style="color: black;">Case History</a>
+                  </b>
+                </div>
+                <!-- /.panel-heading -->
+                <div id="caseHistory" class="panel-collapse collapse">
+                  <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
+                    <?php
+                      if ($caseAuditRes->num_rows > 0) { ?>
+                        <div class="table-responsive">
+                          <table class="table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                  <th>Date</th>
+                                  <th>Action Done</th>
+                                  <th>By Whom</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <?php
+                                while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
+                                  echo "<tr>
+                                          <td>{$caseAuditRow['date']}</td>
+                                          <td>{$caseAuditRow['action_done']}</td>
+                                          <td>{$caseAuditRow['action_done_by']}</td>
+                                        </tr>";
+                                }
+                              ?>
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    <?php }
+                      else {
+                        echo "No case history";
+                      }
+                    ?>
+                    <br>
+                  </div>
+                  <!-- /.panel-body -->
+                </div>
+                <!-- </div> -->
+              </div>
+              <!-- /.panel -->
+
+              <!--RE-ROUTE & RE-ASSIGN-->
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Re-route This Case</a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse">
+                        <div class="panel-body">
+                          <div class="form-group">
+                              <select class="form-control">
+                                <option value="" disabled selected>Select a Stage</option>
+                                <?php
+                                  $remarksQuery= "SELECT * FROM cms.ref_remarks;";
+                                  $remarksRes = $dbc->query($remarksQuery);
+                                  while($remarks = $remarksRes->fetch_assoc())
+                                  echo 
+                                    '<option value="' .$remarks['description']. '">' . $remarks['description'] . '</option>';
+                                ?>
+                              </select>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Re-assign This Case</a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                          <div class="form-group">
+                              <select class="form-control">
+                                  <option value="" disabled selected>Select an IDO</option>
+                                  <?php
+                                    $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
+                                    $IDORes = $dbc->query($idoQuery);
+                                    while($ido = $IDORes->fetch_assoc()){
+                                      $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
+                                      echo 
+                                        '<option value="' .$idoName. '">' . $idoName . '</option>';
+                                    }
+                                  ?>
+                              </select>
+                          </div>    
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- RE-ROUTE & RE-ASSIGN -->
+              
+            </div>
         </div>
+        <br><br><br><br><br>
       </div>
 
       <?php

@@ -125,41 +125,88 @@ if (!isset($_GET['cn']))
     					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
     					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
               <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-            </div>
-        </div>
-  			<br><br>
-  			<!-- /.panel-heading -->
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="form-group">
-              <label>Summary of the Incident</label>
-              <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-            </div>
+          
+              <br><br>
 
-            <div class="form-group" id="proceedingarea" hidden>
-              <label>Nature of Proceedings</label>
-              <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
-            </div>
-
-            <?php
-            if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
-              <div class="form-group" id="penaltyarea">
-                <label>Penalty</label>
-                <?php
-                  if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-                <?php }
-                  else if($row['PROCEEDING_DECISION'] != null) { ?>
-                    <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
-                <?php }
-                ?>
+              <div class="form-group">
+                <label>Summary of the Incident</label>
+                <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
               </div>
-            <?php }
-            ?>
 
-            <br><br><br><br><br>
-          </div>
+              <div class="form-group" id="proceedingarea" hidden>
+                <label>Nature of Proceedings</label>
+                <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+              </div>
+
+              <?php
+              if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
+                <div class="form-group" id="penaltyarea">
+                  <label>Penalty</label>
+                  <?php
+                    if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                      <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+                  <?php }
+                    else if($row['PROCEEDING_DECISION'] != null) { ?>
+                      <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                  <?php }
+                  ?>
+                </div>
+              <?php }
+              ?>
+            </div>
+
+            <?php include "../ajax/user-case-audit.php" ?>
+
+            <div class="col-lg-6">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <b style = "font-size: 17px;">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#caseHistory" style="color: black;">Case History</a>
+                  </b>
+                </div>
+                <!-- /.panel-heading -->
+                <div id="caseHistory" class="panel-collapse collapse">
+                  <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
+                    <?php
+                      if ($caseAuditRes->num_rows > 0) { ?>
+                        <div class="table-responsive">
+                          <table class="table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                  <th>Date</th>
+                                  <th>Action Done</th>
+                                  <th>By Whom</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <?php
+                                while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
+                                  echo "<tr>
+                                          <td>{$caseAuditRow['date']}</td>
+                                          <td>{$caseAuditRow['action_done']}</td>
+                                          <td>{$caseAuditRow['action_done_by']}</td>
+                                        </tr>";
+                                }
+                              ?>
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    <?php }
+                      else {
+                        echo "No case history";
+                      }
+                    ?>
+                    <br>
+                  </div>
+                  <!-- /.panel-body -->
+                </div>
+                <!-- </div> -->
+              </div>
+              <!-- /.panel -->
+            </div>
         </div>
+  			<br><br><br><br><br>
       </div>
 
       <?php

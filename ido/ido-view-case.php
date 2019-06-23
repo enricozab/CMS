@@ -281,165 +281,214 @@ if (!isset($_GET['cn']))
         					<b>Complainant:</b> <?php echo $row['COMPLAINANT']; ?><br>
         					<b>Investigated by:</b> <?php echo $row['HANDLED_BY']; ?><br>
                   <!--<b>Investigating Officer:</b> Debbie Simon <br>-->
-              </div>
 
-              <div class="col-lg-6">
-                  <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b>Documents/Evidence</b>
-                          <button Ftype="submit" id = "first" name="evidence" class="btn btn-primary btn-sm" style = "margin-left: 20px;" onclick="handle('<?php echo $passData;?>')">Authenticate Google Drive</button>
-                      </div>
+                  <br><br>
 
-                      <!-- // NEW - DRIVE -->
-                      <div id = "uploadPanel" class="panel-body" style = "display: none">
-                          <div class="table-responsive">
-                              <table class="table">
-                                  <thead>
-                                      <tr>
-                                          <th></th>
-                                          <th>File Type</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      <tr>
-                                        <?php
-                                          if ($uploadsrow['INCIDENT_UPLOADED']) { ?>
-                                            <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                   <?php  }
+                  <div class="form-group">
+                    <label>Summary of the Incident</label>
+                    <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+                  </div>
 
-                                          elseif ($uploadsrow['INCIDENT_UPLOADED'] == null) { ?>
-                                            <td><label id = "one" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
-                                   <?php  }
+                  <div class="form-group" id="proceedingarea" hidden>
+                    <label>Nature of Proceedings</label>
+                    <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
+                  </div>
 
-                                          else { ?>
-                                            <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                   <?php  }
-                                        ?>
+                  <?php
+                  if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
+                    <div class="form-group" id="penaltyarea">
+                      <label>Penalty</label>
+                      <?php
+                        if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
+                          <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
+                      <?php }
+                        else if($row['PROCEEDING_DECISION'] != null) { ?>
+                          <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
+                      <?php }
+                      ?>
+                    </div>
+                  <?php }
+                  ?>
 
-                                        <td>Incident Report Form</td>
+                  <br>
 
-                                      <tr>
+                  <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+                  <input type="file" id="fUpload" class="hide"/>
 
-                                        <?php
-                                          if ($uploadsrow['STUDENT_UPLOADED']) { ?>
-                                            <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                   <?php  }
+                  <br><br><br><br>
 
-                                          else { ?>
-                                            <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                   <?php  }
-                                        ?>
-
-                                        <td>Student Response Form</td>
-
-                                      </tr>
-
-                                    <?php
-
-                                      if ($row['IF_APPEAL']) { ?>
-                                        <tr>
-
-                                          <?php
-                                            if ($uploadsrow['STUDENT_UPLOADED'] == 2) { ?>
-                                              <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                     <?php  }
-
-                                            else { ?>
-                                              <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                     <?php  }
-                                          ?>
-
-                                          <td>Student Response Form for Appeal</td>
-
-                                        </tr>
-                                <?php }
-
-                                    ?>
-
-                                      <tr>
-
-                                        <?php
-                                          if ($uploadsrow['PL_UPLOADED']) { ?>
-                                            <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                   <?php  }
-                                          elseif ($row['WITH_PARENT_LETTER'] == 0) { ?>
-                                            <td><label id = "three" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
-                                   <?php  }
-
-                                          else { ?>
-                                            <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                   <?php  }
-                                        ?>
-
-                                        <td>Parent Letter</td>
-
-                                      </tr>
-
-                                      <tr>
-                                        <td><button type="submit" id = "four" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-
-                                        <td>Evidence</td>
-
-                                      </tr>
-                                  </tbody>
-                              </table>
-                          </div>
-                      </div>
-                        <!-- //END NEW - DRIVE -->
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <button type="submit" id="return" name="return" class="btn btn-warning">Return to Student</button>
+                      <?php
+                        if ($row['TYPE'] == 'Major') { ?>
+                          <button type="button" class="btn btn-success" id="schedule"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
+                      <?php }
+                      ?>
+                      <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+                      <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
+                      <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
+                      <!--<button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>-->
                     </div>
                   </div>
               </div>
-			<br><br>
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="form-group">
-            <label>Summary of the Incident</label>
-            <textarea id="details" name="details" class="form-control" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
-          </div>
 
-          <div class="form-group" id="proceedingarea" hidden>
-            <label>Nature of Proceedings</label>
-            <textarea id="proceeding" name="proceeding" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING']; ?></textarea>
-          </div>
+              <?php include "../ajax/user-case-audit.php" ?>
 
-          <?php
-          if($row['PENALTY_DESC'] != null || $row['PROCEEDING_DECISION'] != null) { ?>
-            <div class="form-group" id="penaltyarea">
-              <label>Penalty</label>
-              <?php
-                if($row['PENALTY_DESC'] != null and $row['PENALTY_DESC'] != "Will be processed as a major discipline offense") { ?>
-                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PENALTY_DESC']; ?></textarea>
-              <?php }
-                else if($row['PROCEEDING_DECISION'] != null) { ?>
-                  <textarea id="penalty" name="penalty" class="form-control" rows="3" readonly><?php echo $row['PROCEEDING_DECISION']; ?></textarea>
-              <?php }
-              ?>
-            </div>
-          <?php }
-          ?>
+              <div class="col-lg-6">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <b style = "font-size: 17px;">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#caseHistory" style="color: black;">Case History</a>
+                    </b>
+                  </div>
+                  <!-- /.panel-heading -->
+                  <div id="caseHistory" class="panel-collapse collapse">
+                    <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
+                      <?php
+                        if ($caseAuditRes->num_rows > 0) { ?>
+                          <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                              <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Action Done</th>
+                                    <th>By Whom</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <?php
+                                  while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
+                                    echo "<tr>
+                                            <td>{$caseAuditRow['date']}</td>
+                                            <td>{$caseAuditRow['action_done']}</td>
+                                            <td>{$caseAuditRow['action_done_by']}</td>
+                                          </tr>";
+                                  }
+                                ?>
+                              </tbody>
+                            </table>
+                          </div>
+                          <!-- /.table-responsive -->
+                      <?php }
+                        else {
+                          echo "No case history";
+                        }
+                      ?>
+                      <br>
+                    </div>
+                    <!-- /.panel-body -->
+                  </div>
+                  <!-- </div> -->
+                </div>
+                <!-- /.panel -->
 
-          <br>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Documents/Evidence</b>
+                        <button Ftype="submit" id = "first" name="evidence" class="btn btn-primary btn-sm" style = "margin-left: 20px;" onclick="handle('<?php echo $passData;?>')">Authenticate Google Drive</button>
+                    </div>
 
-          <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
-          <input type="file" id="fUpload" class="hide"/>
-        </div>
-      </div>
-      <br><br><br><br>
-      <div class="row">
-        <div class="col-sm-6">
-          <button type="submit" id="return" name="return" class="btn btn-warning">Return to Student</button>
-          <?php
-            if ($row['TYPE'] == 'Major') { ?>
-              <button type="button" class="btn btn-success" id="schedule"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule an interview</button>
-          <?php }
-          ?>
-          <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
-          <button type="submit" id="sendcl" name="sendcl" class="btn btn-success">Send Closure Letter</button>
-          <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')" style = "display: none">Upload Form</button>
-          <!--<button type="submit" id="endorsement" name="submit" class="btn btn-success">Send Academic Service Endorsement Form</button>-->
-        </div>
-      </div>
-      <br><br><br>
+                    <!-- // NEW - DRIVE -->
+                    <div id = "uploadPanel" class="panel-body" style = "display: none">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>File Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                      <?php
+                                        if ($uploadsrow['INCIDENT_UPLOADED']) { ?>
+                                          <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                  <?php  }
+
+                                        elseif ($uploadsrow['INCIDENT_UPLOADED'] == null) { ?>
+                                          <td><label id = "one" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
+                                  <?php  }
+
+                                        else { ?>
+                                          <td><button type="submit" id = "one" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                  <?php  }
+                                      ?>
+
+                                      <td>Incident Report Form</td>
+
+                                    <tr>
+
+                                      <?php
+                                        if ($uploadsrow['STUDENT_UPLOADED']) { ?>
+                                          <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                  <?php  }
+
+                                        else { ?>
+                                          <td><button type="submit" id = "two" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                  <?php  }
+                                      ?>
+
+                                      <td>Student Response Form</td>
+
+                                    </tr>
+
+                                  <?php
+
+                                    if ($row['IF_APPEAL']) { ?>
+                                      <tr>
+
+                                        <?php
+                                          if ($uploadsrow['STUDENT_UPLOADED'] == 2) { ?>
+                                            <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                    <?php  }
+
+                                          else { ?>
+                                            <td><button type="submit" id = "five" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                    <?php  }
+                                        ?>
+
+                                        <td>Student Response Form for Appeal</td>
+
+                                      </tr>
+                              <?php }
+
+                                  ?>
+
+                                    <tr>
+
+                                      <?php
+                                        if ($uploadsrow['PL_UPLOADED']) { ?>
+                                          <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
+                                  <?php  }
+                                        elseif ($row['WITH_PARENT_LETTER'] == 0) { ?>
+                                          <td><label id = "three" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
+                                  <?php  }
+
+                                        else { ?>
+                                          <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+                                  <?php  }
+                                      ?>
+
+                                      <td>Parent Letter</td>
+
+                                    </tr>
+
+                                    <tr>
+                                      <td><button type="submit" id = "four" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
+
+                                      <td>Evidence</td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                      <!-- //END NEW - DRIVE -->
+                  </div>
+                </div>
+              </div>
+      <br><br><br><br><br>
 
       <?php
       //Removes 'new' badge and reduces notif's count

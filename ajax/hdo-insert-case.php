@@ -35,40 +35,49 @@
     echo mysqli_error($dbc);
   }
 
+  
+  $last_id = mysqli_insert_id($dbc);
+  // CASE AUDIT w/ IR
+
+  if ($incidentReport != 'NULL') {
+    $query="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+              VALUES ($last_id,1,'{$_POST['complainantID']}')";
+    $result=mysqli_query($dbc,$query);
+    if(!$result){
+      echo mysqli_error($dbc);
+    }
+  }
+
+  $query="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+              VALUES ($last_id,2,'{$_SESSION['user_id']}')";
+  $result=mysqli_query($dbc,$query);
+  if(!$result){
+    echo mysqli_error($dbc);
+  }
+
   $student = $_POST['studentID'];
 
-  $newQry = "SELECT LAST_INSERT_ID() AS LATEST";
-  $newResult=mysqli_query($dbc,$newQry);
-  if(!$newResult){
+  if($_POST['page'] == "HDO-APPREHENSION"){
+  $queryStud = 'SELECT *
+                  FROM USERS U
+                  JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
+                  JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
+                  WHERE U.USER_ID = "'.$student.'"';
+
+  $resultStud = mysqli_query($dbc,$queryStud);
+
+  if(!$resultStud){
     echo mysqli_error($dbc);
   }
   else{
-    $newRow=mysqli_fetch_array($newResult,MYSQLI_ASSOC);
-    // new
-    if($_POST['page'] == "HDO-APPREHENSION"){
-      $queryStud = 'SELECT *
-                      FROM USERS U
-                      JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
-                      JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
-                     WHERE U.USER_ID = "'.$student.'"';
-
-      $resultStud = mysqli_query($dbc,$queryStud);
-
-      if(!$resultStud){
-        echo mysqli_error($dbc);
-      }
-      else{
-        $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
-      }
-
-      $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['user_id'] .  "/" . "HDO-APPREHENSION" . "/" . $newRow['LATEST'];
-      echo $passData;
-    }
-
-    else {
-      echo $newRow['LATEST'];
-    }
+    $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
   }
 
-  //
+  $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['user_id'] .  "/" . "HDO-APPREHENSION" . "/" . $last_id;
+  echo $passData;
+}
+
+else {
+  echo $last_id;
+}
 ?>
