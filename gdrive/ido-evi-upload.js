@@ -12,10 +12,10 @@ var TOTAL_FOLDERS = [];
 var TOTAL_FILES = [];
 var FILE_COUNTER = 0;
 var FOLDER_ARRAY = [];
-var ASCENDING_ARRAY= [];
-var cancel = 0, buttonNum;
+var ASCENDING_ARRAY= [], WITNESS_ARRAY = [];
+var cancel = 0, buttonNum, caseFilesID = "nothing", evidenceFilesID = "none";
 var madeIDN = 0, folderData = 'hi', newEvi = 0;
-var college, course, idn, graduating, fullIDN, page, caseNum, btnNum, userName, offense, type, finalDesc;
+var college, course, idn, graduating, fullIDN, page, caseNum, btnNum, userName, offense, type, finalDesc, witness;
 /******************** AUTHENTICATION ********************/
 
 
@@ -102,7 +102,7 @@ function getDriveFiles(){
 function getFiles(){
 		console.log("getFiles");
 
-		var request = gapi.client.drive.about.get();
+	var request = gapi.client.drive.about.get();
     var obj = {};
     request.execute(function(resp) {
        if (!resp.error) {
@@ -157,38 +157,6 @@ function getFiles(){
             showErrorMessage("Error: " + resp.error.message);
        }
    });
-
-		// var query = "";
-		//
-		// query = "trashed=false and '" + FOLDER_ID + "' in parents";
-    // var request = gapi.client.drive.files.list({
-    //     'maxResults': NO_OF_FILES,
-    //     'q': query
-    // });
-		//
-    // request.execute(function (resp) {
-    //    if (!resp.error) {
-    //         DRIVE_FILES = resp.items;
-		//
-		// 				for (var i = 0; i < DRIVE_FILES.length; i++) {
-	  //             DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
-		//
-	  //             if (DRIVE_FILES[i].fileType == "folder") {
-	  //                 if (DRIVE_FILES[i].title == "CMS") {
-	  //                     console.log("CMS");
-	  //                     FOLDER_ID = DRIVE_FILES[i].id;
-	  //                 }
-	  //             }
-	  //         }
-		//
-	  //         console.log("folder id CMS: " + FOLDER_ID);
-	  //         getCMSFiles();
-    //    }
-		//
-		// 	 else{
-    //         console.log("Error: " + resp.error.message);
-    //    }
-    // });
 }
 
 /**************** NEW ****************/
@@ -343,13 +311,13 @@ function graduatingFiles() {
        if (!resp.error) {
            DRIVE_FILES = resp.items;
 
-					 if (madeIDN == 1) {
-						 getFullIDNFiles();
-					 }
+            if (madeIDN == 1) {
+                getFullIDNFiles();
+            }
 
-					 else{
-						 idnFiles();
-					 }
+            else{
+                idnFiles();
+            }
        }
        else{
             showErrorMessage("Error: " + resp.error.message);
@@ -384,15 +352,15 @@ function getFullIDNFiles() {
 
     request.execute(function (resp) {
        if (!resp.error) {
-           DRIVE_FILES = resp.items;
-					 console.log("folderData: " + folderData);
-					 if(folderData != 'hi') {
-						 addCaseFolder();
-					 }
+            DRIVE_FILES = resp.items;
+            console.log("folderData: " + folderData);
+            if(folderData != 'hi') {
+                addCaseFolder();
+            }
 
-					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
-						 getCaseFiles();
-					 }
+            if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
+                getCaseFiles();
+            }
        }
        else{
             showErrorMessage("Error: " + resp.error.message);
@@ -404,15 +372,16 @@ function getCaseFiles() {
     console.log("getCaseFiles");
 
     for (var i = 0; i < DRIVE_FILES.length; i++) {
-      DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
+        DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
 
-      if (DRIVE_FILES[i].fileType == "folder") {
-          if (DRIVE_FILES[i].title == caseNum) {
-
-              FOLDER_ID = DRIVE_FILES[i].id;
-              console.log("folder id CaseFiles: " + FOLDER_ID);
-          }
-      }
+        if (DRIVE_FILES[i].fileType == "folder") {
+            if (DRIVE_FILES[i].title == caseNum) {
+    
+                FOLDER_ID = DRIVE_FILES[i].id;
+                caseFilesID = DRIVE_FILES[i].id;
+                console.log("folder id CaseFiles: " + FOLDER_ID);
+            }
+        }
     }
 
     var query = "";
@@ -425,17 +394,16 @@ function getCaseFiles() {
 
     request.execute(function (resp) {
        if (!resp.error) {
-           DRIVE_FILES = resp.items;
+            DRIVE_FILES = resp.items;
 
-					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
-						 $("#waitModal").modal("hide");
-						 $('#driveModal').modal("show");
-						 $("#uploading").hide();
+            if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
+                $("#waitModal").modal("hide");
+                $('#driveModal').modal("show");
+                $("#uploading").hide();
 
-						 $('#first').hide();
-						 $('#uploadPanel').show();
-			       // document.getElementById("uploadPanel").style.display = "block";
-					 }
+                $('#first').hide();
+                $('#uploadPanel').show();
+            }
        }
        else{
             showErrorMessage("Error: " + resp.error.message);
@@ -443,19 +411,102 @@ function getCaseFiles() {
     });
 }
 
+function getCaseFiles2() {
+    console.log("getCaseFiles2");
+
+    console.log(FOLDER_ID);
+
+    var query = "";
+	query = "trashed=false and '" + FOLDER_ID + "' in parents";
+    var request = gapi.client.drive.files.list({
+        'maxResults': NO_OF_FILES,
+        'q': query
+    });
+
+    request.execute(function (resp) {
+        if (!resp.error) {
+             DRIVE_FILES = resp.items;
+             console.log(DRIVE_FILES.length);
+             getEvidenceFiles();
+        }
+        else{
+             showErrorMessage("Error: " + resp.error.message);
+        }
+     });
+}
+
+function getEvidenceFiles2() {
+    console.log("getEvidenceFiles2");
+
+    if(evidenceFilesID == "none") {
+        FOLDER_ID = evidenceFilesID;
+    }
+    
+    var query = "";
+	query = "trashed=false and '" + FOLDER_ID + "' in parents";
+    var request = gapi.client.drive.files.list({
+        'maxResults': NO_OF_FILES,
+        'q': query
+    });
+
+    request.execute(function (resp) {
+        if (!resp.error) {
+             DRIVE_FILES = resp.items;
+             console.log(DRIVE_FILES.length);
+             getWitnessFiles();
+        }
+        else{
+             showErrorMessage("Error: " + resp.error.message);
+        }
+     });
+}
+
 function getEvidenceFiles() {
     console.log("getEvidenceFiles");
 
     for (var i = 0; i < DRIVE_FILES.length; i++) {
-      DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
+        DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
 
-      if (DRIVE_FILES[i].fileType == "folder") {
-          if (DRIVE_FILES[i].title == caseNum) {
+        if (DRIVE_FILES[i].fileType == "folder") {
+            if (DRIVE_FILES[i].title == "Evidence") {
+                FOLDER_ID = DRIVE_FILES[i].id;
+                evidenceFilesID = DRIVE_FILES[i].id;
+                console.log("folder id Evidence: " + FOLDER_ID);
+            }
+        }
+    }
 
-              FOLDER_ID = DRIVE_FILES[i].id;
-              console.log("folder id EvidenceFiles: " + FOLDER_ID);
-          }
-      }
+    var query = "";
+    query = "trashed=false and '" + FOLDER_ID + "' in parents";
+
+    var request = gapi.client.drive.files.list({
+        'maxResults': NO_OF_FILES,
+        'q': query
+    });
+
+    request.execute(function (resp) {
+        if (!resp.error) {
+            DRIVE_FILES = resp.items;
+            checkWitness();
+        }
+        else {
+            showErrorMessage("Error: " + resp.error.message);
+        }
+    });
+}
+
+function getWitnessFiles() {
+    console.log("getWitnessFiles");
+
+    for (var i = 0; i < DRIVE_FILES.length; i++) {
+        DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
+
+        if (DRIVE_FILES[i].fileType == "folder") {
+            if (DRIVE_FILES[i].title == witness) {
+                FOLDER_ID = DRIVE_FILES[i].id;
+                console.log("folder id Witness: " + FOLDER_ID);
+            }
+        }
     }
 
     var query = "";
@@ -468,24 +519,106 @@ function getEvidenceFiles() {
 
     request.execute(function (resp) {
        if (!resp.error) {
-		   DRIVE_FILES = resp.items;
-		   submitThis();
-
-
-				// 	 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
-				// 		 $("#waitModal").modal("hide");
-				// 		 $('#driveModal').modal("show");
-				// 		 $("#uploading").hide();
-
-				// 		 $('#first').hide();
-				// 		 $('#uploadPanel').show();
-			    //    // document.getElementById("uploadPanel").style.display = "block";
-				// 	 }
+            DRIVE_FILES = resp.items;
+            submitThis();
        }
        else{
             showErrorMessage("Error: " + resp.error.message);
        }
     });
+}
+
+function checkEviFolder() {
+    console.log("checkEviFolder");
+
+    // checks if not first time to upload evi
+
+    if (FOLDER_ID == caseFilesID && DRIVE_FILES.length == 0) {
+        // its the first time, make evidence folder
+
+        console.log("evidence - first time");
+        addEvidenceFolder();
+    }
+
+    else {
+        // not first time, get evidence folder ID
+        // using drive files of case folder
+
+        console.log("evidence - not first time");
+        FOLDER_ID = caseFilesID;
+        getCaseFiles2();
+        // getEvidenceFiles();
+    }
+}
+
+function checkWitness() {
+    console.log("checkWitness");
+    console.log("Witness: " + witness);
+
+    // check if evidence folder length is 0
+
+    if (DRIVE_FILES.length == 0) {
+        addWitnessFolder();
+    }
+
+    else {
+        // check if witness folder exists
+
+        console.log("DRIVE: " + DRIVE_FILES.length);
+        console.log("current id: " + FOLDER_ID);
+        console.log("evidenceFilesID: " + evidenceFilesID);
+
+        var checkWitness = 0;
+
+        if (FOLDER_ID != evidenceFilesID) {
+            getEvidenceFiles2();
+        }
+
+        else {
+            for (var i = 0; i < DRIVE_FILES.length; i++) {
+                DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
+    
+                if (DRIVE_FILES[i].fileType == "folder") {
+                    if (DRIVE_FILES[i].title == witness) {
+                        // witness exists
+                        // get witness folder id and its files
+
+                        checkWitness = 1;
+    
+                        FOLDER_ID = DRIVE_FILES[i].id;
+                        console.log("folder id WitnessFiles: " + FOLDER_ID);
+    
+                        var query = "";
+                        query = "trashed=false and '" + FOLDER_ID + "' in parents";
+    
+                        var request = gapi.client.drive.files.list({
+                            'maxResults': NO_OF_FILES,
+                            'q': query
+                        });
+    
+                        request.execute(function (resp) {
+                            if (!resp.error) {
+                                DRIVE_FILES = resp.items;
+                                console.log("here");
+                                submitThis();
+                            }
+                            else {
+                                showErrorMessage("Error: " + resp.error.message);
+                            }
+                        });
+                    }
+                }
+            }
+
+            if (checkWitness == 0) {
+                // witness doesnt exist
+                console.log("witness doesnt exist");
+                addWitnessFolder();
+            }
+
+            console.log("check witness: " + checkWitness);
+        }
+    }
 }
 
 function getCMSFiles()  {
@@ -565,16 +698,47 @@ function addEvidenceFolder() {
 	});
 
 	request.execute(function(resp) {
-			if (!resp.error) {
-				console.log("EVIDENCE FOLDER DONE");
-
-				// $('#waitModal').modal("hide");
-			}else{
-			// hideStatus();
-			// hideLoading();
-			showErrorMessage("Error: " + resp.error.message);
-			}
+        if (!resp.error) {
+            console.log("EVIDENCE FOLDER DONE");
+            getCaseFiles2();
+        } 
+        
+        else {
+            showErrorMessage("Error: " + resp.error.message);
+        }
 	});
+}
+
+function addWitnessFolder() {
+    console.log("addWitnessFolder");
+
+    var access_token =  gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+    var request = gapi.client.request({
+            'path': '/drive/v2/files/',
+            'method': 'POST',
+            'headers': {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + access_token,
+            },
+            'body':{
+                "title" : witness,
+                "mimeType" : "application/vnd.google-apps.folder",
+                "parents": [{
+                "kind": "drive#file",
+                "id": FOLDER_ID
+            }]
+            }
+    });
+
+    request.execute(function(resp) {
+        if (!resp.error) {
+            console.log("WITNESS FOLDER DONE");
+            getEvidenceFiles2();
+        } 
+        else {
+            showErrorMessage("Error: " + resp.error.message);
+        }
+    });
 }
 
 function showProgressPercentage(percentageValue) {
@@ -690,29 +854,29 @@ function btnSubmit(data) {
 	if (page == "IDO-VIEW") {
 		btnNum = data[0];
 		offense = data[1];
-		type = data[2];
-
-		finalDesc = type + ", " + offense;
-		submitThis();
+        type = data[2];
+        getCaseFiles();
+        finalDesc = type + ", " + offense;
+	    submitThis();
 	}
 
 	else if(page == "IDO-VIEW-EVIDENCE") {
 		btnNum = data[0];
 		offense = data[1];
-		type = data[2];
-		newEvi = 1;
+        type = data[2];
+        witness = data[4]
 
-		finalDesc = type + ", " + offense;
-		addEvidenceFolder();
+        checkEviFolder();
+
+        finalDesc = type + ", " + offense;
 	}
 
 	else  {
 		offense = data[0];
-		type = data[1];
-
-		finalDesc = type + ", " + offense;
-		submitThis();
-	}
+        type = data[1];
+        finalDesc = type + ", " + offense;
+	    submitThis();
+    }
 }
 
 function sdfodBtnSubmit() {
@@ -727,132 +891,134 @@ function submitThis(){
 	$("#fUpload").click();
 }
 
-$(function(){
+$(document).ready(function () {
 
 	$("#btnSubmit").click(function () {
-			console.log("btnSubmit");
-			$("#fUpload").click();
-	});
+        console.log("btnSubmit");
+        $("#fUpload").click();
+    });
+    
 
-		$("#fUpload").bind("change", function () {
-				console.log("fUpload");
-				console.log("BTN: " + btnNum);
+    $("#fUpload").bind("change", function () {
+        console.log("fUpload");
+        console.log("BTN: " + btnNum);
 
-				$("#waitModal").modal("show");
+        $("#waitModal").modal("show");
 
-			  var uploadObj = $("[id$=fUpload]");
-			  var file = uploadObj.prop("files")[0];
-			  var metadata = {
-			    'title': file.name,
-			    'description': finalDesc,
-			    'mimeType': file.type || 'application/octet-stream',
-			    "parents": [{
-			      "kind": "drive#file",
-			      "id": FOLDER_ID
-			    }]
-			  };
+        var uploadObj = $("[id$=fUpload]");
+        var file = uploadObj.prop("files")[0];
+        var metadata = {
+            'title': file.name,
+            'description': finalDesc,
+            'mimeType': file.type || 'application/octet-stream',
+            "parents": [{
+                "kind": "drive#file",
+                "id": FOLDER_ID
+            }]
+        };
 
-			  //if user upload an empty content, create a temp blob with a space content on it.
-			  if(file.size <= 0) {
-			    var emptyContent = " ";
-			    file = new Blob([emptyContent], {type: file.type || 'application/octet-stream'});
-			  }
+        //if user upload an empty content, create a temp blob with a space content on it.
+        if(file.size <= 0) {
+            var emptyContent = " ";
+            file = new Blob([emptyContent], {type: file.type || 'application/octet-stream'});
+        }
 
-				showProgressPercentage(0);
+        showProgressPercentage(0);
 
-			  try {
-			    var uploader =new MediaUploader({
-			      file: file,
-			      token: gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token,
-			      metadata: metadata,
-			      onError: function(response){
-			        var errorResponse = JSON.parse(response);
-			        console.log("Error: " + errorResponse.error.message);
-			        $("#fUpload").val("");
-			        $("#upload-percentage").hide(1000);
-			        getDriveFiles();
-			      },
-			      onComplete: function(response){
-			        $("#upload-percentage").hide(1000);
-			        var errorResponse = JSON.parse(response);
+        try {
+            var uploader =new MediaUploader({
+                file: file,
+                token: gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token,
+                metadata: metadata,
+                onError: function(response){
+                    var errorResponse = JSON.parse(response);
+                    console.log("Error: " + errorResponse.error.message);
+                    $("#fUpload").val("");
+                    $("#upload-percentage").hide(1000);
+                    getDriveFiles();
+                },
+                onComplete: function(response){
+                    $("#upload-percentage").hide(1000);
+                    var errorResponse = JSON.parse(response);
 
-							console.log("SUCCESS");
-							$("#successModal").modal("show");
+                    console.log("SUCCESS UPLOAD");
+                    $("#successModal").modal("show");
+                    $("#uploadModal").hide();
 
-			        if(errorResponse.message != null){
-								console.log("Error: " + errorResponse.error.message);
-			          $("#fUpload").val("");
-			          getDriveFiles();
-			        }
+                    if(errorResponse.message != null){
+                        console.log("Error: " + errorResponse.error.message);
+                        $("#fUpload").val("");
+                        getDriveFiles();
+                    }
 
-			        else {
+                    else {
 
-								if (page == "IDO-VIEW" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE") {
-										$("#waitModal").modal("hide");
+                        if (page == "IDO-VIEW" || page == "IDO-VIEW-EVIDENCE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE") {
+                            $("#waitModal").modal("hide");
 
-										if (btnNum == "two") {
-											$("#two").attr('disabled', true).text("Submitted");
-											console.log("responseUpload");
-											// $('#responseUpload').click();
-											// $('#responseUpload').trigger('click');
-											// console.log("hi");
-										}
+                            if (btnNum == "two") {
+                                $("#two").attr('disabled', true).text("Submitted");
+                                console.log("responseUpload");
+                                // $('#responseUpload').click();
+                                // $('#responseUpload').trigger('click');
+                                // console.log("hi");
+                            }
 
-										else if (btnNum == "three") {
-											$("#three").attr('disabled', true).text("Submitted");
-											//$('#checkingForms').click();
-										}
-										else if (btnNum == "four") {
-											//$("#four").attr('disabled', true).text("Submitted");
-											//$('#checkingForms').click();
-										}
-										else if (btnNum == "five") {
-											//$("#five").attr('disabled', true).text("Submitted");
-											//$('#checkingForms').click();
-											//$('#responseUpload').click();
-										}
+                            else if (btnNum == "three") {
+                                $("#three").attr('disabled', true).text("Submitted");
+                                //$('#checkingForms').click();
+                            }
+                            else if (btnNum == "four") {
+                                //$("#four").attr('disabled', true).text("Submitted");
+                                //$('#checkingForms').click();
+                            }
+                            else if (btnNum == "five") {
+                                //$("#five").attr('disabled', true).text("Submitted");
+                                //$('#checkingForms').click();
+                                //$('#responseUpload').click();
+                            }
 
-										else if (btnNum == "six") {
-											//$("#five").attr('disabled', true).text("Submitted");
-											//$('#checkingForms').click();
-											//$('#responseUpload').click();
-										}
+                            else if (btnNum == "six") {
+                                //$("#five").attr('disabled', true).text("Submitted");
+                                //$('#checkingForms').click();
+                                //$('#responseUpload').click();
+                            }
 
-										else {
-											$("#one").attr('disabled', true).text("Submitted");
-											//$('#checkingForms').click();
-											//$('#incidentUpload').click();
-										}
+                            else {
+                                $("#one").attr('disabled', true).text("Submitted");
+                                //$('#checkingForms').click();
+                                //$('#incidentUpload').click();
+                            }
+                        }
 
-								}
+                        else {
+                            getDriveFiles();
+                            console.log("SUCCESS");
+                            $("#uploadModal").hide();
+                            $("#waitModal").modal("hide");
+                            $("#uploadModal").modal("show");
+                            $("#successModal").modal("show");
+                        }
 
-								else {
-				          getDriveFiles();
-									console.log("SUCCESS");
-									$("#waitModal").modal("hide");
-									$("#uploadModal").modal("show");
-									$("#successModal").modal("show");
-								}
+                        $("#successModal").modal("show");
+                    }
+                },
+                onProgress: function(event) {
+                    showProgressPercentage(Math.round(((event.loaded/event.total)*100), 0));
+                },
+                    params: {
+                    convert:false,
+                    ocr: false
+                }
+            });
 
-								$("#successModal").modal("show");
-			        }
-			      },
-						onProgress: function(event) {
-            	showProgressPercentage(Math.round(((event.loaded/event.total)*100), 0));
-    				},
-			      params: {
-			        convert:false,
-			        ocr: false
-			      }
-			    });
+            uploader.upload();
+        }
 
-			    uploader.upload();
-			  }
-
-			  catch(exc){
-					console.log("Error: " + exc);
-			    $("#fUpload").val("");
-			    getDriveFiles();
-			  }
-		});
+        catch(exc){
+            console.log("Error: " + exc);
+            $("#fUpload").val("");
+            getDriveFiles();
+        }
+    });
 });

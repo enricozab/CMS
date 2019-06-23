@@ -58,7 +58,7 @@ if (!isset($_GET['cn']))
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/ido-upload2.js" type="text/javascript"></script>
+    <script src="../gdrive/ido-evi-upload.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
@@ -454,7 +454,6 @@ if (!isset($_GET['cn']))
                               <?php }
 
                                   ?>
-<<<<<<< HEAD
 
                                     <tr>
 
@@ -473,26 +472,6 @@ if (!isset($_GET['cn']))
 
                                       <td>Parent Letter</td>
 
-=======
-
-                                    <tr>
-
-                                      <?php
-                                        if ($uploadsrow['PL_UPLOADED']) { ?>
-                                          <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs" disabled>Submitted</button></td>
-                                  <?php  }
-                                        elseif ($row['WITH_PARENT_LETTER'] == 0) { ?>
-                                          <td><label id = "three" style="font-weight:normal; font-style:italic; font-size:12px;">Not Applicable</label></td>
-                                  <?php  }
-
-                                        else { ?>
-                                          <td><button type="submit" id = "three" name="evidence" class="btn btn-outline btn-primary btn-xs">Upload</button></td>
-                                  <?php  }
-                                      ?>
-
-                                      <td>Parent Letter</td>
-
->>>>>>> origin/ico-dev
                                     </tr>
 
                                     <tr>
@@ -806,13 +785,17 @@ if (!isset($_GET['cn']))
 
     $('#six').on('click',function(data) {
       $("#uploadModal").modal("hide");
+      
       var e = document.getElementById("uploadSelect");
+      var selected = e.options[e.selectedIndex].value.split("|");
+      var name = selected[1];
 
-      if(e.options[e.selectedIndex].value == 0 && document.getElementById("witnessName").value.length == 0) {
+      if(selected[0] == 0 && document.getElementById("witnessName").value.length == 0) {
         $("#emptyUploadModal").modal("show");
       }
 
       else {
+        $("#waitModal").modal("show");
 
         var selectedUser = e.options[e.selectedIndex].value;
         var witness = document.getElementById("witnessName").value;
@@ -820,9 +803,9 @@ if (!isset($_GET['cn']))
         var evidenceSel  = x.options[x.selectedIndex].value;
         var check = 1; 
 
-        // var e = document.getElementById("uploadSelect");
-        // var selectedUser = e.options[e.selectedIndex].value;
-        // var com = document.getElementById("desc_input").value;
+        if (selected[0] == 0) {
+          name = document.getElementById("witnessName").value;
+        }
 
         $.ajax({
             url: '../ajax/ido-insert-evi.php',
@@ -835,6 +818,7 @@ if (!isset($_GET['cn']))
             },
             success: function(msg) {
               document.getElementById("witnessName").value = "";
+              $('#witness').hide();
             },
             error: function(msg) {
               check = NULL;
@@ -842,10 +826,10 @@ if (!isset($_GET['cn']))
         });
 
         if(check != null) {
-          var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
+          console.log(name);
+          var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW-EVIDENCE" + "|" + name;
           btnSubmit(data);
         }
-
       }
     });
 
@@ -1399,7 +1383,9 @@ if (!isset($_GET['cn']))
                 $last = $qSelectRow['LAST_NAME'];
                 $id = $qSelectRow['USER_ID'];
 
-                echo "<option value ='".$id."'> ".$first." ".$last."</option>";
+                $new = $id . "|" . $first . " " . $last;
+
+                echo "<option value ='".$new."'> ".$first." ".$last."</option>";
 
               }
               
