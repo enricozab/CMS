@@ -28,7 +28,8 @@
                       C.VERDICT AS VERDICT,
                       C.PROCEEDING_DATE AS PROCEEDING_DATE,
                       C.DATE_CLOSED AS DATE_CLOSED,
-                      C.IF_NEW AS IF_NEW
+                      C.IF_NEW AS IF_NEW,
+                      IR.NUM_DAYS AS NUM_DAYS
           FROM 		    CASES C
           LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
           LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
@@ -39,9 +40,11 @@
           LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
           LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+          LEFT JOIN   INACTIVITY_RULE IR ON RO.TYPE = IR.OFFENSE_TYPE
 
           WHERE       (S.DESCRIPTION = "ON GOING" OR S.DESCRIPTION = "OPENED")
-                      AND DATEDIFF(CURDATE(),C.DATE_FILED) > 3
+                      AND (RO.TYPE = "Minor" AND DATEDIFF(CURDATE(),C.DATE_FILED) > IR.NUM_DAYS)
+                      OR (RO.TYPE = "Major" AND DATEDIFF(CURDATE(),C.DATE_FILED) > IR.NUM_DAYS)
           ORDER BY	  C.LAST_UPDATE DESC';
   $result=mysqli_query($dbc,$query);
   if(!$result){
