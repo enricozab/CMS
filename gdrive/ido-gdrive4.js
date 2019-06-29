@@ -90,7 +90,7 @@ function updateSigninStatus(isSignedIn) {
 function handleAuthClick(event) {
   console.log("handleAuthClick");
   handleClientLoad();
-  gapi.auth2.getAuthInstance().signIn();
+//   gapi.auth2.getAuthInstance().signIn();
 }
 
 function handleSignoutClick(event) {
