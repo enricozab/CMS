@@ -283,7 +283,8 @@
             success: function(response) {
             	//$("#create-event").removeAttr('disabled');
               $("#message").text("An event has been created successfully!");
-            	$("#alertModal").modal("show");
+              $("#alertModal").modal("show");
+              $("#eventModal").modal("show");
             },
             error: function(response) {
               //$("#create-event").removeAttr('disabled');

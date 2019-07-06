@@ -172,9 +172,9 @@
                         echo mysqli_error($dbc);
                       }
                     ?>
-                    <div class="form-group" style='width: 400px;'>
-                      <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="ido" class="form-control">
+                    <div class="form-group" style='width: 300px;'>
+                      <label>Assign an IDO <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="ido" class="chosen-select">
                         <option value="" disabled selected>Select IDO</option>
                         <?php
                         while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
