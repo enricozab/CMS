@@ -5,6 +5,7 @@
 
   $caseNum = "Case #" . $array[5];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,10 +54,26 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="../gdrive/date.js" type="text/javascript"></script>
     <script src="../gdrive/lightbox.min.js" type="text/javascript"></script>
-    <script src="../gdrive/ido-gdrive4.js" type="text/javascript"></script>
+    <script src="../gdrive/ido-gdrive5.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
+
+    <?php
+      $query = 'SELECT FILENAME
+                  FROM REF_CHECK_OUT
+                 WHERE CHECKEDOUT = 1';
+      $result = mysqli_query($dbc, $query);
+
+      if(!$result){
+        echo mysqli_error($dbc);
+      }
+      else{
+        while($row = $result->fetch_row()) {
+          $rows[] = $row;
+        }
+      }
+    ?>
 
 </head>
 
@@ -76,7 +93,7 @@
           <div id="login-box">
 
             <p> You need to authorize this integration in order to use it. Please sign in to your Google Account to do so.</p><br>
-            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick="handle('<?php echo $passCase;?>')">Log In</button>
+            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick='handle("<?php echo $passCase;?>", "<?php echo $_SESSION["user_id"];?>", <?php echo json_encode($rows);?>)'>Log In</button>
 
           </div>
 

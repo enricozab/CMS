@@ -171,7 +171,7 @@ if (!isset($_GET['cn']))
                 <?php }
                 ?>
                 <br>
-                <button type="submit" id="evidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
+                <button type="submit" id="btnViewEvidence" name="evidence" class="btn btn-outline btn-primary">View evidence</button>
             </div>
             
             <?php include "../ajax/user-case-audit.php" ?>
@@ -361,6 +361,11 @@ if (!isset($_GET['cn']))
     };
 
     $('#evidence').on('click',function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='hdo-gdrive-case.php';
+    });
+
+    $('#btnViewEvidence').on('click',function() {
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='hdo-gdrive-case.php';
     });
