@@ -674,10 +674,10 @@ if (!isset($_GET['cn']))
       location.reload();
     });
 
-    // $('.btnViewEvidence').click(function() {
-    //   <?php //$_SESSION['pass'] = $passCase; ?>
-    //   location.href='ulc-gdrive-case.php';
-    // });
+    $('.btnViewEvidence').click(function() {
+      <?php //$_SESSION['pass'] = $passCase; ?>
+      location.href='ulc-gdrive-case.php';
+    });
 
     $('input[name="verdict"]').click(function(){
       if ($(this).val() == "Guilty") {

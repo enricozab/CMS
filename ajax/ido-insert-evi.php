@@ -2,12 +2,17 @@
   session_start();
   require_once('../mysql_connect.php');
 
-  // $newQry = "INSERT INTO SUBMITTED_EVIDENCE (CASE_ID, SUBMITTED_BY_ID, IDO_ID, COMMENTS)
-  //                   VALUES			       (79, '11525045', '20121234', 'hveqfa')";
+  if ($_POST['submittedBy'] == 0) {
+    $newQry = "INSERT INTO SUBMITTED_EVIDENCE (SUBMITTED_BY_ID, EVIDENCE_TYPE, IDO_ID)
+                    VALUES ({$_POST['submittedBy']}, {$_POST['evidence']}, {$_POST['idoID']});";
 
-  $newQry = "INSERT INTO SUBMITTED_EVIDENCE (CASE_ID, SUBMITTED_BY_ID, IDO_ID, COMMENTS)
-                VALUES ({$_POST['caseID']}, '{$_POST['submittedBy']}', '{$_POST['idoID']}', '{$_POST['comment']}');";
+  }
 
+  else {
+    $newQry = "INSERT INTO SUBMITTED_EVIDENCE (SUBMITTED_BY_ID, UPLOADED_BY_NAME, EVIDENCE_TYPE, IDO_ID)
+                    VALUES ({$_POST['submittedBy']}, '{$_POST['sName']}', {$_POST['evidence']}, '{$_POST['idoID']}');";
+  }
+  
   $newResult = mysqli_query($dbc,$newQry);
 
   if(!$newResult){

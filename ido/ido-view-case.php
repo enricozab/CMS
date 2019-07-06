@@ -58,7 +58,7 @@ if (!isset($_GET['cn']))
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/ido-upload2.js" type="text/javascript"></script>
+    <script src="../gdrive/ido-evi-upload2.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
@@ -248,9 +248,12 @@ if (!isset($_GET['cn']))
                         FROM	USERS U
                    LEFT JOIN	CASES C ON U.USER_ID = C.REPORTED_STUDENT_ID OR U.USER_ID = C.COMPLAINANT_ID
                        WHERE	C.CASE_ID = "'.$_GET['cn'].'"';
-
           $qSelectRes = mysqli_query($dbc,$qSelect);
 
+          $qEvidenceSelect = 'SELECT * 
+                                FROM REF_EVIDENCE_TYPE
+                               WHERE OFFENSE_ID = "'.$row['OFFENSE_ID'].'"';
+          $qEvidenceRes = mysqli_query($dbc,$qEvidenceSelect);
   ?>
 
     <div id="wrapper">
@@ -781,39 +784,53 @@ if (!isset($_GET['cn']))
     });
 
     $('#six').on('click',function(data) {
-
       $("#uploadModal").modal("hide");
-
+      
       var e = document.getElementById("uploadSelect");
-      var selectedUser = e.options[e.selectedIndex].value;
-      var com = document.getElementById("desc_input").value;
-      var check = 1; 
+      var selected = e.options[e.selectedIndex].value.split("|");
+      var name = selected[1];
 
-      $.ajax({
-          url: '../ajax/ido-insert-evi.php',
-          type: 'POST',
-          data: {
-              caseID: <?php echo $_GET['cn']; ?>,
-              submittedBy: selectedUser,
-              idoID: <?php echo $row['COMPLAINANT_ID']; ?>,
-              comment: com
-          },
-          success: function(msg) {
-
-            document.getElementById("uploadSelect").value = "";
-            document.getElementById("desc_input").value = "";
-
-          },
-          error: function(msg) {
-            check = NULL;
-          }
-      });
-
-      if(check != null) {
-        var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW";
-        btnSubmit(data);
+      if(selected[0] == 0 && document.getElementById("witnessName").value.length == 0) {
+        $("#emptyUploadModal").modal("show");
       }
 
+      else {
+        $("#waitModal").modal("show");
+
+        var selectedUser = e.options[e.selectedIndex].value;
+        var witness = document.getElementById("witnessName").value;
+        var x = document.getElementById("evidenceSelect");
+        var evidenceSel  = x.options[x.selectedIndex].value;
+        var check = 1; 
+
+        if (selected[0] == 0) {
+          name = document.getElementById("witnessName").value;
+        }
+
+        $.ajax({
+            url: '../ajax/ido-insert-evi.php',
+            type: 'POST',
+            data: {
+                submittedBy: selectedUser,
+                evidence: evidenceSel,
+                idoID: <?php echo $row['HANDLED_BY_ID']; ?>,
+                sName: witness
+            },
+            success: function(msg) {
+              document.getElementById("witnessName").value = "";
+              $('#witness').hide();
+            },
+            error: function(msg) {
+              check = NULL;
+            }
+        });
+
+        if(check != null) {
+          console.log(name);
+          var data = data.target.id + "|" + "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|" + "IDO-VIEW-EVIDENCE" + "|" + name;
+          btnSubmit(data);
+        }
+      }
     });
 
 
@@ -1007,26 +1024,28 @@ if (!isset($_GET['cn']))
     }
 
     $('#uploadSelect').on('change',function() {
-        var offense_id=$(this).val();
-        if(offense_id==1) {
-          $('#cheat').show();
-        }
-        else{
-          $('#cheat').hide();
+        var submitter_id = $(this).val();
+
+        if (submitter_id == 0) {
+          $('#witness').show();
         }
 
-        $.ajax({
-          url: 'hdo-get-details.php',
-          type: 'POST',
-          data: {
-            offense: offense_id
-          },
-          success: function(response) {
+        else {
+          $('#witness').hide();
+        }
+
+        // $.ajax({
+        //   url: 'hdo-get-details.php',
+        //   type: 'POST',
+        //   data: {
+        //     offense: offense_id
+        //   },
+        //   success: function(response) {
 
             
-          }
-        });
-      });
+        //   }
+        // });
+    });
 
     $('#sendcl').on('click',function() {
       $('#closureModal').modal('show');
@@ -1352,7 +1371,7 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-body">
 
-          <p> Submitted By:
+          <p> <b>Submitted By</b>
 
             <select id = "uploadSelect" class = "form-control">
 
@@ -1364,20 +1383,41 @@ if (!isset($_GET['cn']))
                 $last = $qSelectRow['LAST_NAME'];
                 $id = $qSelectRow['USER_ID'];
 
-                echo "<option value ='".$id."'> ".$first." ".$last."</option>";
+                $new = $id . "|" . $first . " " . $last;
+
+                echo "<option value ='".$new."'> ".$first." ".$last."</option>";
 
               }
               
-              echo "<option value ='witness'> Witness </option>";
+              echo "<option value = 0> Witness </option>";
 
             ?> </select>
 
           </p><br>
 
-          <div id="witness" class="form-group" style='width: 300px;' hidden>
+          <div id="witness" class="form-group" hidden>
             <label>Witness Name</label>
             <input id="witnessName" class="form-control">
           </div>
+
+          <p> <b>Evidence Description</b>
+
+            <select id = "evidenceSelect" class = "form-control">
+
+            <?php
+
+              while($qEvidenceResRow = mysqli_fetch_array($qEvidenceRes,MYSQLI_ASSOC)) {
+
+                $id = $qEvidenceResRow['evidence_type_id'];
+                $desc = $qEvidenceResRow['evidence_type_desc'];
+
+                echo "<option value ='".$id."'> ".$desc." </option>";
+
+              }
+
+            ?> </select>
+
+          </p><br>
 
           <!-- make this select, gets suggested desc of evidence from new table in db -->
 
@@ -1409,6 +1449,23 @@ if (!isset($_GET['cn']))
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="emptyUploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Evidence Upload</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message">Please fill in all the fields!</p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
+    </div>
 
 </body>
 

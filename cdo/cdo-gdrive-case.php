@@ -1,4 +1,4 @@
-<?php include 'hdo.php' ?>
+<?php include 'cdo.php' ?>
 <?php
   $passCase = $_SESSION['pass'];
   $array = explode("/", $passCase);
@@ -53,7 +53,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="../gdrive/date.js" type="text/javascript"></script>
     <script src="../gdrive/lightbox.min.js" type="text/javascript"></script>
-    <script src="../gdrive/hellodrive2.js" type="text/javascript"></script>
+    <script src="../gdrive/ido-gdrive4.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
@@ -64,7 +64,7 @@
 
     <div id="wrapper">
 
-    <?php include 'hdo-sidebar.php'; ?>
+    <?php include 'cdo-sidebar.php'; ?>
 
         <div id="page-wrapper">
           <div class="row">
