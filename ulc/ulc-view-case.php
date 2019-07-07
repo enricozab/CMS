@@ -675,7 +675,7 @@ if (!isset($_GET['cn']))
     });
 
     $('.btnViewEvidence').click(function() {
-      <?php //$_SESSION['pass'] = $passCase; ?>
+      <?php $_SESSION['pass'] = $passCase; ?>
       location.href='ulc-gdrive-case.php';
     });
 

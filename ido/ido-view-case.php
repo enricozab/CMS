@@ -803,6 +803,9 @@ if (!isset($_GET['cn']))
         var evidenceSel  = x.options[x.selectedIndex].value;
         var check = 1; 
 
+        console.log("selected[0]: " + selected[0]);
+        console.log("selected[1]: " + selected[1]);
+
         if (selected[0] == 0) {
           name = document.getElementById("witnessName").value;
         }
@@ -811,14 +814,18 @@ if (!isset($_GET['cn']))
             url: '../ajax/ido-insert-evi.php',
             type: 'POST',
             data: {
-                submittedBy: selectedUser,
+                submittedBy: name,
                 evidence: evidenceSel,
                 idoID: <?php echo $row['HANDLED_BY_ID']; ?>,
-                sName: witness
+                sName: witness,
+                caseID: <?php echo $_GET['cn']; ?>
             },
             success: function(msg) {
+              console.log("selectedUser: " + selectedUser + " evidenceSel: " + evidenceSel + " idoID: " + <?php echo $row['HANDLED_BY_ID']; ?> + " sName: " + witness + " caseid: " + <?php echo $_GET['cn']; ?>);
               document.getElementById("witnessName").value = "";
+              console.log("HIIIIIIII");
               $('#witness').hide();
+              console.log(msg);
             },
             error: function(msg) {
               check = NULL;

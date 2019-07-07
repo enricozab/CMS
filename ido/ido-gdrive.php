@@ -52,6 +52,22 @@
     </script>
     <script src="../gdrive/upload.js"></script>
 
+    <?php
+      $query = 'SELECT FILENAME
+                  FROM REF_CHECK_OUT
+                 WHERE CHECKEDOUT = 1';
+      $result = mysqli_query($dbc, $query);
+
+      if(!$result){
+        echo mysqli_error($dbc);
+      }
+      else{
+        while($row = $result->fetch_row()) {
+          $rows[] = $row;
+        }
+      }
+    ?>
+
 </head>
 
 <body>
@@ -70,7 +86,7 @@
           <div id="login-box">
 
             <p> You need to authorize this integration in order to use it. Please sign in to your Google Account to do so.</p><br>
-            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick="handleAuthClick()">Log In</button>
+            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick='handleAuth("<?php echo $_SESSION["user_id"];?>", <?php echo json_encode($rows);?>)'>Log In</button>
 
           </div>
 
@@ -140,7 +156,7 @@
           <div id="float-box-info" class="float-box">
               <div class="info-form">
                   <div class="close-x"><img id="imgCloseInfo" class="imgClose" src="../gdrive/images/button_close.png" alt="close" /></div>
-                  <h3 class="clear">File information</h3>
+                  <h3 class="clear">File Information</h3>
                   <table cellpadding="0" cellspacing="0" class="tbl-info">
           						<tr>
           								<td class="label">Type</td>

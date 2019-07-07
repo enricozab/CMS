@@ -376,18 +376,59 @@ function getFiles() {
    // });
 }
 
+// function getCMSFiles()  {
+//     console.log("getCMSFiles");
+//     console.log("HIIII");
+//     var query = "";
+//     if (ifShowSharedFiles()) {
+//       $(".button-opt").hide();
+//     }
+//     else{
+//       $(".button-opt").show();
+//     }
+
+//     query = "trashed=false and '" + FOLDER_ID + "' in parents";
+//     var request = gapi.client.drive.files.list({
+//         'maxResults': NO_OF_FILES,
+//         'q': query
+//     });
+
+//     request.execute(function (resp) {
+//        if (!resp.error) {
+
+//           if (page == "VIEW-FOLDER") {
+//             collegeFiles();
+//             DRIVE_FILES = resp.items;
+//             buildFiles();
+//             console.log("view-folder ifffff");
+//           }
+
+//           else {
+//             showUserInfo();
+//             DRIVE_FILES = resp.items;
+//             buildFiles();
+
+//              console.log("else");
+//           }
+//        }
+//        else{
+//             showErrorMessage("Error: " + resp.error.message);
+//        }
+//     });
+// }
 function getCMSFiles()  {
-    console.log("getCMSFiles");
-    console.log("HIIII");
-    var query = "";
     if (ifShowSharedFiles()) {
-      $(".button-opt").hide();
+        $(".button-opt").hide();
     }
     else{
-      $(".button-opt").show();
+        $(".button-opt").show();
     }
 
+    console.log("getCMSFiles");
+
+    var query = "";
     query = "trashed=false and '" + FOLDER_ID + "' in parents";
+
     var request = gapi.client.drive.files.list({
         'maxResults': NO_OF_FILES,
         'q': query
@@ -395,16 +436,8 @@ function getCMSFiles()  {
 
     request.execute(function (resp) {
        if (!resp.error) {
-
-          if (page == "VIEW-FOLDER") {
-            collegeFiles();
-          }
-
-          else {
-            showUserInfo();
-            DRIVE_FILES = resp.items;
-            buildFiles();
-          }
+           DRIVE_FILES = resp.items;
+           collegeFiles();
        }
        else{
             showErrorMessage("Error: " + resp.error.message);
@@ -679,29 +712,29 @@ function buildFiles(){
      //button actions
      fText += "<div class='button-box'>";
      fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
-      //  if (DRIVE_FILES[i].fileType != "folder") {
+    //    if (DRIVE_FILES[i].fileType != "folder") {
 
-      //   console.log(fileArray.length);
+    //     console.log(fileArray.length);
 
-      //   if(fileArray.length != 0) {
-      //     for(x = 0; x < fileArray.length; x++) {
-      //       console.log(fileArray[x] + " " + DRIVE_FILES[i].title);
-      //       if(fileArray[x] == DRIVE_FILES[i].title) {
-      //         check = 0;
-      //       }
-      //     }
+    //     if(fileArray.length != 0) {
+    //       for(x = 0; x < fileArray.length; x++) {
+    //         console.log(fileArray[x] + " " + DRIVE_FILES[i].title);
+    //         if(fileArray[x] == DRIVE_FILES[i].title) {
+    //           check = 0;
+    //         }
+    //       }
 
-      //     if(check == 1) {
-      //       fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
-      //     }
-      //   }
+    //       if(check == 1) {
+    //         fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
+    //       }
+    //     }
 
-      //   else {
-      //     fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
-      //   }
+    //     else {
+    //       fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
+    //     }
 
-      //   check = 1;
-      //  }
+    //     check = 1;
+    //    }
 
        if (DRIVE_FILES[i].textContentURL != null && DRIVE_FILES[i].textContentURL.length > 0) {
          fText += "<div class='button-text' title='Get Text' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
@@ -763,17 +796,17 @@ function initDriveButtons(){
       showStatus("Downloading file in progress...");
       FILE_COUNTER = $(this).attr("data-file-counter");
 
-      // $.ajax({
-      //     url: '../ajax/gdrive-checkout.php',
-      //     type: 'POST',
-      //     data: {
-      //         file_name: DRIVE_FILES[FILE_COUNTER].title,
-      //         user: user_id
-      //     },
-      //     success: function(msg) {
-      //       console.log("SUCCESS " + msg);
-      //     }
-      // });
+    //   $.ajax({
+    //       url: '../ajax/gdrive-checkout.php',
+    //       type: 'POST',
+    //       data: {
+    //           file_name: DRIVE_FILES[FILE_COUNTER].title,
+    //           user: user_id
+    //       },
+    //       success: function(msg) {
+    //         console.log("SUCCESS " + msg);
+    //       }
+    //   });
       
       console.log("FILE NAME: " + DRIVE_FILES[FILE_COUNTER].title);
       
