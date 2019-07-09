@@ -732,30 +732,29 @@ if (!isset($_GET['cn']))
       }
     });
 
-    function sendStudResponseFirst() {
-      $.ajax({
-          url: '../ajax/users-hellosign.php',
-          type: 'POST',
-          data: {
-              formT: titleForm,
-              title : "Student Response Form",
-              subject : "Student Response Form Document Signature",
-              message : "Please do sign this document.",
-                        fname : "<?php echo $nameres['first_name'] ?>",
-              lname : "<?php echo $nameres['last_name'] ?>",
-              email : "<?php echo $nameres['email'] ?>",
-              filename : $('#inputfile').val()
-          },
-          success: function(response) {
-            parentLetter();
-            //$("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
-            //$("#alertModal").modal("show");
-            $("#message").text('forms');
-            $('#waitModal').modal('hide');
-            $("#newFormsModal").modal("show");
-          }
-      });
-    }
+    // function sendStudResponseFirst() {
+    //   $.ajax({
+    //       url: '../ajax/users-hellosign.php',
+    //       type: 'POST',
+    //       data: {
+    //           formT: titleForm,
+    //           title : "Student Response Form",
+    //           subject : "Student Response Form Document Signature",
+    //           message : "Please do sign this document.",
+    //                     fname : "<?php echo $nameres['first_name'] ?>",
+    //           lname : "<?php echo $nameres['last_name'] ?>",
+    //           email : "<?php echo $nameres['email'] ?>",
+    //           filename : $('#inputfile').val()
+    //       },
+    //       success: function(response) {
+    //         parentLetter();
+    //         //$("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
+    //         //$("#alertModal").modal("show");
+    //         $("#message").text('forms');
+    //         $('#waitModal').modal('hide');
+    //       }
+    //   });
+    // }
 
     function parentLetter() {
       loadFile("../templates/template-parent-letter.docx",function(error,content){
@@ -813,55 +812,41 @@ if (!isset($_GET['cn']))
             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         }); //Output the document using Data-URI
         saveAs(out,"Parent Letter.docx");
+        $("#newFormsModal").modal("show");
       });
     }
 
     $("#submitParent").click(function(){
-      // sendStudResponseFirst();
-      $('#waitModal').modal('show');
+      parentLetter();
+      // $('#waitModal').modal('show');
     });
 
-    // $('#form1').on('click', function() {
-    //   $.ajax({
-    //       url: '../ajax/users-hellosign.php',
-    //       type: 'POST',
-    //       data: {
-    //           formT: titleForm,
-    //           title : "Student Response Form",
-    //           subject : "Student Response Form Document Signature",
-    //           message : "Please do sign this document.",
-    //           fname : "<?php echo $nameres['first_name'] ?>",
-    //           lname : "<?php echo $nameres['last_name'] ?>",
-    //           email : "<?php echo $nameres['email'] ?>",
-    //           filename : $('#inputfile').val()
-    //       },
-    //       success: function(response) {
-    //         $('#form').attr('disabled',true);
-    //         location.reload();
-    //       }
-    //   });
-    // });
+    $('#form1').on('click', function() {
+      $('#form').attr('disabled',true);
+      location.reload();
+    });
 
-    // $('#form2').on('click', function() {
-    //   $.ajax({
-    //     url: '../ajax/users-hellosign.php',
-    //     type: 'POST',
-    //     data: {
-    //         formT: "Parent Letter.docx",
-  	// 				title : "Parent Letter",
-  	// 				subject : "Parent Letter Document Signature",
-  	// 				message : "Please do sign this document.",
-		// 			  name : "enrico_zabayle@dlsu.edu.ph",
-  	// 				email : "enrico_zabayle@dlsu.edu.ph",
-  	// 				filename : $('#inputfile').val(),
-    //         caseID : <?php echo $_GET['cn']; ?>
-    //     },
-    //     success: function(response) {
-    //       <!-- <?php echo $studentres['guardian_email'] ?> -->
-    //       $("#form").attr('disabled',true);
-		// 		}
-  	// 	});
-    // });
+    $('#form2').on('click', function() {
+      $.ajax({
+        url: '../ajax/users-hellosign.php',
+        type: 'POST',
+        data: {
+            formT: "Parent Letter.docx",
+  					title : "Parent Letter",
+  					subject : "Parent Letter Document Signature",
+  					message : "Please do sign this document.",
+					  name : "enrico_zabayle@dlsu.edu.ph",
+  					email : "enrico_zabayle@dlsu.edu.ph",
+  					filename : $('#inputfile').val(),
+            caseID : <?php echo $_GET['cn']; ?>
+        },
+        success: function(response) {
+          <!-- <?php echo $studentres['guardian_email'] ?> -->
+          $("#form").attr('disabled',true);
+          location.reload();
+				}
+  		});
+    });
 
     $("#appendevidence").click(function(){
       $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+

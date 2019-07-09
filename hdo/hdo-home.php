@@ -64,13 +64,14 @@
             <button type="button" class="tableButton btn btn-default" id="active">Active</button>
             <button type="button" class="tableButton btn btn-default" id="inactive">Inactive</button>
             <button type="button" class="tableButton btn btn-default" id="closed">Closed</button>
+            <button type="button" class="tableButton btn btn-default" id="migrated">Migrated</button>
           </div>
           <style>
               .tableButton {
                 width: 120px;
               }
               #all {border-radius: 3px 0px 0px 3px;}
-              #closed {border-radius: 0px 3px 3px 0px;}
+              #migrated {border-radius: 0px 3px 3px 0px;}
           </style>
           <br><br>
           <table width="100%" class="table table-striped table-bordered table-hover" id="case-notif-table">
@@ -405,6 +406,52 @@
         });
 
         timeTable = setTimeout(priorityTable, 5000);
+      }
+    });
+
+    $('#migrated').on('click', function () {
+      $('#migrated').focus();
+      $('#migrated').css("background-color", "#e6e6e6");
+      $('#priority').css("background-color", "white");
+      $('#active').css("background-color", "white");
+      $('#inactive').css("background-color", "white");
+      $('#all').css("background-color", "white");
+      $('#closed').css("background-color", "white");
+
+      clearTimeout(timeTable);
+      temCurPage = $('#case-notif-table').DataTable().page();
+      migratedTable();
+
+      function migratedTable() {
+        // $.ajax({
+        //   url: '../ajax/hdo-get-cases-migrated.php',
+        //   type: 'POST',
+        //   data: {
+        //   },
+        //   success: function(response) {
+        //     $('#case-notif-table').html(response);
+        //     if(temCurPage != null) {
+        //       $('#case-notif-table').DataTable().page(0).draw('page');
+        //       temCurPage = null;
+        //     }
+        //     var curPage = $('#case-notif-table').DataTable().page();
+        //     var curSearch = $('#case-notif-table').DataTable().search();
+        //     if($('div.dataTables_filter input').is(':focus')) {
+        //       var focus = true;
+        //     }
+        //     $('#case-notif-table').DataTable({
+        //       'destroy': true,
+        //       'aaSorting': []
+        //     });
+        //     $('#case-notif-table').DataTable().page(curPage).draw('page');
+        //     $('#case-notif-table').DataTable().search(curSearch).draw('page');
+        //     if(focus) {
+        //       $('div.dataTables_filter input').focus();
+        //     }
+        //   }
+        // });
+
+        // timeTable = setTimeout(migratedTable, 5000);
       }
     });
   });
