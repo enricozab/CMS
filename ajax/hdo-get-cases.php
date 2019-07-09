@@ -27,6 +27,7 @@
                       RP.PENALTY_DESC AS PENALTY_DESC,
                       C.VERDICT AS VERDICT,
                       C.PROCEEDING_DATE AS PROCEEDING_DATE,
+                      C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                       C.DATE_CLOSED AS DATE_CLOSED,
                       C.IF_NEW AS IF_NEW
           FROM 		    CASES C
@@ -56,6 +57,7 @@
                   <th>Status</th>
                   <th>Remarks</th>
                   <th>Graduating?</th>
+                  <th style="display: none">METADATAHACKS</th>
               </tr>
           </thead>
           <tbody>';
@@ -82,6 +84,18 @@
             <td>{$row['STATUS_DESCRIPTION']}</td>
             <td>{$row['REMARKS_DESCRIPTION']}</td>
             <td>{$grad}</td>
+            <td style='display: none'>
+              {$row['REPORTED_STUDENT_ID']}
+              {$row['STUDENT']}
+              {$row['COMPLAINANT_ID']}
+              {$row['COMPLAINANT']}
+              {$row['DETAILS']}
+              {$row['HANDLED_BY_ID']}
+              {$row['HANDLED_BY']}
+              {$row['PENALTY_DESC']}
+              {$row['VERDICT']}
+              {$row['PROCEEDING_DECISION']}
+            </td>
             </tr>";
     }
     echo '</tbody>';
