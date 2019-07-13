@@ -67,7 +67,7 @@
         <h4 class="modal-title" id="myModalLabel"><b>Alleged Case</b></h4>
       </div>
       <div class="modal-body">
-        <p id="message"></message>
+        <p id="message"></p>
       </div>
       <div class="modal-footer">
         <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>

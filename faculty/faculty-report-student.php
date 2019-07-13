@@ -64,7 +64,7 @@
                   <form id="form">
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
-                        <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
+                        <label>Student ID No. <span style="font-weight:normal; color:red;">*</span></label>
                         <select id="studentID" class="chosen-select">
                           <option value="" disabled selected>Select student</option>
                           <?php
@@ -349,26 +349,26 @@
         });
       }
 
-      $('#sentOK').on('click', function() {
-          $.ajax({
-                url: '../ajax/users-hellosign.php',
-                type: 'POST',
-                data: {
-                    formT: titleForm,
-                    title : "Incident Report",
-                    subject : "Incident Report Document Signature",
-                    message : "Please do sign this document and forward it, along with your pieces of evidence, to hdo.cms@gmail.com",
-                    fname : "<?php echo $nameres['first_name'] ?>",
-                    lname : "<?php echo $nameres['last_name'] ?>",
-                    email : "<?php echo $nameres['email'] ?>",
-                    filename : $('#inputfile').val()
-                },
-                success: function(response) {
-                  location.reload();
-              }
-          });
+      // $('#sentOK').on('click', function() {
+      //     $.ajax({
+      //           url: '../ajax/users-hellosign.php',
+      //           type: 'POST',
+      //           data: {
+      //               formT: titleForm,
+      //               title : "Incident Report",
+      //               subject : "Incident Report Document Signature",
+      //               message : "Please do sign this document and forward it, along with your pieces of evidence, to hdo.cms@gmail.com",
+      //               fname : "<?php echo $nameres['first_name'] ?>",
+      //               lname : "<?php echo $nameres['last_name'] ?>",
+      //               email : "<?php echo $nameres['email'] ?>",
+      //               filename : $('#inputfile').val()
+      //           },
+      //           success: function(response) {
+      //             location.reload();
+      //         }
+      //     });
 
-      });
+      // });
 
       $('.modal').attr('data-backdrop', "static");
       $('.modal').attr('data-keyboard', false);
@@ -403,9 +403,9 @@
             <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
           </div>
           <div class="modal-body">
-            <p id="message">Incident Report has been submitted and sent to your email successfully! 
+            <p id="message">Incident Report has been downloaded successfully! 
             <!-- <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p> -->
-            <br><br> <b>Next Step: </b> Send your pieces of evidence to <b>hdo.cms@gmail.com</b> for processing. </p>
+            <br><br> <b>Next Step: </b> Send the Incident Report together with your pieces of evidence to <b>hdo.cms@gmail.com</b> for processing. </p>
           </div>
           <div class="modal-footer">
             <button type="submit" id = "sentOK" class="btn btn-default" data-dismiss="modal">Ok</button>

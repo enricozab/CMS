@@ -1176,7 +1176,7 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
         </div>
         <div class="modal-body">
-          <p id="message">Discipline Case Referral Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>aulc.cms1@gmail.com</b> for processing. </p>
+          <p id="message">Discipline Case Referral Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with the pieces of evidence, to <b>aulc.cms1@gmail.com</b> for processing. </p>
         </div>
         <div class="modal-footer">
           <button type="submit" id = "n2" class="btn btn-default" data-dismiss="modal">Ok</button>

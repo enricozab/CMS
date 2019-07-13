@@ -732,30 +732,29 @@ if (!isset($_GET['cn']))
       }
     });
 
-    function sendStudResponseFirst() {
-      $.ajax({
-          url: '../ajax/users-hellosign.php',
-          type: 'POST',
-          data: {
-              formT: titleForm,
-              title : "Student Response Form",
-              subject : "Student Response Form Document Signature",
-              message : "Please do sign this document.",
-                        fname : "<?php echo $nameres['first_name'] ?>",
-              lname : "<?php echo $nameres['last_name'] ?>",
-              email : "<?php echo $nameres['email'] ?>",
-              filename : $('#inputfile').val()
-          },
-          success: function(response) {
-            parentLetter();
-            //$("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
-            //$("#alertModal").modal("show");
-            $("#message").text('forms');
-            $('#waitModal').modal('hide');
-            $("#newFormsModal").modal("show");
-          }
-      });
-    }
+    // function sendStudResponseFirst() {
+    //   $.ajax({
+    //       url: '../ajax/users-hellosign.php',
+    //       type: 'POST',
+    //       data: {
+    //           formT: titleForm,
+    //           title : "Student Response Form",
+    //           subject : "Student Response Form Document Signature",
+    //           message : "Please do sign this document.",
+    //                     fname : "<?php echo $nameres['first_name'] ?>",
+    //           lname : "<?php echo $nameres['last_name'] ?>",
+    //           email : "<?php echo $nameres['email'] ?>",
+    //           filename : $('#inputfile').val()
+    //       },
+    //       success: function(response) {
+    //         parentLetter();
+    //         //$("#message").text('Student Response Form and Parent Letter have been submitted and sent to your email successfully! Check your email to sign the forms.');
+    //         //$("#alertModal").modal("show");
+    //         $("#message").text('forms');
+    //         $('#waitModal').modal('hide');
+    //       }
+    //   });
+    // }
 
     function parentLetter() {
       loadFile("../templates/template-parent-letter.docx",function(error,content){
@@ -813,33 +812,18 @@ if (!isset($_GET['cn']))
             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         }); //Output the document using Data-URI
         saveAs(out,"Parent Letter.docx");
+        $("#newFormsModal").modal("show");
       });
     }
 
     $("#submitParent").click(function(){
-      sendStudResponseFirst();
-      $('#waitModal').modal('show');
+      parentLetter();
+      // $('#waitModal').modal('show');
     });
 
     $('#form1').on('click', function() {
-      $.ajax({
-          url: '../ajax/users-hellosign.php',
-          type: 'POST',
-          data: {
-              formT: titleForm,
-              title : "Student Response Form",
-              subject : "Student Response Form Document Signature",
-              message : "Please do sign this document.",
-              fname : "<?php echo $nameres['first_name'] ?>",
-              lname : "<?php echo $nameres['last_name'] ?>",
-              email : "<?php echo $nameres['email'] ?>",
-              filename : $('#inputfile').val()
-          },
-          success: function(response) {
-            $('#form').attr('disabled',true);
-            location.reload();
-          }
-      });
+      $('#form').attr('disabled',true);
+      location.reload();
     });
 
     $('#form2').on('click', function() {
@@ -859,6 +843,7 @@ if (!isset($_GET['cn']))
         success: function(response) {
           <!-- <?php echo $studentres['guardian_email'] ?> -->
           $("#form").attr('disabled',true);
+          location.reload();
 				}
   		});
     });
@@ -1234,8 +1219,9 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
         </div>
         <div class="modal-body">
-          <p id = "thisMessage">Student Response Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and pieces of evidence to <b>ido.cms1@gmail.com</b>.</p>
-          <!-- <p id = "appealMsg">An appeal has been sent successfully! A new Student Response Form has been sent to your email. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the form and evidences to <b>ido.cms1@gmail.com</b>.</p> -->
+          <p id="message">Student Response Form has been downloaded successfully! 
+          <!-- <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p> -->
+          <br><br> <b>Next Step: </b> Send the Student Response Form together with your pieces of evidence to <b>ido.cms1@gmail.com</b> for processing. </p>
         </div>
         <div class="modal-footer">
           <button type="submit" id="form1" class="btn btn-default" data-dismiss="modal">Ok</button>
@@ -1251,6 +1237,12 @@ if (!isset($_GET['cn']))
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message">Student Response Form has been downloaded successfully and Parent Letter has been created and sent to your Parent/Guardian's email! 
+          <!-- <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p> -->
+          <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Send the Student Response Form together with your pieces of evidence to <b>ido.cms1@gmail.com</b> for processing. 
+          <br> <b>(2)</b> Inform your Parent/Guardian to sign the Parent Letter through their email and forward to <b>ido.cms1@gmail.com</b>. </p>
         </div>
         <div class="modal-body">
           <!-- <p id="message">Student Response Form and Parent Letter have been submitted and sent to your email and to your Parent/Guardian's email respectively. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the Student Response Form. <br> <b>(2)</b> Inform your Parent/Guardian to sign the Parent Letter. <br> <b>(3)</b> Forward the forms and your pieces of evidence to <b>ido.cms1@gmail.com</b>.</p> -->

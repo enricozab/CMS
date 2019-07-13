@@ -236,14 +236,17 @@ if (!isset($_GET['cn']))
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="panel-body">
                           <div class="form-group">
-                              <select class="form-control">
+                              <select class="form-control" id="dropdown">
                                 <option value="" disabled selected>Select a Stage</option>
                                 <?php
-                                  $remarksQuery= "SELECT * FROM cms.ref_remarks;";
+                                  $getRemarks_id = $dbc->query("SELECT remarks_id FROM cms.cases WHERE case_id = " .$_GET['cn']. " LIMIT 1");
+                                  $remarks_id = $getRemarks_id->fetch_row();
+
+                                  $remarksQuery= "SELECT * FROM cms.ref_remarks WHERE remarks_id < " . $remarks_id[0];
                                   $remarksRes = $dbc->query($remarksQuery);
                                   while($remarks = $remarksRes->fetch_assoc())
                                   echo 
-                                    '<option value="' .$remarks['description']. '">' . $remarks['description'] . '</option>';
+                                    '<option value="' .$remarks['remarks_id']. '">' . $remarks['description'] . '</option>';
                                 ?>
                               </select>
                           </div>
@@ -313,7 +316,7 @@ if (!isset($_GET['cn']))
     <script src="../vendor/morrisjs/morris.min.js"></script>
     <script src="../data/morris-data.js"></script>
 
-	<!-- DataTables JavaScript -->
+	  <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
     <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
@@ -321,8 +324,40 @@ if (!isset($_GET['cn']))
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+    <!-- Trigger on Select JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
+  // SELECT TRIGGER
+  $(document).ready(function() {
+    $("#dropdown").change(function() {
+      //alert("Selection: " + $("option:selected", this).val() + ":" + $("option:selected", this).text());
+      var selectedRemarks = $("option:selected", this).val();
+
+      $.ajax({
+              url: '../ajax/hdo-update-remarks.php',
+              type: 'POST',
+              data: {
+    					remarks : selectedRemarks,
+              case_id : <?php echo $_GET['cn'] ?>
+                    },
+              success: function(response) {
+                console.log("Selected Remarks: " + selectedRemarks);
+                console.log("Case ID: " + <?php echo $_GET['cn'] ?>);
+              }
+    		});
+        
+        var dropdown = document.getElementById("dropdown");
+        for(i = dropdown.options.length - 1 ; i >= 0 ; i--)
+        {
+          if (i > selectedRemarks-1)
+            dropdown.remove(i);
+        }
+    });
+  });
+  // END OF SELECT TRIGGER
+
   $(document).ready(function() {
     loadNotif();
 

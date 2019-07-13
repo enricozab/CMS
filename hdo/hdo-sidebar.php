@@ -72,6 +72,12 @@
 				<li>
 					<a href="hdo-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
+				<li>
+					<a href="hdo-user-management.php"><i class="fa fa-users fa-fw"></i> User Management</a>
+				</li>
+				<li>
+					<a href="hdo-data-migration.php"><i class="fa fa-database fa-fw"></i> Data Migration</a>
+				</li>
 			</ul>
 		</div>
 		<!-- /.sidebar-collapse -->

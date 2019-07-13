@@ -90,41 +90,43 @@
    $offenseIndex=0;
 
    // echo "topOffensesIDMajor Size: " , sizeOf($topOffensesIDMajor), "<br>";
-   for($x=0; $x<3; $x++){
+   if (sizeof($topOffensesDescriptionMajor) > 1 && sizeof($topOffensesIDMajor) > 1 && sizeof($totalOffensesMajor) > 1) {
+    for($x=0; $x<3; $x++){
 
-     //echo "Offense Index: ", $offenseIndex, "<br";
+      //echo "Offense Index: ", $offenseIndex, "<br";
 
-     for($i=1; $i<=7; $i++){
-       //echo "I: " , $i, "<br>";
-       $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
-                          FROM CASES C
-                           LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
-                           LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
-                           WHERE U.OFFICE_ID = " .$i ."
-                           && C.OFFENSE_ID = " .$topOffensesIDMajor[$offenseIndex];
+      for($i=1; $i<=7; $i++){
+        //echo "I: " , $i, "<br>";
+        $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
+                            FROM CASES C
+                            LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
+                            LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
+                            WHERE U.OFFICE_ID = " .$i ."
+                            && C.OFFENSE_ID = " .$topOffensesIDMajor[$offenseIndex];
 
-       //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
-       $numcasesres = mysqli_query($dbc,$numcasesquery);
-       if(!$numcasesres){
+        //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
+        $numcasesres = mysqli_query($dbc,$numcasesquery);
+        if(!$numcasesres){
 
-         echo mysqli_error($dbc);
-       }
-       else{
-         $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
-         $cases = $casesrow['NUMCASES'];
-         $dataMajor[]= $cases;
-       }
-       //echo 'Data Num #', $z, '<br>';
-       $queryNum++;
-     }
+          echo mysqli_error($dbc);
+        }
+        else{
+          $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
+          $cases = $casesrow['NUMCASES'];
+          $dataMajor[]= $cases;
+        }
+        //echo 'Data Num #', $z, '<br>';
+        $queryNum++;
+      }
 
-     $offenseIndex++;
+      $offenseIndex++;
 
-     // $asd = 1;
-     // foreach ($dataMajor as $value) {
-     //      echo $asd, " ", $value, "<br>";
-     //      $asd++;
-     //  }
+      // $asd = 1;
+      // foreach ($dataMajor as $value) {
+      //      echo $asd, " ", $value, "<br>";
+      //      $asd++;
+      //  }
+    }
    }
 
    //MINOR CASES
@@ -133,6 +135,7 @@
    $totalOffensesMinor = array();
    $dataMinor = array();
 
+   if (sizeof($topOffensesDescriptionMinor) > 0 && sizeof($topOffensesIDMinor) > 0 && sizeof($totalOffensesMinor) > 0 && sizeof($dataMinor) > 0) {
     $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
                   FROM CASES C
                     LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
@@ -183,6 +186,7 @@
 
       $offenseIndex++;
     }
+   }
   ?>
 
   <?php
