@@ -59,17 +59,16 @@
         <div class="col-lg-12">
           <br>
           <div class="btn-group">
-            <button type="button" class="tableButton btn btn-default" id="all">All Cases</button>
             <button type="button" class="tableButton btn btn-default" id="priority">Priority Cases</button>
-            <button type="button" class="tableButton btn btn-default" id="active">Active</button>
+            <button type="button" class="tableButton btn btn-default" id="all">All Cases</button>
+            <button type="button" class="tableButton btn btn-default" id="open">Open</button>
             <button type="button" class="tableButton btn btn-default" id="closed">Closed</button>
           </div>
           <style>
               .tableButton {
                 width: 120px;
               }
-              #all {border-radius: 3px 0px 0px 3px;}
-              #active {border-radius: 0px;}
+              #priority {border-radius: 3px 0px 0px 3px;}
               #closed {border-radius: 0px 3px 3px 0px;}
           </style>
           <br><br>
@@ -139,7 +138,7 @@
 
     function normalTable() {
       $.ajax({
-        url: '../ajax/cdo-get-cases.php',
+        url: '../ajax/cdo-get-cases-priority.php',
         type: 'POST',
         data: {
         },
@@ -165,12 +164,12 @@
       timeTable = setTimeout(normalTable, 5000);
     }
 
-    $('#all').css("background-color", "#e6e6e6");
+    $('#priority').css("background-color", "#e6e6e6");
 
     $('#all').on('click', function () {
       $('#all').focus();
       $('#all').css("background-color", "#e6e6e6");
-      $('#active').css("background-color", "white");
+      $('#open').css("background-color", "white");
       $('#closed').css("background-color", "white");
       $('#priority').css("background-color", "white");
 
@@ -211,9 +210,9 @@
       }
     });
 
-    $('#active').on('click', function () {
-      $('#active').focus();
-      $('#active').css("background-color", "#e6e6e6");
+    $('#open').on('click', function () {
+      $('#open').focus();
+      $('#open').css("background-color", "#e6e6e6");
       $('#all').css("background-color", "white");
       $('#closed').css("background-color", "white");
       $('#priority').css("background-color", "white");
@@ -258,7 +257,7 @@
     $('#closed').on('click', function () {
       $('#closed').focus();
       $('#closed').css("background-color", "#e6e6e6");
-      $('#active').css("background-color", "white");
+      $('#open').css("background-color", "white");
       $('#all').css("background-color", "white");
       $('#priority').css("background-color", "white");
 
@@ -302,7 +301,7 @@
     $('#priority').on('click', function () {
       $('#priority').focus();
       $('#priority').css("background-color", "#e6e6e6");
-      $('#active').css("background-color", "white");
+      $('#open').css("background-color", "white");
       $('#all').css("background-color", "white");
       $('#closed').css("background-color", "white");
 
