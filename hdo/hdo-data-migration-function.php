@@ -10,8 +10,15 @@
         while (($getData = fgetcsv($file, 10000, ",")) !== FALSE)
         {
           // change this to select where the csv will insert into
-          $sql =  "  INSERT INTO REF_USER_TYPES (USER_TYPE_ID,DESCRIPTION) 
-                     VALUES ('".$getData[0]."','".$getData[1]."')
+          $sql =  "  SELECT USER_ID FROM USERS WHERE CONCAT(FIRST_NAME, ' ' , LAST_NAME) LIKE '".$getData[4]."' ";
+          $result = mysqli_query($dbc, $sql);
+          $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+          $complainant = $row['USER_ID'];
+
+          $details = "$getData[5] ,"." $getData[6] ,"." $getData[7]";
+
+          $sql =  "  INSERT INTO CASES (REPORTED_STUDENT_ID, OFFENSE_ID,COMPLAINANT_ID, DATE_INCIDENT, LOCATION, DETAILS, HANDLED_BY_ID, IF_NEW)
+                     VALUES (".$getData[1].",".$getData[3].",$complainant,STR_TO_DATE('".$getData[2]."', '%m/%d/%Y'),'DLSU','$details',1,2)
                   ";
           $result = mysqli_query($dbc, $sql);
           if(!isset($result))

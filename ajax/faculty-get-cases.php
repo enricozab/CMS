@@ -27,6 +27,8 @@
                       RP.PENALTY_DESC AS PENALTY_DESC,
                       C.VERDICT AS VERDICT,
                       C.PROCEEDING_DATE AS PROCEEDING_DATE,
+                      C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
+                      RCP.PROCEEDINGS_DESC AS PROCEEDINGS_DESC,
                       C.DATE_CLOSED AS DATE_CLOSED,
                       F.IF_NEW AS IF_NEW
           FROM 		    CASES C
@@ -34,12 +36,14 @@
           LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
           LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
           LEFT JOIN	  USERS U2 ON C.HANDLED_BY_ID = U2.USER_ID
+          LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
           LEFT JOIN   REF_STUDENTS RS ON U.USER_ID = RS.STUDENT_ID
           LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
           LEFT JOIN   REF_CHEATING_TYPE RCT ON C.CHEATING_TYPE_ID = RCT.CHEATING_TYPE_ID
           LEFT JOIN   REF_STATUS S ON C.STATUS_ID = S.STATUS_ID
           LEFT JOIN   REF_REMARKS R ON C.REMARKS_ID = R.REMARKS_ID
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
+          LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 
           WHERE       C.COMPLAINANT_ID = '.$_SESSION['user_id'].'
           ORDER BY	  C.LAST_UPDATE DESC';
@@ -57,6 +61,7 @@
                   <th>Last Update</th>
                   <th>Status</th>
                   <th>Remarks</th>
+                  <th style="display: none">METADATAHACKS</th>
               </tr>
           </thead>
           <tbody>';
@@ -74,6 +79,19 @@
             <td>{$row['LAST_UPDATE']}</td>
             <td>{$row['STATUS_DESCRIPTION']}</td>
             <td>{$row['REMARKS_DESCRIPTION']}</td>
+            <td style='display: none'>
+              {$row['REPORTED_STUDENT_ID']}
+              {$row['STUDENT']}
+              {$row['COMPLAINANT_ID']}
+              {$row['COMPLAINANT']}
+              {$row['DETAILS']}
+              {$row['HANDLED_BY_ID']}
+              {$row['HANDLED_BY']}
+              {$row['PENALTY_DESC']}
+              {$row['PROCEEDINGS_DESC']}
+              {$row['VERDICT']}
+              {$row['PROCEEDING_DECISION']}
+            </td>
             </tr>";
     }
     echo '</tbody>';

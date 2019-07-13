@@ -135,11 +135,6 @@
                                             </div>
 
                                             <div class="form-group" style = "width: 400px;">
-                                            <label>Phone Number <span style="font-weight:normal; color:red;">*</span> </label>
-                                            <input id='CU_number' type='text' class="form-control" placeholder="Enter User's Phone Number">
-                                            </div>
-
-                                            <div class="form-group" style = "width: 400px;">
                                             <label>Office <span style="font-weight:normal; color:red;">*</span> </label>
                                               <?php
                                                 $query='SELECT OFFICE_ID, DESCRIPTION FROM ref_user_office';
@@ -194,7 +189,7 @@
                                             ?>
                                           </select>
                                           </div>
-
+                                          
                                           <div id="EUdetails" class="form-group" style = "width: 500px;" hidden>
                                             <div class="form-group" style = "width: 400px;">
                                             <label>First Name</label>
@@ -229,11 +224,6 @@
                                                 }
                                               ?>
                                             </select>
-                                            </div>
-
-                                            <div class="form-group" style = "width: 400px;">
-                                            <label>Phone Number</label>
-                                            <input id='EU_number' type='text' class="form-control" placeholder="Enter User's Phone Number">
                                             </div>
 
                                             <div class="form-group" style = "width: 400px;">
@@ -276,7 +266,7 @@
                                             <div class="form-group" style = "width: 400px;">
                                             <label>Disabled Users</label>
                                               <?php
-                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE IS_ACTIVE = 2';
+                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 2';
                                                 $result=mysqli_query($dbc,$query);
                                                 if(!$result){
                                                   echo mysqli_error($dbc);
@@ -298,7 +288,7 @@
 
                                             <label>Active Users </label>
                                               <?php
-                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE IS_ACTIVE = 1';
+                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 1';
                                                 $result=mysqli_query($dbc,$query);
                                                 if(!$result){
                                                   echo mysqli_error($dbc);
@@ -372,29 +362,47 @@
                                     <div id="collapseFive" class="panel-collapse collapse">
                                       <div class="panel-body">
                                         <div class="form-group" style = "width: 400px;">
-                                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
-                                <thead>
-                                    <tr>
-                                        <th>Rendering engine</th>
-                                        <th>Browser</th>
-                                        <th>Platform(s)</th>
-                                        <th>Engine version</th>
-                                        <th>CSS grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="odd gradeX">
-                                        <td>Trident</td>
-                                        <td>Internet Explorer 4.0</td>
-                                        <td>Win 95+</td>
-                                        <td class="center">4</td>
-                                        <td class="center">X</td>
-                                    </tr>
-                                </tbody>
-                            </table>
 
-                                          <br><br>
-                                          <button id="updaterules" type="submit" class="btn btn-default">Manage Details</button>
+                                          <label>Select Offense <span style="font-weight:normal; color:red;">*</span> </label>
+                                            <?php
+                                              $query='SELECT OFFENSE_ID, DESCRIPTION FROM REF_OFFENSES';
+                                              $result=mysqli_query($dbc,$query);
+                                              if(!$result){
+                                                echo mysqli_error($dbc);
+                                              }
+                                            ?>
+                                          <select id='MD_offense' class="chosen-select">
+                                            <option value="" disabled selected>Select Offense</option>
+                                            <?php
+                                              while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
+                                              {
+                                                echo "<option value=\"{$row['OFFENSE_ID']}\">{$row['DESCRIPTION']}</option>";
+                                              }
+                                            ?>
+                                          </select>
+
+                                          <div id="MDdetails" class="form-group" style = "width: 500px;" hidden>
+                                            <br>
+
+                                            <table width="100%" class="table table-striped table-bordered table-hover" id="MDtable">
+                                              <thead>
+                                                <tr>
+                                                  <th>Details</th>
+                                                  <!-- <th></th> -->
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                              </tbody>
+                                            </table>
+                                            
+                                            <label>Add Details:</label>
+                                            <input id='MDadd' type='text' class="form-control">
+                                            <br>
+                                            <button id="MD_add_detail" type="submit" class="btn btn-default">Add Detail</button>
+
+
+                                          </div>
+
                                       </div>
                                     </div>
                                 </div>
@@ -485,7 +493,7 @@
 
   // create user submit button
   $('#createuser').click(function() {
-    var ids = ['#CU_idnum','#CU_firstname','#CU_lastname','#CU_email','#CU_usertype','#CU_number','#CU_office'];
+    var ids = ['#CU_idnum','#CU_firstname','#CU_lastname','#CU_email','#CU_usertype','#CU_office'];
     var isEmpty = true;
 
     for(var i = 0; i < ids.length; ++i ){
@@ -504,7 +512,6 @@
               lastname: $('#CU_lastname').val(),
               email: $('#CU_email').val(),
               usertype: $('#CU_usertype').val(),
-              number: $('#CU_number').val(),
               office: $('#CU_office').val()
           },
           success: function(response) {
@@ -545,7 +552,6 @@
             $('#EU_lastname').val(details.LAST_NAME);
             $('#EU_email').val(details.EMAIL);
             $('#EU_usertype').val(details.USER_TYPE_ID).trigger("chosen:updated");
-            $('#EU_number').val(details.PHONE);
             $('#EU_office').val(details.OFFICE_ID).trigger("chosen:updated"); 
           }
         });
@@ -555,7 +561,7 @@
   // update user submit button
   $('#edituser').click(function() {
     
-    var ids = ['#EU_firstname','#EU_lastname','#EU_email','#EU_usertype','#EU_number','#EU_office'];
+    var ids = ['#EU_firstname','#EU_lastname','#EU_email','#EU_usertype','#EU_office'];
     var isEmpty = true;
 
     for(var i = 0; i < ids.length; ++i ){
@@ -574,7 +580,6 @@
               lastname: $('#EU_lastname').val(),
               email: $('#EU_email').val(),
               usertype: $('#EU_usertype').val(),
-              number: $('#EU_number').val(),
               office: $('#EU_office').val()
           },
           success: function(response) {
@@ -677,6 +682,74 @@
           },
           success: function(response) {
             alert('success manage rules');
+            location.reload();
+          }
+      });
+    }
+
+    else {
+      alert("Fill out all fields");
+      // $("#done").hide();
+      // $("#alertModal").modal("show");
+    }
+  });
+
+  //manage details show details div
+  $('#MD_offense').on('change',function() {
+    var details=$(this).val();
+        if(details != null) {
+          $('#MDdetails').show();
+        }
+        else {
+          $('#MDdetails').hide();
+        }
+
+        $.ajax({
+          url: 'hdo-get-details-manage-details.php',
+          type: 'POST',
+          data: {
+            offense: $('#MD_offense').val()
+          },
+          success: function(response) {
+            console.log(response);
+            var d = JSON.parse(response);
+            var dd = d.detailsarray;
+            console.log(dd);
+            for (var ctr = 0; ctr < dd.length; ctr++){
+              console.log(ctr);
+              var table = document.getElementById("MDtable");
+              var row = table.insertRow(table.size);
+              var cell1 = row.insertCell(0);
+              // var cell2 = row.insertCell(1);
+              cell1.innerHTML = dd[ctr].DETAILS;
+              // cell2.innerHTML = 'button';
+            }
+            
+          }
+        });
+  });
+
+  // manage details add details
+  $('#MD_add_detail').click(function() {
+    var ids = ['#MDadd'];
+    var isEmpty = true;
+
+    for(var i = 0; i < ids.length; ++i ){
+      if($.trim($(ids[i]).val()).length == 0){
+        isEmpty = false;
+      }
+    }
+
+    if(isEmpty) {
+      $.ajax({
+          url: '../ajax/hdo-insert-offense-details.php',
+          type: 'POST',
+          data: {
+              offenseid: $('#MD_offense').val(),
+              details: $('#MDadd').val()
+          },
+          success: function(response) {
+            alert('success add details');
             location.reload();
           }
       });

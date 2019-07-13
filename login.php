@@ -108,7 +108,7 @@
       </a>
     </div>
     <?php
-      $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$email.'"';
+      $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID FROM USERS WHERE EMAIL="'.$email.'"';
       $result=mysqli_query($dbc,$query);
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
 
@@ -118,7 +118,6 @@
           $_SESSION['first_name']=$row['FIRST_NAME'];
           $_SESSION['last_name']=$row['LAST_NAME'];
           $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
-          $_SESSION['phone']=$row['PHONE'];
           $_SESSION['user_email']=$email;
 
           if($_SESSION['user_type_id']==1){
