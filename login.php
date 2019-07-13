@@ -108,7 +108,7 @@
       </a>
     </div>
     <?php
-      $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID, PHONE FROM USERS WHERE EMAIL="'.$email.'"';
+      $query='SELECT USER_ID, FIRST_NAME, LAST_NAME, USER_TYPE_ID FROM USERS WHERE EMAIL="'.$email.'"';
       $result=mysqli_query($dbc,$query);
       $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
 
