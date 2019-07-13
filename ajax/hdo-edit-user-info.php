@@ -4,7 +4,7 @@
 
   $query=
   " UPDATE USERS
-    SET FIRST_NAME = '{$_POST['firstname']}', LAST_NAME = '{$_POST['lastname']}', EMAIL = '{$_POST['email']}', USER_TYPE_ID = '{$_POST['usertype']}', PHONE = '{$_POST['number']}', OFFICE_ID = '{$_POST['office']}'
+    SET FIRST_NAME = '{$_POST['firstname']}', LAST_NAME = '{$_POST['lastname']}', EMAIL = '{$_POST['email']}', USER_TYPE_ID = '{$_POST['usertype']}', OFFICE_ID = '{$_POST['office']}'
     WHERE USER_ID = '{$_POST['idnum']}'
   ";
 
