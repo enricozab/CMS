@@ -271,8 +271,14 @@ if (!isset($_GET['cn']))
                                     $IDORes = $dbc->query($idoQuery);
                                     while($ido = $IDORes->fetch_assoc()){
                                       $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
+                                      $idoNumber = $ido['user_id'];
+                                      $workloadQuery = $dbc->query("SELECT COUNT(c.case_id) FROM cases c 
+                                                        LEFT JOIN users u ON c.handled_by_id=u.user_id
+                                                          WHERE u.user_id=" .$idoNumber. "
+                                                          && c.status_id!=3;");
+                                      $workload = $workloadQuery->fetch_row();
                                       echo 
-                                        '<option value="' .$idoName. '">' . $idoName . '</option>';
+                                        '<option value="' .$idoName. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
                                     }
                                   ?>
                               </select>
