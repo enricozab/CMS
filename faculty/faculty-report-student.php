@@ -204,13 +204,13 @@
       //   '</div>');
       // });
 
-      $(document).on('click', '#removestudent', function(){
-        $(this).closest("#newstudent").remove();
-      });
+      // $(document).on('click', '#removestudent', function(){
+      //   $(this).closest("#newstudent").remove();
+      // });
 
-      $(document).on('click', '#removeevidence', function(){
-        $(this).closest("#newsevidence").remove();
-      });
+      // $(document).on('click', '#removeevidence', function(){
+      //   $(this).closest("#newsevidence").remove();
+      // });
 
       $('form').submit(function(e) {
         e.preventDefault();
