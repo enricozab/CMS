@@ -59,22 +59,6 @@
     </script>
     <script src="../gdrive/upload.js"></script>
 
-    <?php
-      $query = 'SELECT FILENAME
-                  FROM REF_CHECK_OUT
-                 WHERE CHECKEDOUT = 1';
-      $result = mysqli_query($dbc, $query);
-
-      if(!$result){
-        echo mysqli_error($dbc);
-      }
-      else{
-        while($row = $result->fetch_row()) {
-          $rows[] = $row;
-        }
-      }
-    ?>
-
 </head>
 
 <body>
