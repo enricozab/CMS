@@ -33,6 +33,13 @@
     echo mysqli_error($dbc);
   }
 
+  $query2="INSERT INTO CASE_AUDIT (CASE_ID,ACTION_DONE_ID,ACTION_DONE_BY_ID)
+              VALUES ({$_POST['caseID']},16,'{$_SESSION['user_id']}')";
+  $result2=mysqli_query($dbc,$query2);
+  if(!$result2){
+    echo mysqli_error($dbc);
+  }
+
   $remdesc = [];
   foreach ($rem as $remark) {
     $query="SELECT DIRECTOR_REMARKS FROM REF_DIRECTOR_REMARKS WHERE DIRECTOR_REMARKS_ID = $remark";

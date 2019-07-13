@@ -33,6 +33,11 @@
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <!-- FOR SEARCHABLE DROP-->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../extra-css/chosen.jquery.min.js"></script>
+    <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -59,8 +64,20 @@
                   <form id="form">
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
-                        <label>Student ID No. <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 11530022)</span> <span style="font-weight:normal; color:red;">*</span></label>
-                        <input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>
+                        <label>Student ID No. <span style="font-weight:normal; color:red;">*</span></label>
+                        <select id="studentID" class="chosen-select">
+                          <option value="" disabled selected>Select student</option>
+                          <?php
+                            $studentQ= "SELECT * FROM cms.users u WHERE u.user_type_id = 1;";
+                            $studentRes = $dbc->query($studentQ);
+                            while($student = $studentRes->fetch_assoc()){
+                              $studentName = $student['first_name'].' '.$student['last_name'];
+                              echo 
+                                '<option value='.$student['user_id'].'>'.$student['user_id'].' : '.$studentName.'</option>';
+                            }
+                          ?>
+                        </select>
+                        <!--<input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>-->
                       </div>
                     </div>
                     <!-- <div id="appendstudent">
@@ -85,7 +102,7 @@
                       <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" placeholder="Enter Summary of the Incident"></textarea>
                     </div>
                     <br><br><br>
-                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" id="2factor" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
                 </div>
@@ -99,9 +116,6 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -138,6 +152,8 @@
     $(document).ready(function() {
       loadNotif();
 
+      $('.chosen-select').chosen({width: '100%'});
+
       function loadNotif () {
           $.ajax({
             url: '../ajax/faculty-notif-cases.php',
@@ -165,11 +181,11 @@
         $("#date").focus();
       });
 
-      $('.studentID').keypress(validateNumber);
+      // $('.studentID').keypress(validateNumber);
 
-      $(document).on('keypress', '.studentID', function(){
-        $(this).keypress(validateNumber);
-      });
+      // $(document).on('keypress', '.studentID', function(){
+      //   $(this).keypress(validateNumber);
+      // });
 
       function validateNumber(event) {
         var key = window.event ? event.keyCode : event.which;
@@ -182,18 +198,11 @@
         }
       };
 
-      $("#appendstudent").click(function() {
-        $("#studentinvolved").append('<div class="form-group input-group" style="width: 300px;" id="newstudent"><input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>'+
-        '<span id="removestudent" style="cursor: pointer;" class="input-group-addon"><span style="color:red;" class="fa fa-times"></span></span>'+
-        '</div>');
-      });
-
-      $("#appendevidence").click(function(){
-        $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
-        '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
-        '<input type="file">'+
-        '</div>');
-      });
+      // $("#appendstudent").click(function() {
+      //   $("#studentinvolved").append('<div class="form-group input-group" style="width: 300px;" id="newstudent"><input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>'+
+      //   '<span id="removestudent" style="cursor: pointer;" class="input-group-addon"><span style="color:red;" class="fa fa-times"></span></span>'+
+      //   '</div>');
+      // });
 
       $(document).on('click', '#removestudent', function(){
         $(this).closest("#newstudent").remove();
@@ -209,45 +218,44 @@
 
       var studentlist = [];
 
-      $('#submit').click(function() {
-        var ids = ['#location','#date','textarea'];
+      $('#2factor').click(function() {
+        var ids = ['#studentID','#location','#date','textarea'];
         var isEmpty = true;
-
-        $('.studentID').each(function(i, obj){
-          if(obj.value.length == 0){
-            isEmpty = false;
-          }
-          studentlist.push(parseInt(obj.value));
-        });
 
         for(var i = 0; i < ids.length; ++i ) {
           if($.trim($(ids[i]).val()).length == 0) {
             isEmpty = false;
           }
         }
-
-        <?php  include 'faculty-form-queries.php'  ?>
         if(isEmpty) {
-          $.ajax({
-              url: '../ajax/faculty-insert-incident-report.php',
-              type: 'POST',
-              data: {
-                  studentID: studentlist,
-                  location: $('#location').val(),
-                  date: $('#date').val(),
-                  details: $('#details').val()
-              },
-              success: function(msg) {
-                  generate();
-                  //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
-                  $("#sendModal").modal("show");
-              }
-          });
+          $("#twoFactorModal").modal("show");
         }
         else {
           $("#alertModal").modal("show");
         }
       });
+
+      $('#modalYes').click(function() {
+        $.ajax({
+          url: '../ajax/faculty-insert-incident-report.php',
+          type: 'POST',
+          data: {
+              studentID: $('#studentID').val(),
+              location: $('#location').val(),
+              date: $('#date').val(),
+              details: $('#details').val()
+          },
+          success: function(msg) {
+              generate();
+              //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
+              $("#sendModal").modal("show");
+          }
+        });
+      });
+
+      // $('#submit').click(function() {
+        
+      // });
 
       <?php  include 'faculty-form-queries.php'  ?>
 
@@ -256,113 +264,111 @@
           JSZipUtils.getBinaryContent(url,callback);
       }
       function generate(){
-        for(var i = 0; i < studentlist.length; ++i ) {
-          $.ajax({
-              url: '../ajax/get-student-info.php',
-              type: 'POST',
-              data: {
-                  studentID: studentlist[i]
-              },
-              success: function(response) {
-                var stud = JSON.parse(response);
-                loadFile("../templates/template-incident-report.docx",function(error,content){
-                    if (error) { throw error };
-                    var zip = new JSZip(content);
-                    var doc=new window.docxtemplater().loadZip(zip);
-                    // date
-                    var today = new Date();
-                    var dd = today.getDate();
-                    var mm = today.getMonth() + 1; //January is 0!
-                    var yyyy = today.getFullYear();
-                    if (dd < 10) {
-                      dd = '0' + dd;
-                    }
-                    if (mm < 10) {
-                      mm = '0' + mm;
-                    }
-                    var today = dd + '/' + mm + '/' + yyyy;
+        $.ajax({
+          url: '../ajax/get-student-info.php',
+          type: 'POST',
+          data: {
+              studentID: $('#studentID').val()
+          },
+          success: function(response) {
+            var stud = JSON.parse(response);
+            loadFile("../templates/template-incident-report.docx",function(error,content){
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc=new window.docxtemplater().loadZip(zip);
+                // date
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                  dd = '0' + dd;
+                }
+                if (mm < 10) {
+                  mm = '0' + mm;
+                }
+                var today = dd + '/' + mm + '/' + yyyy;
 
-                    var formNumber;
-                    <?php
-                    if ($formres['MAX'] != null) { ?>
-                      formNumber = <?php echo $formres['MAX'] ?>;
-                    <?php }
-                    else { ?>
-                      formNumber = 1;
-                    <?php }
-                    ?>
+                var formNumber;
+                <?php
+                if ($formres['MAX'] != null) { ?>
+                  formNumber = <?php echo $formres['MAX'] ?>;
+                <?php }
+                else { ?>
+                  formNumber = 1;
+                <?php }
+                ?>
 
-                    titleForm = "Incident Report Form #" + formNumber + ".docx";
-                    doc.setData({
-                      <?php
-                      if ($formres['MAX'] != null) { ?>
-                        formNum: <?php echo $formres['MAX'] ?>,
-                      <?php }
-                      else { ?>
-                        formNum: 1,
-                      <?php }
-                      ?>
-                      date: today,
-                      first: "<?php echo $nameres['first_name'] ?>",
-                      last: "<?php echo $nameres['last_name'] ?>",
-                      details: "<?php echo $officerow['description'] ?>",
-                      college: stud.description,
-                      studentF: stud.first_name,
-                      studentL: stud.last_name,
-                      idn: stud.user_id,
-                      degree: stud.degree,
-                      loc: document.getElementById("location").value,
-                      dateIncident: document.getElementById("date").value,
-                      summary: document.getElementById("details").value
-                    });
-                    try {
-                        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                        doc.render();
-                    }
-                    catch (error) {
-                        var e = {
-                            message: error.message,
-                            name: error.name,
-                            stack: error.stack,
-                            properties: error.properties,
-                        }
-                        console.log(JSON.stringify({error: e}));
-                        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                        throw error;
-                    }
-                    var out=doc.getZip().generate({
-                        type:"blob",
-                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    }); //Output the document using Data-URI
-                    saveAs(out,titleForm,  {
-                      locURL: "/localhost/CMS/ajax"
-                    });
+                titleForm = "Incident Report Form #" + formNumber + ".docx";
+                doc.setData({
+                  <?php
+                  if ($formres['MAX'] != null) { ?>
+                    formNum: <?php echo $formres['MAX'] ?>,
+                  <?php }
+                  else { ?>
+                    formNum: 1,
+                  <?php }
+                  ?>
+                  date: today,
+                  first: "<?php echo $nameres['first_name'] ?>",
+                  last: "<?php echo $nameres['last_name'] ?>",
+                  details: "<?php echo $officerow['description'] ?>",
+                  college: stud.description,
+                  studentF: stud.first_name,
+                  studentL: stud.last_name,
+                  idn: stud.user_id,
+                  degree: stud.degree,
+                  loc: document.getElementById("location").value,
+                  dateIncident: document.getElementById("date").value,
+                  summary: document.getElementById("details").value
                 });
-              }
-          });
-        }
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render();
+                }
+                catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out,titleForm,  {
+                  locURL: "/localhost/CMS/ajax"
+                });
+            });
+          }
+        });
       }
 
-      $('#sentOK').on('click', function() {
-          $.ajax({
-                url: '../ajax/users-hellosign.php',
-                type: 'POST',
-                data: {
-                    formT: titleForm,
-                    title : "Incident Report",
-                    subject : "Incident Report Document Signature",
-                    message : "Please do sign this document and forward it, along with your pieces of evidence, to hdo.cms@gmail.com",
-                    fname : "<?php echo $nameres['first_name'] ?>",
-                    lname : "<?php echo $nameres['last_name'] ?>",
-                    email : "<?php echo $nameres['email'] ?>",
-                    filename : $('#inputfile').val()
-                },
-                success: function(response) {
-                  location.reload();
-              }
-          });
+      // $('#sentOK').on('click', function() {
+      //     $.ajax({
+      //           url: '../ajax/users-hellosign.php',
+      //           type: 'POST',
+      //           data: {
+      //               formT: titleForm,
+      //               title : "Incident Report",
+      //               subject : "Incident Report Document Signature",
+      //               message : "Please do sign this document and forward it, along with your pieces of evidence, to hdo.cms@gmail.com",
+      //               fname : "<?php echo $nameres['first_name'] ?>",
+      //               lname : "<?php echo $nameres['last_name'] ?>",
+      //               email : "<?php echo $nameres['email'] ?>",
+      //               filename : $('#inputfile').val()
+      //           },
+      //           success: function(response) {
+      //             location.reload();
+      //         }
+      //     });
 
-      });
+      // });
 
       $('.modal').attr('data-backdrop', "static");
       $('.modal').attr('data-keyboard', false);
@@ -397,13 +403,34 @@
             <h4 class="modal-title" id="myModalLabel"><b>Instructions</b></h4>
           </div>
           <div class="modal-body">
-            <p id="message">Incident Report has been submitted and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p>
+            <p id="message">Incident Report has been downloaded successfully! 
+            <!-- <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p> -->
+            <br><br> <b>Next Step: </b> Send the Incident Report together with your pieces of evidence to <b>hdo.cms@gmail.com</b> for processing. </p>
           </div>
           <div class="modal-footer">
             <button type="submit" id = "sentOK" class="btn btn-default" data-dismiss="modal">Ok</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Two Factor Authentication Modal -->
+		<div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
+          </div>
+				</div>
+			</div>
     </div>
 
 </body>

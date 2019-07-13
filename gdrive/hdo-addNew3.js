@@ -446,12 +446,12 @@ function getCaseFiles() {
 
     request.execute(function (resp) {
        if (!resp.error) {
-           DRIVE_FILES = resp.items;
+           	DRIVE_FILES = resp.items;
 
-					 if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE") {
-						 $("#waitModal").modal("hide");
-						 $('#driveModal').modal("show");
-					 }
+			if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE") {
+				$("#waitModal").modal("hide");
+				$('#driveModal').modal("show");
+			}
        }
        else{
             showErrorMessage("Error: " + resp.error.message);

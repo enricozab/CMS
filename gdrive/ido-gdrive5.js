@@ -22,7 +22,7 @@ var TOTAL_FILES = [];
 var FILE_COUNTER = 0;
 var FOLDER_ARRAY = [];
 var ASCENDING_ARRAY= [];
-var cancel = 0, userName, page, folderData;
+var cancel = 0, userName, page, folderData, user_id, fileArray = [], check = 1;
 
 /******************** AUTHENTICATION ********************/
 
@@ -32,8 +32,13 @@ function handleClientLoad() {
  gapi.load('client:auth2', initClient);
 }
 
-function handle(data) {
-  handleClientLoad();
+function handle(data, user_id, fileArray) {
+  this.user_id = user_id;
+  this.fileArray = fileArray;
+
+  console.log("USER: " + user_id);
+  console.log("ARRAY: " + fileArray.length);
+  
 	/**************** NEW ****************/
 	console.log("DATA: " + data);
 	data = data.split("/");
@@ -51,7 +56,9 @@ function handle(data) {
 	console.log("COLLEGE: " + college);
 	console.log("IDN: " + idn);
 	console.log("GRADUATING: " + graduating);
-	console.log("CASENUM: " + caseNum);
+  console.log("CASENUM: " + caseNum);
+  
+  handleClientLoad();
 }
 
 //authorize apps
@@ -90,7 +97,18 @@ function updateSigninStatus(isSignedIn) {
 function handleAuthClick(event) {
   console.log("handleAuthClick");
   handleClientLoad();
-  gapi.auth2.getAuthInstance().signIn();
+//   gapi.auth2.getAuthInstance().signIn();
+}
+
+function handleAuth(user_id, fileArray) {
+  this.user_id = user_id;
+  this.fileArray = fileArray;
+
+  console.log("USER: " + user_id);
+  console.log("ARRAY: " + fileArray.length);
+
+  console.log("handleAuth");
+  handleClientLoad();
 }
 
 function handleSignoutClick(event) {
@@ -186,11 +204,11 @@ $(function(){
        FOLDER_ARRAY = [];
        $("#span-navigation").html("");
        $(this).toggleClass("flash");
-   if($(this).attr("class").indexOf("flash") >= 0){
-     $("#span-sharemode").html("ON");
-   }else{
-     $("#span-sharemode").html("OFF");
-   }
+      if($(this).attr("class").indexOf("flash") >= 0){
+        $("#span-sharemode").html("ON");
+      }else{
+        $("#span-sharemode").html("OFF");
+      }
        showLoading();
        showStatus("Loading Google Drive files...");
        getDriveFiles();
@@ -358,16 +376,58 @@ function getFiles() {
    // });
 }
 
+// function getCMSFiles()  {
+//     console.log("getCMSFiles");
+//     console.log("HIIII");
+//     var query = "";
+//     if (ifShowSharedFiles()) {
+//       $(".button-opt").hide();
+//     }
+//     else{
+//       $(".button-opt").show();
+//     }
+
+//     query = "trashed=false and '" + FOLDER_ID + "' in parents";
+//     var request = gapi.client.drive.files.list({
+//         'maxResults': NO_OF_FILES,
+//         'q': query
+//     });
+
+//     request.execute(function (resp) {
+//        if (!resp.error) {
+
+//           if (page == "VIEW-FOLDER") {
+//             collegeFiles();
+//             DRIVE_FILES = resp.items;
+//             buildFiles();
+//             console.log("view-folder ifffff");
+//           }
+
+//           else {
+//             showUserInfo();
+//             DRIVE_FILES = resp.items;
+//             buildFiles();
+
+//              console.log("else");
+//           }
+//        }
+//        else{
+//             showErrorMessage("Error: " + resp.error.message);
+//        }
+//     });
+// }
 function getCMSFiles()  {
-    console.log("getCMSFiles");
-    var query = "";
     if (ifShowSharedFiles()) {
-      $(".button-opt").hide();
+        $(".button-opt").hide();
     }
     else{
-      $(".button-opt").show();
-      query = "trashed=false and '" + FOLDER_ID + "' in parents";
+        $(".button-opt").show();
     }
+
+    console.log("getCMSFiles");
+
+    var query = "";
+    query = "trashed=false and '" + FOLDER_ID + "' in parents";
 
     var request = gapi.client.drive.files.list({
         'maxResults': NO_OF_FILES,
@@ -376,16 +436,8 @@ function getCMSFiles()  {
 
     request.execute(function (resp) {
        if (!resp.error) {
-
-          if (page == "VIEW-FOLDER") {
-            collegeFiles();
-          }
-
-          else {
-            showUserInfo();
-            DRIVE_FILES = resp.items;
-            buildFiles();
-          }
+           DRIVE_FILES = resp.items;
+           collegeFiles();
        }
        else{
             showErrorMessage("Error: " + resp.error.message);
@@ -400,7 +452,8 @@ function collegeFiles() {
       DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
 
       if (DRIVE_FILES[i].fileType == "folder") {
-				console.log("DIS FOLDER: "  + college);
+        console.log("DIS FOLDER: "  + college);
+        console.log("yes " + DRIVE_FILES[i].title);
           if (DRIVE_FILES[i].title == college) {
               console.log("college");
 
@@ -658,9 +711,30 @@ function buildFiles(){
 
      //button actions
      fText += "<div class='button-box'>";
-       if (DRIVE_FILES[i].fileType != "folder") {
-         fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
-       }
+     fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
+    //    if (DRIVE_FILES[i].fileType != "folder") {
+
+    //     console.log(fileArray.length);
+
+    //     if(fileArray.length != 0) {
+    //       for(x = 0; x < fileArray.length; x++) {
+    //         console.log(fileArray[x] + " " + DRIVE_FILES[i].title);
+    //         if(fileArray[x] == DRIVE_FILES[i].title) {
+    //           check = 0;
+    //         }
+    //       }
+
+    //       if(check == 1) {
+    //         fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
+    //       }
+    //     }
+
+    //     else {
+    //       fText += "<div class='button-download' title='Download' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
+    //     }
+
+    //     check = 1;
+    //    }
 
        if (DRIVE_FILES[i].textContentURL != null && DRIVE_FILES[i].textContentURL.length > 0) {
          fText += "<div class='button-text' title='Get Text' data-id='" + DRIVE_FILES[i].id + "' data-file-counter='" + i + "'></div>";
@@ -717,21 +791,38 @@ function initDriveButtons(){
 
  //Initiate the download button
  $(".button-download").unbind("click");
-   $(".button-download").click(function () {
-       showLoading();
-       showStatus("Downloading file in progress...");
-       FILE_COUNTER = $(this).attr("data-file-counter");
-       setTimeout(function () {
-     //If there is a text version, we get this version instead.
-     if(DRIVE_FILES[FILE_COUNTER].webContentLink == null){
-       window.open(DRIVE_FILES[FILE_COUNTER]['exportLinks']['text/plain']);
-     }else{
-       window.open(DRIVE_FILES[FILE_COUNTER].webContentLink);
-     }
-     hideLoading();
-     hideStatus();
-   }, 1000);
-   });
+  $(".button-download").click(function () {
+      showLoading();
+      showStatus("Downloading file in progress...");
+      FILE_COUNTER = $(this).attr("data-file-counter");
+
+    //   $.ajax({
+    //       url: '../ajax/gdrive-checkout.php',
+    //       type: 'POST',
+    //       data: {
+    //           file_name: DRIVE_FILES[FILE_COUNTER].title,
+    //           user: user_id
+    //       },
+    //       success: function(msg) {
+    //         console.log("SUCCESS " + msg);
+    //       }
+    //   });
+      
+      console.log("FILE NAME: " + DRIVE_FILES[FILE_COUNTER].title);
+      
+      setTimeout(function () {
+    //If there is a text version, we get this version instead.
+    if(DRIVE_FILES[FILE_COUNTER].webContentLink == null){
+      window.open(DRIVE_FILES[FILE_COUNTER]['exportLinks']['text/plain']);
+    }else{
+      window.open(DRIVE_FILES[FILE_COUNTER].webContentLink);
+    }
+
+
+    hideLoading();
+    hideStatus();
+  }, 1000);
+  });
 
  $(".button-info").unbind("click");
    $(".button-info").click(function () {

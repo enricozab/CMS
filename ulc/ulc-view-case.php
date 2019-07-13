@@ -299,9 +299,102 @@ if (!isset($_GET['cn']))
                     <?php }
                     ?>
 
+                    <br><br>
+
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <button type="submit" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Referral Form</button>
+
+                        <?php
+                          $signq = 'SELECT      *
+                                    FROM        CASE_REFERRAL_FORMS CRF
+                                    WHERE       CRF.CASE_ID = "'.$_GET['cn'].'"';
+                          $signr = mysqli_query($dbc,$signq);
+                          if(!$signr){
+                            echo mysqli_error($dbc);
+                          }
+                          else{
+                            $signrow=mysqli_fetch_array($signr,MYSQLI_ASSOC);
+                          }
+                        ?>
+
+                        <?php
+                          if($signrow['if_signed'] && !$signrow['if_uploaded'] && ($row['REMARKS_ID'] == 14 || $row['REMARKS_ID'] == 16)) { ?>
+                            <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')">Upload Discipline Case Referral Form</button>
+                        <?php }
+                        ?>
+
+                        <?php
+                          if((($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 15) && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
+                            <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
+                        <?php }
+                          if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 3){ ?>
+                            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Formal Hearing</button>
+                        <?php }
+                          if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 2){ ?>
+                            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Summary Proceeding</button>
+                        <?php }
+                          if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 1){ ?>
+                            <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for UPCC</button>
+                        <?php }
+                          if($row['REMARKS_ID'] == 12){ ?>
+                            <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse to the President</button>
+                        <?php }
+                        ?>
+                      </div>
+                    </div>
                 </div>
 
+                <?php include "../ajax/user-case-audit.php" ?>
+
                 <div class="col-lg-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <b style = "font-size: 17px;">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#caseHistory" style="color: black;">Case History</a>
+                        </b>
+                      </div>
+                      <!-- /.panel-heading -->
+                      <div id="caseHistory" class="panel-collapse collapse">
+                        <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
+                          <?php
+                            if ($caseAuditRes->num_rows > 0) { ?>
+                              <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                  <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Action Done</th>
+                                        <th>By Whom</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <?php
+                                      while($caseAuditRow = mysqli_fetch_array($caseAuditRes,MYSQLI_ASSOC)) {
+                                        echo "<tr>
+                                                <td>{$caseAuditRow['date']}</td>
+                                                <td>{$caseAuditRow['action_done']}</td>
+                                                <td>{$caseAuditRow['action_done_by']}</td>
+                                              </tr>";
+                                      }
+                                    ?>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <!-- /.table-responsive -->
+                          <?php }
+                            else {
+                              echo "No case history";
+                            }
+                          ?>
+                          <br>
+                        </div>
+                        <!-- /.panel-body -->
+                      </div>
+                      <!-- </div> -->
+                    </div>
+                    <!-- /.panel -->
+                    
                     <div class="panel panel-default">
                       <div class="panel-heading">
                           <b style = "font-size: 17px;">Related Cases</b>
@@ -342,59 +435,9 @@ if (!isset($_GET['cn']))
                     </div>
                 </div>
               </div>
-			<br><br>
-      <div class="row">
-        <div class="col-lg-6">
+			
 
-        </div>
-      </div>
-
-      <br><br><br><br>
-
-      <div class="row">
-        <div class="col-sm-6">
-          <button type="submit" id="sign" class="btn btn-success" data-dismiss="modal">Sign Discipline Case Referral Form</button>
-
-          <?php
-            $signq = 'SELECT      *
-                      FROM        CASE_REFERRAL_FORMS CRF
-                      WHERE       CRF.CASE_ID = "'.$_GET['cn'].'"';
-            $signr = mysqli_query($dbc,$signq);
-            if(!$signr){
-              echo mysqli_error($dbc);
-            }
-            else{
-              $signrow=mysqli_fetch_array($signr,MYSQLI_ASSOC);
-            }
-          ?>
-
-          <?php
-            if($signrow['if_signed'] && !$signrow['if_uploaded'] && ($row['REMARKS_ID'] == 14 || $row['REMARKS_ID'] == 16)) { ?>
-              <button type="submit" id = "uploading" name="submit" class="btn btn-success" onclick="handle('<?php echo $passData;?>')">Upload Discipline Case Referral Form</button>
-          <?php }
-           ?>
-
-          <?php
-            if((($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 15) && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
-              <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
-          <?php }
-            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 3){ ?>
-              <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Formal Hearing</button>
-          <?php }
-            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 2){ ?>
-              <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Summary Proceeding</button>
-          <?php }
-            if($row['REMARKS_ID'] == 8 and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 1){ ?>
-              <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for UPCC</button>
-          <?php }
-            if($row['REMARKS_ID'] == 12){ ?>
-              <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse to the President</button>
-          <?php }
-          ?>
-        </div>
-      </div>
-
-      <br><br><br>
+      <br><br><br><br><br>
 
       <?php
       //Removes 'new' badge and reduces notif's count
@@ -631,10 +674,10 @@ if (!isset($_GET['cn']))
       location.reload();
     });
 
-    // $('.btnViewEvidence').click(function() {
-    //   <?php //$_SESSION['pass'] = $passCase; ?>
-    //   location.href='ulc-gdrive-case.php';
-    // });
+    $('.btnViewEvidence').click(function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='ulc-gdrive-case.php';
+    });
 
     $('input[name="verdict"]').click(function(){
       if ($(this).val() == "Guilty") {
