@@ -118,7 +118,6 @@
           $_SESSION['first_name']=$row['FIRST_NAME'];
           $_SESSION['last_name']=$row['LAST_NAME'];
           $_SESSION['user_type_id']=$row['USER_TYPE_ID'];
-          $_SESSION['phone']=$row['PHONE'];
           $_SESSION['user_email']=$email;
 
           if($_SESSION['user_type_id']==1){
