@@ -22,7 +22,7 @@ var TOTAL_FILES = [];
 var FILE_COUNTER = 0;
 var FOLDER_ARRAY = [];
 var ASCENDING_ARRAY= [];
-var cancel = 0, userName, page, folderData, user_id, fileArray = [], check = 1;
+var cancel = 0, userName, page, folderData, user_id, check = 1;
 
 /******************** AUTHENTICATION ********************/
 
@@ -32,12 +32,10 @@ function handleClientLoad() {
  gapi.load('client:auth2', initClient);
 }
 
-function handle(data, user_id, fileArray) {
+function handle(data, user_id) {
   this.user_id = user_id;
-  this.fileArray = fileArray;
 
   console.log("USER: " + user_id);
-  console.log("ARRAY: " + fileArray.length);
   
 	/**************** NEW ****************/
 	console.log("DATA: " + data);
@@ -100,12 +98,10 @@ function handleAuthClick(event) {
 //   gapi.auth2.getAuthInstance().signIn();
 }
 
-function handleAuth(user_id, fileArray) {
+function handleAuth(user_id) {
   this.user_id = user_id;
-  this.fileArray = fileArray;
 
   console.log("USER: " + user_id);
-  console.log("ARRAY: " + fileArray.length);
 
   console.log("handleAuth");
   handleClientLoad();
