@@ -5,14 +5,14 @@
   if ($_POST['checker'] == '1') {
     $query=
     " UPDATE USERS
-      SET IS_ACTIVE = 1
+      SET ACTIVE = 1
       WHERE USER_ID = '{$_POST['idnum']}'
     ";
   }
   else if ($_POST['checker'] == '2') {
     $query=
     " UPDATE USERS
-      SET IS_ACTIVE = 2
+      SET ACTIVE = 2
       WHERE USER_ID = '{$_POST['idnum']}'
     ";
   }

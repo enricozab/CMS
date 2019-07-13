@@ -1,4 +1,4 @@
-<?php include 'hdo.php' ?>
+<?php include 'sdfod.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,12 +61,12 @@
 
     <div id="wrapper">
 
-        <?php include 'hdo-sidebar.php';?>
+        <?php include 'sdfod-sidebar.php';?>
 
         <div id="page-wrapper">
           <div class="row">
               <div class="col-lg-8">
-                  <h3 class="page-header">User Management</h3>
+                  <h3 class="page-header">System Management</h3>
               </div>
               <!-- /.col-lg-12 -->
           </div>
@@ -257,13 +257,35 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Manage User</a>
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Manage User Activity</a>
                                         </h4>
                                     </div>
                                     <div id="collapseThree" class="panel-collapse collapse">
                                         <div class="panel-body">
 
                                             <div class="form-group" style = "width: 400px;">
+                                            
+                                            <label>Active Users </label>
+                                              <?php
+                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 1';
+                                                $result=mysqli_query($dbc,$query);
+                                                if(!$result){
+                                                  echo mysqli_error($dbc);
+                                                }
+                                              ?>
+                                            <select id='MU_selecteduserdisable' class="chosen-select">
+                                             <option value="" disabled selected>Select User</option>
+                                              <?php
+                                                while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
+                                                {
+                                                  echo "<option value=\"{$row['USER_ID']}\">{$row['USER_INFO']}</option>";
+                                                }
+                                              ?>
+                                            </select>
+                                            <br><br>
+                                            <button id="disableuser" type="submit" class="btn btn-default">Disable User</button>
+                                            <br><br>
+                                            
                                             <label>Disabled Users</label>
                                               <?php
                                                 $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 2';
@@ -284,28 +306,7 @@
 
                                             <br><br>   
                                             <button id="activateuser" type="submit" class="btn btn-default">Activate User</button>
-                                            <br><br>
-
-                                            <label>Active Users </label>
-                                              <?php
-                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 1';
-                                                $result=mysqli_query($dbc,$query);
-                                                if(!$result){
-                                                  echo mysqli_error($dbc);
-                                                }
-                                              ?>
-                                            <select id='MU_selecteduserdisable' class="chosen-select">
-                                             <option value="" disabled selected>Select User</option>
-                                              <?php
-                                                while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
-                                                {
-                                                  echo "<option value=\"{$row['USER_ID']}\">{$row['USER_INFO']}</option>";
-                                                }
-                                              ?>
-                                            </select>
-                                            <br><br>
-                                            <button id="disableuser" type="submit" class="btn btn-default">Disable User</button>
-                                            <br>
+                                            
                                           </div>
                                     </div>
                                 </div>
@@ -356,7 +357,7 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">Manage Details</a>
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">Manage Offense Descriptions</a>
                                         </h4>
                                     </div> 
                                     <div id="collapseFive" class="panel-collapse collapse">
@@ -387,7 +388,7 @@
                                             <table width="100%" class="table table-striped table-bordered table-hover" id="MDtable">
                                               <thead>
                                                 <tr>
-                                                  <th>Details</th>
+                                                  <th>Offense Descriptions</th>
                                                   <!-- <th></th> -->
                                                 </tr>
                                               </thead>
@@ -395,7 +396,7 @@
                                               </tbody>
                                             </table>
                                             
-                                            <label>Add Details:</label>
+                                            <label>Add Offense Description:</label>
                                             <input id='MDadd' type='text' class="form-control">
                                             <br>
                                             <button id="MD_add_detail" type="submit" class="btn btn-default">Add Detail</button>
@@ -455,7 +456,7 @@
 
     function loadNotif () {
         $.ajax({
-          url: '../ajax/hdo-notif-incident-reports.php',
+          url: '../ajax/sdfod-notif-incident-reports.php',
           type: 'POST',
           data: {
           },
@@ -470,7 +471,7 @@
         });
 
         $.ajax({
-          url: '../ajax/hdo-notif-cases.php',
+          url: '../ajax/sdfod-notif-cases.php',
           type: 'POST',
           data: {
           },
@@ -504,7 +505,7 @@
 
     if(isEmpty) {
       $.ajax({
-          url: '../ajax/hdo-insert-created-user.php',
+          url: '../ajax/sdfod-insert-created-user.php',
           type: 'POST',
           data: {
               idnum: $('#CU_idnum').val(),
@@ -539,7 +540,7 @@
         }
 
         $.ajax({
-          url: 'hdo-get-details-edit-user.php',
+          url: 'sdfod-get-details-edit-user.php',
           type: 'POST',
           data: {
             userid: $('#EU_selecteduser').val()
@@ -572,7 +573,7 @@
 
     if(isEmpty) {
       $.ajax({
-          url: '../ajax/hdo-edit-user-info.php',
+          url: '../ajax/sdfod-edit-user-info.php',
           type: 'POST',
           data: {
               idnum: $('#EU_selecteduser').val(),
@@ -609,7 +610,7 @@
 
     if(isEmpty) {
       $.ajax({
-          url: '../ajax/hdo-update-user-active.php',
+          url: '../ajax/sdfod-update-user-active.php',
           type: 'POST',
           data: {
               idnum: $('#MU_selecteduseractive').val(),
@@ -642,7 +643,7 @@
 
     if(isEmpty) {
       $.ajax({
-          url: '../ajax/hdo-update-user-active.php',
+          url: '../ajax/sdfod-update-user-active.php',
           type: 'POST',
           data: {
               idnum: $('#MU_selecteduserdisable').val(),
@@ -674,7 +675,7 @@
 
     if(isEmpty) {
       $.ajax({
-          url: '../ajax/hdo-update-inactivity-rules.php',
+          url: '../ajax/sdfod-update-inactivity-rules.php',
           type: 'POST',
           data: {
               minor: $('#MR_minor').val(),
@@ -705,7 +706,7 @@
         }
 
         $.ajax({
-          url: 'hdo-get-details-manage-details.php',
+          url: 'sdfod-get-details-manage-details.php',
           type: 'POST',
           data: {
             offense: $('#MD_offense').val()
@@ -742,7 +743,7 @@
 
     if(isEmpty) {
       $.ajax({
-          url: '../ajax/hdo-insert-offense-details.php',
+          url: '../ajax/sdfod-insert-offense-details.php',
           type: 'POST',
           data: {
               offenseid: $('#MD_offense').val(),
