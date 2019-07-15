@@ -428,35 +428,35 @@
       migratedTable();
 
       function migratedTable() {
-        // $.ajax({
-        //   url: '../ajax/hdo-get-cases-migrated.php',
-        //   type: 'POST',
-        //   data: {
-        //   },
-        //   success: function(response) {
-        //     $('#case-notif-table').html(response);
-        //     if(temCurPage != null) {
-        //       $('#case-notif-table').DataTable().page(0).draw('page');
-        //       temCurPage = null;
-        //     }
-        //     var curPage = $('#case-notif-table').DataTable().page();
-        //     var curSearch = $('#case-notif-table').DataTable().search();
-        //     if($('div.dataTables_filter input').is(':focus')) {
-        //       var focus = true;
-        //     }
-        //     $('#case-notif-table').DataTable({
-        //       'destroy': true,
-        //       'aaSorting': []
-        //     });
-        //     $('#case-notif-table').DataTable().page(curPage).draw('page');
-        //     $('#case-notif-table').DataTable().search(curSearch).draw('page');
-        //     if(focus) {
-        //       $('div.dataTables_filter input').focus();
-        //     }
-        //   }
-        // });
+        $.ajax({
+          url: '../ajax/hdo-get-cases-migrated.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            $('#case-notif-table').html(response);
+            if(temCurPage != null) {
+              $('#case-notif-table').DataTable().page(0).draw('page');
+              temCurPage = null;
+            }
+            var curPage = $('#case-notif-table').DataTable().page();
+            var curSearch = $('#case-notif-table').DataTable().search();
+            if($('div.dataTables_filter input').is(':focus')) {
+              var focus = true;
+            }
+            $('#case-notif-table').DataTable({
+              'destroy': true,
+              'aaSorting': []
+            });
+            $('#case-notif-table').DataTable().page(curPage).draw('page');
+            $('#case-notif-table').DataTable().search(curSearch).draw('page');
+            if(focus) {
+              $('div.dataTables_filter input').focus();
+            }
+          }
+        });
 
-        // timeTable = setTimeout(migratedTable, 5000);
+        timeTable = setTimeout(migratedTable, 5000);
       }
     });
   });

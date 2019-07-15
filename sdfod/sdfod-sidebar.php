@@ -69,6 +69,9 @@
 				<li>
 					<a href="sdfod-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
+				<li>
+					<a href="sdfod-system-management.php"><i class="fa fa-users fa-fw"></i> System Management</a>
+				</li>
 			</ul>
 		</div>
 		<!-- /.sidebar-collapse -->
