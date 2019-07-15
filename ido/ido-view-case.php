@@ -58,7 +58,7 @@ if (!isset($_GET['cn']))
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/ido-evi-upload2.js" type="text/javascript"></script>
+    <script src="../gdrive/ido-evi-upload3.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>

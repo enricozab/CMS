@@ -51,7 +51,8 @@ function handle(data) {
 	console.log("GRADUATING: " + graduating);
 	console.log("CASENUM: " + caseNum);
 
-	gapi.auth2.getAuthInstance().signIn();
+    // gapi.auth2.getAuthInstance().signIn();
+    // handleClientLoad();
 }
 
 function handleClientLoad() {
@@ -435,15 +436,7 @@ function getCaseFiles() {
 				$("#uploading").hide();
 
 				$('#first').hide();
-				$('#uploadPanel').show();
-		// document.getElementById("uploadPanel").style.display = "block";
-			}
-
-			if(page == "ULC-VIEW-CASE") {
-				$('#uploadBtnP').show();
-				$('#upAuthen').show();
-				$('#logBtnP').hide();
-				$('#authen').hide();
+                $('#uploadPanel').show();
 			}
        }
        else{
@@ -622,25 +615,13 @@ function btnSubmit(data) {
         getCaseFiles();
         finalDesc = type + ", " + offense;
 	    submitThis();
-	}
-
-	console.log("DATA BTNSUMIT: " + data);
-
-	data = data.split("|");
-
-	page = data[3];
-
-	if (page == "IDO-VIEW") {
-		btnNum = data[0];
-		offense = data[1];
-		type = data[2];
-	}
-
-	else  {
+    }
+    
+    else  {
 		offense = data[0];
 		type = data[1];
 	}
-
+    
 	finalDesc = type + ", " + offense;
 	submitThis();
 }
@@ -746,8 +727,8 @@ $(function(){
 									console.log("SUCCESS");
 									$("#waitModal").modal("hide");
 									$("#uploadModal").modal("show");
-									$("#successModal").modal("show");
-								}
+                                    $("#successModal").modal("show");
+                                }
 
 								$("#successModal").modal("show");
 			        }

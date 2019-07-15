@@ -58,7 +58,7 @@ if (!isset($_GET['cn']))
     <!-- GDRIVE -->
 
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/ah2.js" type="text/javascript"></script>
+    <script src="../gdrive/ulc-gdrive.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js">
     </script>
     <script src="../gdrive/upload.js"></script>
@@ -670,29 +670,7 @@ if (!isset($_GET['cn']))
         JSZipUtils.getBinaryContent(url,callback);
     }
 
-    $('#modalOK').click(function() {
-      location.reload();
-    });
-
-    $('.btnViewEvidence').click(function() {
-      <?php $_SESSION['pass'] = $passCase; ?>
-      location.href='ulc-gdrive-case.php';
-    });
-
-    $('input[name="verdict"]').click(function(){
-      if ($(this).val() == "Guilty") {
-        $('#finpenaltyarea').show();
-      }
-      else {
-        $('#finpenaltyarea').hide();
-      }
-    });
-
-    if("<?php echo $row['VERDICT']; ?>" == "Guilty") {
-      $('#finpenaltyarea').show();
-    }
-
-    $('#submit').click(function() {
+    function submitCase() {
       var ids = [];
       var remarks = [];
       $.each($("input[name='otherpens']:checked"), function(){
@@ -812,6 +790,43 @@ if (!isset($_GET['cn']))
       else {
         $("#alertModal").modal("show");
       }
+    }
+
+    $('#modalOK').click(function() {
+      location.reload();
+    }); 
+
+    $('#successOK').click(function() {
+      submitCase();
+    });
+
+    $('.btnViewEvidence').click(function() {
+      <?php $_SESSION['pass'] = $passCase; ?>
+      location.href='ulc-gdrive-case.php';
+    });
+
+    $('input[name="verdict"]').click(function(){
+      if ($(this).val() == "Guilty") {
+        $('#finpenaltyarea').show();
+      }
+      else {
+        $('#finpenaltyarea').hide();
+      }
+    });
+
+    if("<?php echo $row['VERDICT']; ?>" == "Guilty") {
+      $('#finpenaltyarea').show();
+    }
+
+    $('#submit').click(function() {
+      $("#decisionModal").modal('show');
+    });
+
+    $('#decisionUpload').click(function() {
+      $("#waitModal").modal("show");
+
+      var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>" + "|";
+      btnSubmit(data);
     });
 
     $('#endorse').click(function() {
@@ -904,6 +919,10 @@ if (!isset($_GET['cn']))
     $('#fileUpload').click(function() {
       var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
       btnSubmit(data);
+    });
+
+    $('#logBtn').on('click',function() {
+      $("#waitModal").modal("show");
     });
 
     $('#successModal').on('click', function() {
@@ -1076,10 +1095,10 @@ if (!isset($_GET['cn']))
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+          <h4 class="modal-title" id="myModalLabel"><b>Upload Decision Letter</b></h4>
         </div>
         <div class="modal-body">
-          <p> You have authenticated the use of Google Drive. You can now upload your evidences.</p>
+          <p> Please upload the letter to authenticate the case decision. </p>
         </div>
         <div class="modal-footer">
           <input type="file" id="fUpload" class="hide"/>
@@ -1120,6 +1139,27 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal fade" id="decisionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Upload Decision Letter</b></h4>
+        </div>
+        <div class="modal-body">
+        <p> Please authenticate the use of Google Drive. </p>
+        </div>
+        <div class="modal-footer">
+          <input type="file" id="fUpload" class="hide"/>
+          
+          <button type="button" id = "logBtn" class="btn btn-primary" data-dismiss="modal" onclick="handle('<?php echo $passData;?>')">Log In</button>
+
         </div>
       </div>
     </div>
