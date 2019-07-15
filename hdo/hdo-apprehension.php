@@ -144,7 +144,6 @@
                             }
                           ?>
                         </select>
-
                     </div>
                     <div class="form-group" style = "width: 300px;">
                       <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>

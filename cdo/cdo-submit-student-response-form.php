@@ -1,4 +1,4 @@
-<?php include 'faculty.php' ?>
+<?php include 'cdo.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,8 +53,8 @@
     <?php $message = NULL ?>
     <div id="wrapper">
 
-        <?php include 'faculty-sidebar.php'; ?>
-		<?php include 'faculty-form-queries.php'; ?>
+    <?php include 'cdo-sidebar.php'; ?>
+		<?php include 'cdo-form-queries.php'; ?>
 
         <div id="page-wrapper">
             <div class="row">
@@ -62,6 +62,21 @@
 
                 <div class="col-lg-12">
                   <form id="form">
+                    <div class="form-group" style = "width: 300px;">
+                      <label>Complainant <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="complainantID" class="chosen-select">
+                          <option value="" disabled selected>Select complainant</option>
+                          <?php
+                            $complainantQ= "SELECT * FROM cms.users WHERE user_type_id != 1 ORDER BY 5;";
+                            $complaiantRes = $dbc->query($complainantQ);
+                            while($complainant = $complaiantRes->fetch_assoc()){
+                              $complainantName = $complainant['first_name'] . ' ' . $complainant['last_name'];
+                              echo 
+                                '<option value=' .$complainant['user_id']. '>' . $complainant['user_id'] . ' : ' . $complainantName . '</option>';
+                            }
+                          ?>
+                        </select>
+                    </div>
                     <div id="studentinvolved">
                       <div class="form-group" style = "width: 300px;">
                         <label>Student ID No. <span style="font-weight:normal; color:red;">*</span></label>
@@ -156,7 +171,7 @@
 
       function loadNotif () {
           $.ajax({
-            url: '../ajax/faculty-notif-cases.php',
+            url: '../ajax/cdo-notif-cases.php',
             type: 'POST',
             data: {
             },
@@ -219,7 +234,7 @@
       var studentlist = [];
 
       $('#2factor').click(function() {
-        var ids = ['#studentID','#location','#date','textarea'];
+        var ids = ['#complainantID','#studentID','#location','#date','textarea'];
         var isEmpty = true;
 
         for(var i = 0; i < ids.length; ++i ) {
@@ -237,13 +252,14 @@
 
       $('#modalYes').click(function() {
         $.ajax({
-          url: '../ajax/faculty-insert-incident-report.php',
+          url: '../ajax/cdo-insert-incident-report.php',
           type: 'POST',
           data: {
-              studentID: $('#studentID').val(),
-              location: $('#location').val(),
-              date: $('#date').val(),
-              details: $('#details').val()
+            complainantID: $('#complainantID').val(),
+            studentID: $('#studentID').val(),
+            location: $('#location').val(),
+            date: $('#date').val(),
+            details: $('#details').val()
           },
           success: function(msg) {
               generate();
@@ -257,7 +273,7 @@
         
       // });
 
-      <?php  include 'faculty-form-queries.php'  ?>
+      <?php  include 'cdo-form-queries.php'  ?>
 
       //generate incident report form (doc file)
       function loadFile(url,callback){
@@ -409,7 +425,7 @@
           <div class="modal-body">
             <p id="message">Incident Report has been downloaded successfully! 
             <!-- <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with your pieces of evidence, to <b>hdo.cms@gmail.com</b> for processing. </p> -->
-            <br><br> <b>Next Step: </b> Send the Incident Report together with your pieces of evidence to <b>hdo.cms@gmail.com</b> for processing. </p>
+            <br><br> <b>Next Step: </b> Send the Incident Report together with the pieces of evidence to <b>hdo.cms@gmail.com</b> for processing. </p>
           </div>
           <div class="modal-footer">
             <button type="submit" id = "sentOK" class="btn btn-default" data-dismiss="modal">Ok</button>
