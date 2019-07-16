@@ -516,7 +516,7 @@
               office: $('#CU_office').val()
           },
           success: function(response) {
-            alert('success create');
+            alert('Create User Succsseful');
             location.reload();
           }
       });
@@ -524,8 +524,6 @@
 
     else {
       alert("Fill out all fields");
-      // $("#done").hide();
-      // $("#alertModal").modal("show");
     }
   });
 
@@ -546,8 +544,6 @@
             userid: $('#EU_selecteduser').val()
           },
           success: function(response) {
-            // alert(response);
-            console.log(response);
             var details = JSON.parse(response);
             $('#EU_firstname').val(details.FIRST_NAME);
             $('#EU_lastname').val(details.LAST_NAME);
@@ -584,7 +580,7 @@
               office: $('#EU_office').val()
           },
           success: function(response) {
-            alert('success edit');
+            alert('Edit User Successful');
             location.reload();
           }
       });
@@ -592,8 +588,6 @@
 
     else {
       alert("Fill out all fields");
-      // $("#done").hide();
-      // $("#alertModal").modal("show");
     }
   });
 
@@ -617,7 +611,7 @@
               checker: '1'
           },
           success: function(response) {
-            alert('success manage');
+            alert('Manage User Successful');
             location.reload();
           }
       });
@@ -625,8 +619,6 @@
 
     else {
       alert("Fill out all fields");
-      // $("#done").hide();
-      // $("#alertModal").modal("show");
     }
   });
 
@@ -650,7 +642,7 @@
               checker: '2'
           },
           success: function(response) {
-            alert('success manage');
+            alert('Manage User Successful');
             location.reload();
           }
       });
@@ -658,8 +650,6 @@
 
     else {
       alert("Fill out all fields");
-      // $("#done").hide();
-      // $("#alertModal").modal("show");
     }
   });
 
@@ -682,7 +672,7 @@
               major: $('#MR_major').val()
           },
           success: function(response) {
-            alert('success manage rules');
+            alert('Manage Rules Successful');
             location.reload();
           }
       });
@@ -690,8 +680,6 @@
 
     else {
       alert("Fill out all fields");
-      // $("#done").hide();
-      // $("#alertModal").modal("show");
     }
   });
 
@@ -721,11 +709,8 @@
               var table = document.getElementById("MDtable");
               var row = table.insertRow(table.size);
               var cell1 = row.insertCell(0);
-              // var cell2 = row.insertCell(1);
               cell1.innerHTML = dd[ctr].DETAILS;
-              // cell2.innerHTML = 'button';
             }
-            
           }
         });
   });
@@ -750,7 +735,7 @@
               details: $('#MDadd').val()
           },
           success: function(response) {
-            alert('success add details');
+            alert('Add Offense Description Successful');
             location.reload();
           }
       });
@@ -758,8 +743,6 @@
 
     else {
       alert("Fill out all fields");
-      // $("#done").hide();
-      // $("#alertModal").modal("show");
     }
   });
 

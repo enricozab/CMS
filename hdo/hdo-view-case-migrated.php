@@ -261,39 +261,10 @@ if (!isset($_GET['cn']))
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
-  // SELECT TRIGGER
-  $(document).ready(function() {
 
+  $(document).ready(function() {
     $('.chosen-select').chosen({width: '100%'});
 
-    $("#dropdown").change(function() {
-      //alert("Selection: " + $("option:selected", this).val() + ":" + $("option:selected", this).text());
-      var selectedRemarks = $("option:selected", this).val();
-
-      $.ajax({
-              url: '../ajax/hdo-update-remarks.php',
-              type: 'POST',
-              data: {
-    					remarks : selectedRemarks,
-              case_id : <?php echo $_GET['cn'] ?>
-                    },
-              success: function(response) {
-                console.log("Selected Remarks: " + selectedRemarks);
-                console.log("Case ID: " + <?php echo $_GET['cn'] ?>);
-              }
-    		});
-        
-        var dropdown = document.getElementById("dropdown");
-        for(i = dropdown.options.length - 1 ; i >= 0 ; i--)
-        {
-          if (i > selectedRemarks-1)
-            dropdown.remove(i);
-        }
-    });
-  });
-  // END OF SELECT TRIGGER
-
-  $(document).ready(function() {
     loadNotif();
 
     function loadNotif () {
@@ -330,16 +301,6 @@ if (!isset($_GET['cn']))
         setTimeout(loadNotif, 5000);
     };
 
-    $('#evidence').on('click',function() {
-      <?php $_SESSION['pass'] = $passCase; ?>
-      location.href='hdo-gdrive-case.php';
-    });
-
-    $('#btnViewEvidence').on('click',function() {
-      <?php $_SESSION['pass'] = $passCase; ?>
-      location.href='hdo-gdrive-case.php';
-    });
-
     $('#proceeding_decision').on('change',function() {
     var pd=$('#proceeding_decision').val();
         if(pd == 3) {
@@ -362,7 +323,7 @@ if (!isset($_GET['cn']))
 
     if(isEmpty) {
       $.ajax({
-          url: '../ajax/sdfod-update-case.php',
+          url: '../ajax/hdo-update-migrated-case.php',
           type: 'POST',
           data: {
               caseid: <?php echo $_GET['cn'] ?>,
@@ -372,25 +333,18 @@ if (!isset($_GET['cn']))
               verdict: $('#verdict').val()
           },
           success: function(response) {
-            alert('success update');
-            location.reload();
+            alert('Update successful');
+            window.location.replace("http://localhost/CMS/hdo/hdo-home.php");
           }
       });
     }
 
     else {
       alert("Fill out all fields");
-      // $("#done").hide();
-      // $("#alertModal").modal("show");
     }
   });
 
 });
-
-  <?php
-    if($row2['PROCEEDING'] != null ){ ?>
-      $("#proceedingarea").show();
-  <?php } ?>
   </script>
 
 </body>
