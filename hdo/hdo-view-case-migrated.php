@@ -173,7 +173,23 @@ if (!isset($_GET['cn']))
                 </select>
               </div>
 
-              <div class="form-group" style = "width: 400px;">
+              <div id="NOP" class="form-group" style = "width: 400px;" hidden>
+                <label>Nature of Proceeding <span style="font-weight:normal; color:red;">*</span></label>
+                <input id="NOPinput" type='text' class="form-control" readonly>
+              </div>
+
+              <div id="verdict_div" class="form-group" style = "width: 400px;" hidden>
+                <div class="form-group" style = "width: 400px;">
+                  <label>Verdict <span style="font-weight:normal; color:red;">*</span> </label>
+                  <select id="verdict" class="chosen-select">
+                    <option value="null" disabled selected>Select Verdict</option>
+                    <option value="Guilty">Guilty</option>
+                    <option value="Not Guilty">Not Guilty</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="penalty" class="form-group" style = "width: 400px;" hidden>
                 <label>Penalty <span style="font-weight:normal; color:red;">*</span> </label>
                   <?php
                     $query='SELECT PENALTY_ID, PENALTY_DESC FROM ref_penalties';
@@ -187,41 +203,10 @@ if (!isset($_GET['cn']))
                   <?php
                     while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
                     {
-                      echo "<option value=\"{$row['PENALTY_ID']}\">{$row['PENALTY_DESC']}</option>";
+                      echo "<option value=\"{$row['PENALTY_DESC']}\">{$row['PENALTY_DESC']}</option>";
                     }
                   ?>
                 </select>
-              </div>
-
-              <div class="form-group" style = "width: 400px;">
-                <label>Proceeding Decision <span style="font-weight:normal; color:red;">*</span> </label>
-                  <?php
-                    $query='SELECT CASE_PROCEEDINGS_ID, PROCEEDINGS_DESC FROM ref_case_proceedings';
-                    $result=mysqli_query($dbc,$query);
-                    if(!$result){
-                      echo mysqli_error($dbc);
-                    }
-                  ?>
-                <select id="proceeding_decision" class="chosen-select">
-                  <option value="" disabled selected>Select Proceeding Decision</option>
-                  <?php
-                    while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
-                    {
-                      echo "<option value=\"{$row['CASE_PROCEEDINGS_ID']}\">{$row['PROCEEDINGS_DESC']}</option>";
-                    }
-                  ?>
-                </select>
-              </div>
-
-              <div id="verdict_div" class="form-group" style = "width: 400px;" hidden>
-                <div class="form-group" style = "width: 400px;">
-                  <label>Verdict <span style="font-weight:normal; color:red;">*</span> </label>
-                  <select id="verdict" class="chosen-select">
-                    <option value="null" disabled selected>Select Verdict</option>
-                    <option value="Guilty">Guilty</option>
-                    <option value="Not Guilty">Not Guilty</option>
-                  </select>
-                </div>
               </div>
 
               <div class="form-group" style = "padding-left: 330px;">
@@ -301,18 +286,33 @@ if (!isset($_GET['cn']))
         setTimeout(loadNotif, 5000);
     };
 
-    $('#proceeding_decision').on('change',function() {
-    var pd=$('#proceeding_decision').val();
-        if(pd == 3) {
-          $('#verdict_div').show();
-        }
-        else {
-          $('#verdict_div').hide();
-        }
+    $('#admission_type').on('change',function() {
+      var pd=$('#admission_type').val();
+      if(pd == 1){
+        $('#NOP').show();
+        $('#penalty').show();
+        $('#NOPinput').val('UPCC');
+      }
+      if(pd == 2){
+        $('#NOP').show();
+        $('#penalty').show();
+        $('#NOPinput').val('Summary Proceedings');
+      }
+      if(pd == 3) {
+        $('#NOP').show();
+        $('#penalty').show();
+        $('#NOPinput').val('Formal Hearing');
+        $('#verdict_div').show();
+      }
+      else {
+        $('#verdict_div').hide();
+      }
+      console.log(pd);
+        // console.log($('NOP').val());
   });
 
   $('#update_case').click(function() {
-    var ids = ['#admission_type','#penalty_type','#proceeding_decision'];
+    var ids = ['#admission_type','#penalty_type'];
     var isEmpty = true;
 
     for(var i = 0; i < ids.length; ++i ){
@@ -329,7 +329,6 @@ if (!isset($_GET['cn']))
               caseid: <?php echo $_GET['cn'] ?>,
               admission: $('#admission_type').val(),
               penalty: $('#penalty_type').val(),
-              pdesc: $('#proceeding_decision').val(),
               verdict: $('#verdict').val()
           },
           success: function(response) {
