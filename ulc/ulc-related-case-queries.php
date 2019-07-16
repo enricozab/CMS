@@ -48,6 +48,7 @@
           LEFT JOIN   DIRECTOR_REMARKS_LIST DRL ON C.CASE_ID = DRL.CASE_ID
           WHERE       (RO.TYPE="MAJOR" OR DRL.DIRECTOR_REMARKS_ID=3) AND S.DESCRIPTION = "Closed"
                       AND C.OFFENSE_ID = "'.$row['OFFENSE_ID'].'" AND C.CASE_ID != "'.$_GET['cn'].'"
+                      AND (C.IF_NEW != 2 AND C.IF_NEW != 3)
           ORDER BY	  C.DATE_FILED DESC';
   $relatedres=mysqli_query($dbc,$relatedq);
   if(!$relatedres){

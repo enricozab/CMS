@@ -1430,10 +1430,11 @@ if (!isset($_GET['cn']))
 
           <!-- <p> Description: <textarea class="form-control" rows="3" id = "desc_input"></textarea></p><br> -->
 
-          <button type="submit" id = "six" name="evidence" class="btn btn-primary ">Upload</button>
+          <!-- <button type="submit" id = "six" name="evidence" class="btn btn-primary ">Upload</button> -->
         </div>
         <div class="modal-footer">
           <!-- <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button> -->
+          <button type="submit" id = "six" name="evidence" class="btn btn-primary" data-dismiss="modal">Upload</button>
         </div>
       </div>
     </div>

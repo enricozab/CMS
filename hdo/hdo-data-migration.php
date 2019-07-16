@@ -60,37 +60,34 @@
 
         <div id="page-wrapper">
           <div class="row">
-              <div class="col-lg-8">
-                  <h3 class="page-header">Data Migration</h3>
-              </div>
-              <!-- /.col-lg-12 -->
+            <div class="col-lg-8">
+                <h3 class="page-header">Data Migration</h3>
+            </div>
           </div>
-
           <div class="row">
-            <div class="col-lg-12">
-              <!-- insert code here -->
-                          <form class="form-horizontal" action="hdo-data-migration-function.php" method="post" name="upload_excel" enctype="multipart/form-data">
-                              <fieldset>
-                                  <!-- File Button -->
-                                  <div class="form-group">
-                                      <label for="filebutton">Select File</label>
-                                      <div>
-                                          <input type="file" name="file" id="file" class="input-large">
-                                      </div>
-                                  </div>
-                                  <!-- Button -->
-                                  <div class="form-group">
-                                      <label for="singlebutton">Import data</label>
-                                      <div>
-                                          <button type="submit" id="submit" name="Import" class="btn btn-primary button-loading" data-loading-text="Loading...">Import</button>
-                                      </div>
-                                  </div>
-                              </fieldset>
-                          </form>
+            <div class="col-lg-6">
+              <form action="hdo-data-migration-function.php" method="post" name="upload_excel" enctype="multipart/form-data">
+                <fieldset>
+                  <!-- File Button -->
+                  <div class="form-group">
+                      <label for="filebutton">Select File</label>
+                      <div>
+                          <input type="file" name="file" id="file" class="input-large">
                       </div>
-                      <?php
-                        // get_all_records();
-                      ?>
+                  </div>
+                  <br>
+                  <!-- Button -->
+                  <div class="form-group">
+                      <div>
+                          <button type="submit" id="submit" name="Import" class="btn btn-primary button-loading" data-loading-text="Loading..." disabled>Import</button>
+                      </div>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+            <?php
+              // get_all_records();
+            ?>
           </div>
         </div>
         <!-- /#page-wrapper -->
@@ -161,6 +158,12 @@
 
         setTimeout(loadNotif, 5000);
     };
+
+    $('input:file').change(function() {
+      if ($(this).val()) {
+        $('#submit').attr('disabled',false); 
+      }
+    });
 
     $("#login").hide();
     $("#create").hide();

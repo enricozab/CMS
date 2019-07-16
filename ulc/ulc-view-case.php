@@ -883,6 +883,12 @@ if (!isset($_GET['cn']))
             if($('#vcv').text() == "") {
               $('#va').hide();
             }
+            if($('#vcprd').text() == "") {
+              $('#prda').hide();
+            }
+            if($('#vcnd').text() == "") {
+              $('#nda').hide();
+            }
             $('#vcprd').text(vc.PROCEEDING_DECISION);
 
             var pass = vc.OFFICE_DESCRIPTION+"/"+vc.DEGREE+"/"+vc.LEVEL+"/"+vc.REPORTED_STUDENT_ID+"/VIEW-FOLDER/"+vc.CASE_ID;
@@ -1045,7 +1051,7 @@ if (!isset($_GET['cn']))
             <label>Summary of the Incident</label>
             <textarea id="vcd" name="details" class="form-control" readonly></textarea>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="nda">
             <label>Nature of Proceeding</label>
             <textarea id="vcnd" name="details" class="form-control" readonly></textarea>
           </div>
@@ -1053,7 +1059,7 @@ if (!isset($_GET['cn']))
             <label>Verdict</label>
             <textarea id="vcv" name="details" class="form-control" readonly></textarea>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="prda">
             <label>Penalty</label>
             <textarea id="vcprd" name="details" class="form-control" readonly></textarea>
           </div>

@@ -174,7 +174,7 @@ if (!isset($_GET['cn']))
               </div>
 
               <div class="form-group" style = "width: 400px;">
-                <label>Penalty Type <span style="font-weight:normal; color:red;">*</span> </label>
+                <label>Penalty <span style="font-weight:normal; color:red;">*</span> </label>
                   <?php
                     $query='SELECT PENALTY_ID, PENALTY_DESC FROM ref_penalties';
                     $result=mysqli_query($dbc,$query);
