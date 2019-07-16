@@ -46,6 +46,7 @@
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 
           WHERE       C.HANDLED_BY_ID = '.$_SESSION['user_id'].'
+                      AND IDO.HANDLE = 1
           ORDER BY	  C.LAST_UPDATE DESC';
   $result=mysqli_query($dbc,$query);
   if(!$result){

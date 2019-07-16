@@ -45,7 +45,10 @@
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 
-          WHERE       C.HANDLED_BY_ID = '.$_SESSION['user_id'].' AND RS.IF_GRADUATING = 1 AND (S.DESCRIPTION = "OPENED" OR S.DESCRIPTION = "ON GOING")
+          WHERE       C.HANDLED_BY_ID = '.$_SESSION['user_id'].'
+                      AND RS.IF_GRADUATING = 1 
+                      AND (S.DESCRIPTION = "OPENED" OR S.DESCRIPTION = "ON GOING")
+                      AND IDO.HANDLE = 1
           ORDER BY	  RO.TYPE ASC, C.DATE_FILED ASC';
   $result=mysqli_query($dbc,$query);
   if(!$result){

@@ -233,7 +233,7 @@ if (!isset($_GET['cn']))
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="panel-body">
                           <div class="form-group">
-                              <select class="form-control" id="dropdown">
+                              <select id="rerouteCase" class="form-control">
                                 <option value="" disabled selected>Select a Stage</option>
                                 <?php
                                   $getRemarks_id = $dbc->query("SELECT remarks_id FROM cms.cases WHERE case_id = " .$_GET['cn']. " LIMIT 1");
@@ -261,7 +261,7 @@ if (!isset($_GET['cn']))
                     <div id="collapseTwo" class="panel-collapse collapse">
                         <div class="panel-body">
                           <div class="form-group">
-                              <select class="form-control">
+                              <select id="reassignIDO" class="form-control">
                                   <option value="" disabled selected>Select an IDO</option>
                                   <?php
                                     $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
@@ -269,16 +269,23 @@ if (!isset($_GET['cn']))
                                     while($ido = $IDORes->fetch_assoc()){
                                       $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
                                       $idoNumber = $ido['user_id'];
-                                      $workloadQuery = $dbc->query("SELECT COUNT(c.case_id) FROM cases c 
-                                                        LEFT JOIN users u ON c.handled_by_id=u.user_id
-                                                          WHERE u.user_id=" .$idoNumber. "
-                                                          && c.status_id!=3;");
+                                      $workloadQuery = $dbc->query("SELECT COUNT(c.case_id) 
+                                                                    FROM cases c 
+                                                                    LEFT JOIN users u ON c.handled_by_id=u.user_id
+                                                                    LEFT JOIN ido_cases ic ON c.handled_by_id=ic.user_id
+                                                                    WHERE u.user_id = ".$idoNumber."
+                                                                          && (c.status_id != 3 && c.status_id != 4)
+                                                                          && ic.handle = 1");
                                       $workload = $workloadQuery->fetch_row();
-                                      echo 
-                                        '<option value="' .$idoName. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
+                                      if ($idoNumber != $row2['HANDLED_BY_ID']) {
+                                        echo 
+                                          '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
+                                      }
                                     }
                                   ?>
                               </select>
+                              <br>
+                              <button type="submit" id="btnReassign" name="btnReassign" class="btn btn-primary" style="float: right;">Re-assign</button>
                           </div>    
                         </div>
                     </div>
@@ -322,39 +329,8 @@ if (!isset($_GET['cn']))
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
-    <!-- Trigger on Select JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
-  // SELECT TRIGGER
-  $(document).ready(function() {
-    $("#dropdown").change(function() {
-      //alert("Selection: " + $("option:selected", this).val() + ":" + $("option:selected", this).text());
-      var selectedRemarks = $("option:selected", this).val();
-
-      $.ajax({
-              url: '../ajax/hdo-update-remarks.php',
-              type: 'POST',
-              data: {
-    					remarks : selectedRemarks,
-              case_id : <?php echo $_GET['cn'] ?>
-                    },
-              success: function(response) {
-                console.log("Selected Remarks: " + selectedRemarks);
-                console.log("Case ID: " + <?php echo $_GET['cn'] ?>);
-              }
-    		});
-        
-        var dropdown = document.getElementById("dropdown");
-        for(i = dropdown.options.length - 1 ; i >= 0 ; i--)
-        {
-          if (i > selectedRemarks-1)
-            dropdown.remove(i);
-        }
-    });
-  });
-  // END OF SELECT TRIGGER
 
   $(document).ready(function() {
     loadNotif();
@@ -402,6 +378,65 @@ if (!isset($_GET['cn']))
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='hdo-gdrive-case.php';
     });
+
+    var action = "";
+
+    $("#rerouteCase").change(function() {
+      //alert("Selection: " + $("option:selected", this).val() + ":" + $("option:selected", this).text());
+      var selectedRemarks = $("option:selected", this).val();
+
+      $.ajax({
+              url: '../ajax/hdo-update-remarks.php',
+              type: 'POST',
+              data: {
+    					remarks : selectedRemarks,
+              case_id : <?php echo $_GET['cn'] ?>
+                    },
+              success: function(response) {
+                console.log("Selected Remarks: " + selectedRemarks);
+                console.log("Case ID: " + <?php echo $_GET['cn'] ?>);
+              }
+    		});
+        
+        var rerouteCase = document.getElementById("rerouteCase");
+        for(i = rerouteCase.options.length - 1 ; i >= 0 ; i--)
+        {
+          if (i > selectedRemarks-1)
+            rerouteCase.remove(i);
+        }
+    });
+
+    $("#btnReassign").click(function() {
+      if($.trim($("#reassignIDO").val()).length > 0) {
+        action = "reassign";
+        $("#twoFactorModal").modal('show');
+      }
+      else {
+        $("#alertModal").modal('show');
+      }
+    });
+
+    $("#modalYes").click(function(){
+      if (action == "reroute") {
+        
+      } else if (action == "reassign") {
+        $.ajax({
+          url: '../ajax/hdo-update-ido.php',
+          type: 'POST',
+          data: {
+            case_id: <?php echo $_GET['cn'] ?>,
+            ido_id: $("#reassignIDO").val(),
+          },
+          success: function(response) {
+            $("#message2").text("Cases has been reassigned.");
+            $("#alertModal2").modal('show');
+          }
+        });
+      }
+    });
+
+    $('.modal').attr('data-backdrop', "static");
+    $('.modal').attr('data-keyboard', false);
   });
 
   <?php
@@ -409,6 +444,61 @@ if (!isset($_GET['cn']))
       $("#proceedingarea").show();
   <?php } ?>
   </script>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel1"><b>Alleged Case</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two Factor Authentication Modal -->
+  <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
+				</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="alertModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel1"><b>Alleged Case</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message2"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="modalOK" class="btn btn-default" onclick="location.reload()" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 

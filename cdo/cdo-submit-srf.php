@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Report Student</title>
+    <title>CMS - Encode Student Response Form</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -58,63 +58,38 @@
 
         <div id="page-wrapper">
             <div class="row">
-                <h3 class="page-header">Incident Report</h3>
-
+              <div class="col-lg-8">
+                <h3 class="page-header">Encode Student Response Form</h3>
+              </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-12">
                   <form id="form">
                     <div class="form-group" style = "width: 300px;">
-                      <label>Complainant <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="complainantID" class="chosen-select">
-                          <option value="" disabled selected>Select complainant</option>
-                          <?php
-                            $complainantQ= "SELECT * FROM cms.users WHERE user_type_id != 1 ORDER BY 5;";
-                            $complaiantRes = $dbc->query($complainantQ);
-                            while($complainant = $complaiantRes->fetch_assoc()){
-                              $complainantName = $complainant['first_name'] . ' ' . $complainant['last_name'];
-                              echo 
-                                '<option value=' .$complainant['user_id']. '>' . $complainant['user_id'] . ' : ' . $complainantName . '</option>';
-                            }
-                          ?>
-                        </select>
-                    </div>
-                    <div id="studentinvolved">
-                      <div class="form-group" style = "width: 300px;">
-                        <label>Student ID No. <span style="font-weight:normal; color:red;">*</span></label>
-                        <select id="studentID" class="chosen-select">
-                          <option value="" disabled selected>Select student</option>
-                          <?php
-                            $studentQ= "SELECT * FROM cms.users u WHERE u.user_type_id = 1;";
-                            $studentRes = $dbc->query($studentQ);
-                            while($student = $studentRes->fetch_assoc()){
-                              $studentName = $student['first_name'].' '.$student['last_name'];
-                              echo 
-                                '<option value='.$student['user_id'].'>'.$student['user_id'].' : '.$studentName.'</option>';
-                            }
-                          ?>
-                        </select>
-                        <!--<input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>-->
-                      </div>
-                    </div>
-                    <!-- <div id="appendstudent">
-                      <span class="fa fa-plus" style="color: #337ab7;">&nbsp; <a style="color: #337ab7; font-family: Arial;">Add another student</a></span>
-                    </div>
-                    <br> -->
-                    <div class="form-group" style = "width: 300px;">
-                      <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="location" name="location" class="form-control" placeholder="Enter Location"/>
+                      <label>School Year <span style="font-weight:normal; font-style:italic; font-size:12px;">(Ex. 2018-2019)</span></label><span style="font-weight:normal; color:red;"> *</span>
+                      <input id="schoolyr" pattern="[0-9]{4}-[0-9]{4}" minlength="9" maxlength="9" class="schoolyear form-control"/>
                     </div>
                     <div class="form-group" style = "width: 300px;">
-                      <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <div class='input-group date'>
-                        <input  id='date' type='text' class="form-control" placeholder="Enter Date"/>
-                        <span id='cal' style="cursor: pointer;" class="input-group-addon">
-                            <span class="fa fa-calendar"></span>
-                        </span>
-                      </div>
+                      <label>Term Number</label><span style="font-weight:normal; color:red;"> *</span>
+                      <select id="term" class="form-control">
+                        <option value="" disabled selected>Select Term</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                      </select>
                     </div>
-                    <div class="form-group">
-                      <label>Please provide a summary of the incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <textarea id="details" style="width:600px;" name="details" class="form-control" rows="5" placeholder="Enter Summary of the Incident"></textarea>
+                    <div class="form-group" style = "width: 300px;">
+                      <label>Type of Admission</label><span style="font-weight:normal; color:red;"> *</span>
+                      <select id="admissionType" class="form-control">
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="1">Full Admission (Apology/Admission)</option>
+                        <option value="2">Partial Admission (Apology/Explanation)</option>
+                        <option value="3">Full Denial (Explanation)</option>
+                      </select>
+                    </div>
+                    <div id="letterarea" class="form-group" hidden>
+                      <label id="letterlabel"></label> <span style="font-weight:normal; color:red;"> *</span><br>
+                      <textarea id="letter" style="width:600px;" name="details" class="form-control" rows="10"></textarea>
                     </div>
                     <br><br><br>
                     <button type="submit" id="2factor" name="submit" class="btn btn-primary">Submit</button>
@@ -190,51 +165,26 @@
 
       var titleForm;
 
-      $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, maxTime: 0, step: 1});
-
-      $('#cal').on('click', function() {
-        $("#date").focus();
-      });
-
-      // $('.studentID').keypress(validateNumber);
-
-      // $(document).on('keypress', '.studentID', function(){
-      //   $(this).keypress(validateNumber);
-      // });
-
-      function validateNumber(event) {
-        var key = window.event ? event.keyCode : event.which;
-        if (event.keyCode === 8 || event.keyCode === 46) {
-            return true;
-        } else if ( key < 48 || key > 57 ) {
-            return false;
-        } else {
-            return true;
+      $('#admissionType').on('change', function() {
+        var option = $("option:selected", this);
+        if(this.value == "1") {
+          $('#letterlabel').text("Please write an apology and admission letter");
         }
-      };
-
-      // $("#appendstudent").click(function() {
-      //   $("#studentinvolved").append('<div class="form-group input-group" style="width: 300px;" id="newstudent"><input id="studentID" name="studentID" pattern="[0-9]{8}" minlength="8" maxlength="8" class="studentID form-control" placeholder="Enter ID No."/>'+
-      //   '<span id="removestudent" style="cursor: pointer;" class="input-group-addon"><span style="color:red;" class="fa fa-times"></span></span>'+
-      //   '</div>');
-      // });
-
-      // $(document).on('click', '#removestudent', function(){
-      //   $(this).closest("#newstudent").remove();
-      // });
-
-      // $(document).on('click', '#removeevidence', function(){
-      //   $(this).closest("#newsevidence").remove();
-      // });
+        else if(this.value == "2") {
+          $('#letterlabel').text("Please write an apology and explanation letter");
+        }
+        else if(this.value == "3") {
+          $('#letterlabel').text("Please write an explanation");
+        }
+        $('#letterarea').show();
+      });
 
       $('form').submit(function(e) {
         e.preventDefault();
       });
 
-      var studentlist = [];
-
       $('#2factor').click(function() {
-        var ids = ['#complainantID','#studentID','#location','#date','textarea'];
+        var ids = ['#schoolyr','#term','#admissionType','#letter'];
         var isEmpty = true;
 
         for(var i = 0; i < ids.length; ++i ) {
@@ -252,19 +202,122 @@
 
       $('#modalYes').click(function() {
         $.ajax({
-          url: '../ajax/cdo-insert-incident-report.php',
+          url: '../ajax/student-submit-forms.php',
           type: 'POST',
           data: {
-            complainantID: $('#complainantID').val(),
-            studentID: $('#studentID').val(),
-            location: $('#location').val(),
-            date: $('#date').val(),
-            details: $('#details').val()
+              caseID: <?php echo $_GET['cn']; ?>,
+              remarks: <?php echo $row['REMARKS_ID']; ?>,
+              admission: document.getElementById("admissionType").value,
+              term: document.getElementById("term").value,
+              schoolyr: document.getElementById("schoolyr").value,
+              response: document.getElementById("letter").value
           },
           success: function(msg) {
-              generate();
-              //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
-              $("#sendModal").modal("show");
+              $("#evidencediv").hide();
+              $("#form").attr("disabled", true);
+
+              loadFile("../templates/template-student-reponse-form.docx",function(error,content){
+
+              if (error) { throw error };
+              var zip = new JSZip(content);
+              var doc=new window.docxtemplater().loadZip(zip);
+              // date
+              var today = new Date();
+              var dd = today.getDate();
+              var mm = today.getMonth() + 1; //January is 0!
+              var yyyy = today.getFullYear();
+              if (dd < 10) {
+                dd = '0' + dd;
+              }
+              if (mm < 10) {
+                mm = '0' + mm;
+              }
+              var today = dd + '/' + mm + '/' + yyyy;
+
+              var formNumber;
+              <?php
+              if ($formres['MAX'] != null) { ?>
+                formNumber = <?php echo $formres['MAX'] ?>;
+              <?php }
+              else { ?>
+                formNumber = 1;
+              <?php }
+              ?>
+
+              titleForm = "Student Response Form #" + formNumber + ".docx";
+
+              doc.setData({
+                <?php
+                if ($formres2['student_response_form_id'] != null) { ?>
+                  formNum: <?php echo $formres2['student_response_form_id'] ?>,
+                <?php }
+                else {
+                  if ($formres['MAX'] != null) { ?>
+                    formNum: <?php echo $formres['MAX'] ?>,
+                  <?php }
+                  else { ?>
+                    formNum: 1,
+                  <?php }
+                }
+                ?>
+                firstIDO: "<?php echo $idores['first_name'] ?>",
+                lastIDO: "<?php echo $idores['last_name'] ?>",
+                firstComplainant: "<?php echo $nameres['first_name'] ?>",
+                lastComplainant: "<?php echo $nameres['last_name'] ?>",
+                nature: "<?php echo $caseres['description'] ?>",
+                section: '2.1??',
+                date: today,
+                dateApp: "<?php echo $caseres['date_filed'] ?>",
+                term: document.getElementById("term").value,
+                year: document.getElementById("schoolyr").value,
+                admission: document.getElementById("admissionType").value,
+                letter: document.getElementById("letter").value,
+                firstStudent: "<?php echo $caseres['first_name'] ?>",
+                lastStudent: "<?php echo $caseres['last_name'] ?>",
+                yearLvl: "<?php echo $studentres['year_level'] ?>",
+                idn: "<?php echo $nameres['user_id'] ?>",
+                college: "<?php echo $nameres['description'] ?>",
+                degree: "<?php echo $studentres['degree'] ?>"
+
+              });
+
+              try {
+                  // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                  doc.render();
+              }
+
+              catch (error) {
+                  var e = {
+                      message: error.message,
+                      name: error.name,
+                      stack: error.stack,
+                      properties: error.properties,
+                  }
+                  console.log(JSON.stringify({error: e}));
+                  // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                  throw error;
+              }
+
+              var out=doc.getZip().generate({
+                  type:"blob",
+                  mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              }); //Output the document using Data-URI
+              saveAs(out,titleForm);
+
+              });
+              // $('#message').text('Student Response Form has been submitted and sent to your email successfully! Check your email to sign the form.');
+              $('#message').text('form');
+
+              <?php
+                if($countrow['CASE_COUNT'] > 1) { ?>
+                  $("#parentModal").modal("show");
+              <?php }
+                else { ?>
+                  //$("#alertModal").modal("show");
+                  //$('#appealMsg').show();
+                  $("#newFormModal").modal("show");
+              <?php }
+              ?>
           }
         });
       });

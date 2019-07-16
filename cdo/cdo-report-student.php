@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Report Student</title>
+    <title>CMS - Encode Incident Report</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -58,8 +58,11 @@
 
         <div id="page-wrapper">
             <div class="row">
-                <h3 class="page-header">Incident Report</h3>
-
+              <div class="col-lg-8">
+                <h3 class="page-header">Encode Incident Report</h3>
+              </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-12">
                   <form id="form">
                     <div class="form-group" style = "width: 300px;">
