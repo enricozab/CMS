@@ -17,8 +17,8 @@
 
           $details = "$getData[5] ,"." $getData[6] ,"." $getData[7]";
 
-          $sql =  "  INSERT INTO CASES (REPORTED_STUDENT_ID, OFFENSE_ID,COMPLAINANT_ID, DATE_INCIDENT, LOCATION, DETAILS, HANDLED_BY_ID, IF_NEW, STATUS_ID, REMARKS_ID)
-                     VALUES (".$getData[1].",".$getData[3].",$complainant,STR_TO_DATE('".$getData[2]."', '%m/%d/%Y'),'DLSU','$details',1,2,3,11)
+          $sql =  "  INSERT INTO CASES (REPORTED_STUDENT_ID, OFFENSE_ID, COMPLAINANT_ID, DATE_INCIDENT, LOCATION, DETAILS, HANDLED_BY_ID, IF_NEW, STATUS_ID, REMARKS_ID)
+                     VALUES (".$getData[1].",".$getData[3].",$complainant,STR_TO_DATE('".$getData[2]."', '%m/%d/%Y'),'DLSU','$details',20111234,2,3,11)
                   ";
           $result = mysqli_query($dbc, $sql);
           if(!isset($result))
