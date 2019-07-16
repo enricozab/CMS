@@ -224,9 +224,9 @@ if (!isset($_GET['cn']))
                 </div>
               </div>
 
-              <div class="form-group" style = "width: 400px;">
+              <div class="form-group" style = "padding-left: 330px;">
                 <br>
-                <button id="update_case" type="submit" class="btn btn-default">Update Case Details</button>
+                <button id="update_case" type="submit" class="btn btn-primary">Update</button>
               </div>
 
             </div>

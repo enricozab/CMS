@@ -31,9 +31,6 @@ if (!isset($_GET['cn']))
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -297,7 +294,7 @@ if (!isset($_GET['cn']))
 
       <?php
         //Removes 'new' badge and reduces notif's count
-        if($row2['IF_NEW']){
+        if($row2['IF_NEW'] == 1){
           $query3='UPDATE CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
           $result3=mysqli_query($dbc,$query3);
           if(!$result3){
@@ -316,11 +313,6 @@ if (!isset($_GET['cn']))
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Morris Charts JavaScript -->
-    <script src="../vendor/raphael/raphael.min.js"></script>
-    <script src="../vendor/morrisjs/morris.min.js"></script>
-    <script src="../data/morris-data.js"></script>
 
 	  <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>

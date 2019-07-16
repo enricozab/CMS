@@ -78,7 +78,7 @@
       echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='cdo-view-case.php?cn={$row['CASE_ID']}'\">
             <td>{$row['CASE_ID']}";
 
-      if($row['IF_NEW']) {
+      if($row['IF_NEW'] == 1) {
           echo "&nbsp;&nbsp;&nbsp;<span class=\"badge\">NEW</span></td>";
       }
 

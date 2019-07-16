@@ -241,7 +241,7 @@ if (!isset($_GET['cn']))
         }
         else{
           $row3=mysqli_fetch_array($result3,MYSQLI_ASSOC);
-          if($row3['IF_NEW']){
+          if($row3['IF_NEW'] == 1){
             $query3='UPDATE CDO_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
             $result3=mysqli_query($dbc,$query3);
             if(!$result3){

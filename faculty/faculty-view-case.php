@@ -221,7 +221,7 @@ if (!isset($_GET['cn']))
         }
         else{
           $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
-          if($row2['IF_NEW']){
+          if($row2['IF_NEW'] == 1){
             $query2='UPDATE FACULTY_CASES SET IF_NEW=0 WHERE CASE_ID="'.$_GET['cn'].'"';
             $result2=mysqli_query($dbc,$query2);
             if(!$result2){

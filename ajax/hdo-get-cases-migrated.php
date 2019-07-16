@@ -78,10 +78,6 @@
       echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-case-migrated.php?cn={$row['CASE_ID']}'\">
             <td>{$row['CASE_ID']}";
 
-      if($row['IF_NEW']) {
-          echo "&nbsp;&nbsp;&nbsp;<span class=\"badge\">NEW</span></td>";
-      }
-
       echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>
             <td>{$row['TYPE']}</td>
             <td>{$row['DATE_FILED']}</td>
