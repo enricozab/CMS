@@ -222,7 +222,7 @@ if (!isset($_GET['cn']))
     </div>
     <!-- /#wrapper -->
 
-    !-- jQuery -->
+    <!-- jQuery -->
     <!-- <script src="../vendor/jquery/jquery.min.js"></script> -->
 
     <!-- Bootstrap Core JavaScript -->
@@ -246,105 +246,142 @@ if (!isset($_GET['cn']))
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
   <script>
+    $(document).ready(function() {
+      $('.chosen-select').chosen({width: '100%'});
 
-  $(document).ready(function() {
-    $('.chosen-select').chosen({width: '100%'});
+      loadNotif();
 
-    loadNotif();
-
-    function loadNotif () {
-        $.ajax({
-          url: '../ajax/hdo-notif-incident-reports.php',
-          type: 'POST',
-          data: {
-          },
-          success: function(response) {
-            if(response > 0) {
-              $('#ir').text(response);
+      function loadNotif () {
+          $.ajax({
+            url: '../ajax/hdo-notif-incident-reports.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#ir').text(response);
+              }
+              else {
+                $('#ir').text('');
+              }
             }
-            else {
-              $('#ir').text('');
+          });
+
+          $.ajax({
+            url: '../ajax/hdo-notif-cases.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              if(response > 0) {
+                $('#cn').text(response);
+              }
+              else {
+                $('#cn').text('');
+              }
             }
-          }
-        });
+          });
 
-        $.ajax({
-          url: '../ajax/hdo-notif-cases.php',
-          type: 'POST',
-          data: {
-          },
-          success: function(response) {
-            if(response > 0) {
-              $('#cn').text(response);
-            }
-            else {
-              $('#cn').text('');
-            }
-          }
-        });
+          setTimeout(loadNotif, 5000);
+      };
 
-        setTimeout(loadNotif, 5000);
-    };
-
-    $('#admission_type').on('change',function() {
-      var pd=$('#admission_type').val();
-      if(pd == 1){
-        $('#NOP').show();
-        $('#penalty').show();
-        $('#NOPinput').val('UPCC');
-      }
-      if(pd == 2){
-        $('#NOP').show();
-        $('#penalty').show();
-        $('#NOPinput').val('Summary Proceedings');
-      }
-      if(pd == 3) {
-        $('#NOP').show();
-        $('#penalty').show();
-        $('#NOPinput').val('Formal Hearing');
-        $('#verdict_div').show();
-      }
-      else {
-        $('#verdict_div').hide();
-      }
-      console.log(pd);
-        // console.log($('NOP').val());
-  });
-
-  $('#update_case').click(function() {
-    var ids = ['#admission_type','#penalty_type'];
-    var isEmpty = true;
-
-    for(var i = 0; i < ids.length; ++i ){
-      if($.trim($(ids[i]).val()).length == 0){
-        isEmpty = false;
-      }
-    }
-
-    if(isEmpty) {
-      $.ajax({
-          url: '../ajax/hdo-update-migrated-case.php',
-          type: 'POST',
-          data: {
-              caseid: <?php echo $_GET['cn'] ?>,
-              admission: $('#admission_type').val(),
-              penalty: $('#penalty_type').val(),
-              verdict: $('#verdict').val()
-          },
-          success: function(response) {
-            alert('Update successful');
-            window.location.replace("http://localhost/CMS/hdo/hdo-home.php");
-          }
+      $('#admission_type').on('change',function() {
+        var pd=$('#admission_type').val();
+        if(pd == 1){
+          $('#NOP').show();
+          $('#penalty').show();
+          $('#NOPinput').val('UPCC');
+        }
+        if(pd == 2){
+          $('#NOP').show();
+          $('#penalty').show();
+          $('#NOPinput').val('Summary Proceedings');
+        }
+        if(pd == 3) {
+          $('#NOP').show();
+          $('#penalty').show();
+          $('#NOPinput').val('Formal Hearing');
+          $('#verdict_div').show();
+        }
+        else {
+          $('#verdict_div').hide();
+        }
+        console.log(pd);
+          // console.log($('NOP').val());
       });
-    }
 
-    else {
-      alert("Fill out all fields");
-    }
-  });
+      $('#update_case').click(function() {
+        var ids = ['#admission_type','#penalty_type'];
+        var isEmpty = true;
 
-});
+        if($('#verdict_div').is(":visible")){
+          ids.push('#verdict');
+        }
+        else{
+          if($.inArray('#verdict', ids) !== -1){
+            ids.splice(ids.indexOf('#verdict'),1);
+          }
+        }
+        
+        for(var i = 0; i < ids.length; ++i ){
+          if($.trim($(ids[i]).val()).length == 0){
+            isEmpty = false;
+          }
+        }
+
+        if(isEmpty) {
+          $.ajax({
+              url: '../ajax/hdo-update-migrated-case.php',
+              type: 'POST',
+              data: {
+                  caseid: <?php echo $_GET['cn'] ?>,
+                  admission: $('#admission_type').val(),
+                  penalty: $('#penalty_type').val(),
+                  verdict: $('#verdict').val()
+              },
+              success: function(response) {
+                $("#message1").hide();
+                $("#message2").show();
+                $('#alertModal').modal('show');
+              }
+          });
+        }
+        else {
+          $("#message1").show();
+          $("#message2").hide();
+          $('#alertModal').modal('show');
+        }
+      });
+
+      $('#modalOK').click(function() {
+        if ($('#message2').is(':visible')) {
+          window.location.replace("http://localhost/CMS/hdo/hdo-home.php");
+        }
+      });
+
+      $('.modal').attr('data-backdrop', "static");
+      $('.modal').attr('data-keyboard', false);
+    });
   </script>
+
+  <!-- Modal -->
+  <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel1"><b>Alleged Case</b></h4>
+        </div>
+        <div class="modal-body">
+          <p id="message1">Please fill in all the required ( <span style='color:red;'>*</span> ) fields!</p>
+          <p id="message2">Case details have been updated successfully!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 

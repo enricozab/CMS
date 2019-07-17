@@ -24,7 +24,7 @@
           if(!isset($result))
           {
             echo "<script type=\"text/javascript\">
-            alert(\"Invalid File:Please Upload CSV File.\");
+            alert(\"Invalid File: Please Upload CSV File.\");
             window.location = \"../hdo/hdo-data-migration.php\"
             </script>";    
           }
