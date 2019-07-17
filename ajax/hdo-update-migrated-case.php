@@ -6,8 +6,7 @@
   " UPDATE cases 
     SET 
       admission_type_id = '{$_POST['admission']}'
-      , penalty_id = '{$_POST['penalty']}'
-      , proceeding_decision = '{$_POST['pdesc']}'
+      , proceeding_decision = '{$_POST['penalty']}'
       , verdict = '{$_POST['verdict']}'
       , if_new = 3
     WHERE case_id = '{$_POST['caseid']}';
