@@ -97,14 +97,14 @@
     <div style="margin-top: 30px;">
       <img src="images/newlogo.png"></img>
       <br><br>
-      <p style="font-family: Helvetica; font-size: 50px; color: white;"><b>Welcome to CMS!</b></hp>
+      <p style="font-family: Helvetica; font-size: 50px; color: white;"><b>Welcome to CMS!</b></p>
     </div>
     <div style="margin-top: 5px;">
       <p style="font-family: Helvetica; font-size: 15px; color: #11cfff;"><i>Case Management System for De La Salle University</i></hp>
     </div>
     <div style="margin-top: 40px;">
-      <a align="center" class="btn btn-danger" href="<?php echo $auth_url ?>">
-        <i class="fa fa-google-plus"></i>&nbsp; Sign in with Google
+      <a id="signin" alignment="center" class="btn btn-danger" href="<?php echo $auth_url ?>">
+        <i class="fa fa-google-plus"></i>&nbsp; <span id="text">Sign in with Google</span>
       </a>
     </div>
     <?php
@@ -149,7 +149,7 @@
           ?>
             <div>
               <br>
-              <p style="font-family: Helvetica; font-size: 12px; color: white;">Invalid Email. Please try again.</p>
+              <p id="invalid" style="font-family: Helvetica; font-size: 12px; color: white;">Invalid Email. Please try again.</p>
             </div>
           <?php
         }
@@ -188,5 +188,14 @@
   <!-- Custom Theme JavaScript -->
   <script src="./dist/js/sb-admin-2.js"></script>
 
+  <script>
+    $(document).ready(function() {
+      if ($("#invalid").is(":visible")) {
+        var newUrl = "https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/CMS";
+        $('#signin').attr("href", newUrl);
+        $('#text').text("Logout from Google");
+      }
+    });
+  </script>
 </body>
 </html>
