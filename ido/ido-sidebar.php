@@ -66,6 +66,9 @@
 				<li>
 					<a href="ido-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
+				<li>
+					<a href="ido-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+				</li>
 			</ul>
 		</div>
 		<!-- /.sidebar-collapse -->

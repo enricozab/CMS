@@ -48,8 +48,7 @@
     <script src="../gdrive/date.js" type="text/javascript"></script>
     <script src="../gdrive/lightbox.min.js" type="text/javascript"></script>
     <script src="../gdrive/ido-gdrive4.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js">
-    </script>
+    <script async defer src="https://apis.google.com/js/api.js"></script>
     <script src="../gdrive/upload.js"></script>
 
 </head>
@@ -70,7 +69,7 @@
           <div id="login-box">
 
             <p> You need to authorize this integration in order to use it. Please sign in to your Google Account to do so.</p><br>
-            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick='handleAuth("<?php echo $_SESSION["user_id"];?>", <?php echo json_encode($rows);?>)'>Log In</button>
+            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick='handleAuthClick()'>Log In</button>
 
           </div>
 

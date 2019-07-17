@@ -221,14 +221,14 @@ if (!isset($_GET['cn']))
               </div>
               <!-- /.panel -->
 
-              <!--RE-ROUTE & RE-ASSIGN-->
+              <!--REROUTE & REASSIGN-->
               <div class="row">
                 <div class="col-lg-6">
                   <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Re-route This Case</a>
-                        </h4>
+                        <b style = "font-size: 17px;">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style="color: black">Reroute Case</a>
+                        </b>
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="panel-body">
@@ -246,6 +246,8 @@ if (!isset($_GET['cn']))
                                     '<option value="' .$remarks['remarks_id']. '">' . $remarks['description'] . '</option>';
                                 ?>
                               </select>
+                              <br>
+                              <button type="submit" id="btnReroute" name="btnReroute" class="btn btn-primary" style="float: right;">Reroute</button>
                           </div>
                         </div>
                     </div>
@@ -254,9 +256,9 @@ if (!isset($_GET['cn']))
                 <div class="col-lg-6">
                   <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Re-assign This Case</a>
-                        </h4>
+                        <b style = "font-size: 17px;">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style="color: black">Reassign Case</a>
+                        </b>
                     </div>
                     <div id="collapseTwo" class="panel-collapse collapse">
                         <div class="panel-body">
@@ -285,14 +287,14 @@ if (!isset($_GET['cn']))
                                   ?>
                               </select>
                               <br>
-                              <button type="submit" id="btnReassign" name="btnReassign" class="btn btn-primary" style="float: right;">Re-assign</button>
+                              <button type="submit" id="btnReassign" name="btnReassign" class="btn btn-primary" style="float: right;">Reassign</button>
                           </div>    
                         </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- RE-ROUTE & RE-ASSIGN -->
+              <!-- REROUTE & REASSIGN -->
               
             </div>
         </div>

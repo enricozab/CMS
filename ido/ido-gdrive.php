@@ -70,7 +70,7 @@
           <div id="login-box">
 
             <p> You need to authorize this integration in order to use it. Please sign in to your Google Account to do so.</p><br>
-            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick='handleAuth("<?php echo $_SESSION["user_id"];?>")'>Log In</button>
+            <button type="submit" id="drive" name="evidence" class="btn btn-primary" onclick='handleAuthClick()'>Log In</button>
 
           </div>
 
