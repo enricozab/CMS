@@ -233,21 +233,32 @@ if (!isset($_GET['cn']))
                     <div id="collapseOne" class="panel-collapse collapse">
                         <div class="panel-body">
                           <div class="form-group">
+                            <div id="rerouteDiv">
                               <select id="rerouteCase" class="form-control">
-                                <option value="" disabled selected>Select a Stage</option>
+                                <option value="" disabled selected>Select a stage</option>
                                 <?php
-                                  $getRemarks_id = $dbc->query("SELECT remarks_id FROM cms.cases WHERE case_id = " .$_GET['cn']. " LIMIT 1");
-                                  $remarks_id = $getRemarks_id->fetch_row();
+                                  // $getRemarks_id = $dbc->query("SELECT remarks_id FROM cms.cases WHERE case_id = " .$_GET['cn']. " LIMIT 1");
+                                  // $remarks_id = $getRemarks_id->fetch_row();
 
-                                  $remarksQuery= "SELECT * FROM cms.ref_remarks WHERE remarks_id < " . $remarks_id[0];
-                                  $remarksRes = $dbc->query($remarksQuery);
-                                  while($remarks = $remarksRes->fetch_assoc())
-                                  echo 
-                                    '<option value="' .$remarks['remarks_id']. '">' . $remarks['description'] . '</option>';
+                                  // $remarksQuery= "SELECT * FROM cms.ref_remarks WHERE remarks_id < " . $remarks_id[0];
+                                  // $remarksRes = $dbc->query($remarksQuery);
+                                  // while($remarks = $remarksRes->fetch_assoc())
+                                  // echo 
+                                  //   '<option value="' .$remarks['remarks_id']. '">' . $remarks['description'] . '</option>';
+                                  if ($row2['REMARKS_ID'] > 2) 
+                                    echo 
+                                      '<option value="2">For investigation by IDO</option>';
+                                  if ($row2['REMARKS_ID'] > 4) 
+                                    echo 
+                                      '<option value="4">For resubmission by the student</option>';
                                 ?>
                               </select>
                               <br>
                               <button type="submit" id="btnReroute" name="btnReroute" class="btn btn-primary" style="float: right;">Reroute</button>
+                            </div>
+                            <div id="rerouteDiv2" hidden>
+                              <i>Rerouting is not applicable.</i>
+                            </div>
                           </div>
                         </div>
                     </div>
@@ -383,29 +394,25 @@ if (!isset($_GET['cn']))
 
     var action = "";
 
-    $("#rerouteCase").change(function() {
-      //alert("Selection: " + $("option:selected", this).val() + ":" + $("option:selected", this).text());
-      var selectedRemarks = $("option:selected", this).val();
+    var rerouteCase = document.getElementById("rerouteCase");
 
-      $.ajax({
-              url: '../ajax/hdo-update-remarks.php',
-              type: 'POST',
-              data: {
-    					remarks : selectedRemarks,
-              case_id : <?php echo $_GET['cn'] ?>
-                    },
-              success: function(response) {
-                console.log("Selected Remarks: " + selectedRemarks);
-                console.log("Case ID: " + <?php echo $_GET['cn'] ?>);
-              }
-    		});
-        
-        var rerouteCase = document.getElementById("rerouteCase");
-        for(i = rerouteCase.options.length - 1 ; i >= 0 ; i--)
-        {
-          if (i > selectedRemarks-1)
-            rerouteCase.remove(i);
-        }
+    if (rerouteCase.options.length <= 1) {
+      $("#rerouteDiv").hide();
+      $("#rerouteDiv2").show();
+    } else {
+      $("#rerouteDiv").show();
+      $("#rerouteDiv2").hide();
+    }
+
+    $("#btnReroute").click(function() {
+      if($.trim($("#rerouteCase").val()).length > 0) {
+        action = "reroute";
+        $("#twoFactorModal").modal('show');
+      }
+      else {
+        $("#message").text("Please select a stage.");
+        $("#alertModal").modal('show');
+      }
     });
 
     $("#btnReassign").click(function() {
@@ -414,13 +421,25 @@ if (!isset($_GET['cn']))
         $("#twoFactorModal").modal('show');
       }
       else {
+        $("#message").text("Please select an IDO.");
         $("#alertModal").modal('show');
       }
     });
 
     $("#modalYes").click(function(){
       if (action == "reroute") {
-        
+        $.ajax({
+          url: '../ajax/hdo-update-remarks.php',
+          type: 'POST',
+          data: {
+            case_id: <?php echo $_GET['cn'] ?>,
+            remark_id : $("#rerouteCase").val(),
+          },
+          success: function(response) {
+            $("#message2").text("Cases has been rerouted.");
+            $("#alertModal2").modal('show');
+          }
+    		});
       } else if (action == "reassign") {
         $.ajax({
           url: '../ajax/hdo-update-ido.php',
@@ -456,7 +475,7 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel1"><b>Alleged Case</b></h4>
         </div>
         <div class="modal-body">
-          <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
+          <p id="message"></p>
         </div>
         <div class="modal-footer">
           <button type="submit" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
@@ -474,7 +493,7 @@ if (!isset($_GET['cn']))
           <h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
 				</div>
 					<div class="modal-body">
-						<p id="message"> Are you sure you want to proceed? </p>
+						<p> Are you sure you want to proceed? </p>
 					</div>
 					<div class="modal-footer">
             <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
