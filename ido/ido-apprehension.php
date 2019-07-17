@@ -150,8 +150,9 @@
                             $complaiantRes = $dbc->query($complainantQ);
                             while($complainant = $complaiantRes->fetch_assoc()){
                               $complainantName = $complainant['first_name'] . ' ' . $complainant['last_name'];
-                              echo 
-                                '<option value=' .$complainant['user_id']. '>' . $complainant['user_id'] . ' : ' . $complainantName . '</option>';
+                              if ($complainant['user_id'] != 1)
+                                echo 
+                                  '<option value=' .$complainant['user_id']. '>' . $complainant['user_id'] . ' : ' . $complainantName . '</option>';
                             }
                           ?>
                         </select>
