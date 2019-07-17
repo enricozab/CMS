@@ -13,7 +13,7 @@ var TOTAL_FILES = [];
 var FILE_COUNTER = 0;
 var FOLDER_ARRAY = [];
 var ASCENDING_ARRAY= [], WITNESS_ARRAY = [];
-var cancel = 0, buttonNum, caseFilesID = "nothing", evidenceFilesID = "none";
+var cancel = 0, buttonNum, caseFilesID = "nothing", caseFiles = null, evidenceFilesID = "none", isEviUpload = false;
 var madeIDN = 0, folderData = 'hi', newEvi = 0;
 var college, course, idn, graduating, fullIDN, page, caseNum, btnNum, userName, offense, type, finalDesc, witness;
 /******************** AUTHENTICATION ********************/
@@ -395,6 +395,7 @@ function getCaseFiles() {
     request.execute(function (resp) {
        if (!resp.error) {
             DRIVE_FILES = resp.items;
+            caseFiles = DRIVE_FILES;
 
             if (page == "IDO-VIEW-CASE" || page == "SDFOD-VIEW-CASE" || page == "AULC-VIEW-CASE" || page == "ULC-VIEW-CASE") {
                 $("#waitModal").modal("hide");
@@ -533,12 +534,12 @@ function checkEviFolder() {
 
     // checks if not first time to upload evi
 
+    isEviUpload = true;
     var checker = false;
 
     for (var i = 0; i < DRIVE_FILES.length; i++) {
         DRIVE_FILES[i].fileType =  (DRIVE_FILES[i].fileExtension == null) ? "folder" : "file";
 
-        console.log("drive file: " + DRIVE_FILES[i].title);
         if (DRIVE_FILES[i].fileType == "folder") {
             if (DRIVE_FILES[i].title == "Evidence") {
                 checker = true;
@@ -548,22 +549,22 @@ function checkEviFolder() {
 
     console.log("checker: " + checker);
 
-    // if (FOLDER_ID == caseFilesID || DRIVE_FILES.length == 0) {
-    //     // its the first time, make evidence folder
+    if (checker == false) {
+        // its the first time, make evidence folder
 
-    //     console.log("evidence - first time");
-    //     addEvidenceFolder();
-    // }
+        console.log("evidence - first time");
+        addEvidenceFolder();
+    }
 
-    // else {
-    //     // not first time, get evidence folder ID
-    //     // using drive files of case folder
+    else {
+        // not first time, get evidence folder ID
+        // using drive files of case folder
 
-    //     console.log("evidence - not first time");
-    //     FOLDER_ID = caseFilesID;
-    //     getCaseFiles2();
-    //     // getEvidenceFiles();
-    // }
+        console.log("evidence - not first time");
+        FOLDER_ID = caseFilesID;
+        getCaseFiles2();
+        // getEvidenceFiles();
+    }
 }
 
 function checkWitness() {
@@ -956,7 +957,16 @@ $(document).ready(function () {
                     $("#upload-percentage").hide(1000);
                     var errorResponse = JSON.parse(response);
 
-                    console.log("SUCCESS UPLOAD");
+                    console.log("SUCCESS");
+
+                    if(isEviUpload = true) {
+                        DRIVE_FILES = caseFiles;
+                        FOLDER_ID = caseFilesID;
+                        getCaseFiles();
+
+                        isEviUpload = false;
+                    }
+
                     $("#successModal").modal("show");
                     $("#uploadModal").hide();
 
