@@ -66,9 +66,9 @@
 						<li>
 							<a href="cdo-report-student.php"> Incident Report</a>
 						</li>
-						<li>
+						<!-- <li>
 							<a href="cdo-submit-srf.php"> Student Response Form</a>
-						</li>
+						</li> -->
 					</ul>
 					<!-- /.nav-second-level -->
 				</li>

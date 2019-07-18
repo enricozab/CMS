@@ -623,19 +623,6 @@ function btnSubmit(data) {
         finalDesc = type + ", " + offense;
 	    submitThis();
 	}
-
-	console.log("DATA BTNSUMIT: " + data);
-
-	// data = data.split("|");
-
-	page = data[3];
-
-	if (page == "IDO-VIEW") {
-		btnNum = data[0];
-		offense = data[1];
-		type = data[2];
-	}
-
 	else  {
 		offense = data[0];
 		type = data[1];
