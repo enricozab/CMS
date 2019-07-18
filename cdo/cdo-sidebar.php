@@ -61,16 +61,7 @@
 					<a href="cdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
-					<a href="#"><i class="fa fa-file-text-o fa-fw"></i> Encode<span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
-						<li>
-							<a href="cdo-report-student.php"> Incident Report</a>
-						</li>
-						<!-- <li>
-							<a href="cdo-submit-srf.php"> Student Response Form</a>
-						</li> -->
-					</ul>
-					<!-- /.nav-second-level -->
+					<a href="cdo-report-student.php"><i class="fa fa-file-text-o fa-fw"></i> Encode Incident Report</a>
 				</li>
 				<li>
 					<a href="cdo-reports.php"><i class="fa fa-clipboard fa-fw"></i> Reports</a>
