@@ -691,7 +691,6 @@ if (!isset($_GET['cn']))
       }
       else {
         $.ajax({
-          //../ajax/director-endorse-case.php
             url: '../ajax/director-endorse-case.php',
             type: 'POST',
             data: {
@@ -1179,7 +1178,7 @@ if (!isset($_GET['cn']))
           <p id="message">Discipline Case Referral Form has been submitted and sent to your email successfully! <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Check your email to sign the form. <br> <b>(2)</b> Forward the file, along with the pieces of evidence, to <b>aulc.cms1@gmail.com</b> for processing. </p>
         </div>
         <div class="modal-footer">
-          <button type="submit" id = "n2" class="btn btn-default" data-dismiss="modal">Ok</button>
+          <button type="submit" id="n2" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
       </div>
     </div>

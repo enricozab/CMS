@@ -626,7 +626,7 @@ function btnSubmit(data) {
 
 	console.log("DATA BTNSUMIT: " + data);
 
-	data = data.split("|");
+	// data = data.split("|");
 
 	page = data[3];
 
