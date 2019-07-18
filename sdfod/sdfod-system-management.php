@@ -389,7 +389,6 @@
                                               <thead>
                                                 <tr>
                                                   <th>Offense Descriptions</th>
-                                                  <!-- <th></th> -->
                                                 </tr>
                                               </thead>
                                               <tbody>
@@ -704,6 +703,7 @@
             var d = JSON.parse(response);
             var dd = d.detailsarray;
             console.log(dd);
+            $("#MDtable").find("tr:gt(0)").remove();
             for (var ctr = 0; ctr < dd.length; ctr++){
               console.log(ctr);
               var table = document.getElementById("MDtable");
