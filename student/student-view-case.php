@@ -298,9 +298,8 @@ if (!isset($_GET['cn']))
                                       <div class="panel-body">
                                           <?php
                                               $ctr=0;
-                                              $evidenceQuery= "SELECT * FROM cms.evidence_suggestion ES
-                                                                LEFT JOIN cms.ref_offenses RO ON ES.offense_id = RO.offense_id
-                                                                WHERE RO.description = '" . $row['OFFENSE_DESCRIPTION'] ."';";
+                                              $evidenceQuery= "SELECT * FROM CMS.REF_EVIDENCE_TYPE RET
+                                                                WHERE RET.offense_id = " . $row['OFFENSE_ID'];
                                               $evidenceRes = $dbc->query($evidenceQuery);
 
                                               if ($evidenceRes->num_rows > 0) {
@@ -327,7 +326,7 @@ if (!isset($_GET['cn']))
                                                         echo '<td></td>';
                                                       }
                                                   echo
-                                                      '<td>' . $evidence['suggested_evidence_desc'] . '</td>
+                                                      '<td>' . $evidence['evidence_type_desc'] . '</td>
                                                     </tr>';
                                                 }
                                                 echo '</tbody>
