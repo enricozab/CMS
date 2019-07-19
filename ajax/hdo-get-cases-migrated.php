@@ -46,7 +46,7 @@
 
           WHERE       S.DESCRIPTION = "CLOSED"
                       AND C.IF_NEW = 2
-          ORDER BY	  C.LAST_UPDATE DESC';
+          ORDER BY	  C.CASE_ID';
   $result=mysqli_query($dbc,$query);
   if(!$result){
     echo mysqli_error($dbc);

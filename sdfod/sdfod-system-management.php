@@ -96,7 +96,7 @@
 
                                             <div class="form-group" style = "width: 400px;">
                                             <label>ID Number <span style="font-weight:normal; color:red;">*</span> </label>
-                                            <input id='CU_idnum' type='text' class="form-control" placeholder="Enter User's ID Number">
+                                            <input id='CU_idnum' type='number' class="form-control" placeholder="Enter User's ID Number">
                                             </div>
 
                                             <div class="form-group" style = "width: 400px;">
@@ -331,7 +331,7 @@
                                             }
                                           ?>
                                           <label>Maximum days of inactivity for Minor Cases:</label>
-                                          <input id='MR_minor' type='text' class="form-control" value="<?php echo $row['NUM_DAYS']; ?>">
+                                          <input id='MR_minor' type='number' class="form-control" value="<?php echo $row['NUM_DAYS']; ?>">
 
                                           <br>
                                           
@@ -346,7 +346,7 @@
                                             }
                                           ?>
                                           <label>Maximum days of inactivity for Major Cases:</label>
-                                          <input id='MR_major' type='text' class="form-control" value="<?php echo $row['NUM_DAYS']; ?>">
+                                          <input id='MR_major' type='number' class="form-control" value="<?php echo $row['NUM_DAYS']; ?>">
 
                                           <br><br>
                                           <button id="updaterules" type="submit" class="btn btn-default">Update Rules</button>
@@ -398,7 +398,7 @@
                                             <label>Add Offense Description:</label>
                                             <input id='MDadd' type='text' class="form-control">
                                             <br>
-                                            <button id="MD_add_detail" type="submit" class="btn btn-default">Add Detail</button>
+                                            <button id="MD_add_detail" type="submit" class="btn btn-default">Add Offense Description</button>
 
 
                                           </div>
