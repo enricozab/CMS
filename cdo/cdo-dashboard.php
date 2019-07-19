@@ -96,6 +96,14 @@
          //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
          //echo "NUMCASES: ", $topOffenses[0], "<br>";
        }
+      
+       //ERROR-HANDLING
+       if (sizeof($topOffensesIDMajor)!=3){
+        while (sizeof($topOffensesIDMajor)<=3){
+         $topOffensesIDMajor[] = "0";
+         $totalOffensesMajor[] = 0;
+        }
+      }
 
        $queryNum=0;
        $offenseIndex=0;
@@ -154,6 +162,14 @@
           //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
           //echo "NUMCASES: ", $topOffenses[0], "<br>";
         }
+        
+        //ERROR HANDLING
+        if (sizeof($topOffensesIDMinor)!=3){
+         while (sizeof($topOffensesIDMinor)<=3){
+          $topOffensesIDMinor[] = "0";
+          $totalOffensesMinor[] = 0;
+         }
+       }
 
         $queryNum=0;
         $offenseIndex=0;
@@ -499,31 +515,40 @@
         <div class="col-lg-6" style="position: relative; padding-top: 70px; left: -15%">
           <!-- <label for="majorTable">Common Reasons for committing such violations</label> style="display:none;"-->
           <table id="majorTable" align="center">
-            <caption style="font-size: 18px; color: black;">Top Ways for Committing Such Offenses</caption>
-            <tr>
-              <th>Offense</th>
-              <th>Reason</th>
-            </tr>
-            <?php
+          <?php 
+            if(sizeof($topDetailsMajor)==9){
+              echo'
+              <caption style="font-size: 18px; color: black;">Top Ways for Committing Such Offenses</caption>
+              <tr>
+                <th>Offense</th>
+                <th>Reason</th>
+              </tr>';
+
               $descIndex = 0;
               for($x=0; $x<9;$x++){
                 if($x==3 || $x==6){
                   $descIndex++;
                 }
+                
+                if(sizeof($topDetailsMajor)==9){
+                  if($topDetailsMajor[$x] != ''){
+                    echo'<tr>';
+                    if($x==0 || $x==3 || $x==6){
+                      echo'<td>'. $topOffensesDescriptionMajor[$descIndex] .'</td>';
+                      }
 
-                if($topDetailsMajor[$x] != ''){
-                  echo'<tr>';
-                  if($x==0 || $x==3 || $x==6){
-                    echo'<td>'. $topOffensesDescriptionMajor[$descIndex] .'</td>';
+                    else{
+                      echo '<td></td>';
                     }
-
-                  else{
-                    echo '<td></td>';
+                    echo'<td>'. $topDetailsMajor[$x] .'</td>
+                          </tr>';
                   }
-                  echo'<td>'. $topDetailsMajor[$x] .'</td>
-                        </tr>';
                 }
               }
+            }
+            else{
+              echo("<br><h3>No data to display</h3>");
+            }
             ?>
           </table>
           <script> var majorTable = document.getElementById("majorTable"); majorTable.style.display = "block"; </script>
@@ -531,32 +556,37 @@
 
         <div class="col-lg-6" style="position: relative; padding-top: 0px; left: -15%">
           <table id="minorTable" style="display: none;" align="center">
+          <?php
+          if(sizeof($topDetailsMajor)==9){
+            echo '
             <caption style="font-size: 18px; color: black;">Top Ways for Commiting Such Offenses</caption>
             <tr>
               <th>Offense</th>
               <th>Reason</th>
-            </tr>
+            </tr>';
 
-            <?php
               $descIndex = 0;
               for($x=0; $x<9;$x++){
                 if($x==3 || $x==6){
                   $descIndex++;
                 }
 
-                if($topDetailsMinor[$x] != ''){
-                  echo'<tr>';
-                  if($x==0 || $x==3 || $x==6){
-                    echo'<td>'. $topOffensesDescriptionMinor[$descIndex] .'</td>';
-                    }
+                if(sizeof($topDetailsMinor)==9){
+                  if($topDetailsMinor[$x] != ''){
+                    echo'<tr>';
+                    if($x==0 || $x==3 || $x==6){
+                      echo'<td>'. $topOffensesDescriptionMinor[$descIndex] .'</td>';
+                      }
 
-                  else{
-                    echo '<td></td>';
+                    else{
+                      echo '<td></td>';
+                    }
+                    echo'<td>'. $topDetailsMinor[$x] .'</td>
+                          </tr>';
                   }
-                  echo'<td>'. $topDetailsMinor[$x] .'</td>
-                        </tr>';
                 }
               }
+            }
             ?>
           </table>
         </div>
