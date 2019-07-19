@@ -31,7 +31,8 @@
                       RCP.PROCEEDINGS_DESC AS PROCEEDINGS_DESC,
                       C.DATE_CLOSED AS DATE_CLOSED,
                       C.IF_NEW AS IF_NEW,
-                      IR.NUM_DAYS AS NUM_DAYS
+                      IR.NUM_DAYS AS NUM_DAYS,
+                      DATEDIFF(CURDATE(),C.DATE_FILED) AS INACTIVE
           FROM 		    CASES C
           LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
           LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
@@ -60,6 +61,7 @@
                   <th>Offense</th>
                   <th>Type</th>
                   <th>Date Filed</th>
+                  <th>Inactive Days</th>
                   <th>Last Update</th>
                   <th>Status</th>
                   <th>Remarks</th>
@@ -87,6 +89,7 @@
       echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>
             <td>{$row['TYPE']}</td>
             <td>{$row['DATE_FILED']}</td>
+            <td>{$row['INACTIVE']}</td>
             <td>{$row['LAST_UPDATE']}</td>
             <td>{$row['STATUS_DESCRIPTION']}</td>
             <td>{$row['REMARKS_DESCRIPTION']}</td>
