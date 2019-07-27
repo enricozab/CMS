@@ -1243,10 +1243,6 @@ if (!isset($_GET['cn']))
           <br><br> <b>Next Steps: </b> <br> <b>(1)</b> Send the Student Response Form together with your pieces of evidence to <b>ido.cms1@gmail.com</b> for processing. 
           <br> <b>(2)</b> Inform your Parent/Guardian to sign the Parent Letter through their email and forward to <b>ido.cms1@gmail.com</b>. </p>
         </div>
-        <div class="modal-body">
-          <!-- <p id="message">Student Response Form and Parent Letter have been submitted and sent to your email and to your Parent/Guardian's email respectively. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Check your email to sign the Student Response Form. <br> <b>(2)</b> Inform your Parent/Guardian to sign the Parent Letter. <br> <b>(3)</b> Forward the forms and your pieces of evidence to <b>ido.cms1@gmail.com</b>.</p> -->
-          <p id = "message">Student Response Form and Parent Letter have been created. <br><br> <b>Next Steps:</b> <br> <b>(1)</b> Inform your Parent/Guardian to sign the Parent Letter through their email. <br> <b>(2)</b> Forward both forms and your pieces of evidence to <b>ido.cms1@gmail.com</b>. </p>
-        </div>
         <div class="modal-footer">
           <button type="button" id="form2" class="btn btn-default" data-dismiss="modal">Ok</button>
         </div>
