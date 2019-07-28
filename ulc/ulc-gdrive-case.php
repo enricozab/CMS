@@ -1,6 +1,10 @@
 <?php include 'ulc.php' ?>
 <?php
-  $passCase = $_SESSION['pass'];
+  if (isset($_GET['pass'])) {
+    $passCase = $_GET['pass'];
+  } else {
+    $passCase = $_SESSION['pass'];
+  }
   $array = explode("/", $passCase);
 
   $caseNum = "Case #" . $array[5];
