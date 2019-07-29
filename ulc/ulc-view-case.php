@@ -486,6 +486,8 @@ if (!isset($_GET['cn']))
   <script>
   $(document).ready(function() {
     loadNotif();
+    
+    var upload = "dl"; 
 
     function loadNotif () {
         $.ajax({
@@ -509,7 +511,6 @@ if (!isset($_GET['cn']))
     /*$('#review').click(function() {
       $("#revModal").modal("show");
     });*/
-
 
     $('#sign').click(function() {
 
@@ -797,12 +798,9 @@ if (!isset($_GET['cn']))
     }); 
 
     $('#successOK').click(function() {
-      submitCase();
-    });
-
-    $('.btnViewEvidence').click(function() {
-      <?php $_SESSION['pass'] = $passCase; ?>
-      location.href='ulc-gdrive-case.php';
+      if (upload == "dl") {
+        submitCase();
+      }
     });
 
     $('input[name="verdict"]').click(function(){
@@ -854,6 +852,10 @@ if (!isset($_GET['cn']))
     });
 
     $('#uploading').click(function() {
+      upload = "dcrf";
+      $("#uploadB").text("Upload Discipline Case Referral Form");
+      $("#uploadP").text("Please upload the Discipline Case Referral Form.");
+
       $("#waitModal").modal("show");
     });
 
@@ -932,7 +934,8 @@ if (!isset($_GET['cn']))
     });
 
     $('#successModal').on('click', function() {
-      $.ajax({
+      if (upload == "dcrf") {
+        $.ajax({
           url: '../ajax/ulc-update-referral.php',
           type: 'POST',
           data: {
@@ -940,7 +943,8 @@ if (!isset($_GET['cn']))
           },
           success: function(msg) {
           }
-      });
+        });
+      }
     });
 
     if($('#schedule').is(':visible')) {
@@ -1101,10 +1105,10 @@ if (!isset($_GET['cn']))
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Upload Decision Letter</b></h4>
+          <h4 class="modal-title"><b id="uploadB">Upload Decision Letter</b></h4>
         </div>
         <div class="modal-body">
-          <p> Please upload the letter to authenticate the case decision. </p>
+          <p id="uploadP"> Please upload the letter to authenticate the case decision. </p>
         </div>
         <div class="modal-footer">
           <input type="file" id="fUpload" class="hide"/>
@@ -1163,9 +1167,7 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <input type="file" id="fUpload" class="hide"/>
-          
           <button type="button" id = "logBtn" class="btn btn-primary" data-dismiss="modal" onclick="handle('<?php echo $passData;?>')">Log In</button>
-
         </div>
       </div>
     </div>

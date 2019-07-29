@@ -602,7 +602,7 @@
 <!-- Page-Level Demo Scripts - Tables - Use for reference -->
 <script>
 
-  $(documen).ready(function () {
+  $(document).ready(function () {
     loadNotif();
 
     function loadNotif () {
