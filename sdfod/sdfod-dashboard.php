@@ -61,205 +61,6 @@
 
 <body>
 
-  <?php
-  //MAJOR CASES
-  require_once('../mysql_connect.php');
-  $topOffensesDescriptionMajor = array();
-  $topOffensesIDMajor = array();
-  $totalOffensesMajor = array();
-  $dataMajor = array();
-
-   $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
-                 FROM CASES C
-                   LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
-                   WHERE RO.TYPE = 'Major'
-                   GROUP BY C.OFFENSE_ID
-                   ORDER BY COUNT(C.CASE_ID) DESC
-                   LIMIT 3";
-
-   $sqlRes = mysqli_query($dbc, $sqlQuery);
-   while ($row = $sqlRes->fetch_assoc()){
-     $topOffensesDescriptionMajor[] = $row['DESCRIPTION'];
-     $topOffensesIDMajor[] = $row['OFFENSE_ID'];
-     $totalOffensesMajor[] = $row['NUMCASES'];
-     //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
-     //echo "NUMCASES: ", $topOffenses[0], "<br>";
-   }
-
-   //ERROR-HANDLING
-   if (sizeof($topOffensesIDMajor)!=3){
-    while (sizeof($topOffensesIDMajor)<=3){
-     $topOffensesIDMajor[] = "0";
-     $totalOffensesMajor[] = 0;
-    }
-  }
-
-   $queryNum=0;
-   $offenseIndex=0;
-
-   // echo "topOffensesIDMajor Size: " , sizeOf($topOffensesIDMajor), "<br>";
-  for($x=0; $x<3; $x++){
-
-    //echo "Offense Index: ", $offenseIndex, "<br";
-
-    for($i=1; $i<=7; $i++){
-      //echo "I: " , $i, "<br>";
-      $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
-                          FROM CASES C
-                          LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
-                          LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
-                          WHERE U.OFFICE_ID = " .$i ."
-                          && C.OFFENSE_ID = " .$topOffensesIDMajor[$offenseIndex];
-
-      //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
-      $numcasesres = mysqli_query($dbc,$numcasesquery);
-      if(!$numcasesres){
-
-        echo mysqli_error($dbc);
-      }
-      else{
-        $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
-        $cases = $casesrow['NUMCASES'];
-        $dataMajor[]= $cases;
-      }
-      //echo 'Data Num #', $z, '<br>';
-      $queryNum++;
-    }
-
-    $offenseIndex++;
-
-    // $asd = 1;
-    // foreach ($dataMajor as $value) {
-    //      echo $asd, " ", $value, "<br>";
-    //      $asd++;
-    //  }
-  }
-
-  //MINOR CASES
-  $topOffensesDescriptionMinor = array();
-  $topOffensesIDMinor = array();
-  $totalOffensesMinor = array();
-  $dataMinor = array();
-
-  $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
-                FROM CASES C
-                  LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
-                  WHERE RO.TYPE = 'Minor'
-                  GROUP BY C.OFFENSE_ID
-                  ORDER BY COUNT(C.CASE_ID) DESC
-                  LIMIT 3";
-
-  $sqlRes = mysqli_query($dbc, $sqlQuery);
-  while ($row = $sqlRes->fetch_assoc()){
-    $topOffensesDescriptionMinor[] = $row['DESCRIPTION'];
-    $topOffensesIDMinor[] = $row['OFFENSE_ID'];
-    $totalOffensesMinor[] = $row['NUMCASES'];
-    //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
-    //echo "NUMCASES: ", $topOffenses[0], "<br>";
-  }
-
-  //ERROR HANDLING
-  if (sizeof($topOffensesIDMinor)!=3){
-    while (sizeof($topOffensesIDMinor)<=3){
-      $topOffensesIDMinor[] = "0";
-      $totalOffensesMinor[] = 0;
-    }
-  }
-
-  $queryNum=0;
-  $offenseIndex=0;
-
-  for($x=0; $x<3; $x++){
-
-    //echo "Offense Index: ", $offenseIndex, "<br";
-
-    for($i=1; $i<=7; $i++){
-      //echo "I: " , $i, "<br>";
-      $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
-                          FROM CASES C
-                          LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
-                          LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
-                          WHERE U.OFFICE_ID = " .$i ."
-                          && C.OFFENSE_ID = " .$topOffensesIDMinor[$offenseIndex];
-
-      //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
-      $numcasesres = mysqli_query($dbc,$numcasesquery);
-      if(!$numcasesres){
-
-        echo mysqli_error($dbc);
-      }
-      else{
-        $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
-        $cases = $casesrow['NUMCASES'];
-        $dataMinor[]= $cases;
-      }
-      //echo 'Data Num #', $z, '<br>';
-      $queryNum++;
-    }
-
-    $offenseIndex++;
-  }
-  ?>
-
-  <?php
-  ////////////////////////GET REASONS FOR MAJOR CASES
-  $topDetailsMajor = array();
-  $totalOffensesMajor = array();
-
-  for($i=0; $i < sizeOf($topOffensesIDMajor); $i++){
-    // echo "Offense ID: ", $topOffensesIDMajor[$i], "<br>";
-    $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
-                  FROM CASES C
-                  LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
-                    LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
-                    WHERE C.OFFENSE_ID = " .$topOffensesIDMajor[$i] ."
-                    GROUP BY C.DETAILS
-                    ORDER BY 1 DESC
-                    LIMIT 3";
-
-    $sqlRes = mysqli_query($dbc, $sqlQuery);
-    while ($row = $sqlRes->fetch_assoc()){
-      $topDetailsMajor[] = $row['DETAILS'];
-    }
-
-    if(mysqli_num_rows($sqlRes)==1){
-      $topDetailsMajor[] ='';
-      $topDetailsMajor[] ='';
-    }
-    else if(mysqli_num_rows($sqlRes)==2){
-      $topDetailsMajor[] ='';
-    }
-  }
-
-  ////////////////////////GET REASONS FOR MINOR CASES
-  $topDetailsMinor = array();
-
-  for($i=0; $i < sizeOf($topOffensesIDMinor); $i++){
-    $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
-                  FROM CASES C
-                  LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
-                    LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
-                    WHERE C.OFFENSE_ID = " .$topOffensesIDMinor[$i] ."
-                    GROUP BY C.DETAILS
-                    ORDER BY 1 DESC
-                    LIMIT 3";
-
-    $sqlRes = mysqli_query($dbc, $sqlQuery);
-    while ($row = $sqlRes->fetch_assoc()){
-      $topDetailsMinor[] = $row['DETAILS'];
-    }
-
-    if(mysqli_num_rows($sqlRes)==1){
-      $topDetailsMinor[] ='';
-      $topDetailsMinor[] ='';
-    }
-    else if(mysqli_num_rows($sqlRes)==2){
-      $topDetailsMinor[] ='';
-    }
-
-  }
-  ?>
-
   <div id="wrapper">
 
     <?php include 'sdfod-sidebar.php'; ?>
@@ -270,6 +71,198 @@
               <h3 class="page-header">Dashboard</h3>
           </div>
       </div>
+
+      <?php
+      //MAJOR CASES
+      require_once('../mysql_connect.php');
+      $topOffensesDescriptionMajor = array();
+      $topOffensesIDMajor = array();
+      $totalOffensesMajor = array();
+      $dataMajor = array();
+
+      $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
+                    FROM CASES C
+                      LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
+                      WHERE RO.TYPE = 'Major'
+                      GROUP BY C.OFFENSE_ID
+                      ORDER BY COUNT(C.CASE_ID) DESC
+                      LIMIT 3";
+
+      $sqlRes = mysqli_query($dbc, $sqlQuery);
+      while ($row = $sqlRes->fetch_assoc()){
+        $topOffensesDescriptionMajor[] = $row['DESCRIPTION'];
+        $topOffensesIDMajor[] = $row['OFFENSE_ID'];
+        $totalOffensesMajor[] = $row['NUMCASES'];
+        //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
+        //echo "NUMCASES: ", $topOffenses[0], "<br>";
+      }
+
+      //ERROR-HANDLING
+      if (sizeof($topOffensesIDMajor)!=3){
+        while (sizeof($topOffensesIDMajor)<=3){
+        $topOffensesIDMajor[] = "0";
+        $totalOffensesMajor[] = 0;
+        }
+      }
+
+      $queryNum=0;
+      $offenseIndex=0;
+
+      // echo "topOffensesIDMajor Size: " , sizeOf($topOffensesIDMajor), "<br>";
+      for($x=0; $x<3; $x++){
+
+        //echo "Offense Index: ", $offenseIndex, "<br";
+
+        for($i=1; $i<=7; $i++){
+          //echo "I: " , $i, "<br>";
+          $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
+                              FROM CASES C
+                              LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
+                              LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
+                              WHERE U.OFFICE_ID = " .$i ."
+                              && C.OFFENSE_ID = " .$topOffensesIDMajor[$offenseIndex];
+
+          //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
+          $numcasesres = mysqli_query($dbc,$numcasesquery);
+          if(!$numcasesres){
+
+            echo mysqli_error($dbc);
+          }
+          else{
+            $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
+            $cases = $casesrow['NUMCASES'];
+            $dataMajor[]= $cases;
+          }
+          //echo 'Data Num #', $z, '<br>';
+          $queryNum++;
+        }
+
+        $offenseIndex++;
+      }
+
+      //MINOR CASES
+      $topOffensesDescriptionMinor = array();
+      $topOffensesIDMinor = array();
+      $totalOffensesMinor = array();
+      $dataMinor = array();
+
+      $sqlQuery = "SELECT DISTINCT RO.DESCRIPTION, C.OFFENSE_ID, COUNT(C.CASE_ID) AS 'NUMCASES'
+                    FROM CASES C
+                      LEFT JOIN ref_offenses RO ON RO.OFFENSE_ID = C.OFFENSE_ID
+                      WHERE RO.TYPE = 'Minor'
+                      GROUP BY C.OFFENSE_ID
+                      ORDER BY COUNT(C.CASE_ID) DESC
+                      LIMIT 3";
+
+      $sqlRes = mysqli_query($dbc, $sqlQuery);
+      while ($row = $sqlRes->fetch_assoc()){
+        $topOffensesDescriptionMinor[] = $row['DESCRIPTION'];
+        $topOffensesIDMinor[] = $row['OFFENSE_ID'];
+        $totalOffensesMinor[] = $row['NUMCASES'];
+      }
+
+      //ERROR HANDLING
+      if (sizeof($topOffensesIDMinor)!=3){
+        while (sizeof($topOffensesIDMinor)<=3){
+          $topOffensesIDMinor[] = "0";
+          $totalOffensesMinor[] = 0;
+        }
+      }
+
+      $queryNum=0;
+      $offenseIndex=0;
+
+      for($x=0; $x<3; $x++){
+
+        //echo "Offense Index: ", $offenseIndex, "<br";
+
+        for($i=1; $i<=7; $i++){
+          //echo "I: " , $i, "<br>";
+          $numcasesquery =  "SELECT COUNT(C.CASE_ID) AS 'NUMCASES'
+                              FROM CASES C
+                              LEFT JOIN USERS U 				    ON	C.REPORTED_STUDENT_ID = U.USER_ID
+                              LEFT JOIN REF_USER_OFFICE RUO	ON 	U.OFFICE_ID = RUO.OFFICE_ID
+                              WHERE U.OFFICE_ID = " .$i ."
+                              && C.OFFENSE_ID = " .$topOffensesIDMinor[$offenseIndex];
+
+          //echo $queryNum, " Query: ", $numcasesquery, "<br><br>";
+          $numcasesres = mysqli_query($dbc,$numcasesquery);
+          if(!$numcasesres){
+
+            echo mysqli_error($dbc);
+          }
+          else{
+            $casesrow=mysqli_fetch_array($numcasesres,MYSQLI_ASSOC);
+            $cases = $casesrow['NUMCASES'];
+            $dataMinor[]= $cases;
+          }
+          //echo 'Data Num #', $z, '<br>';
+          $queryNum++;
+        }
+
+        $offenseIndex++;
+      }
+      ?>
+
+      <?php
+      ////////////////////////GET REASONS FOR MAJOR CASES
+      $topDetailsMajor = array();
+      $totalOffensesMajor = array();
+
+      for($i=0; $i < sizeOf($topOffensesIDMajor); $i++){
+        // echo "Offense ID: ", $topOffensesIDMajor[$i], "<br>";
+        $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
+                      FROM CASES C
+                      LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
+                        LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
+                        WHERE C.OFFENSE_ID = " .$topOffensesIDMajor[$i] ."
+                        GROUP BY C.DETAILS
+                        ORDER BY 1 DESC
+                        LIMIT 3";
+
+        $sqlRes = mysqli_query($dbc, $sqlQuery);
+        while ($row = $sqlRes->fetch_assoc()){
+          $topDetailsMajor[] = $row['DETAILS'];
+        }
+
+        if(mysqli_num_rows($sqlRes)==1){
+          $topDetailsMajor[] ='';
+          $topDetailsMajor[] ='';
+        }
+        else if(mysqli_num_rows($sqlRes)==2){
+          $topDetailsMajor[] ='';
+        }
+      }
+
+      ////////////////////////GET REASONS FOR MINOR CASES
+      $topDetailsMinor = array();
+
+      for($i=0; $i < sizeOf($topOffensesIDMinor); $i++){
+        $sqlQuery = "SELECT COUNT(C.CASE_ID) AS 'COUNT', C.DETAILS
+                      FROM CASES C
+                      LEFT JOIN	REF_OFFENSES RO	ON	C.OFFENSE_ID = RO.OFFENSE_ID
+                        LEFT JOIN	REF_DETAILS	 RD	ON	C.DETAILS = RD.DETAILS
+                        WHERE C.OFFENSE_ID = " .$topOffensesIDMinor[$i] ."
+                        GROUP BY C.DETAILS
+                        ORDER BY 1 DESC
+                        LIMIT 3";
+
+        $sqlRes = mysqli_query($dbc, $sqlQuery);
+        while ($row = $sqlRes->fetch_assoc()){
+          $topDetailsMinor[] = $row['DETAILS'];
+        }
+
+        if(mysqli_num_rows($sqlRes)==1){
+          $topDetailsMinor[] ='';
+          $topDetailsMinor[] ='';
+        }
+        else if(mysqli_num_rows($sqlRes)==2){
+          $topDetailsMinor[] ='';
+        }
+
+      }
+      ?>
+
 			<!-- CHARTS -->
 			<div class="row">
         <div class="col-lg-6">
@@ -601,270 +594,267 @@
 
 <!-- Page-Level Demo Scripts - Tables - Use for reference -->
 <script>
+  loadNotif();
 
-  $(document).ready(function () {
-    loadNotif();
+  function loadNotif () {
+      $.ajax({
+        url: '../ajax/sdfod-notif-cases.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          if(response > 0) {
+            $('#cn').text(response);
+          }
+          else {
+            $('#cn').text('');
+          }
+        }
+      });
 
-    function loadNotif () {
-        $.ajax({
-          url: '../ajax/sdfod-notif-cases.php',
-          type: 'POST',
-          data: {
+      setTimeout(loadNotif, 5000);
+  };
+
+  function majorBtn(){
+    $(document).ready(function() {
+      var chart = {
+          type: 'bar'
+      };
+      var title = {
+          text: 'Top 3 Major Cases in DLSU',
+          style: {
+              fontFamily: 'Arial'
+          }
+      };
+      var subtitle = {
+          text: ''
+      };
+      var xAxis = {
+          categories: ['College of Computer Studies',
+                      'College of Liberal Arts',
+                      'College of Business',
+                      'School of Economics',
+                      'Gokongwei College of Engineering',
+                      'College of Science',
+                      'College of Education'],
+          title: {
+            text: null
+          }
+      };
+      var yAxis = {
+          min: 0,
+          allowDecimals: false,
+          title: {
+            text: 'Total',
+            align: 'high'
           },
-          success: function(response) {
-            if(response > 0) {
-              $('#cn').text(response);
-            }
-            else {
-              $('#cn').text('');
+          labels: {
+            overflow: 'justify'
+          }
+      };
+      var tooltip = {
+          valueSuffix: ''
+      };
+      var plotOptions = {
+          bar: {
+            dataLabels: {
+                enabled: true
             }
           }
-        });
+      };
+      var legend = {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'top',
+        x: -90,
+        y: 250,
+        floating: false,
+        borderWidth: 1,
+        backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+        shadow: true
+      };
+      var credits = {
+          enabled: false
+      };
+      var series = [
+          {
+            name: '<?php echo $topOffensesDescriptionMajor[0] ?>',
+            data: [<?php echo $dataMajor[0]?>,
+                    <?php echo $dataMajor[1]?>,
+                    <?php echo $dataMajor[2]?>,
+                    <?php echo $dataMajor[3]?>,
+                    <?php echo $dataMajor[4]?>,
+                    <?php echo $dataMajor[5]?>,
+                    <?php echo $dataMajor[6]?>]
+          },
+          {
+            name: '<?php echo $topOffensesDescriptionMajor[1] ?>',
+            data: [<?php echo $dataMajor[7]?>,
+                    <?php echo $dataMajor[8]?>,
+                    <?php echo $dataMajor[9]?>,
+                    <?php echo $dataMajor[10]?>,
+                    <?php echo $dataMajor[11]?>,
+                    <?php echo $dataMajor[12]?>,
+                    <?php echo $dataMajor[13]?>]
+          },
+          {
+            name: '<?php echo $topOffensesDescriptionMajor[2] ?>',
+            data: [<?php echo $dataMajor[14]?>,
+                    <?php echo $dataMajor[15]?>,
+                    <?php echo $dataMajor[16]?>,
+                    <?php echo $dataMajor[17]?>,
+                    <?php echo $dataMajor[18]?>,
+                    <?php echo $dataMajor[19]?>,
+                    <?php echo $dataMajor[20]?>]
+          }
+      ];
 
-        setTimeout(loadNotif, 5000);
-    };
+      var json = {};
+      json.chart = chart;
+      json.title = title;
+      json.subtitle = subtitle;
+      json.tooltip = tooltip;
+      json.xAxis = xAxis;
+      json.yAxis = yAxis;
+      json.series = series;
+      json.plotOptions = plotOptions;
+      json.legend = legend;
+      json.credits = credits;
+      $('#majorCase').highcharts(json);
+    });
 
-    function majorBtn(){
-      $(document).ready(function() {
-        var chart = {
-            type: 'bar'
-        };
-        var title = {
-            text: 'Top 3 Major Cases in DLSU',
-            style: {
-                fontFamily: 'Arial'
-            }
-        };
-        var subtitle = {
-            text: ''
-        };
-        var xAxis = {
-            categories: ['College of Computer Studies',
-                        'College of Liberal Arts',
-                        'College of Business',
-                        'School of Economics',
-                        'Gokongwei College of Engineering',
-                        'College of Science',
-                        'College of Education'],
-            title: {
-              text: null
-            }
-        };
-        var yAxis = {
-            min: 0,
-            allowDecimals: false,
-            title: {
-              text: 'Total',
-              align: 'high'
-            },
-            labels: {
-              overflow: 'justify'
-            }
-        };
-        var tooltip = {
-            valueSuffix: ''
-        };
-        var plotOptions = {
-            bar: {
-              dataLabels: {
-                  enabled: true
-              }
-            }
-        };
-        var legend = {
-          layout: 'vertical',
-          align: 'right',
-          verticalAlign: 'top',
-          x: -90,
-          y: 250,
-          floating: false,
-          borderWidth: 1,
-          backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
-          shadow: true
-        };
-        var credits = {
-            enabled: false
-        };
-        var series = [
-            {
-              name: '<?php echo $topOffensesDescriptionMajor[0] ?>',
-              data: [<?php echo $dataMajor[0]?>,
-                      <?php echo $dataMajor[1]?>,
-                      <?php echo $dataMajor[2]?>,
-                      <?php echo $dataMajor[3]?>,
-                      <?php echo $dataMajor[4]?>,
-                      <?php echo $dataMajor[5]?>,
-                      <?php echo $dataMajor[6]?>]
-            },
-            {
-              name: '<?php echo $topOffensesDescriptionMajor[1] ?>',
-              data: [<?php echo $dataMajor[7]?>,
-                      <?php echo $dataMajor[8]?>,
-                      <?php echo $dataMajor[9]?>,
-                      <?php echo $dataMajor[10]?>,
-                      <?php echo $dataMajor[11]?>,
-                      <?php echo $dataMajor[12]?>,
-                      <?php echo $dataMajor[13]?>]
-            },
-            {
-              name: '<?php echo $topOffensesDescriptionMajor[2] ?>',
-              data: [<?php echo $dataMajor[14]?>,
-                      <?php echo $dataMajor[15]?>,
-                      <?php echo $dataMajor[16]?>,
-                      <?php echo $dataMajor[17]?>,
-                      <?php echo $dataMajor[18]?>,
-                      <?php echo $dataMajor[19]?>,
-                      <?php echo $dataMajor[20]?>]
-            }
-        ];
+    var minorChart = document.getElementById("minorCase");
+    var majorChart = document.getElementById("majorCase");
+      majorChart.style.display = "block";
+      minorChart.style.display = "none";
+    var minorTable = document.getElementById("minorTable");
+    var majorTable = document.getElementById("majorTable");
+      majorTable.style.display = "block";
+      minorTable.style.display = "none";
 
-        var json = {};
-        json.chart = chart;
-        json.title = title;
-        json.subtitle = subtitle;
-        json.tooltip = tooltip;
-        json.xAxis = xAxis;
-        json.yAxis = yAxis;
-        json.series = series;
-        json.plotOptions = plotOptions;
-        json.legend = legend;
-        json.credits = credits;
-        $('#majorCase').highcharts(json);
-      });
+    $("#majorBtn").css("background-color", "#256092");
+    $('#minorBtn').css("background-color", "#337ab7");
+  }
 
-      var minorChart = document.getElementById("minorCase");
-      var majorChart = document.getElementById("majorCase");
-        majorChart.style.display = "block";
-        minorChart.style.display = "none";
-      var minorTable = document.getElementById("minorTable");
-      var majorTable = document.getElementById("majorTable");
-        majorTable.style.display = "block";
-        minorTable.style.display = "none";
+  function minorBtn(){
+    $(document).ready(function() {
+      var chart = {
+          type: 'bar'
+      };
+      var title = {
+          text: 'Top 3 Minor Cases in DLSU',
+          style: {
+              fontFamily: 'Arial'
+          }
+      };
+      var subtitle = {
+          text: ''
+      };
+      var xAxis = {
+          categories: ['College of Computer Studies',
+                      'College of Liberal Arts',
+                      'College of Business',
+                      'School of Economics',
+                      'Gokongwei College of Engineering',
+                      'College of Science',
+                      'College of Education'],
+          title: {
+            text: null
+          }
+      };
+      var yAxis = {
+          min: 0,
+          allowDecimals: false,
+          title: {
+            text: 'Total',
+            align: 'high'
+          },
+          labels: {
+            overflow: 'justify'
+          }
+      };
+      var tooltip = {
+          valueSuffix: ''
+      };
+      var plotOptions = {
+          bar: {
+            dataLabels: {
+                enabled: true
+            }
+          }
+      };
+      var legend = {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'top',
+        x: -90,
+        y: 250,
+        floating: false,
+        borderWidth: 1,
+        backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+        shadow: true
+      };
+      var credits = {
+          enabled: false
+      };
+      var series = [
+          {
+            name: '<?php echo $topOffensesDescriptionMinor[0] ?>',
+            data: [<?php echo $dataMinor[0]?>,
+                    <?php echo $dataMinor[1]?>,
+                    <?php echo $dataMinor[2]?>,
+                    <?php echo $dataMinor[3]?>,
+                    <?php echo $dataMinor[4]?>,
+                    <?php echo $dataMinor[5]?>,
+                    <?php echo $dataMinor[6]?>]
+          },
+          {
+            name: '<?php echo $topOffensesDescriptionMinor[1] ?>',
+            data: [<?php echo $dataMinor[7]?>,
+                    <?php echo $dataMinor[8]?>,
+                    <?php echo $dataMinor[9]?>,
+                    <?php echo $dataMinor[10]?>,
+                    <?php echo $dataMinor[11]?>,
+                    <?php echo $dataMinor[12]?>,
+                    <?php echo $dataMinor[13]?>]
+          },
+          {
+            name: '<?php echo $topOffensesDescriptionMinor[2] ?>',
+            data: [<?php echo $dataMinor[14]?>,
+                    <?php echo $dataMinor[15]?>,
+                    <?php echo $dataMinor[16]?>,
+                    <?php echo $dataMinor[17]?>,
+                    <?php echo $dataMinor[18]?>,
+                    <?php echo $dataMinor[19]?>,
+                    <?php echo $dataMinor[20]?>]
+          }
+      ];
 
-      $("#majorBtn").css("background-color", "#256092");
-      $('#minorBtn').css("background-color", "#337ab7");
-    }
+      var json = {};
+      json.chart = chart;
+      json.title = title;
+      json.subtitle = subtitle;
+      json.tooltip = tooltip;
+      json.xAxis = xAxis;
+      json.yAxis = yAxis;
+      json.series = series;
+      json.plotOptions = plotOptions;
+      json.legend = legend;
+      json.credits = credits;
+      $('#minorCase').highcharts(json);
+    });
+    var minorChart = document.getElementById("minorCase");
+    var majorChart = document.getElementById("majorCase");
+      minorChart.style.display = "block";
+      majorChart.style.display = "none";
+    var minorTable = document.getElementById("minorTable");
+    var majorTable = document.getElementById("majorTable");
+      minorTable.style.display = "block";
+      majorTable.style.display = "none";
 
-    function minorBtn(){
-      $(document).ready(function() {
-        var chart = {
-            type: 'bar'
-        };
-        var title = {
-            text: 'Top 3 Minor Cases in DLSU',
-            style: {
-                fontFamily: 'Arial'
-            }
-        };
-        var subtitle = {
-            text: ''
-        };
-        var xAxis = {
-            categories: ['College of Computer Studies',
-                        'College of Liberal Arts',
-                        'College of Business',
-                        'School of Economics',
-                        'Gokongwei College of Engineering',
-                        'College of Science',
-                        'College of Education'],
-            title: {
-              text: null
-            }
-        };
-        var yAxis = {
-            min: 0,
-            allowDecimals: false,
-            title: {
-              text: 'Total',
-              align: 'high'
-            },
-            labels: {
-              overflow: 'justify'
-            }
-        };
-        var tooltip = {
-            valueSuffix: ''
-        };
-        var plotOptions = {
-            bar: {
-              dataLabels: {
-                  enabled: true
-              }
-            }
-        };
-        var legend = {
-          layout: 'vertical',
-          align: 'right',
-          verticalAlign: 'top',
-          x: -90,
-          y: 250,
-          floating: false,
-          borderWidth: 1,
-          backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
-          shadow: true
-        };
-        var credits = {
-            enabled: false
-        };
-        var series = [
-            {
-              name: '<?php echo $topOffensesDescriptionMinor[0] ?>',
-              data: [<?php echo $dataMinor[0]?>,
-                      <?php echo $dataMinor[1]?>,
-                      <?php echo $dataMinor[2]?>,
-                      <?php echo $dataMinor[3]?>,
-                      <?php echo $dataMinor[4]?>,
-                      <?php echo $dataMinor[5]?>,
-                      <?php echo $dataMinor[6]?>]
-            },
-            {
-              name: '<?php echo $topOffensesDescriptionMinor[1] ?>',
-              data: [<?php echo $dataMinor[7]?>,
-                      <?php echo $dataMinor[8]?>,
-                      <?php echo $dataMinor[9]?>,
-                      <?php echo $dataMinor[10]?>,
-                      <?php echo $dataMinor[11]?>,
-                      <?php echo $dataMinor[12]?>,
-                      <?php echo $dataMinor[13]?>]
-            },
-            {
-              name: '<?php echo $topOffensesDescriptionMinor[2] ?>',
-              data: [<?php echo $dataMinor[14]?>,
-                      <?php echo $dataMinor[15]?>,
-                      <?php echo $dataMinor[16]?>,
-                      <?php echo $dataMinor[17]?>,
-                      <?php echo $dataMinor[18]?>,
-                      <?php echo $dataMinor[19]?>,
-                      <?php echo $dataMinor[20]?>]
-            }
-        ];
-
-        var json = {};
-        json.chart = chart;
-        json.title = title;
-        json.subtitle = subtitle;
-        json.tooltip = tooltip;
-        json.xAxis = xAxis;
-        json.yAxis = yAxis;
-        json.series = series;
-        json.plotOptions = plotOptions;
-        json.legend = legend;
-        json.credits = credits;
-        $('#minorCase').highcharts(json);
-      });
-      var minorChart = document.getElementById("minorCase");
-      var majorChart = document.getElementById("majorCase");
-        minorChart.style.display = "block";
-        majorChart.style.display = "none";
-      var minorTable = document.getElementById("minorTable");
-      var majorTable = document.getElementById("majorTable");
-        minorTable.style.display = "block";
-        majorTable.style.display = "none";
-
-      $('#minorBtn').css("background-color", "#256092");
-      $('#majorBtn').css("background-color", "#337ab7");
-    }
-  });
+    $('#minorBtn').css("background-color", "#256092");
+    $('#majorBtn').css("background-color", "#337ab7");
+  }
 </script>
 
 <style>
