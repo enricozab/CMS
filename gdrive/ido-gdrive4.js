@@ -707,9 +707,9 @@ function buildFiles(){
 
        if (DRIVE_FILES[i].hasPermission) {
          if (DRIVE_FILES[i].permissionRole == "owner") {
-           fText += "<div class='button-delete' title='Delete' data-id='" + DRIVE_FILES[i].id + "'></div>";
+          //  fText += "<div class='button-delete' title='Delete' data-id='" + DRIVE_FILES[i].id + "'></div>";
          }else if(DRIVE_FILES[i].fileType != "folder"){
-           fText += "<div class='button-delete' title='Delete' data-id='" + DRIVE_FILES[i].id + "'></div>";
+          //  fText += "<div class='button-delete' title='Delete' data-id='" + DRIVE_FILES[i].id + "'></div>";
          }
        }
 
