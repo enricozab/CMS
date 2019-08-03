@@ -85,7 +85,6 @@
                 </div>
                 <!-- /.col-lg-12 -->
 
-                <!-- <button onclick="showSnackbar()">Show Snackbar</button> -->
                 <div id="snackbar"><i class="fa fa-info-circle fa-fw" style="font-size: 20px"></i> <span id="alert-message">Some text some message..</span></div>
 
             </div>
@@ -296,33 +295,33 @@
           timeTable = setTimeout(closedTable, 5000);
         }
       });
-      
+
       var count = 0;
       var prevCount = 0;
       loadCount();
 
-      function loadCount () {
-          $.ajax({
-            url: '../ajax/notifications-count-student.php',
-            type: 'POST',
-            data: {
-            },
-            success: function(response) {
-              count = response;
-              if(count > 0) {
-                $('#notif-badge').text(count);
-              }
-              else {
-                $('#notif-badge').text('');
-              }
-              if (prevCount != count) {
-                loadReminders();
-                prevCount = count;
-              }
+      function loadCount() {
+        $.ajax({
+          url: '../ajax/user-notifications-count.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            count = response;
+            if(count > 0) {
+              $('#notif-badge').text(count);
             }
-          });
+            else {
+              $('#notif-badge').text('');
+            }
+            if (prevCount != count) {
+              loadReminders();
+              prevCount = count;
+            }
+          }
+        });
 
-          setTimeout(loadCount, 5000);
+        setTimeout(loadCount, 5000);
       };
 
       var notifTable;
@@ -332,25 +331,25 @@
           var notif = " new notification";
           if (count > 1) notif = " new notifications";
           $('#alert-message').text('You have '+count+notif);
-          setTimeout(function() { showSnackbar(); }, 2000);
+          setTimeout(function() { showSnackbar(); }, 1500);
         }
       }
 
       notifData();
 
       function notifData() {
-          $.ajax({
-            url: '../ajax/notifications-student.php',
-            type: 'POST',
-            data: {
-            },
-            success: function(response) {
-              $('#notifTable').html(response);
-            }
-          });
+        $.ajax({
+          url: '../ajax/user-notifications.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            $('#notifTable').html(response);
+          }
+        });
 
-          notifTable = setTimeout(notifData, 5000);
-        }
+        notifTable = setTimeout(notifData, 5000);
+      }
     });
     </script>
 
@@ -377,8 +376,8 @@
 
 #snackbar.show {
   visibility: visible;
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.75s;
-  animation: fadein 0.5s, fadeout 0.5s 2.75s;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
 @-webkit-keyframes fadein {

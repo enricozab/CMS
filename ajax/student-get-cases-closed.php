@@ -45,7 +45,8 @@
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 
-          WHERE       C.REPORTED_STUDENT_ID = '.$_SESSION['user_id'].' AND S.DESCRIPTION = "CLOSED"
+          WHERE       C.REPORTED_STUDENT_ID = '.$_SESSION['user_id'].'
+          AND         (S.DESCRIPTION = "CLOSED" OR S.DESCRIPTION = "DISMISSED")
           ORDER BY	  C.LAST_UPDATE DESC';
   $result=mysqli_query($dbc,$query);
   if(!$result){
