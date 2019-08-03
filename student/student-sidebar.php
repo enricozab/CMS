@@ -30,7 +30,7 @@
 					<span id="notif-badge" class="badge badge-notify"></span>
 				<span>
 			</a>
-			<ul id="notifTable" class="dropdown-menu dropdown-alerts" style="width: 400px; overflow-y: scroll; max-height: 500px;">
+			<ul id="notifTable" class="dropdown-menu dropdown-alerts" style="width: 500px; overflow-y: scroll; max-height: 500px;">
 			</ul>
 			<!-- /.dropdown-alerts -->
 		</li>
