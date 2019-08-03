@@ -67,6 +67,49 @@ if (!isset($_GET['cn']))
       function viewEvidence (pass) {
         location.href='ulc-gdrive-case.php?pass='+pass;
       }
+
+      function viewCase(id) {
+        $.ajax({
+          url: 'ulc-view-case-queries.php',
+          type: 'POST',
+          data: {
+              caseID: id
+          },
+          success: function(response) {
+            var vc = JSON.parse(response);
+            $('#vccn').text('Case No. ' + vc.CASE_ID);
+            $('#vco').text(vc.OFFENSE_DESCRIPTION);
+            $('#vct').text(vc.TYPE);
+            $('#vcli').text(vc.LOCATION);
+            $('#vcdf').text(vc.DATE_FILED);
+            $('#vclu').text(vc.LAST_UPDATE);
+            $('#vcs').text(vc.STATUS_DESCRIPTION);
+            $('#vcsid').text(vc.REPORTED_STUDENT_ID);
+            $('#vcsn').text(vc.STUDENT);
+            $('#vcc').text(vc.COMPLAINANT);
+            $('#vci').text(vc.HANDLED_BY);
+            $('#vcd').text(vc.DETAILS);
+            $('#vcnd').text(vc.PROCEEDING);
+            $('#vcv').text(vc.VERDICT);
+            if($('#vcv').text() == "") {
+              $('#va').hide();
+            }
+            if($('#vcprd').text() == "") {
+              $('#prda').hide();
+            }
+            if($('#vcnd').text() == "") {
+              $('#nda').hide();
+            }
+            $('#vcprd').text(vc.PROCEEDING_DECISION);
+
+            var pass = vc.OFFICE_DESCRIPTION+"/"+vc.DEGREE+"/"+vc.LEVEL+"/"+vc.REPORTED_STUDENT_ID+"/VIEW-FOLDER/"+vc.CASE_ID;
+
+            $('#btnViewEvidenceVC').attr("onclick","viewEvidence('"+pass+"')");
+
+            $("#viewCaseModal").modal("show");
+          }
+        });
+      };
     </script>
 </head>
 
@@ -401,34 +444,20 @@ if (!isset($_GET['cn']))
                       </div>
                       <div class="panel-body" style="overflow-y: scroll; max-height: 500px;">
                         <ul style="list-style-type:none;">
-                          <?php include 'ulc-related-case-queries.php';?>
-
-                          <?php
-                            if ($relatedres->num_rows > 0) {
-                              while($relatedrow=mysqli_fetch_array($relatedres,MYSQLI_ASSOC)) {
-                                echo "<li>
-                                        <div style='margin-right: 20px; margin-left: -20px;'>
-                                          <p>
-                                              <strong>Case No. {$relatedrow['CASE_ID']}</strong>
-                                              <span class='pull-right text-muted'><button type='submit' id='viewCase' name='viewCase' value='{$relatedrow['CASE_ID']}' class='btn btn-info viewC'>View Case</button></span>
-                                          </p>
-                                          <div>
-                                              <br>
-                                              <p>Offense: <strong>{$relatedrow['OFFENSE_DESCRIPTION']}</strong></p>
-                                              <p>Status: <strong>{$relatedrow['STATUS_DESCRIPTION']}</strong></p>
-                                              <p>Summary of the Incident: <strong>{$relatedrow['DETAILS']}</strong></p>
-                                              <p>Proceedings: <strong>{$relatedrow['PROCEEDINGS']}</strong></p>
-                                              <p>Penalty: <strong>{$relatedrow['PROCEEDING_DECISION']}</strong></p>
-                                          </div>
-                                        </div>
-                                      </li>
-                                      <hr style='margin-right: 20px; margin-left: -20px;'>";
+                          <div class="btn-group" style='margin-right: 20px; margin-left: -20px;'>
+                            <button type="button" class="tableButton btn btn-default" id="relatedCases">All Related Cases</button>
+                            <button type="button" class="tableButton btn btn-default" id="studentCases">Student's Previous Cases</button>
+                          </div>
+                          <style>
+                              .tableButton {
+                                width: 200px;
                               }
-                            }
-                            else {
-                              echo "<p style='margin-right: 20px; margin-left: -20px;'>No related closed cases available.</p>";
-                            }
-                          ?>
+                              #relatedCases {border-radius: 3px 0px 0px 3px;}
+                              #studentCases {border-radius: 0px 3px 3px 0px;}
+                          </style>
+                          <br><br>
+                          <div id='related-cases-table'>
+                          </div>
                         </ul>
                       </div>
                       <!-- .panel-body -->
@@ -486,6 +515,8 @@ if (!isset($_GET['cn']))
   <script>
   $(document).ready(function() {
     loadNotif();
+    
+    var upload = "dl"; 
 
     function loadNotif () {
         $.ajax({
@@ -510,6 +541,49 @@ if (!isset($_GET['cn']))
       $("#revModal").modal("show");
     });*/
 
+    $('#relatedCases').css("background-color", "#e6e6e6");
+
+    defaultTable();
+
+    function defaultTable() {
+      $.ajax({
+        url: '../ajax/ulc-related-cases-others.php',
+        type: 'POST',
+        data: {
+          cn: <?php echo $_GET['cn'] ?>,
+          offenseID: <?php echo $row['OFFENSE_ID']; ?>
+        },
+        success: function(response) {
+          $('#related-cases-table').html(response);
+        }
+      });
+    }
+
+    $('#studentCases').on('click', function () {
+      $('#studentCases').focus();
+      $('#studentCases').css("background-color", "#e6e6e6");
+      $('#relatedCases').css("background-color", "white");
+
+      $.ajax({
+        url: '../ajax/ulc-related-cases-student.php',
+        type: 'POST',
+        data: {
+          studentID: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+          cn: <?php echo $_GET['cn'] ?>
+        },
+        success: function(response) {
+          $('#related-cases-table').html(response);
+        }
+      });
+    });
+
+    $('#relatedCases').on('click', function () {
+      $('#relatedCases').focus();
+      $('#relatedCases').css("background-color", "#e6e6e6");
+      $('#studentCases').css("background-color", "white");
+      
+      defaultTable();
+    });
 
     $('#sign').click(function() {
 
@@ -797,12 +871,9 @@ if (!isset($_GET['cn']))
     }); 
 
     $('#successOK').click(function() {
-      submitCase();
-    });
-
-    $('.btnViewEvidence').click(function() {
-      <?php $_SESSION['pass'] = $passCase; ?>
-      location.href='ulc-gdrive-case.php';
+      if (upload == "dl") {
+        submitCase();
+      }
     });
 
     $('input[name="verdict"]').click(function(){
@@ -854,50 +925,11 @@ if (!isset($_GET['cn']))
     });
 
     $('#uploading').click(function() {
+      upload = "dcrf";
+      $("#uploadB").text("Upload Discipline Case Referral Form");
+      $("#uploadP").text("Please upload the Discipline Case Referral Form.");
+
       $("#waitModal").modal("show");
-    });
-
-    $('.viewC').on('click', function() {
-      $.ajax({
-          url: 'ulc-view-case-queries.php',
-          type: 'POST',
-          data: {
-              caseID: $(this).val()
-          },
-          success: function(response) {
-            var vc = JSON.parse(response);
-            $('#vccn').text('Case No. ' + vc.CASE_ID);
-            $('#vco').text(vc.OFFENSE_DESCRIPTION);
-            $('#vct').text(vc.TYPE);
-            $('#vcli').text(vc.LOCATION);
-            $('#vcdf').text(vc.DATE_FILED);
-            $('#vclu').text(vc.LAST_UPDATE);
-            $('#vcs').text(vc.STATUS_DESCRIPTION);
-            $('#vcsid').text(vc.REPORTED_STUDENT_ID);
-            $('#vcsn').text(vc.STUDENT);
-            $('#vcc').text(vc.COMPLAINANT);
-            $('#vci').text(vc.HANDLED_BY);
-            $('#vcd').text(vc.DETAILS);
-            $('#vcnd').text(vc.PROCEEDING);
-            $('#vcv').text(vc.VERDICT);
-            if($('#vcv').text() == "") {
-              $('#va').hide();
-            }
-            if($('#vcprd').text() == "") {
-              $('#prda').hide();
-            }
-            if($('#vcnd').text() == "") {
-              $('#nda').hide();
-            }
-            $('#vcprd').text(vc.PROCEEDING_DECISION);
-
-            var pass = vc.OFFICE_DESCRIPTION+"/"+vc.DEGREE+"/"+vc.LEVEL+"/"+vc.REPORTED_STUDENT_ID+"/VIEW-FOLDER/"+vc.CASE_ID;
-
-            $('#btnViewEvidenceVC').attr("onclick","viewEvidence('"+pass+"')");
-
-            $("#viewCaseModal").modal("show");
-          }
-      });
     });
 
     $('#n1').on('click', function() {
@@ -932,7 +964,8 @@ if (!isset($_GET['cn']))
     });
 
     $('#successModal').on('click', function() {
-      $.ajax({
+      if (upload == "dcrf") {
+        $.ajax({
           url: '../ajax/ulc-update-referral.php',
           type: 'POST',
           data: {
@@ -940,7 +973,8 @@ if (!isset($_GET['cn']))
           },
           success: function(msg) {
           }
-      });
+        });
+      }
     });
 
     if($('#schedule').is(':visible')) {
@@ -1101,10 +1135,10 @@ if (!isset($_GET['cn']))
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel"><b>Upload Decision Letter</b></h4>
+          <h4 class="modal-title"><b id="uploadB">Upload Decision Letter</b></h4>
         </div>
         <div class="modal-body">
-          <p> Please upload the letter to authenticate the case decision. </p>
+          <p id="uploadP"> Please upload the letter to authenticate the case decision. </p>
         </div>
         <div class="modal-footer">
           <input type="file" id="fUpload" class="hide"/>
@@ -1163,9 +1197,7 @@ if (!isset($_GET['cn']))
         </div>
         <div class="modal-footer">
           <input type="file" id="fUpload" class="hide"/>
-          
           <button type="button" id = "logBtn" class="btn btn-primary" data-dismiss="modal" onclick="handle('<?php echo $passData;?>')">Log In</button>
-
         </div>
       </div>
     </div>

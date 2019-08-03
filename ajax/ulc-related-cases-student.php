@@ -1,5 +1,8 @@
 <?php
-  $relatedq='SELECT 	C.CASE_ID AS CASE_ID,
+  session_start();
+  require_once('../mysql_connect.php');
+
+  $query='SELECT    	C.CASE_ID AS CASE_ID,
                       C.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
                       C.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
                       CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS STUDENT,
@@ -46,12 +49,40 @@
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
           LEFT JOIN   DIRECTOR_REMARKS_LIST DRL ON C.CASE_ID = DRL.CASE_ID
-          WHERE       (RO.TYPE="MAJOR" OR DRL.DIRECTOR_REMARKS_ID=3) AND S.DESCRIPTION = "Closed"
-                      AND C.OFFENSE_ID = "'.$row['OFFENSE_ID'].'" AND C.CASE_ID != "'.$_GET['cn'].'"
-                      AND (C.IF_NEW != 2 AND C.IF_NEW != 3)
+          WHERE       (RO.TYPE="MAJOR" OR DRL.DIRECTOR_REMARKS_ID=3) 
+          AND         S.DESCRIPTION = "Closed"
+          AND         (C.IF_NEW != 2 AND C.IF_NEW != 3)
+          AND         C.CASE_ID != '.$_POST['cn'].'
+          AND         C.REPORTED_STUDENT_ID = '.$_POST["studentID"].'
           ORDER BY	  C.DATE_FILED DESC';
-  $relatedres=mysqli_query($dbc,$relatedq);
+  $relatedres=mysqli_query($dbc,$query);
   if(!$relatedres){
     echo mysqli_error($dbc);
+  }
+  else{
+    if ($relatedres->num_rows > 0) {
+      while($relatedrow=mysqli_fetch_array($relatedres,MYSQLI_ASSOC)) {
+        echo "<li>
+                <div style='margin-right: 20px; margin-left: -20px;'>
+                  <p>
+                      <strong>Case No. {$relatedrow['CASE_ID']}</strong>
+                      <span class='pull-right text-muted'><button type='submit' id='viewCase' name='viewCase' onclick='viewCase({$relatedrow['CASE_ID']})' value='{$relatedrow['CASE_ID']}' class='btn btn-info viewC'>View Case</button></span>
+                  </p>
+                  <div>
+                      <br>
+                      <p>Offense: <strong>{$relatedrow['OFFENSE_DESCRIPTION']}</strong></p>
+                      <p>Status: <strong>{$relatedrow['STATUS_DESCRIPTION']}</strong></p>
+                      <p>Summary of the Incident: <strong>{$relatedrow['DETAILS']}</strong></p>
+                      <p>Proceedings: <strong>{$relatedrow['PROCEEDINGS']}</strong></p>
+                      <p>Penalty: <strong>{$relatedrow['PROCEEDING_DECISION']}</strong></p>
+                  </div>
+                </div>
+              </li>
+              <hr style='margin-right: 20px; margin-left: -20px;'>";
+      }
+    }
+    else {
+      echo "<p style='margin-right: 20px; margin-left: -20px;'>No related closed cases available.</p>";
+    }
   }
 ?>

@@ -159,8 +159,6 @@
           $topOffensesDescriptionMinor[] = $row['DESCRIPTION'];
           $topOffensesIDMinor[] = $row['OFFENSE_ID'];
           $totalOffensesMinor[] = $row['NUMCASES'];
-          //echo "DESCRIPTION: ", $topOffenses[0], "<br>";
-          //echo "NUMCASES: ", $topOffenses[0], "<br>";
         }
         
         //ERROR HANDLING
