@@ -63,16 +63,16 @@
 						<iframe src="https://www.zeitverschiebung.net/clock-widget-iframe-v2?language=en&size=small&timezone=Asia%2FManila" width="100%" height="90" frameborder="0" seamless></iframe>
 				</li>
 				<li>
-					<a href="faculty-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
+					<a href="faculty-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="faculty-report-student.php"><i class="fa fa-plus fa-fw"></i> Report Student</a>
+					<a href="faculty-report-student.php" id="sidebar_report"><i class="fa fa-plus fa-fw"></i> Report Student</a>
 				</li>
 				<li>
-					<a href="faculty-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="faculty-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="faculty-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="faculty-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 			</ul>
 		</div>

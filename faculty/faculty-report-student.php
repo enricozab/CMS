@@ -246,6 +246,19 @@
               details: $('#details').val()
           },
           success: function(msg) {
+            // audit trail
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'Faculty Incident Report - Submitted Incident Report'
+                },
+                success: function(response) {
+                  console.log('Success'+<?php echo $_SESSION['user_id'] ?>);
+                }
+            });
+
               generate();
               //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
               $("#sendModal").modal("show");
@@ -376,6 +389,61 @@
 
       $('.modal').attr('data-backdrop', "static");
       $('.modal').attr('data-keyboard', false);
+
+
+      // sidebar system audit trail
+      $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Report Student - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_report').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Report Student - Viewed Report Student'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Report Student - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Report Student - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
 
     });
   	</script>

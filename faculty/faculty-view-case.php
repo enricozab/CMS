@@ -284,6 +284,60 @@ if (!isset($_GET['cn']))
     if($row['PROCEEDING'] != null ){ ?>
       $("#proceedingarea").show();
   <?php } ?>
+
+   // sidebar system audit trail
+   $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Viewed Case - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_report').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Viewed Case - Viewed Report Student'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Viewed Case - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Faculty Viewed Case - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
   </script>
 
   <!-- Modal -->

@@ -46,7 +46,7 @@
 				<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
 				</li>
 				<li class="divider"></li>
-				<li><a href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/CMS"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+				<li><a href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/CMS" id="logout_button"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 				</li>
 			</ul>
 			<!-- /.dropdown-user -->
@@ -63,22 +63,22 @@
 						<iframe src="https://www.zeitverschiebung.net/clock-widget-iframe-v2?language=en&size=small&timezone=Asia%2FManila" width="100%" height="90" frameborder="0" seamless></iframe>
 				</li>
 				<li>
-					<a href="sdfod-dashboard.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</span></a>
+					<a href="sdfod-dashboard.php" id="sidebar_dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</span></a>
 				</li>
 				<li>
-					<a href="sdfod-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
+					<a href="sdfod-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="sdfod-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="sdfod-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="sdfod-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
+					<a href="sdfod-gdrive.php" id="sidebar_drive"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
 				<li>
-					<a href="sdfod-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="sdfod-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 				<li>
-					<a href="sdfod-system-management.php"><i class="fa fa-users fa-fw"></i> System Management</a>
+					<a href="sdfod-system-management.php" id="sidebar_sysmanagement"><i class="fa fa-users fa-fw"></i> System Management</a>
 				</li>
 			</ul>
 		</div>
