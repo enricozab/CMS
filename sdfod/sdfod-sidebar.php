@@ -78,7 +78,15 @@
 					<a href="sdfod-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 				<li>
-					<a href="sdfod-system-management.php" id="sidebar_sysmanagement"><i class="fa fa-users fa-fw"></i> System Management</a>
+					<a id="sidebar_sysmanagement"><i class="fa fa-users fa-fw"></i> System Management<span class="fa arrow"></span></a>
+					<ul class="nav nav-second-level">
+						<li>
+							<a href="sdfod-system-management.php">Management</a>
+						</li>
+						<li>
+							<a href="sdfod-system-audit.php">Audit Trail</a>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</div>

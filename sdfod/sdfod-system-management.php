@@ -45,16 +45,6 @@
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
-    <style>
-      iframe {
-        width: 100%;
-        border: 0;
-        min-height: 80%;
-        height: 600px;
-        display: flex;
-      }
-    </style>
-
 </head>
 
 <body>
@@ -416,8 +406,6 @@
             </div>
           </div>
           <br><br>
-          <table width="100%" class="table table-striped table-bordered table-hover" id="audit-table">
-          </table>
         </div>
         <!-- /#page-wrapper -->
     </div>
