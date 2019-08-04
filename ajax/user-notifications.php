@@ -56,7 +56,7 @@
       else if($row['REMARKS_ID'] == 3 && $_SESSION['user_type_id'] == 1) {
         if($row['DATEDIFF'] > 0) {
           echo "<li>
-                  <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ido-view-case.php?cn={$row['CASE_ID']}'\">
+                  <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='student-view-case.php?cn={$row['CASE_ID']}'\">
                     <b>Case {$row['CASE_ID']}: </b>Please submit Student Response Form and evidence if there is any.
                   </div>
                 </li>
@@ -67,7 +67,7 @@
       else if($row['REMARKS_ID'] == 4 && $_SESSION['user_type_id'] == 1) {
         if($row['DATEDIFF'] > 0) {
           echo "<li>
-                  <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ido-view-case.php?cn={$row['CASE_ID']}'\">
+                  <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='student-view-case.php?cn={$row['CASE_ID']}'\">
                     <b>Case {$row['CASE_ID']}: </b>Please resubmit Student Response Form.
                   </div>
                 </li>

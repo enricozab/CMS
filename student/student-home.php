@@ -358,6 +358,14 @@
 </html>
 
 <style>
+.badge-notify{
+   background: red;
+   position: relative;
+   top: -8px;
+   left: -3px;
+   margin: -10px;
+}
+
 #snackbar {
   visibility: hidden;
   min-width: 300px;

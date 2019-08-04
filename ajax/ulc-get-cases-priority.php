@@ -79,7 +79,7 @@
             <td>{$row['CASE_ID']}";
 
       if($row['IF_NEW'] == 1) {
-          echo "&nbsp;&nbsp;&nbsp;<span class=\"badge\">NEW</span></td>";
+          echo "&nbsp;&nbsp;&nbsp;<span class=\"badge badge-notify\">NEW</span></td>";
       }
 
       echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>

@@ -70,7 +70,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="student-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
+					<a href="student-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify"></span></a>
 				</li>
 				<li>
 					<a href="student-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
@@ -87,7 +87,7 @@
 
 <style>
 .badge-notify{
-   background: grey;
+   background: red;
    position: relative;
    top: -10px;
    left: 0px;

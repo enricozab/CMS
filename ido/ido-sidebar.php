@@ -70,7 +70,7 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="ido-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
+					<a href="ido-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify"></span></a>
 				</li>
 				<li>
 					<a href="ido-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
@@ -93,7 +93,7 @@
 
 <style>
 .badge-notify{
-   background: grey;
+   background: red;
    position: relative;
    top: -10px;
    left: 0px;
