@@ -65,6 +65,9 @@
 					<a href="cdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
+					<a href="cdo-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge badge-notify2"></span></a>
+				</li>
+				<li>
 					<a href="cdo-report-student.php"><i class="fa fa-file-text-o fa-fw"></i> Encode Incident Report</a>
 				</li>
 				<li>
