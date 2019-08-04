@@ -1,7 +1,7 @@
 <?php include 'cdo.php' ?>
 <?php
 if (!isset($_GET['irn']))
-    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/hdo/hdo-home.php");
+    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/cdo/cdo-home.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -317,7 +317,7 @@ if (!isset($_GET['irn']))
           });
 
           $.ajax({
-            url: '../ajax/hdo-notif-cases.php',
+            url: '../ajax/cdo-notif-cases.php',
             type: 'POST',
             data: {
             },

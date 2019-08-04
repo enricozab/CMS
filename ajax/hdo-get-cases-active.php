@@ -57,7 +57,6 @@
                   <th>Offense</th>
                   <th>Type</th>
                   <th>Date Filed</th>
-                  <th style="display: none">Inactive Days</th>
                   <th>Last Update</th>
                   <th>Status</th>
                   <th>Remarks</th>
@@ -85,7 +84,6 @@
       echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>
             <td>{$row['TYPE']}</td>
             <td>{$row['DATE_FILED']}</td>
-            <td style='display: none'></td>
             <td>{$row['LAST_UPDATE']}</td>
             <td>{$row['STATUS_DESCRIPTION']}</td>
             <td>{$row['REMARKS_DESCRIPTION']}</td>

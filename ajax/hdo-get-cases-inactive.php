@@ -85,8 +85,7 @@
           echo "&nbsp;&nbsp;&nbsp;<span class=\"badge badge-notify\">NEW</span></td>";
       }
 
-      echo "<td>{$row['CASE_ID']}</td>
-            <td>{$row['OFFENSE_DESCRIPTION']}</td>
+      echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>
             <td>{$row['TYPE']}</td>
             <td>{$row['DATE_FILED']}</td>
             <td>{$row['LAST_UPDATE']}</td>
