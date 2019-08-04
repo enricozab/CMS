@@ -238,7 +238,6 @@
         setTimeout(loadNotif, 5000);
     };
 
-<<<<<<< HEAD
     var count = 0;
     var prevCount = 0;
     loadCount();
@@ -293,7 +292,6 @@
 
       notifTable = setTimeout(notifData, 5000);
     }
-=======
     // sidebar system audit trail
     $('#sidebar_cases').click(function() {
         $.ajax({
@@ -347,7 +345,6 @@
             }
         });
       });
->>>>>>> origin/carlos-dev
   });
   </script>
 
