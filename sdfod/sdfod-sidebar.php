@@ -62,11 +62,7 @@
 					<a href="sdfod-dashboard.php" id="sidebar_dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</span></a>
 				</li>
 				<li>
-<<<<<<< HEAD
 					<a href="sdfod-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
-=======
-					<a href="sdfod-home.php"  id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
->>>>>>> origin/debbie-dev
 				</li>
 				<li>
 					<a href="sdfod-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
