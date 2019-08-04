@@ -412,13 +412,13 @@
                 }
             });
           });
-          $('#sidebar_apprehend').click(function() {
+          $('#sidebar_report').click(function() {
             $.ajax({
                 url: '../ajax/insert_system_audit_trail.php',
                 type: 'POST',
                 data: {
                     userid: <?php echo $_SESSION['user_id'] ?>,
-                    actiondone: 'IDO Calendar - Viewed Apprehend'
+                    actiondone: 'IDO Calendar - Viewed Reoort Student'
                 },
                 success: function(response) {
                   console.log('Success');
