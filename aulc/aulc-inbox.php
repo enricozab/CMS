@@ -128,6 +128,60 @@
     
     $("#login").hide();
     $("#create").hide();
+
+    // sidebar system audit trail
+    $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Inbox - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_files').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Inbox - Viewed Files'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Inbox - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Inbox - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
   });
   </script>
 

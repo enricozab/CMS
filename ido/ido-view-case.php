@@ -579,6 +579,19 @@ if (!isset($_GET['cn']))
                       appeal: <?php echo $row['IF_APPEAL']; ?>
                   },
                   success: function(msg) {
+                    // audit trail
+                    $.ajax({
+                      url: '../ajax/insert_system_audit_trail.php',
+                      type: 'POST',
+                      data: {
+                          userid: <?php echo $_SESSION['user_id'] ?>,
+                          actiondone: 'IDO Case - Uploaded Student Response Form for Case #<?php echo $_GET['cn']; ?>'
+                      },
+                      success: function(response) {
+                        console.log('Success');
+                      }
+                  })
+
                     clearInterval(myVar);
                   }
               });
@@ -621,6 +634,19 @@ if (!isset($_GET['cn']))
                     irn: <?php echo $row['INCIDENT_REPORT_ID']; ?>
                 },
                 success: function(msg) {
+                  // audit trail
+                    $.ajax({
+                      url: '../ajax/insert_system_audit_trail.php',
+                      type: 'POST',
+                      data: {
+                          userid: <?php echo $_SESSION['user_id'] ?>,
+                          actiondone: 'IDO Case - Uploaded Incident Report for Case #<?php echo $_GET['cn']; ?>'
+                      },
+                      success: function(response) {
+                        console.log('Success');
+                      }
+                  })
+
                   clearInterval(myVar3);
                 }
             });
@@ -639,6 +665,18 @@ if (!isset($_GET['cn']))
                 caseid: <?php echo $_GET['cn']; ?>
             },
             success: function(msg) {
+              // audit trail
+                    $.ajax({
+                      url: '../ajax/insert_system_audit_trail.php',
+                      type: 'POST',
+                      data: {
+                          userid: <?php echo $_SESSION['user_id'] ?>,
+                          actiondone: 'IDO Case - Uploaded Parent Letter for Case #<?php echo $_GET['cn']; ?>'
+                      },
+                      success: function(response) {
+                        console.log('Success');
+                      }
+                  })
               clearInterval(myVar4);
             }
         });
@@ -724,6 +762,19 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
+              // audit trail
+              $.ajax({
+                        url: '../ajax/insert_system_audit_trail.php',
+                        type: 'POST',
+                        data: {
+                            userid: <?php echo $_SESSION['user_id'] ?>,
+                            actiondone: 'IDO Case - Forwared Case #<?php echo $_GET['cn']; ?> to SDFOD'
+                        },
+                        success: function(response) {
+                          console.log('Success');
+                        }
+                    })
+
               $('#message').text('Case is forwarded to SDFO Director successfully!');
               $("#submit").attr('disabled', true).text("Submitted");
               $("#return").attr('disabled', true);
@@ -821,6 +872,19 @@ if (!isset($_GET['cn']))
                 caseID: <?php echo $_GET['cn']; ?>
             },
             success: function(msg) {
+              // audit trail
+              $.ajax({
+                        url: '../ajax/insert_system_audit_trail.php',
+                        type: 'POST',
+                        data: {
+                            userid: <?php echo $_SESSION['user_id'] ?>,
+                            actiondone: 'IDO Case - Uploaded Evidence for Case #<?php echo $_GET['cn']; ?>'
+                        },
+                        success: function(response) {
+                          console.log('Success');
+                        }
+                    })
+
               console.log("selectedUser: " + selectedUser + " evidenceSel: " + evidenceSel + " idoID: " + <?php echo $row['HANDLED_BY_ID']; ?> + " sName: " + witness + " caseid: " + <?php echo $_GET['cn']; ?>);
               document.getElementById("witnessName").value = "";
               console.log("HIIIIIIII");
@@ -844,6 +908,19 @@ if (!isset($_GET['cn']))
     $('#btnViewEvidence').on('click',function() {
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='ido-gdrive-case.php';
+
+      // audit trail
+      $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Case - Viewed Evidence for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
     });
 
     $('#submitComment').on('click',function() {
@@ -868,6 +945,18 @@ if (!isset($_GET['cn']))
 
     $('#return').on('click',function() {
       $("#commentModal").modal("show");
+      // audit trail
+      $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Case - Returned Student Response Form for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
     });
 
     function calculateID() {
@@ -1157,6 +1246,73 @@ if (!isset($_GET['cn']))
 
     $('.modal').attr('data-backdrop', "static");
     $('.modal').attr('data-keyboard', false);
+
+    // sidebar system audit trail
+    $('#sidebar_cases').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Viewed Case - Viewed Cases'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_apprehend').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Viewed Case - Viewed Apprehend'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_files').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Viewed Case - Viewed Files'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_calendar').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Viewed Case - Viewed Calendar'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_inbox').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Viewed Case - Viewed Inbox'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
 
   });
 

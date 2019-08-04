@@ -55,16 +55,16 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="ulc-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
+					<a href="ulc-home.php " id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
-					<a href="ulc-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="ulc-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="ulc-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
+					<a href="ulc-gdrive.php" id="sidebar_files"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
 				<li>
-					<a href="ulc-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="ulc-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 			</ul>
 		</div>

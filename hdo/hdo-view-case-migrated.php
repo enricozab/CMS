@@ -340,6 +340,20 @@ if (!isset($_GET['cn']))
                   verdict: $('#verdict').val()
               },
               success: function(response) {
+
+                // audit trail
+                $.ajax({
+                    url: '../ajax/insert_system_audit_trail.php',
+                    type: 'POST',
+                    data: {
+                        userid: <?php echo $_SESSION['user_id'] ?>,
+                        actiondone: 'HDO Migrated Case - Updated Data for Migrated Case #<?php echo $_GET['cn']; ?>'
+                    },
+                    success: function(response) {
+                      console.log('Success');
+                    }
+                })
+
                 $("#message1").hide();
                 $("#message2").show();
                 $('#alertModal').modal('show');
@@ -361,6 +375,99 @@ if (!isset($_GET['cn']))
 
       $('.modal').attr('data-backdrop', "static");
       $('.modal').attr('data-keyboard', false);
+
+      // sidebar system audit trail
+      $('#sidebar_cases').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Apprehension - Viewed Cases'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_apprehend').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Apprehension - Viewed Apprehend'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_reports').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Apprehension - Viewed Incidet Reports'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_files').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Apprehension - Viewed Files'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_calendar').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Apprehension - Viewed Calendar'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_inbox').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Apprehension - Viewed Inbox'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_migration').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Apprehension - Viewed Data Migration'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
     });
   </script>
 

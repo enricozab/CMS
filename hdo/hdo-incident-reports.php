@@ -40,6 +40,22 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <script> 
+      function viewIRAudit(x) {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: ('HDO Incident Report - Viewed Incident Report #' + x)
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      }
+    </script>
+
 </head>
 
 <body>
@@ -162,6 +178,100 @@
 
           timeTable = setTimeout(normalTable, 5000);
         }
+
+        // sidebar system audit trail
+        $('#sidebar_cases').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Incident Reports - Viewed Cases'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_apprehend').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Incident Reports - Viewed Apprehend'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_reports').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Incident Reports - Viewed Incidet Reports'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_files').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Incident Reports - Viewed Files'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_calendar').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Incident Reports - Viewed Calendar'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_inbox').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Incident Reports - Viewed Inbox'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_migration').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Incident Reports - Viewed Data Migration'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+
     });
     </script>
 

@@ -40,6 +40,22 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <script> 
+      function viewCaseAudit(x) {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: ('HDO Cases - Viewed Case #' + x)
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      }
+    </script>
+
 </head>
 
 <body>
@@ -459,6 +475,100 @@
         timeTable = setTimeout(migratedTable, 5000);
       }
     });
+
+    // sidebar system audit trail
+    $('#sidebar_cases').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Cases - Viewed Cases'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_apprehend').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Cases - Viewed Apprehend'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_reports').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Cases - Viewed Incidet Reports'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_files').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Cases - Viewed Files'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_calendar').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Cases - Viewed Calendar'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_inbox').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Cases - Viewed Inbox'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_migration').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Cases - Viewed Data Migration'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+
   });
   </script>
 
