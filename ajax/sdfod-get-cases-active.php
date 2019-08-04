@@ -75,7 +75,8 @@
         $grad = "No";
       }
 
-      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
+      //changed part
+      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'; viewCaseAudit({$row['CASE_ID']});\">
             <td>{$row['CASE_ID']}";
 
       if($row['IF_NEW'] == 1) {

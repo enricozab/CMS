@@ -129,6 +129,86 @@
     $("#login").hide();
     $("#create").hide();
   });
+
+  // sidebar system audit trail
+  $('#sidebar_dashboard').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Inbox - Viewed Dashboard'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_cases').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Inbox - Viewed Cases'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_calendar').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Inbox - Viewed Calendar'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_drive').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Inbox - Viewed Files'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_inbox').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Inbox - Viewed Inbox'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_sysmanagement').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Inbox - Viewed System Management'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
   </script>
 
 </body>

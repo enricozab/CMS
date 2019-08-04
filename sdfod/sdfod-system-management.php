@@ -415,9 +415,11 @@
                 </div>
             </div>
           </div>
+          <br><br>
+          <table width="100%" class="table table-striped table-bordered table-hover" id="audit-table">
+          </table>
         </div>
         <!-- /#page-wrapper -->
-
     </div>
     <!-- /#wrapper -->
 
@@ -491,6 +493,21 @@
     $("#create").hide();
   });
 
+  auditTable();
+
+  function auditTable() {
+    $.ajax({
+      url: '../ajax/sdfod-get-sys-audit.php',
+      type: 'POST',
+      data: {
+      },
+      success: function(response) {
+        console.log('gi');
+        $('#audit-table').html(response);
+      }
+    });
+  }
+
   // create user submit button
   $('#createuser').click(function() {
     var ids = ['#CU_idnum','#CU_firstname','#CU_lastname','#CU_email','#CU_usertype','#CU_office'];
@@ -515,7 +532,18 @@
               office: $('#CU_office').val()
           },
           success: function(response) {
-            alert('Create User Succsseful');
+            alert('Create User Succsseful'+response);
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD System Management - Created a user.'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
             location.reload();
           }
       });
@@ -580,6 +608,17 @@
           },
           success: function(response) {
             alert('Edit User Successful');
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD System Management - Edited a user.'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
             location.reload();
           }
       });
@@ -610,7 +649,18 @@
               checker: '1'
           },
           success: function(response) {
-            alert('Manage User Successful');
+            alert('Activate User Successful');
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD System Management - Activated a user.'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
             location.reload();
           }
       });
@@ -641,7 +691,18 @@
               checker: '2'
           },
           success: function(response) {
-            alert('Manage User Successful');
+            alert('Disable User Successful');
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD System Management - Disabled a user.'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
             location.reload();
           }
       });
@@ -672,6 +733,17 @@
           },
           success: function(response) {
             alert('Manage Rules Successful');
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD System Management - Edited rules.'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
             location.reload();
           }
       });
@@ -736,6 +808,17 @@
           },
           success: function(response) {
             alert('Add Offense Description Successful');
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD System Management - Added offense description.'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
             location.reload();
           }
       });
@@ -744,6 +827,87 @@
     else {
       alert("Fill out all fields");
     }
+  });
+
+
+  // sidebar system audit trail
+  $('#sidebar_dashboard').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Management - Viewed Dashboard'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_cases').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Management - Viewed Cases'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_calendar').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Management - Viewed Calendar'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_drive').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Management - Viewed Files'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_inbox').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Management - Viewed Inbox'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_sysmanagement').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Management - Viewed System Management'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
   });
 
   </script>
