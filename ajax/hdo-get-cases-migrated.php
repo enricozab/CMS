@@ -76,7 +76,7 @@
         $grad = "No";
       }
 
-      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-case-migrated.php?cn={$row['CASE_ID']}'\">
+      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-case-migrated.php?cn={$row['CASE_ID']}'; viewCaseAudit({$row['CASE_ID']});\">
             <td>{$row['CASE_ID']}";
 
       echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>

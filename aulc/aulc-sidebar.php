@@ -59,16 +59,16 @@
 		<div class="sidebar-nav navbar-collapse">
 			<ul class="nav" id="side-menu">
 				<li>
-					<a href="aulc-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
+					<a href="aulc-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="aulc-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="aulc-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="aulc-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
+					<a href="aulc-gdrive.php" id="sidebar_files"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
 				<li>
-					<a href="aulc-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="aulc-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 			</ul>
 		</div>

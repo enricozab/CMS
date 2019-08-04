@@ -42,20 +42,20 @@
 
     
     <script> 
-    function viewCaseAudit(x) {
-      $.ajax({
-          url: '../ajax/insert_system_audit_trail.php',
-          type: 'POST',
-          data: {
-              userid: <?php echo $_SESSION['user_id'] ?>,
-              actiondone: ('Faculty Cases - Viewed Case #' + x)
-          },
-          success: function(response) {
-            console.log('Success');
-          }
-      });
-    }
-  </script>
+      function viewCaseAudit(x) {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: ('Faculty Cases - Viewed Case #' + x)
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      }
+    </script>
 
 
 </head>

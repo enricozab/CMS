@@ -419,6 +419,19 @@ if (!isset($_GET['cn']))
     $('#btnViewEvidence').on('click',function() {
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='hdo-gdrive-case.php';
+
+      // audit trail
+      $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Case - Viewed Evidence for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
     });
 
     var action = "";
@@ -465,6 +478,18 @@ if (!isset($_GET['cn']))
             remark_id : $("#rerouteCase").val(),
           },
           success: function(response) {
+            // audit trail
+            $.ajax({
+                      url: '../ajax/insert_system_audit_trail.php',
+                      type: 'POST',
+                      data: {
+                          userid: <?php echo $_SESSION['user_id'] ?>,
+                          actiondone: 'HDO Case - Rerouted Case #<?php echo $_GET['cn']; ?>'
+                      },
+                      success: function(response) {
+                        console.log('Success');
+                      }
+                  })
             $("#message2").text("Cases has been rerouted.");
             $("#alertModal2").modal('show');
           }
@@ -478,6 +503,19 @@ if (!isset($_GET['cn']))
             ido_id: $("#reassignIDO").val(),
           },
           success: function(response) {
+            // audit trail
+            $.ajax({
+                      url: '../ajax/insert_system_audit_trail.php',
+                      type: 'POST',
+                      data: {
+                          userid: <?php echo $_SESSION['user_id'] ?>,
+                          actiondone: 'AULC Case - Reassigned IDO for Case #<?php echo $_GET['cn']; ?>'
+                      },
+                      success: function(response) {
+                        console.log('Success');
+                      }
+                  })
+
             $("#message2").text("Cases has been reassigned.");
             $("#alertModal2").modal('show');
           }
@@ -542,6 +580,99 @@ if (!isset($_GET['cn']))
 
       notifTable = setTimeout(notifData, 5000);
     }
+    // sidebar system audit trail
+    $('#sidebar_cases').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Viewed Case - Viewed Cases'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_apprehend').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Viewed Case - Viewed Apprehend'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_reports').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Viewed Case - Viewed Incidet Reports'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_files').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Viewed Case - Viewed Files'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_calendar').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Viewed Case - Viewed Calendar'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_inbox').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Viewed Case - Viewed Inbox'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_migration').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'HDO Viewed Case - Viewed Data Migration'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+
   });
 
   <?php

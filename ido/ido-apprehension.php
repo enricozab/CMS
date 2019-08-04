@@ -430,6 +430,19 @@
                   page: "HDO-APPREHENSION"
               },
               success: function(response) {
+                
+                // audit trail
+                $.ajax({
+                          url: '../ajax/insert_system_audit_trail.php',
+                          type: 'POST',
+                          data: {
+                              userid: <?php echo $_SESSION['user_id'] ?>,
+                              actiondone: 'IDO Apprehend - Apprehended a student'
+                          },
+                          success: function(response) {
+                            console.log('Success');
+                          }
+                      })
 
                 data = response.split("/");
             		caseData = "Case #" + data[5];
@@ -504,6 +517,75 @@
           location.reload();
         }
       })
+
+      // sidebar system audit trail
+      $('#sidebar_cases').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Apprehend - Viewed Cases'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_apprehend').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Apprehend - Viewed Apprehend'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_files').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Apprehend - Viewed Files'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_calendar').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Apprehend - Viewed Calendar'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_inbox').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'IDO Apprehend - Viewed Inbox'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+
+
     });
     </script>
 

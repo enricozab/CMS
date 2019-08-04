@@ -33,7 +33,7 @@
         $caseid='For review by HDO';
       }
 
-      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-incident-report.php?irn={$row['INCIDENT_REPORT_ID']}'\">
+      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='hdo-view-incident-report.php?irn={$row['INCIDENT_REPORT_ID']}'; viewIRAudit({$row['INCIDENT_REPORT_ID']});\">
             <td>{$row['INCIDENT_REPORT_ID']}";
 
       if($row['IF_NEW']) {

@@ -59,25 +59,25 @@
 		<div class="sidebar-nav navbar-collapse">
 			<ul class="nav" id="side-menu">
 				<li>
-					<a href="hdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
+					<a href="hdo-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="hdo-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge badge-notify2"></span></a>
+					<a href="hdo-incident-reports.php" id="sidebar_reports"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="hdo-apprehension.php"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
+					<a href="hdo-apprehension.php " id="sidebar_apprehend"><i class="fa fa-plus fa-fw"></i> Apprehend</a>
 				</li>
 				<li>
-					<a href="hdo-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
+					<a href="hdo-gdrive.php" id="sidebar_files"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
 				<li>
-					<a href="hdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="hdo-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="hdo-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="hdo-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 				<li>
-					<a href="hdo-data-migration.php"><i class="fa fa-database fa-fw"></i> Data Migration</a>
+					<a href="hdo-data-migration.php" id="sidebar_migration"><i class="fa fa-database fa-fw"></i> Data Migration</a>
 				</li>
 			</ul>
 		</div>

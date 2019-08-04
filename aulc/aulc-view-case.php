@@ -480,6 +480,19 @@ if (!isset($_GET['cn']))
         },
         success: function(msg) {
 
+          // audit trail
+          $.ajax({
+                    url: '../ajax/insert_system_audit_trail.php',
+                    type: 'POST',
+                    data: {
+                        userid: <?php echo $_SESSION['user_id'] ?>,
+                        actiondone: 'AULC Case - Forwarded Discipline Case Referral Form for Case #<?php echo $_GET['cn']; ?>'
+                    },
+                    success: function(response) {
+                      console.log('Success');
+                    }
+                })
+
           // $('#message').text('Case forwarded to ULC successfully!');
           $('#forward').attr('disabled', true);
 
@@ -603,6 +616,19 @@ if (!isset($_GET['cn']))
     $('#btnViewEvidence').click(function() {
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='aulc-gdrive-case.php';
+
+      // audit trail
+      $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'AULC Case - Viewed Evidence for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
     });
 
     $('input[name="caseDecision"]').click(function(){
@@ -628,6 +654,61 @@ if (!isset($_GET['cn']))
 
     $('.modal').attr('data-backdrop', "static");
     $('.modal').attr('data-keyboard', false);
+
+    // sidebar system audit trail
+    $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Viewed Case - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_files').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Viewed Case - Viewed Files'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Viewed Case - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'AULC Viewed Case - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+    
   });
 
   <?php

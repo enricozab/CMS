@@ -292,6 +292,20 @@
             },
             dataType: 'json',
             success: function(response) {
+
+              // audit trail
+              $.ajax({
+                          url: '../ajax/insert_system_audit_trail.php',
+                          type: 'POST',
+                          data: {
+                              userid: <?php echo $_SESSION['user_id'] ?>,
+                              actiondone: 'ULC Calendar - Created Event'
+                          },
+                          success: function(response) {
+                            console.log('Success');
+                          }
+                      })
+
             	//$("#create-event").removeAttr('disabled');
               $("#message").text("An event has been created successfully!");
               $("#alertModal").modal("show");
@@ -384,6 +398,60 @@
 
       notifTable = setTimeout(notifData, 5000);
     }
+    // sidebar system audit trail
+    $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'ULC Calendar - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_files').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'ULC Calendar - Viewed Files'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'ULC Calendar - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'ULC Calendar - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+
   });
   </script>
 

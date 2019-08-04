@@ -62,7 +62,7 @@
 					<a href="ido-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="ido-report-student.php" id="sidebar_report"><i class="fa fa-plus fa-fw"></i> Report Student</a>
+					<a href="ido-report-student.php" id="sidebar_apprehend"><i class="fa fa-plus fa-fw"></i> Report Student</a>
 					<!-- <a href="ido-apprehension.php" id="sidebar_apprehend"><i class="fa fa-plus fa-fw"></i> </a> -->
 				</li>
 				<li>
