@@ -27,7 +27,7 @@
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 				<span>
 					<i class="fa fa-bell fa-2x" style="font-size: 18px; margin: -5px" aria-hidden="true"></i>
-					<span id="notif-badge" class="badge badge-notify"></span>
+					<span id="notif-badge" class="badge badge-notify2"></span>
 				<span>
 			</a>
 			<ul id="notifTable" class="dropdown-menu dropdown-alerts" style="width: 500px; overflow-y: scroll; max-height: 500px;">
@@ -58,19 +58,8 @@
 	<div class="navbar-default sidebar" role="navigation">
 		<div class="sidebar-nav navbar-collapse">
 			<ul class="nav" id="side-menu">
-				<li class="sidebar-search">
-					<div class="input-group custom-search-form">
-						<input type="text" class="form-control" placeholder="Search...">
-						<span class="input-group-btn">
-						<button class="btn btn-default" type="button">
-							<i class="fa fa-search"></i>
-						</button>
-					</span>
-					</div>
-					<!-- /input-group -->
-				</li>
 				<li>
-					<a href="student-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify"></span></a>
+					<a href="student-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
 					<a href="student-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
@@ -86,11 +75,11 @@
 </nav>
 
 <style>
-.badge-notify{
+.badge-notify2{
    background: red;
    position: relative;
    top: -10px;
-   left: 0px;
+   left: 2px;
    margin: -10px;
 }
 </style>

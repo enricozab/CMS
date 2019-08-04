@@ -20,10 +20,25 @@
 	<!-- /.navbar-header -->
 
 	<ul class="nav navbar-top-links navbar-right">
-		<li><b>Welcome, <?php echo $_SESSION['first_name']; ?>!</b></li>
+	<li><b>Welcome, <?php echo $_SESSION['first_name']; ?>!</b></li>&nbsp;&nbsp;&nbsp;
+		
+		<!-- /.dropdown -->
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-				<i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+				<span>
+					<i class="fa fa-bell fa-2x" style="font-size: 18px; margin: -5px" aria-hidden="true"></i>
+					<span id="notif-badge" class="badge badge-notify2"></span>
+				<span>
+			</a>
+			<ul id="notifTable" class="dropdown-menu dropdown-alerts" style="width: 500px; overflow-y: scroll; max-height: 500px;">
+			</ul>
+			<!-- /.dropdown-alerts -->
+		</li>
+		<!-- /.dropdown -->
+
+		<li class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				<i class="fa fa-user fa-fw" style="font-size: 18px; margin: -5px"></i>
 			</a>
 			<ul class="dropdown-menu dropdown-user">
 				<li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
@@ -43,22 +58,11 @@
 	<div class="navbar-default sidebar" role="navigation">
 		<div class="sidebar-nav navbar-collapse">
 			<ul class="nav" id="side-menu">
-				<li class="sidebar-search">
-					<div class="input-group custom-search-form">
-						<input type="text" class="form-control" placeholder="Search...">
-						<span class="input-group-btn">
-						<button class="btn btn-default" type="button">
-							<i class="fa fa-search"></i>
-						</button>
-					</span>
-					</div>
-					<!-- /input-group -->
-				</li>
 				<li>
 					<a href="sdfod-dashboard.php" id="sidebar_dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</span></a>
 				</li>
 				<li>
-					<a href="sdfod-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
+					<a href="sdfod-home.php"  id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
 					<a href="sdfod-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
@@ -78,3 +82,13 @@
 	</div>
 	<!-- /.navbar-static-side -->
 </nav>
+
+<style>
+.badge-notify2{
+   background: red;
+   position: relative;
+   top: -10px;
+   left: 2px;
+   margin: -10px;
+}
+</style>

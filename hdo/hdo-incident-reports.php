@@ -40,6 +40,17 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    
+    <script>
+      function showSnackbar() {
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+      }
+    </script>
+
 </head>
 
 <body>
@@ -65,14 +76,14 @@
                 <!-- /.col-lg-12 -->
             </div>
             <br><br><br><br><br>
+
+            <div id="snackbar"><i class="fa fa-info-circle fa-fw" style="font-size: 20px"></i> <span id="alert-message">Some text some message..</span></div>
+
         </div>
         <!-- /#page-wrapper -->
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -96,75 +107,175 @@
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {
-        loadNotif();
+      loadNotif();
 
-        function loadNotif () {
-            $.ajax({
-              url: '../ajax/hdo-notif-incident-reports.php',
-              type: 'POST',
-              data: {
-              },
-              success: function(response) {
-                if(response > 0) {
-                  $('#ir').text(response);
-                }
-                else {
-                  $('#ir').text('');
-                }
-              }
-            });
-
-            $.ajax({
-              url: '../ajax/hdo-notif-cases.php',
-              type: 'POST',
-              data: {
-              },
-              success: function(response) {
-                if(response > 0) {
-                  $('#cn').text(response);
-                }
-                else {
-                  $('#cn').text('');
-                }
-              }
-            });
-
-            setTimeout(loadNotif, 5000);
-        };
-
-        var timeTable;
-        normalTable();
-
-        function normalTable() {
-          $.ajax({
-            url: '../ajax/hdo-get-incident-reports.php',
-            type: 'POST',
-            data: {
-            },
-            success: function(response) {
-              $('#incident-reports-table').html(response);
-              var curPage = $('#incident-reports-table').DataTable().page();
-              var curSearch = $('#incident-reports-table').DataTable().search();
-              if($('div.dataTables_filter input').is(':focus')) {
-                var focus = true;
-              }
-              $('#incident-reports-table').DataTable({
-                'destroy': true,
-                'aaSorting': []
-              });
-              $('#incident-reports-table').DataTable().page(curPage).draw('page');
-              $('#incident-reports-table').DataTable().search(curSearch).draw('page');
-              if(focus) {
-                $('div.dataTables_filter input').focus();
-              }
+      function loadNotif () {
+        $.ajax({
+          url: '../ajax/hdo-notif-incident-reports.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#ir').text(response);
             }
-          });
+            else {
+              $('#ir').text('');
+            }
+          }
+        });
 
-          timeTable = setTimeout(normalTable, 5000);
+        $.ajax({
+          url: '../ajax/hdo-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
+
+    var timeTable;
+    normalTable();
+
+    function normalTable() {
+      $.ajax({
+        url: '../ajax/hdo-get-incident-reports.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          $('#incident-reports-table').html(response);
+          var curPage = $('#incident-reports-table').DataTable().page();
+          var curSearch = $('#incident-reports-table').DataTable().search();
+          if($('div.dataTables_filter input').is(':focus')) {
+            var focus = true;
+          }
+          $('#incident-reports-table').DataTable({
+            'destroy': true,
+            'aaSorting': []
+          });
+          $('#incident-reports-table').DataTable().page(curPage).draw('page');
+          $('#incident-reports-table').DataTable().search(curSearch).draw('page');
+          if(focus) {
+            $('div.dataTables_filter input').focus();
+          }
         }
-    });
-    </script>
+      });
+
+      timeTable = setTimeout(normalTable, 5000);
+    }
+    
+    var count = 0;
+    var prevCount = 0;
+    loadCount();
+
+    function loadCount() {
+      $.ajax({
+        url: '../ajax/user-notifications-count.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          count = response;
+          if(count > 0) {
+            $('#notif-badge').text(count);
+          }
+          else {
+            $('#notif-badge').text('');
+          }
+          if (prevCount != count) {
+            loadReminders();
+            prevCount = count;
+          }
+        }
+      });
+
+      setTimeout(loadCount, 5000);
+    };
+
+    var notifTable;
+
+    function loadReminders() {
+      if (count > 0) {
+        var notif = " new notification";
+        if (count > 1) notif = " new notifications";
+        $('#alert-message').text('You have '+count+notif);
+        setTimeout(function() { showSnackbar(); }, 1500);
+      }
+    }
+
+    notifData();
+
+    function notifData() {
+      $.ajax({
+        url: '../ajax/user-notifications.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          $('#notifTable').html(response);
+        }
+      });
+
+      notifTable = setTimeout(notifData, 5000);
+    }
+  });
+  </script>
 
 </body>
 
 </html>
+
+
+<style>
+#snackbar {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #337ab7;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 15px;
+  position: fixed;
+  z-index: 1;
+  right: 40px;
+  bottom: 40px;
+  font-size: 18px;
+  border-radius: 5px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 40px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 40px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 40px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 40px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>
