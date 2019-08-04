@@ -368,9 +368,7 @@ if (!isset($_GET['cn']))
                         ?>
 
                         <?php
-                          if((($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 15) && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
-                            <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
-                        <?php }
+                          
                           if(($row['REMARKS_ID'] == 8 || $row['REMARKS_ID'] == 9) and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 3){ ?>
                             <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for Formal Hearing</button>
                         <?php }
@@ -379,6 +377,9 @@ if (!isset($_GET['cn']))
                         <?php }
                           if(($row['REMARKS_ID'] == 8 || $row['REMARKS_ID'] == 16) and $signrow['if_signed'] and $row['PROCEEDING_ID'] == 1){ ?>
                             <button type="button" id="schedule" class="btn btn-success"><span class=" fa fa-calendar-o"></span>&nbsp; Schedule for UPCC</button>
+                        <?php }
+                          if((($row['REMARKS_ID'] == 9 || $row['REMARKS_ID'] == 15) && date('Y-m-d H:i:s') > $row['PROCEEDING_DATE']) || $row['REMARKS_ID'] == 13) { ?>
+                            <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                         <?php }
                           if($row['REMARKS_ID'] == 12){ ?>
                             <button type="submit" id="endorse" name="endorse" class="btn btn-primary">Endorse to the President</button>
@@ -708,7 +709,7 @@ if (!isset($_GET['cn']))
           reason: "<?php echo $crfrow['reason']; ?>",
           remark: "<?php echo $crfrow['aulc_remarks']; ?>",
           changes: "<?php echo $crfrow['change_offense']; ?>",
-          others: $('#ulcRemarks').val();
+          others: $('#ulcRemarks').val()
 
         });
 
