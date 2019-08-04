@@ -279,21 +279,37 @@ if (!isset($_GET['cn']))
                                   <?php
                                     $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
                                     $IDORes = $dbc->query($idoQuery);
+                                    $ido_workloads = array();
+                                    $ido_names = array();
+
                                     while($ido = $IDORes->fetch_assoc()){
                                       $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
                                       $idoNumber = $ido['user_id'];
-                                      $workloadQuery = $dbc->query("SELECT COUNT(c.case_id) 
-                                                                    FROM cases c 
-                                                                    LEFT JOIN users u ON c.handled_by_id=u.user_id
-                                                                    LEFT JOIN ido_cases ic ON c.handled_by_id=ic.user_id
-                                                                    WHERE u.user_id = ".$idoNumber."
+                                      $workloadQuery = $dbc->query("SELECT COUNT(ic.case_id)
+                                                                    FROM ido_cases ic
+                                                                      LEFT JOIN cases c on ic.case_id=c.case_id
+                                                                      WHERE ic.user_id = ".$idoNumber."
                                                                           && (c.status_id != 3 && c.status_id != 4)
                                                                           && ic.handle = 1");
                                       $workload = $workloadQuery->fetch_row();
-                                      if ($idoNumber != $row2['HANDLED_BY_ID']) {
-                                        echo 
-                                          '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
+
+                                      if ($idoNumber != $row2['HANDLED_BY_ID'] && $workload[0] < 8) {
+                                        $ido_names[$idoNumber] = $idoName;
+                                        $ido_workloads[$idoNumber] = $workload[0];
+                                        // echo 
+                                        //   '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
                                       }
+                                    }
+
+                                    asort($ido_workloads);
+                                    $ido_names_ordered = array();
+                                    
+                                    foreach (array_keys($ido_workloads) as $key) {
+                                      $ido_names_ordered[$key] = $ido_names[$key] ;
+                                    }
+                                    
+                                    foreach($ido_workloads as $x => $x_value) {
+                                      echo '<option value="' .$x. '">' . $ido_names[$x] . ' (Active Cases: ' .$ido_workloads[$x]. ')</option>';
                                     }
                                   ?>
                               </select>
