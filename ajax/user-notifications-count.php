@@ -34,7 +34,19 @@
             LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
-
+  else if($_SESSION['user_type_id'] == 3){
+    $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
+                        C.REMARKS_ID AS 'REMARKS_ID',
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+            FROM 		    CASES C
+            ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
+            
+    $query2="SELECT 		IR.INCIDENT_REPORT_ID AS 'INCIDENT_REPORT_ID',
+                        C.CASE_ID AS CASE_ID
+            FROM 		    INCIDENT_REPORTS IR
+            LEFT JOIN		CASES C ON IR.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
+            ORDER BY    IR.DATE_FILED DESC, IR.INCIDENT_REPORT_ID DESC";
+  }
 
   $result=mysqli_query($dbc,$query);
   if(!$result){
@@ -57,6 +69,19 @@
         }
         else {
           $count += 1;
+        }
+      }
+    }
+    if($_SESSION['user_type_id'] == 3) {
+      $result2=mysqli_query($dbc,$query2);
+      if(!$result2){
+        echo mysqli_error($dbc);
+      }
+      else {
+        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+          if($row2['CASE_ID'] == NULL) {
+            $count += 1;
+          }
         }
       }
     }

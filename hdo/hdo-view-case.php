@@ -41,6 +41,16 @@ if (!isset($_GET['cn']))
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    
+    <script>
+      function showSnackbar() {
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+      }
+    </script>
 </head>
 
 <body>
@@ -279,21 +289,37 @@ if (!isset($_GET['cn']))
                                   <?php
                                     $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
                                     $IDORes = $dbc->query($idoQuery);
+                                    $ido_workloads = array();
+                                    $ido_names = array();
+
                                     while($ido = $IDORes->fetch_assoc()){
                                       $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
                                       $idoNumber = $ido['user_id'];
-                                      $workloadQuery = $dbc->query("SELECT COUNT(c.case_id) 
-                                                                    FROM cases c 
-                                                                    LEFT JOIN users u ON c.handled_by_id=u.user_id
-                                                                    LEFT JOIN ido_cases ic ON c.handled_by_id=ic.user_id
-                                                                    WHERE u.user_id = ".$idoNumber."
+                                      $workloadQuery = $dbc->query("SELECT COUNT(ic.case_id)
+                                                                    FROM ido_cases ic
+                                                                      LEFT JOIN cases c on ic.case_id=c.case_id
+                                                                      WHERE ic.user_id = ".$idoNumber."
                                                                           && (c.status_id != 3 && c.status_id != 4)
                                                                           && ic.handle = 1");
                                       $workload = $workloadQuery->fetch_row();
-                                      if ($idoNumber != $row2['HANDLED_BY_ID']) {
-                                        echo 
-                                          '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
+
+                                      if ($idoNumber != $row2['HANDLED_BY_ID'] && $workload[0] < 8) {
+                                        $ido_names[$idoNumber] = $idoName;
+                                        $ido_workloads[$idoNumber] = $workload[0];
+                                        // echo 
+                                        //   '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
                                       }
+                                    }
+
+                                    asort($ido_workloads);
+                                    $ido_names_ordered = array();
+                                    
+                                    foreach (array_keys($ido_workloads) as $key) {
+                                      $ido_names_ordered[$key] = $ido_names[$key] ;
+                                    }
+                                    
+                                    foreach($ido_workloads as $x => $x_value) {
+                                      echo '<option value="' .$x. '">' . $ido_names[$x] . ' (Active Cases: ' .$ido_workloads[$x]. ')</option>';
                                     }
                                   ?>
                               </select>
@@ -310,6 +336,9 @@ if (!isset($_GET['cn']))
             </div>
         </div>
         <br><br><br><br><br>
+
+        <div id="snackbar"><i class="fa fa-info-circle fa-fw" style="font-size: 20px"></i> <span id="alert-message">Some text some message..</span></div>
+
       </div>
 
       <?php
@@ -458,6 +487,61 @@ if (!isset($_GET['cn']))
 
     $('.modal').attr('data-backdrop', "static");
     $('.modal').attr('data-keyboard', false);
+
+    var count = 0;
+    var prevCount = 0;
+    loadCount();
+
+    function loadCount() {
+      $.ajax({
+        url: '../ajax/user-notifications-count.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          count = response;
+          if(count > 0) {
+            $('#notif-badge').text(count);
+          }
+          else {
+            $('#notif-badge').text('');
+          }
+          if (prevCount != count) {
+            loadReminders();
+            prevCount = count;
+          }
+        }
+      });
+
+      setTimeout(loadCount, 5000);
+    };
+
+    var notifTable;
+
+    function loadReminders() {
+      if (count > 0) {
+        var notif = " new notification";
+        if (count > 1) notif = " new notifications";
+        $('#alert-message').text('You have '+count+notif);
+        setTimeout(function() { showSnackbar(); }, 1500);
+      }
+    }
+
+    notifData();
+
+    function notifData() {
+      $.ajax({
+        url: '../ajax/user-notifications.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          $('#notifTable').html(response);
+        }
+      });
+
+      notifTable = setTimeout(notifData, 5000);
+    }
   });
 
   <?php
@@ -524,3 +608,47 @@ if (!isset($_GET['cn']))
 </body>
 
 </html>
+
+<style>
+#snackbar {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #337ab7;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 15px;
+  position: fixed;
+  z-index: 1;
+  right: 40px;
+  bottom: 40px;
+  font-size: 18px;
+  border-radius: 5px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 40px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 40px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 40px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 40px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>

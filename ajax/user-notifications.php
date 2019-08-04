@@ -34,6 +34,27 @@
             LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
+  else if($_SESSION['user_type_id'] == 3){
+    $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
+                        C.REMARKS_ID AS 'REMARKS_ID',
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+            FROM 		    CASES C
+            ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
+            
+    $query2="SELECT 		IR.INCIDENT_REPORT_ID AS 'INCIDENT_REPORT_ID',
+                        C.CASE_ID AS CASE_ID
+            FROM 		    INCIDENT_REPORTS IR
+            LEFT JOIN		CASES C ON IR.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
+            ORDER BY    IR.DATE_FILED DESC, IR.INCIDENT_REPORT_ID DESC";
+  }
+  if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
+    $query3="SELECT 		  C.CASE_ID AS CASE_ID,
+                          RO.TYPE AS TYPE,
+                          DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+              FROM 		    CASES C
+              LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+              ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
+  }
 
   $result=mysqli_query($dbc,$query);
   if(!$result){
@@ -136,6 +157,44 @@
               </li>
               <li class='divider'></li>";
         $empty = false;
+      }
+      if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
+        $result3=mysqli_query($dbc,$query3);
+        if(!$result3){
+          echo mysqli_error($dbc);
+        }
+        else {
+          while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)) {
+            if($row3['TYPE'] == 'Minor' && $row3) {
+              echo "<li>
+                      <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ulc-view-case.php?cn={$row['CASE_ID']}'\">
+                        <b>Case {$row['CASE_ID']}: </b>Please follow-up on the final decision from the President and update the verdict and penalty.</i>
+                      </div>
+                    </li>
+                    <li class='divider'></li>";
+              $empty = false;
+            }
+          }
+        }
+      }
+    }
+    if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
+      $result2=mysqli_query($dbc,$query2);
+      if(!$result2){
+        echo mysqli_error($dbc);
+      }
+      else {
+        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
+          if($row2['CASE_ID'] == NULL) {
+            echo "<li>
+                    <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='hdo-view-incident-report.php?irn={$row2['INCIDENT_REPORT_ID']}'\">
+                      <b>Incident Report {$row2['INCIDENT_REPORT_ID']}: </b>Please process and assign an IDO to create an alleged case.</i>
+                    </div>
+                  </li>
+                  <li class='divider'></li>";
+            $empty = false;
+          }
+        }
       }
     }
     if ($empty) {

@@ -59,14 +59,14 @@
 		<div class="sidebar-nav navbar-collapse">
 			<ul class="nav" id="side-menu">
 				<li>
-					<div style="text-align:center;padding:1em 0;"> 
-						<iframe src="https://www.zeitverschiebung.net/clock-widget-iframe-v2?language=en&size=small&timezone=Asia%2FManila" width="100%" height="90" frameborder="0" seamless></iframe>
-				</li>
-				<li>
 					<a href="sdfod-dashboard.php" id="sidebar_dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</span></a>
 				</li>
 				<li>
+<<<<<<< HEAD
 					<a href="sdfod-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
+=======
+					<a href="sdfod-home.php"  id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
+>>>>>>> origin/debbie-dev
 				</li>
 				<li>
 					<a href="sdfod-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
