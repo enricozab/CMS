@@ -32,7 +32,7 @@
                       C.DATE_CLOSED AS DATE_CLOSED,
                       C.IF_NEW AS IF_NEW,
                       IR.NUM_DAYS AS NUM_DAYS,
-                      DATEDIFF(CURDATE(),C.DATE_FILED) AS INACTIVE
+                      DATEDIFF(CURDATE(),C.LAST_UPDATE) AS INACTIVE
           FROM 		    CASES C
           LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
           LEFT JOIN	  USERS U1 ON C.COMPLAINANT_ID = U1.USER_ID
@@ -48,7 +48,7 @@
           LEFT JOIN   INACTIVITY_RULE IR ON RO.TYPE = IR.OFFENSE_TYPE
 
           WHERE       (S.DESCRIPTION = "ON GOING" OR S.DESCRIPTION = "OPENED")
-                      AND DATEDIFF(CURDATE(),C.DATE_FILED) > IR.NUM_DAYS
+          AND         DATEDIFF(CURDATE(),C.LAST_UPDATE) > IR.NUM_DAYS
           ORDER BY	  C.LAST_UPDATE DESC';
   $result=mysqli_query($dbc,$query);
   if(!$result){
@@ -61,7 +61,6 @@
                   <th>Offense</th>
                   <th>Type</th>
                   <th>Date Filed</th>
-                  <th>Inactive Days</th>
                   <th>Last Update</th>
                   <th>Status</th>
                   <th>Remarks</th>
@@ -86,10 +85,10 @@
           echo "&nbsp;&nbsp;&nbsp;<span class=\"badge badge-notify\">NEW</span></td>";
       }
 
-      echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>
+      echo "<td>{$row['CASE_ID']}</td>
+            <td>{$row['OFFENSE_DESCRIPTION']}</td>
             <td>{$row['TYPE']}</td>
             <td>{$row['DATE_FILED']}</td>
-            <td>{$row['INACTIVE']}</td>
             <td>{$row['LAST_UPDATE']}</td>
             <td>{$row['STATUS_DESCRIPTION']}</td>
             <td>{$row['REMARKS_DESCRIPTION']}</td>

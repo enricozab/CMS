@@ -34,7 +34,8 @@
             LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
-  else if($_SESSION['user_type_id'] == 3){
+
+  if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
                         C.REMARKS_ID AS 'REMARKS_ID',
                         DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
@@ -46,13 +47,12 @@
             FROM 		    INCIDENT_REPORTS IR
             LEFT JOIN		CASES C ON IR.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
             ORDER BY    IR.DATE_FILED DESC, IR.INCIDENT_REPORT_ID DESC";
-  }
-  if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query3="SELECT 		  C.CASE_ID AS CASE_ID,
                           RO.TYPE AS TYPE,
                           DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
               FROM 		    CASES C
               LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+              WHERE       C.STATUS_ID = 1 OR C.STATUS_ID = 2
               ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
 
@@ -158,25 +158,6 @@
               <li class='divider'></li>";
         $empty = false;
       }
-      if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
-        $result3=mysqli_query($dbc,$query3);
-        if(!$result3){
-          echo mysqli_error($dbc);
-        }
-        else {
-          while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)) {
-            if($row3['TYPE'] == 'Minor' && $row3) {
-              echo "<li>
-                      <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ulc-view-case.php?cn={$row['CASE_ID']}'\">
-                        <b>Case {$row['CASE_ID']}: </b>Please follow-up on the final decision from the President and update the verdict and penalty.</i>
-                      </div>
-                    </li>
-                    <li class='divider'></li>";
-              $empty = false;
-            }
-          }
-        }
-      }
     }
     if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
       $result2=mysqli_query($dbc,$query2);
@@ -189,6 +170,36 @@
             echo "<li>
                     <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='hdo-view-incident-report.php?irn={$row2['INCIDENT_REPORT_ID']}'\">
                       <b>Incident Report {$row2['INCIDENT_REPORT_ID']}: </b>Please process and assign an IDO to create an alleged case.</i>
+                    </div>
+                  </li>
+                  <li class='divider'></li>";
+            $empty = false;
+          }
+        }
+      }
+
+      $result3=mysqli_query($dbc,$query3);
+      if(!$result3){
+        echo mysqli_error($dbc);
+      }
+      else {
+        while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)) {
+          $user = 'hdo';
+          if($_SESSION['user_type_id'] == 8) $user = 'cdo';
+          else if($_SESSION['user_type_id'] == 9) $user = 'sdfod';
+          if($row3['TYPE'] == 'Minor' && $row3['DATEDIFF'] > 2) {
+            echo "<li>
+                    <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='{$user}-view-case.php?cn={$row3['CASE_ID']}'\">
+                      <b>Case {$row3['CASE_ID']}: </b>The case has been inactive for 3 or more days. Please reassign the case.</i>
+                    </div>
+                  </li>
+                  <li class='divider'></li>";
+            $empty = false;
+          }
+          else if($row3['TYPE'] == 'Major' && $row3['DATEDIFF'] > 4) {
+            echo "<li>
+                    <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='{$user}-view-case.php?cn={$row3['CASE_ID']}'\">
+                      <b>Case {$row3['CASE_ID']}: </b>The case has been inactive for 5 or more days. Please reassign the case.</i>
                     </div>
                   </li>
                   <li class='divider'></li>";

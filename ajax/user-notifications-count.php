@@ -34,7 +34,8 @@
             LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
-  else if($_SESSION['user_type_id'] == 3){
+  
+  if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
                         C.REMARKS_ID AS 'REMARKS_ID',
                         DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
@@ -46,6 +47,13 @@
             FROM 		    INCIDENT_REPORTS IR
             LEFT JOIN		CASES C ON IR.INCIDENT_REPORT_ID = C.INCIDENT_REPORT_ID
             ORDER BY    IR.DATE_FILED DESC, IR.INCIDENT_REPORT_ID DESC";
+    $query3="SELECT 		  C.CASE_ID AS CASE_ID,
+                          RO.TYPE AS TYPE,
+                          DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+              FROM 		    CASES C
+              LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+              WHERE       C.STATUS_ID = 1 OR C.STATUS_ID = 2
+              ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
 
   $result=mysqli_query($dbc,$query);
@@ -72,6 +80,7 @@
         }
       }
     }
+
     if($_SESSION['user_type_id'] == 3) {
       $result2=mysqli_query($dbc,$query2);
       if(!$result2){
@@ -80,6 +89,21 @@
       else {
         while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
           if($row2['CASE_ID'] == NULL) {
+            $count += 1;
+          }
+        }
+      }
+
+      $result3=mysqli_query($dbc,$query3);
+      if(!$result3){
+        echo mysqli_error($dbc);
+      }
+      else {
+        while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)){
+          if($row3['TYPE'] == 'Minor' && $row3['DATEDIFF'] > 2) {
+            $count += 1;
+          }
+          else if($row3['TYPE'] == 'Major' && $row3['DATEDIFF'] > 4) {
             $count += 1;
           }
         }
