@@ -55,13 +55,13 @@
 					<!-- /input-group -->
 				</li>
 				<li>
-					<a href="student-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
+					<a href="student-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge"></span></a>
 				</li>
 				<li>
-					<a href="student-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="student-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="student-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="student-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 			</ul>
 		</div>

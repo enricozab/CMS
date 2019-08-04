@@ -508,6 +508,19 @@ if (!isset($_GET['cn']))
               response: document.getElementById("letter").value
           },
           success: function(msg) {
+            // audit trail
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'Student Case - Accomplished Student Response Form for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+              })
+
               $("#evidencediv").hide();
               $("#form").attr("disabled", true);
 
@@ -816,7 +829,20 @@ if (!isset($_GET['cn']))
     }
 
     $("#submitParent").click(function(){
+      // audit trail
+      $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Parent Letter Sent for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+              })
       parentLetter();
+      
       // $('#waitModal').modal('show');
     });
 
@@ -885,6 +911,20 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
+           
+            // audit trail
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Appeal made for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+              })
+
               $('#message').text('An appeal has been sent to ULC successfully!');
               $("#appeal").attr('disabled', true);
               $("#alertModal").modal("show");
@@ -990,6 +1030,48 @@ if (!isset($_GET['cn']))
 
     $('.modal').attr('data-backdrop', "static");
     $('.modal').attr('data-keyboard', false);
+
+     // sidebar system audit trail
+     $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Student Viewed Case - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Student Viewed Case - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Student Viewed Case - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+
   });
 
   <?php

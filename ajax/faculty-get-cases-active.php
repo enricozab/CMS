@@ -66,7 +66,7 @@
           </thead>
           <tbody>';
     while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='faculty-view-case.php?cn={$row['CASE_ID']}'\">
+      echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='faculty-view-case.php?cn={$row['CASE_ID']}'; viewCaseAudit({$row['CASE_ID']});\">
             <td>{$row['CASE_ID']}";
 
       if($row['IF_NEW'] == 1) {
