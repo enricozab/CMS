@@ -82,7 +82,7 @@
       }
     }
     else {
-      echo "<p style='margin-right: 20px; margin-left: -20px;'>No related closed cases available.</p>";
+      echo "<p style='margin-right: 20px; margin-left: -20px;'>No previous closed cases available.</p>";
     }
   }
 ?>

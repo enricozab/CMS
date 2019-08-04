@@ -46,8 +46,8 @@
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 
           WHERE       C.HANDLED_BY_ID = '.$_SESSION['user_id'].'
-                      AND S.DESCRIPTION = "CLOSED"
-                      AND IDO.HANDLE = 1
+          AND         (S.DESCRIPTION = "CLOSED" OR S.DESCRIPTION = "DISMISSED")
+          AND         IDO.HANDLE = 1
           ORDER BY	  C.LAST_UPDATE DESC';
   $result=mysqli_query($dbc,$query);
   if(!$result){
@@ -81,7 +81,7 @@
             <td>{$row['CASE_ID']}";
 
       if($row['IF_NEW'] == 1) {
-          echo "&nbsp;&nbsp;&nbsp;<span class=\"badge\">NEW</span></td>";
+          echo "&nbsp;&nbsp;&nbsp;<span class=\"badge badge-notify\">NEW</span></td>";
       }
 
       echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>

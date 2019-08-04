@@ -45,7 +45,8 @@
           LEFT JOIN   REF_PENALTIES RP ON C.PENALTY_ID = RP.PENALTY_ID
           LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
 
-          WHERE       C.REPORTED_STUDENT_ID = '.$_SESSION['user_id'].' AND S.DESCRIPTION = "ON GOING" OR S.DESCRIPTION = "OPENED"
+          WHERE       C.REPORTED_STUDENT_ID = '.$_SESSION['user_id'].' 
+          AND         (S.DESCRIPTION = "ON GOING" OR S.DESCRIPTION = "OPENED")
           ORDER BY	  C.LAST_UPDATE DESC';
   $result=mysqli_query($dbc,$query);
   if(!$result){
@@ -70,7 +71,7 @@
             <td>{$row['CASE_ID']}";
 
       if($row['IF_NEW'] == 1) {
-          echo "&nbsp;&nbsp;&nbsp;<span class=\"badge\">NEW</span></td>";
+          echo "&nbsp;&nbsp;&nbsp;<span class=\"badge badge-notify\">NEW</span></td>";
       }
 
       echo "<td>{$row['OFFENSE_DESCRIPTION']}</td>
