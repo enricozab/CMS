@@ -47,6 +47,23 @@
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
       }
     </script> 
+
+    <script> 
+      function viewCaseAudit(x) {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: ('Student Cases - Viewed Case #' + x)
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      }
+    </script>
+
 </head>
 
 <body>
@@ -350,6 +367,47 @@
 
         notifTable = setTimeout(notifData, 5000);
       }
+      // sidebar system audit trail
+     $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Student Cases - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Student Cases - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'Student Cases - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+
     });
     </script>
 

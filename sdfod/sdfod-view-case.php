@@ -603,6 +603,19 @@ if (!isset($_GET['cn']))
     $('#fileUpload').click(function() {
       var data = "<?php echo $row['OFFENSE_DESCRIPTION']; ?>" + "|" + "<?php echo $row['TYPE']; ?>";
       btnSubmit(data);
+      
+      // audit trail
+      $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Uploaded Discipline Case Feedback Form for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
     });
 
     $('#endorse').click(function() {
@@ -628,6 +641,20 @@ if (!isset($_GET['cn']))
                 penalty: $('#finpenalty').val()
             },
             success: function(response) {
+
+              // audit trail
+              $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Closed Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
+
               loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
                 if (error) { throw error };
                 var zip = new JSZip(content);
@@ -698,6 +725,20 @@ if (!isset($_GET['cn']))
                 //proceeding: $("input:radio[name=proceedings]:checked").val()
             },
             success: function(response) {
+
+              // audit trail
+              $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Endorsed Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+              })
+
               loadFile("../templates/template-discipline-case-referral-form.docx",function(error,content){
                 if (error) { throw error };
                 var zip = new JSZip(content);
@@ -854,6 +895,19 @@ if (!isset($_GET['cn']))
     $('#btnViewEvidence').click(function() {
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='sdfod-gdrive-case.php';
+
+      // audit trail
+      $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Viewed Evidence for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
     });
 
     function loadFile(url,callback){
@@ -876,6 +930,20 @@ if (!isset($_GET['cn']))
               dRemarks: remarks
           },
           success: function(response) {
+
+            // audit trail
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Sign Discipline Feedback Form for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+              })
+
             loadFile("../templates/template-discipline-case-feedback-form.docx",function(error,content){
               if (error) { throw error };
               var zip = new JSZip(content);
@@ -1040,6 +1108,20 @@ if (!isset($_GET['cn']))
               caseID: <?php echo $_GET['cn']; ?>
           },
           success: function(msg) {
+
+            // audit trail
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'SDFOD Case - Sent Academic Endorsement Service Form for Case #<?php echo $_GET['cn']; ?>'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            })
+
             $('#message').text('Academic Service Endorsement Form has been sent to your email. Please sign the form and sent it to the student.');
             $("#sendAcad").attr('disabled', true);
             $("#alertModal").modal("show");
@@ -1127,6 +1209,86 @@ if (!isset($_GET['cn']))
       //$("input[type=radio]").attr('disabled', true);
   <?php }
   ?>
+
+      // sidebar system audit trail
+      $('#sidebar_dashboard').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'SDFOD Viewed Case - Viewed Dashboard'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'SDFOD Viewed Case - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'SDFOD Viewed Case - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_drive').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'SDFOD Viewed Case - Viewed Files'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'SDFOD Viewed Case - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_sysmanagement').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'SDFOD Viewed Case - Viewed System Management'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
   </script>
 
   <!-- Modal -->

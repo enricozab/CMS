@@ -1,4 +1,4 @@
-<?php include 'student.php' ?>
+<?php include 'sdfod.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Inobx</title>
+    <title>CMS - Incident Reports</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
     <!-- MetisMenu CSS -->
     <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
-    <!-- DataTables CSS -->
+	  <!-- DataTables CSS -->
     <link href="../vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
@@ -49,17 +49,7 @@
         x.className = "show";
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
       }
-    </script> 
-
-    <style>
-      iframe {
-        width: 100%;
-        border: 0;
-        min-height: 80%;
-        height: 600px;
-        display: flex;
-      }
-    </style>
+    </script>
 
 </head>
 
@@ -67,23 +57,27 @@
 
     <div id="wrapper">
 
-        <?php include 'student-sidebar.php';?>
+        <?php include 'sdfod-sidebar.php';?>
 
         <div id="page-wrapper">
-          <div class="row">
-              <div class="col-lg-8">
-                  <h3 class="page-header">Inbox</h3>
-              </div>
-              <!-- /.col-lg-12 -->
-          </div>
-
-          <div class="row">
-            <div class="col-lg-12">
-              <?php include  '../gmail/inbox.php' ?>
+            <div class="row">
+                <div class="col-lg-8">
+                    <h3 class="page-header">Incident Reports</h3>
+                </div>
+                <!-- /.col-lg-12 -->
             </div>
-          </div>
+      			<!-- case notification table -->
+      			<div class="row">
+                <div class="col-lg-12">
+                  <table width="100%" class="table table-striped table-bordered table-hover" id="incident-reports-table">
+                  </table>
+                  <!-- /.table-responsive -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <br><br><br><br><br>
 
-          <div id="snackbar"><i class="fa fa-info-circle fa-fw" style="font-size: 20px"></i> <span id="alert-message">Some text some message..</span></div>
+            <div id="snackbar"><i class="fa fa-info-circle fa-fw" style="font-size: 20px"></i> <span id="alert-message">Some text some message..</span></div>
 
         </div>
         <!-- /#page-wrapper -->
@@ -111,16 +105,28 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
 	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
-  <script>
-  //all functinos have to be inside this functions
-  //function that runs once the page is loaded
+    <script>
+    $(document).ready(function() {
+      loadNotif();
 
-  $(document).ready(function() {
-    loadNotif();
-
-    function loadNotif () {
+      function loadNotif () {
         $.ajax({
-          url: '../ajax/student-notif-cases.php',
+          url: '../ajax/hdo-notif-incident-reports.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#ir').text(response);
+            }
+            else {
+              $('#ir').text('');
+            }
+          }
+        });
+
+        $.ajax({
+          url: '../ajax/sdfod-notif-cases.php',
           type: 'POST',
           data: {
           },
@@ -137,110 +143,98 @@
         setTimeout(loadNotif, 5000);
     };
 
-    $("#login").hide();
-    $("#create").hide();
+    var timeTable;
+    normalTable();
 
-    var count = 0;
-      var prevCount = 0;
-      loadCount();
-
-      function loadCount() {
-        $.ajax({
-          url: '../ajax/user-notifications-count.php',
-          type: 'POST',
-          data: {
-          },
-          success: function(response) {
-            count = response;
-            if(count > 0) {
-              $('#notif-badge').text(count);
-            }
-            else {
-              $('#notif-badge').text('');
-            }
-            if (prevCount != count) {
-              loadReminders();
-              prevCount = count;
-            }
+    function normalTable() {
+      $.ajax({
+        url: '../ajax/sdfod-get-incident-reports.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          $('#incident-reports-table').html(response);
+          var curPage = $('#incident-reports-table').DataTable().page();
+          var curSearch = $('#incident-reports-table').DataTable().search();
+          if($('div.dataTables_filter input').is(':focus')) {
+            var focus = true;
           }
-        });
-
-        setTimeout(loadCount, 5000);
-      };
-
-      var notifTable;
-
-      function loadReminders() {
-        if (count > 0) {
-          var notif = " new notification";
-          if (count > 1) notif = " new notifications";
-          $('#alert-message').text('You have '+count+notif);
-          setTimeout(function() { showSnackbar(); }, 1500);
+          $('#incident-reports-table').DataTable({
+            'destroy': true,
+            'aaSorting': []
+          });
+          $('#incident-reports-table').DataTable().page(curPage).draw('page');
+          $('#incident-reports-table').DataTable().search(curSearch).draw('page');
+          if(focus) {
+            $('div.dataTables_filter input').focus();
+          }
         }
-      }
+      });
 
-      notifData();
+      timeTable = setTimeout(normalTable, 5000);
+    }
+    
+    var count = 0;
+    var prevCount = 0;
+    loadCount();
 
-      function notifData() {
-        $.ajax({
-          url: '../ajax/user-notifications.php',
-          type: 'POST',
-          data: {
-          },
-          success: function(response) {
-            $('#notifTable').html(response);
+    function loadCount() {
+      $.ajax({
+        url: '../ajax/user-notifications-count.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          count = response;
+          if(count > 0) {
+            $('#notif-badge').text(count);
           }
-        });
+          else {
+            $('#notif-badge').text('');
+          }
+          if (prevCount != count) {
+            loadReminders();
+            prevCount = count;
+          }
+        }
+      });
 
-        notifTable = setTimeout(notifData, 5000);
+      setTimeout(loadCount, 5000);
+    };
+
+    var notifTable;
+
+    function loadReminders() {
+      if (count > 0) {
+        var notif = " new notification";
+        if (count > 1) notif = " new notifications";
+        $('#alert-message').text('You have '+count+notif);
+        setTimeout(function() { showSnackbar(); }, 1500);
       }
-     // sidebar system audit trail
-     $('#sidebar_cases').click(function() {
-        $.ajax({
-            url: '../ajax/insert_system_audit_trail.php',
-            type: 'POST',
-            data: {
-                userid: <?php echo $_SESSION['user_id'] ?>,
-                actiondone: 'Student Inbox - Viewed Cases'
-            },
-            success: function(response) {
-              console.log('Success');
-            }
-        });
-      });
-      $('#sidebar_inbox').click(function() {
-        $.ajax({
-            url: '../ajax/insert_system_audit_trail.php',
-            type: 'POST',
-            data: {
-                userid: <?php echo $_SESSION['user_id'] ?>,
-                actiondone: 'Student Inbox - Viewed Inbox'
-            },
-            success: function(response) {
-              console.log('Success');
-            }
-        });
-      });
-      $('#sidebar_calendar').click(function() {
-        $.ajax({
-            url: '../ajax/insert_system_audit_trail.php',
-            type: 'POST',
-            data: {
-                userid: <?php echo $_SESSION['user_id'] ?>,
-                actiondone: 'Student Inbox - Viewed Calendar'
-            },
-            success: function(response) {
-              console.log('Success');
-            }
-        });
+    }
+
+    notifData();
+
+    function notifData() {
+      $.ajax({
+        url: '../ajax/user-notifications.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          $('#notifTable').html(response);
+        }
       });
 
+      notifTable = setTimeout(notifData, 5000);
+    }
   });
   </script>
 
 </body>
 
 </html>
+
 
 <style>
 #snackbar {

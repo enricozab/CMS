@@ -1,4 +1,8 @@
-<?php include 'hdo.php' ?>
+<?php include 'sdfod.php' ?>
+<?php
+if (!isset($_GET['irn']))
+    header("Location: http://".$_SERVER['HTTP_HOST']."/CMS/hdo/hdo-home.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +14,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CMS - Apprehension</title>
+    <title>CMS - Incident Report</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -27,6 +31,9 @@
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
+    <!-- Morris Charts CSS -->
+    <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
+
     <!-- Custom Fonts -->
     <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -37,24 +44,18 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- FOR SEARCHABLE DROP -->
+    <!-- FOR SEARCHABLE DROP-->
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
 
-    <!--Datetimepicker -->
-    <!-- scripts from calendar api  -->
-    <link rel="stylesheet" href="../extra-css/jquery.datetimepicker.min.css" />
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
-    <script src="../extra-css/jquery.datetimepicker.min.js"></script>
-
     <!-- GDRIVE -->
-
     <script src="../gdrive/date.js" type="text/javascript"></script>
-    <script src="../gdrive/hdo-addNewFolder3.js" type="text/javascript"></script>
-    <script async defer src="https://apis.google.com/js/api.js"></script>
+    <script src="../gdrive/hdo-addNew6.js" type="text/javascript"></script>
+    <script async defer src="https://apis.google.com/js/api.js">
+    </script>
     <script src="../gdrive/upload.js"></script>
-
+    
     <script>
       function showSnackbar() {
         var x = document.getElementById("snackbar");
@@ -62,43 +63,72 @@
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
       }
     </script>
-
 </head>
 
 <body>
 
     <div id="wrapper">
 
-        <?php include 'hdo-sidebar.php';?>
+        <?php include 'sdfod-sidebar.php'; ?>
 
         <div id="page-wrapper">
             <div class="row">
-                <h3 class="page-header">Student Apprehension</h3>
+                <h3 class="page-header">Incident Report No.: <?php echo $_GET['irn']; ?></h3>
 
                 <div class="col-lg-12">
                   <?php
+                    //Gets incident report data
+                    $query='SELECT 	   IR.INCIDENT_REPORT_ID AS INCIDENT_REPORT_ID,
+                                       IR.REPORTED_STUDENT_ID AS REPORTED_STUDENT_ID,
+                                       CONCAT(U2.FIRST_NAME," ",U2.LAST_NAME) AS STUDENT,
+                                       U.EMAIL AS COMPLAINANT_EMAIL,
+                                       U2.EMAIL AS STUDENT_EMAIL,
+                                       IR.LOCATION AS LOCATION,
+                                       IR.DETAILS AS DETAILS,
+                                       IR.DATE_INCIDENT AS DATE_INCIDENT,
+                                       IR.COMPLAINANT_ID AS COMPLAINANT_ID,
+                                       CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS COMPLAINANT,
+                                       DATE_FILED,
+                                       IR.IF_NEW AS IF_NEW
+                            FROM 	  	 INCIDENT_REPORTS IR
+                            JOIN	     USERS U ON IR.COMPLAINANT_ID = U.USER_ID
+                            JOIN	     USERS U2 ON IR.REPORTED_STUDENT_ID = U2.USER_ID
+                            WHERE		   IR.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"
+                            ORDER BY 	 IR.DATE_FILED';
+                    $result=mysqli_query($dbc,$query);
+
                     //Gets list of offenses
                     $query2='SELECT OFFENSE_ID, DESCRIPTION FROM REF_OFFENSES';
                     $result2=mysqli_query($dbc,$query2);
-                    if(!$result2){
+                    if(!$result && !$result2){
                       echo mysqli_error($dbc);
                     }
+                    else{
+                      $row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+                    }
+
+                    $queryStud = 'SELECT *
+                                    FROM INCIDENT_REPORTS IR
+                                    JOIN USERS U ON IR.REPORTED_STUDENT_ID = U.USER_ID
+                                    JOIN REF_USER_OFFICE RU ON RU.OFFICE_ID = U.OFFICE_ID
+                                    JOIN REF_STUDENTS RS ON RS.STUDENT_ID = U.USER_ID
+                                   WHERE IR.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"';
+
+                    $resultStud = mysqli_query($dbc,$queryStud);
+
+                    if(!$queryStud){
+                      echo mysqli_error($dbc);
+                    }
+                    else{
+                      $rowStud = mysqli_fetch_array($resultStud,MYSQLI_ASSOC);
+                    }
+
+                    $passData = $rowStud['description'] . "/" . $rowStud['degree'] . "/" . $rowStud['level'] . "/" . $rowStud['reported_student_id'] .  "/" . "HDO-VIEW-INCIDENT";
                   ?>
                   <form id="form">
                     <div class="form-group" style='width: 300px;'>
-                      <label>Student <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="studentID" class="chosen-select">
-                          <option value="" disabled selected>Select student</option>
-                          <?php
-                            $studentQ= "SELECT * FROM cms.users u WHERE u.user_type_id = 1 ORDER BY 5;";
-                            $studentRes = $dbc->query($studentQ);
-                            while($student = $studentRes->fetch_assoc()){
-                              $studentName = $student['first_name'] . ' ' . $student['last_name'];
-                              echo 
-                                '<option value=' .$student['user_id']. '>' . $student['user_id'] . ' : ' . $studentName . '</option>';
-                            }
-                          ?>
-                      </select>
+                      <label>Student</label>
+                      <input class="form-control" value="<?php echo $row['REPORTED_STUDENT_ID'].' : '.$row['STUDENT']; ?>" readonly>
                     </div>
                     <div class="form-group" style='width: 300px;'>
                       <label>Offense <span style="font-weight:normal; color:red;">*</span></label>
@@ -118,7 +148,6 @@
                       </select>
                     </div>
                     <?php
-                      //Gets list of cheat types
                       $query2='SELECT CHEATING_TYPE_ID, DESCRIPTION FROM REF_CHEATING_TYPE';
                       $result2=mysqli_query($dbc,$query2);
                       if(!$result2){
@@ -138,44 +167,48 @@
                       </select>
                     </div>
                     <div class="form-group" style = "width: 300px;">
-                      <label>Complainant <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="complainantID" class="chosen-select">
-                          <option value="" disabled selected>Select complainant</option>
-                          <?php
-                            $complainantQ= "SELECT * FROM cms.users WHERE user_type_id != 1 ORDER BY 5;";
-                            $complaiantRes = $dbc->query($complainantQ);
-                            while($complainant = $complaiantRes->fetch_assoc()){
-                              $complainantName = $complainant['first_name'] . ' ' . $complainant['last_name'];
-                              if ($complainant['user_id'] != 1)
-                                echo 
-                                  '<option value=' .$complainant['user_id']. '>' . $complainant['user_id'] . ' : ' . $complainantName . '</option>';
-                            }
-                          ?>
-                        </select>
-                    </div>
-                    <div class="form-group" style = "width: 300px;">
-                      <label>Date of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <div class='input-group date'>
-                        <input id='date' type='text' class="form-control" placeholder="Enter Date"/>
-                        <span id='cal' style="cursor: pointer;" class="input-group-addon">
-                            <span class="fa fa-calendar"></span>
-                        </span>
-                      </div>
+                      <label>Complainant </label>
+                      <input class="form-control" value="<?php echo $row['COMPLAINANT_ID'].' : '.$row['COMPLAINANT']; ?>" readonly>
                     </div>
                     <div class="form-group" style='width: 300px;'>
-                      <label>Location of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <input id="location" class="form-control">
+                      <label>Location of the Incident</label>
+                      <input class="form-control" value="<?php echo $row['LOCATION']; ?>" readonly>
                     </div>
-                    <!-- new - edited from previous -->
-                    <div id="detailarea" class="form-group" style='width: 300px;' hidden>
-                      <label>Summary of the Incident <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="details" class="chosen-select">
+                    <div class="form-group" style='width: 300px;'>
+                      <label>Date and Time of the Incident</label>
+                      <input class="form-control" value="<?php echo $row['DATE_INCIDENT']; ?>" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Summary of the Incident </label>
+                      <textarea id="details" class="form-control" style="width:600px;" rows="5" readonly><?php echo $row['DETAILS']; ?></textarea>
+  				          </div>
+                    <!-- new (the div below)-->
+                    <div id="detailarea" class="form-group" style='width: 600px;' hidden>
+                      <label>Details <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="details2" class="chosen-select">
                       </select>
   				          </div>
+                    <?php
+                      $query2='SELECT DETAILS FROM CASES WHERE INCIDENT_REPORT_ID = '.$_GET['irn'].'';
+                      $result2=mysqli_query($dbc,$query2);
+                      if(!$result2){
+                        echo mysqli_error($dbc);
+                      }
+                      else{
+                        $row2=mysqli_fetch_array($result2,MYSQLI_ASSOC);
+                      }
+                      if($row2['DETAILS'] != null) { ?>
+                        <div class="form-group">
+                          <label>Details</label>
+                          <textarea class="form-control" style="width:600px;" readonly><?php echo $row2['DETAILS']; ?></textarea>
+      				          </div>
+                    <?php }
+                    ?>
+                    <br>
 
-                    <div class="form-group" style='width: 300px;'>
-                      <label>Assign an IDO <span style="font-weight:normal; color:red;">*</span></label>
-                      <select id="ido" class="chosen-select">
+                    <div class="form-group" style='width: 400px;'>
+                      <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
+                      <select id="ido" class="form-control">
                         <option value="" disabled selected>Select an IDO</option>
                         <?php
                           $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
@@ -197,6 +230,8 @@
                             if ($idoNumber != $row2['HANDLED_BY_ID'] && $workload[0] < 8) {
                               $ido_names[$idoNumber] = $idoName;
                               $ido_workloads[$idoNumber] = $workload[0];
+                              // echo 
+                              //   '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
                             }
                           }
 
@@ -213,10 +248,21 @@
                         ?>
                       </select>
                     </div>
+
                     <br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
                   <br><br><br>
+                  <?php
+                    //Removes 'new' badge and reduces notif's count
+                    if($row['IF_NEW']){
+                      $query2='UPDATE INCIDENT_REPORTS SET IF_NEW=0 WHERE INCIDENT_REPORT_ID='.$_GET['irn'];
+                      $result2=mysqli_query($dbc,$query2);
+                      if(!$result2){
+                        echo mysqli_error($dbc);
+                      }
+                    }
+                  ?>
                 </div>
             </div>
 
@@ -234,7 +280,12 @@
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
-	  <!-- DataTables JavaScript -->
+    <!-- Morris Charts JavaScript -->
+    <script src="../vendor/raphael/raphael.min.js"></script>
+    <script src="../vendor/morrisjs/morris.min.js"></script>
+    <script src="../data/morris-data.js"></script>
+
+	   <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
     <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
@@ -245,7 +296,7 @@
     <!-- gmail -->
     <?php //include '../gmail/send-email.php'; ?>
 
-    <script>
+    <script type='text/javascript'>
     $(document).ready(function() {
       loadNotif();
 
@@ -283,46 +334,12 @@
           setTimeout(loadNotif, 5000);
       };
 
+      var caseData;
+
+      //new
       $('.chosen-select').chosen({width: '100%'});
 
-      $("#date").datetimepicker({ format: 'Y-m-d H:i', maxDate: 0, maxTime: 0, step: 1});
-
-      $('#cal').on('click', function() {
-        $("#date").focus();
-      })
-
-      $('.studentID').keypress(validateNumber);
-      $('.comID').keypress(validateNumber);
-
-      $('#folderBtn').click(function() {
-        //buttonAddfolder(caseData);
-
-        newCaseFolder(caseData);
-      });
-
-      function validateNumber(event) {
-        var key = window.event ? event.keyCode : event.which;
-        if (event.keyCode === 8 || event.keyCode === 46) {
-            return true;
-        } else if ( key < 48 || key > 57 ) {
-            return false;
-        } else {
-            return true;
-        }
-      };
-
-      $("#appendevidence").click(function(){
-        $("#evidencelist").append('<div class="form-group input-group" id="newsevidence">'+
-        '<span id="removeevidence" style="cursor: pointer; color:red; float: right;"><b>&nbsp;&nbsp; x</b></span>'+
-        '<input type="file">'+
-
-        '</div>');
-      });
-
-      $(document).on('click', '#removeevidence', function(){
-        $(this).closest("#newsevidence").remove();
-      });
-
+      //new
       $('#offense').on('change',function() {
         var offense_id=$(this).val();
         if(offense_id==1) {
@@ -333,15 +350,15 @@
         }
 
         $.ajax({
-          url: 'hdo-get-details.php',
+          url: 'sdfod-get-details.php',
           type: 'POST',
           data: {
             offense: offense_id
           },
           success: function(response) {
             $('#detailarea').show();
-            $("#details").html(response);
-            $("#details").trigger("chosen:updated");
+            $("#details2").html(response);
+            $("#details2").trigger("chosen:updated");
           }
         });
       });
@@ -350,8 +367,8 @@
         e.preventDefault();
       });
 
-      $('#submit').click(function() {
-        var ids = ['#studentID','#offense','#complainantID','#date','#location','#ido'];
+      $('#submit').click(function(){
+        var ids = ['#offense','#ido'];
         var isEmpty = true;
 
         if($('#cheat').is(":visible")){
@@ -364,11 +381,11 @@
         }
 
         if($('#detailarea').is(":visible")){
-          ids.push('#details');
+          ids.push('#details2');
         }
         else{
-          if($.inArray('#details', ids) !== -1){
-            ids.splice(ids.indexOf('#details'),1);
+          if($.inArray('#details2', ids) !== -1){
+            ids.splice(ids.indexOf('#details2'),1);
           }
         }
 
@@ -377,42 +394,45 @@
             isEmpty = false;
           }
         }
+
         if(isEmpty) {
           $('#twoFactorModal').modal('show');
         }
 
-        else {
-          $("#done").hide();
+        else{
+          $('#done').hide();
           $("#alertModal").modal("show");
         }
       });
 
       $('#modalYes').on('click', function() {
-        handleApprehend();
+        handle('<?php echo $passData;?>');
         $('#waitModal').modal("show");
         $.ajax({
-            url: '../ajax/hdo-insert-case.php',
-            type: 'POST',
-            data: {
-                incidentreportID: null,
-                studentID: $('#studentID').val(),
-                offenseID: $('#offense').val(),
-                cheatingType: $('#cheat-type').val(),
-                complainantID: $('#complainantID').val(),
-                dateIncident: $('#date').val(),
-                location: $('#location').val(),
-                details: $('#details').val(),
-                assignIDO: $('#ido').val(),
-                page: "HDO-APPREHENSION"
-            },
-            success: function(response) {
+          url: '../ajax/hdo-insert-case.php',
+          type: 'POST',
+          data: {
+              incidentreportID: <?php echo $_GET['irn']; ?>,
+              studentID: <?php echo $row['REPORTED_STUDENT_ID']; ?>,
+              offenseID: $('#offense').val(),
+              cheatingType: $('#cheat-type').val(),
+              complainantID: <?php echo $row['COMPLAINANT_ID']; ?>,
+              dateIncident: "<?php echo $row['DATE_INCIDENT']; ?>",
+              location: "<?php echo $row['LOCATION']; ?>",
+              details: $('#details2').val(),
+              assignIDO: $('#ido').val(),
+              page: "HDO-VIEW-CASE"
+          },
 
-              data = response.split("/");
-              caseData = "Case #" + data[5];
-              loadData(response);
-              //$('#message').text('Submitted successfully!');
-            }
+          success: function(response) {
+            var string = "Case #";
+            caseData = string.concat(response);
+          }
         });
+        $('#message').text('Submitted successfully!');
+        $('#form').find('input, textarea, button, select').attr('disabled','disabled');
+        $(".chosen-select").attr('disabled', true).trigger("chosen:updated");
+        $('#submit').text("Submitted");
       });
 
       $('#modalOK').click(function() {
@@ -435,30 +455,18 @@
           <?php
             }
           }?>
-          //gets students email address
-          <?php
-          $studentquery='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS STUDENT, EMAIL AS STUDENT_EMAIL FROM USERS WHERE USER_TYPE_ID = 1';
-          $studentresult=mysqli_query($dbc,$studentquery);
-          if(!$studentresult){
-            echo mysqli_error($dbc);
-          }
-          else{
-            while($studentrow=mysqli_fetch_array($studentresult,MYSQLI_ASSOC)){ ?>
-              var studentrow = "<?php echo $studentrow['USER_ID']; ?>";
-              if (studentrow == $('#studentID').val()){
-                studentemail = "<?php echo $studentrow['STUDENT_EMAIL']; ?>";
-              }
-          <?php
-            }
-          }?>
+
+          //sets complainant and student emails
+          /*var complainantemail = "<?php echo $row['COMPLAINANT_EMAIL']; ?>";
+          var studentemail = "<?php echo $row['STUDENT_EMAIL']; ?>";
 
           //sends emails
-          //sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
-          //sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(complainantemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(studentemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');
+          sendEmail(idoemail,'[CMS] Case Created on ' + new Date($.now()), 'Message');*/
 
-          $('#form')[0].reset();
-          $(".chosen-select").trigger("chosen:updated");
-          location.reload();
+          //hides modal
+          $("#alertModal").modal("hide");
         }
         else{
           //hides modal
@@ -466,70 +474,93 @@
         }
       });
 
-      $('.modal').attr('data-backdrop', "static");
-      $('.modal').attr('data-keyboard', false);
-
-      $('#modalOK').on('click', function() {
-        if($('#done').is(":visible")) {
-          location.reload();
-        }
+      $('#folderBtn').click(function() {
+        newCaseFolder(caseData);
       });
 
-      var count = 0;
-      var prevCount = 0;
-      loadCount();
-
-      function loadCount() {
-        $.ajax({
-          url: '../ajax/user-notifications-count.php',
-          type: 'POST',
-          data: {
-          },
-          success: function(response) {
-            count = response;
-            if(count > 0) {
-              $('#notif-badge').text(count);
-            }
-            else {
-              $('#notif-badge').text('');
-            }
-            if (prevCount != count) {
-              loadReminders();
-              prevCount = count;
-            }
-          }
-        });
-
-        setTimeout(loadCount, 5000);
-      };
-
-      var notifTable;
-
-      function loadReminders() {
-        if (count > 0) {
-          var notif = " new notification";
-          if (count > 1) notif = " new notifications";
-          $('#alert-message').text('You have '+count+notif);
-          setTimeout(function() { showSnackbar(); }, 1500);
+      //Changes button text and disabled
+      <?php
+        $query2='SELECT   RO.DESCRIPTION AS DESCRIPTION,
+                          CONCAT(U.FIRST_NAME," ",U.LAST_NAME) AS IDO
+                FROM 		  CASES C
+                JOIN      REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
+                JOIN      USERS U ON C.HANDLED_BY_ID = U.USER_ID
+                WHERE     C.INCIDENT_REPORT_ID = "'.$_GET['irn'].'"';
+        $result2=mysqli_query($dbc,$query2);
+        if(!$result2){
+          echo mysqli_error($dbc);
         }
-      }
+        else{
+          if($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){ ?>
+            $('#form').find('button, select').attr('disabled',true);
+            $('#details').attr('readonly',true);
+            $(".chosen-select").attr('disabled', true).trigger("chosen:updated");
+            $('#submit').text("Submitted");
+            $('select[class=chosen-select] > option:first-child').text('<?php echo $row2['DESCRIPTION']; ?>').trigger("chosen:updated");
+            $('select[id=ido] > option:first-child').text('<?php echo $row2['IDO']; ?>');
+            $('#details').val('<?php echo $row['DETAILS']; ?>');
+        <?php }
+        } ?>
 
-      notifData();
+        $('.modal').attr('data-backdrop', "static");
+        $('.modal').attr('data-keyboard', false);
 
-      function notifData() {
-        $.ajax({
-          url: '../ajax/user-notifications.php',
-          type: 'POST',
-          data: {
-          },
-          success: function(response) {
-            $('#notifTable').html(response);
+        var count = 0;
+        var prevCount = 0;
+        loadCount();
+
+        function loadCount() {
+          $.ajax({
+            url: '../ajax/user-notifications-count.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              count = response;
+              if(count > 0) {
+                $('#notif-badge').text(count);
+              }
+              else {
+                $('#notif-badge').text('');
+              }
+              if (prevCount != count) {
+                loadReminders();
+                prevCount = count;
+              }
+            }
+          });
+
+          setTimeout(loadCount, 5000);
+        };
+
+        var notifTable;
+
+        function loadReminders() {
+          if (count > 0) {
+            var notif = " new notification";
+            if (count > 1) notif = " new notifications";
+            $('#alert-message').text('You have '+count+notif);
+            setTimeout(function() { showSnackbar(); }, 1500);
           }
-        });
+        }
 
-        notifTable = setTimeout(notifData, 5000);
-      }
+        notifData();
+
+        function notifData() {
+          $.ajax({
+            url: '../ajax/user-notifications.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              $('#notifTable').html(response);
+            }
+          });
+
+          notifTable = setTimeout(notifData, 5000);
+        }
     });
+
     </script>
 
     <!-- Modal -->
@@ -541,9 +572,12 @@
 						<h4 class="modal-title" id="myModalLabel"><b>Student Apprehension</b></h4>
 					</div>
 					<div class="modal-body">
-            <p id = "done">Case has been created and passed to the assigned IDO successfully!</p>
-            <p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</message>
-					</div>
+						<p id="message">Please fill in all the required ( <span style="color:red;">*</span> ) fields!</p>
+            <div id = "done">
+              </p>Case has been created and passed to the assigned IDO successfully!</p>
+              <b>Next Step: </b> <br>  Forward the received pieces of evidence sent by the facutly to <b>ido.cms1@gmail.com</b> for processing.</p>
+            </div>
+          </div>
 					<div class="modal-footer">
 						<button type="button" id = "modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
 					</div>
@@ -551,8 +585,41 @@
 			</div>
     </div>
 
+    <!-- DRIVE Modal -->
+    <div class="modal fade" id="driveModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>Google Authentication</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> You have authenticated the use of Google Drive. You can now upload your evidences.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick = "btnSubmit()">Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- NEW DRIVE  -->
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"><b>File Upload</b></h4>
+          </div>
+          <div class="modal-body">
+            <p> File was uploaded successfully!</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="modalOK" class="btn btn-default" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Folder Modal -->
     <div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -591,27 +658,27 @@
     </div>
 
     <!-- Two Factor Authentication Modal -->
-    <div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
+		<div class="modal fade" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel"><b>Confirmation</b></h4>
+					</div>
+					<div class="modal-body">
+						<p id="message"> Are you sure you want to proceed? </p>
+					</div>
+					<div class="modal-footer">
+            <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
+            <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
           </div>
-            <div class="modal-body">
-              <p id="message"> Are you sure you want to proceed? </p>
-            </div>
-            <div class="modal-footer">
-              <button type="submit" id = "modalNo" style="width: 70px" class="btn btn-danger" data-dismiss="modal">No</button>
-              <button type="submit" id = "modalYes" style="width: 70px" class="btn btn-success" data-dismiss="modal">Yes</button>
-            </div>
-        </div>
-      </div>
+				</div>
+			</div>
     </div>
-
 </body>
 
 </html>
+
 
 <style>
 #snackbar {

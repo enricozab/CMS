@@ -205,25 +205,50 @@ if (!isset($_GET['irn']))
                     <?php }
                     ?>
                     <br>
-                    <?php
-                      $query2='SELECT USER_ID, CONCAT(FIRST_NAME," ",LAST_NAME) AS IDO FROM USERS WHERE USER_TYPE_ID = 4';
-                      $result2=mysqli_query($dbc,$query2);
-                      if(!$result2){
-                        echo mysqli_error($dbc);
-                      }
-                    ?>
+
                     <div class="form-group" style='width: 400px;'>
                       <label>Assign an Investigation Discipline Officer (IDO) <span style="font-weight:normal; color:red;">*</span></label>
                       <select id="ido" class="form-control">
-                        <option value="" disabled selected>Select IDO</option>
+                        <option value="" disabled selected>Select an IDO</option>
                         <?php
-                        while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
-                          echo
-                            "<option value=\"{$row2['USER_ID']}\">{$row2['IDO']}</option>";
-                        }
+                          $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
+                          $IDORes = $dbc->query($idoQuery);
+                          $ido_workloads = array();
+                          $ido_names = array();
+
+                          while($ido = $IDORes->fetch_assoc()){
+                            $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
+                            $idoNumber = $ido['user_id'];
+                            $workloadQuery = $dbc->query("SELECT COUNT(ic.case_id)
+                                                          FROM ido_cases ic
+                                                            LEFT JOIN cases c on ic.case_id=c.case_id
+                                                            WHERE ic.user_id = ".$idoNumber."
+                                                                && (c.status_id != 3 && c.status_id != 4)
+                                                                && ic.handle = 1");
+                            $workload = $workloadQuery->fetch_row();
+
+                            if ($idoNumber != $row2['HANDLED_BY_ID'] && $workload[0] < 8) {
+                              $ido_names[$idoNumber] = $idoName;
+                              $ido_workloads[$idoNumber] = $workload[0];
+                              // echo 
+                              //   '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
+                            }
+                          }
+
+                          asort($ido_workloads);
+                          $ido_names_ordered = array();
+                          
+                          foreach (array_keys($ido_workloads) as $key) {
+                            $ido_names_ordered[$key] = $ido_names[$key] ;
+                          }
+                          
+                          foreach($ido_workloads as $x => $x_value) {
+                            echo '<option value="' .$x. '">' . $ido_names[$x] . ' (Active Cases: ' .$ido_workloads[$x]. ')</option>';
+                          }
                         ?>
                       </select>
                     </div>
+
                     <br><br>
                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button>
                   </form>
