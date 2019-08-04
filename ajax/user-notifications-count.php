@@ -24,6 +24,19 @@
             AND			    (C.STATUS_ID = 1 OR C.STATUS_ID = 2)
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
+  else if($_SESSION['user_type_id'] == 7){
+    $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
+                        C.REMARKS_ID AS 'REMARKS_ID',
+                        RCP.PROCEEDINGS_DESC AS PROCEEDINGS_DESC,
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF',
+                        DATEDIFF(CURDATE(),C.PROCEEDING_DATE) AS 'DATEPROC'
+            FROM 		    ULC_CASES ULC
+            LEFT JOIN   CASES C ON ULC.CASE_ID = C.CASE_ID
+            LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
+            LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
+            WHERE		    (C.STATUS_ID = 1 OR C.STATUS_ID = 2)
+            ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
+  }
 
 
   $result=mysqli_query($dbc,$query);
@@ -50,6 +63,16 @@
       }
       else if($row['REMARKS_ID'] == 7 && $_SESSION['user_type_id'] == 4) {
         if($row['DATEDIFF'] > 0) {
+          $count += 1;
+        }
+      }
+      else if($row['REMARKS_ID'] == 8 && $_SESSION['user_type_id'] == 7) {
+        if($row['DATEDIFF'] > 0) {
+          $count += 1;
+        }
+      }
+      else if($row['REMARKS_ID'] == 9 && $_SESSION['user_type_id'] == 7) {
+        if($row['DATEPROC'] > 0) {
           $count += 1;
         }
       }
