@@ -8,7 +8,6 @@
                         DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
             FROM 		    CASES C
             WHERE		    C.REPORTED_STUDENT_ID = ".$_SESSION['user_id']."
-            AND			    (C.STATUS_ID = 1 OR C.STATUS_ID = 2)
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
   else if($_SESSION['user_type_id'] == 4){
@@ -21,7 +20,6 @@
             LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             WHERE		    C.HANDLED_BY_ID = ".$_SESSION['user_id']."
             AND         IDO.HANDLE = 1
-            AND			    (C.STATUS_ID = 1 OR C.STATUS_ID = 2)
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
   else if($_SESSION['user_type_id'] == 7){
@@ -34,7 +32,6 @@
             LEFT JOIN   CASES C ON ULC.CASE_ID = C.CASE_ID
             LEFT JOIN   CASE_REFERRAL_FORMS CRF ON C.CASE_ID = CRF.CASE_ID
             LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
-            WHERE		    (C.STATUS_ID = 1 OR C.STATUS_ID = 2)
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
 
@@ -46,33 +43,19 @@
   else {
     $count = 0;
     while($row=mysqli_fetch_array($result,MYSQLI_ASSOC)){
-      if($row['REMARKS_ID'] == 2 && $_SESSION['user_type_id'] == 4) {
-        if($row['DATEDIFF'] > 0) {
-          $count += 1;
-        }
+      if(in_array($row['REMARKS_ID'],array(2,7)) && $_SESSION['user_type_id'] == 4) {
+        $count += 1;
       }
-      else if($row['REMARKS_ID'] == 3 && $_SESSION['user_type_id'] == 1) {
-        if($row['DATEDIFF'] > 0) {
-          $count += 1;
-        }
+      else if(in_array($row['REMARKS_ID'],array(3,4)) && $_SESSION['user_type_id'] == 1) {
+        $count += 1;
       }
-      else if($row['REMARKS_ID'] == 4 && $_SESSION['user_type_id'] == 1) {
-        if($row['DATEDIFF'] > 0) {
-          $count += 1;
+      else if(in_array($row['REMARKS_ID'],array(8,9,12,13,14,15,16)) && $_SESSION['user_type_id'] == 7) {
+        if ($row['REMARKS_ID'] == 9) {
+          if($row['DATEPROC'] >= 0) {
+            $count += 1;
+          }
         }
-      }
-      else if($row['REMARKS_ID'] == 7 && $_SESSION['user_type_id'] == 4) {
-        if($row['DATEDIFF'] > 0) {
-          $count += 1;
-        }
-      }
-      else if($row['REMARKS_ID'] == 8 && $_SESSION['user_type_id'] == 7) {
-        if($row['DATEDIFF'] > 0) {
-          $count += 1;
-        }
-      }
-      else if($row['REMARKS_ID'] == 9 && $_SESSION['user_type_id'] == 7) {
-        if($row['DATEPROC'] > 0) {
+        else {
           $count += 1;
         }
       }
