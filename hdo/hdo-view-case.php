@@ -438,94 +438,97 @@ if (!isset($_GET['cn']))
     });
 
     //REROUTE & REASSIGN
-    var action = "";
+    <?php 
+    if($row2['STATUS_ID'] == 1 || $row2['STATUS_ID'] == 2) { ?>
+      var action = "";
 
-    var rerouteCase = document.getElementById("rerouteCase");
+      var rerouteCase = document.getElementById("rerouteCase");
 
-    if (rerouteCase.options.length <= 1) {
-      $("#rerouteDiv").hide();
-      $("#rerouteDiv2").show();
-    } else {
-      $("#rerouteDiv").show();
-      $("#rerouteDiv2").hide();
-    }
-
-    $("#btnReroute").click(function() {
-      if($.trim($("#rerouteCase").val()).length > 0) {
-        action = "reroute";
-        $("#twoFactorModal").modal('show');
+      if (rerouteCase.options.length <= 1) {
+        $("#rerouteDiv").hide();
+        $("#rerouteDiv2").show();
+      } else {
+        $("#rerouteDiv").show();
+        $("#rerouteDiv2").hide();
       }
-      else {
-        $("#message").text("Please select a stage.");
-        $("#alertModal").modal('show');
-      }
-    });
 
-    $("#btnReassign").click(function() {
-      if($.trim($("#reassignIDO").val()).length > 0) {
-        action = "reassign";
-        $("#twoFactorModal").modal('show');
-      }
-      else {
-        $("#message").text("Please select an IDO.");
-        $("#alertModal").modal('show');
-      }
-    });
+      $("#btnReroute").click(function() {
+        if($.trim($("#rerouteCase").val()).length > 0) {
+          action = "reroute";
+          $("#twoFactorModal").modal('show');
+        }
+        else {
+          $("#message").text("Please select a stage.");
+          $("#alertModal").modal('show');
+        }
+      });
 
-    $("#modalYes").click(function(){
-      if (action == "reroute") {
-        $.ajax({
-          url: '../ajax/hdo-update-remarks.php',
-          type: 'POST',
-          data: {
-            case_id: <?php echo $_GET['cn'] ?>,
-            remark_id : $("#rerouteCase").val(),
-          },
-          success: function(response) {
-            // audit trail
-            $.ajax({
-                      url: '../ajax/insert_system_audit_trail.php',
-                      type: 'POST',
-                      data: {
-                          userid: <?php echo $_SESSION['user_id'] ?>,
-                          actiondone: 'HDO Case - Rerouted Case #<?php echo $_GET['cn']; ?>'
-                      },
-                      success: function(response) {
-                        console.log('Success');
-                      }
-                  })
-            $("#message2").text("Cases has been rerouted.");
-            $("#alertModal2").modal('show');
-          }
-    		});
-      } else if (action == "reassign") {
-        $.ajax({
-          url: '../ajax/hdo-update-ido.php',
-          type: 'POST',
-          data: {
-            case_id: <?php echo $_GET['cn'] ?>,
-            ido_id: $("#reassignIDO").val(),
-          },
-          success: function(response) {
-            // audit trail
-            $.ajax({
-                      url: '../ajax/insert_system_audit_trail.php',
-                      type: 'POST',
-                      data: {
-                          userid: <?php echo $_SESSION['user_id'] ?>,
-                          actiondone: 'HDO Case - Reassigned IDO for Case #<?php echo $_GET['cn']; ?>'
-                      },
-                      success: function(response) {
-                        console.log('Success');
-                      }
-                  })
+      $("#btnReassign").click(function() {
+        if($.trim($("#reassignIDO").val()).length > 0) {
+          action = "reassign";
+          $("#twoFactorModal").modal('show');
+        }
+        else {
+          $("#message").text("Please select an IDO.");
+          $("#alertModal").modal('show');
+        }
+      });
 
-            $("#message2").text("Cases has been reassigned.");
-            $("#alertModal2").modal('show');
-          }
-        });
-      }
-    });
+      $("#modalYes").click(function(){
+        if (action == "reroute") {
+          $.ajax({
+            url: '../ajax/hdo-update-remarks.php',
+            type: 'POST',
+            data: {
+              case_id: <?php echo $_GET['cn'] ?>,
+              remark_id : $("#rerouteCase").val(),
+            },
+            success: function(response) {
+              // audit trail
+              $.ajax({
+                        url: '../ajax/insert_system_audit_trail.php',
+                        type: 'POST',
+                        data: {
+                            userid: <?php echo $_SESSION['user_id'] ?>,
+                            actiondone: 'HDO Case - Rerouted Case #<?php echo $_GET['cn']; ?>'
+                        },
+                        success: function(response) {
+                          console.log('Success');
+                        }
+                    })
+              $("#message2").text("Cases has been rerouted.");
+              $("#alertModal2").modal('show');
+            }
+          });
+        } else if (action == "reassign") {
+          $.ajax({
+            url: '../ajax/hdo-update-ido.php',
+            type: 'POST',
+            data: {
+              case_id: <?php echo $_GET['cn'] ?>,
+              ido_id: $("#reassignIDO").val(),
+            },
+            success: function(response) {
+              // audit trail
+              $.ajax({
+                        url: '../ajax/insert_system_audit_trail.php',
+                        type: 'POST',
+                        data: {
+                            userid: <?php echo $_SESSION['user_id'] ?>,
+                            actiondone: 'HDO Case - Reassigned IDO for Case #<?php echo $_GET['cn']; ?>'
+                        },
+                        success: function(response) {
+                          console.log('Success');
+                        }
+                    })
+
+              $("#message2").text("Cases has been reassigned.");
+              $("#alertModal2").modal('show');
+            }
+          });
+        }
+      });
+    <?php } ?>
 
     $('.modal').attr('data-backdrop', "static");
     $('.modal').attr('data-keyboard', false);

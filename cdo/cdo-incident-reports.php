@@ -235,7 +235,6 @@
 
 </html>
 
-
 <style>
 #snackbar {
   visibility: hidden;

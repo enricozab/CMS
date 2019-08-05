@@ -38,8 +38,10 @@
   if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
                         C.REMARKS_ID AS 'REMARKS_ID',
+                        RO.TYPE AS TYPE,
                         DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
             FROM 		    CASES C
+            LEFT JOIN	  REF_OFFENSES RO ON C.OFFENSE_ID = RO.OFFENSE_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
             
     $query2="SELECT 		IR.INCIDENT_REPORT_ID AS 'INCIDENT_REPORT_ID',
@@ -114,7 +116,7 @@
       else if($row['REMARKS_ID'] == 8 && $_SESSION['user_type_id'] == 7) {
         echo "<li>
                 <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ulc-view-case.php?cn={$row['CASE_ID']}'\">
-                  <b>Case {$row['CASE_ID']}: </b>Please sign the Discipline Case Referral Form and/or schedule a {$row['PROCEEDINGS_DESC']}</i>
+                  <b>Case {$row['CASE_ID']}: </b>Please sign the Discipline Case Referral Form and/or schedule a {$row['PROCEEDINGS_DESC']}.
                 </div>
               </li>
               <li class='divider'></li>";
@@ -124,7 +126,7 @@
         if($row['DATEPROC'] >= 0) {
           echo "<li>
                   <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ulc-view-case.php?cn={$row['CASE_ID']}'\">
-                    <b>Case {$row['CASE_ID']}: </b>Please reschedule if the proceeding did not push through and/or submit the verdict and penalty.</i>
+                    <b>Case {$row['CASE_ID']}: </b>Please reschedule if the proceeding did not push through and/or submit the verdict and penalty.
                   </div>
                 </li>
                 <li class='divider'></li>";
@@ -134,7 +136,7 @@
       else if(in_array($row['REMARKS_ID'],array(14,16)) && $_SESSION['user_type_id'] == 7) {
         echo "<li>
                 <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ulc-view-case.php?cn={$row['CASE_ID']}'\">
-                  <b>Case {$row['CASE_ID']}: </b>Please upload the Discipline Case Referral Form.</i>
+                  <b>Case {$row['CASE_ID']}: </b>Please upload the Discipline Case Referral Form.
                 </div>
               </li>
               <li class='divider'></li>";
@@ -143,7 +145,7 @@
       else if($row['REMARKS_ID'] == 12 && $_SESSION['user_type_id'] == 7) {
         echo "<li>
                 <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ulc-view-case.php?cn={$row['CASE_ID']}'\">
-                  <b>Case {$row['CASE_ID']}: </b>Please process the Student Appeal by endorsing the case to the President.</i>
+                  <b>Case {$row['CASE_ID']}: </b>Please process the Student Appeal by endorsing the case to the President.
                 </div>
               </li>
               <li class='divider'></li>";
@@ -152,7 +154,44 @@
       else if($row['REMARKS_ID'] == 13 && $_SESSION['user_type_id'] == 7) {
         echo "<li>
                 <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='ulc-view-case.php?cn={$row['CASE_ID']}'\">
-                  <b>Case {$row['CASE_ID']}: </b>Please follow-up on the final decision from the President and update the verdict and penalty.</i>
+                  <b>Case {$row['CASE_ID']}: </b>Please follow-up on the final decision from the President and update the verdict and penalty.
+                </div>
+              </li>
+              <li class='divider'></li>";
+        $empty = false;
+      }
+      else if($row['REMARKS_ID'] == 5 && $_SESSION['user_type_id'] == 9) {
+        if($row['TYPE'] == 'Minor') {
+          echo "<li>
+                  <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
+                    <b>Case {$row['CASE_ID']}: </b>Please process the case for closing.
+                  </div>
+                </li>
+                <li class='divider'></li>";
+        }
+        else if($row['TYPE'] == 'Major') {
+          echo "<li>
+                  <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
+                    <b>Case {$row['CASE_ID']}: </b>Please endorse the case to the OULC.
+                  </div>
+                </li>
+                <li class='divider'></li>";
+        }
+        $empty = false;
+      }
+      else if($row['REMARKS_ID'] == 14 && $_SESSION['user_type_id'] == 9) {
+        echo "<li>
+                <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
+                  <b>Case {$row['CASE_ID']}: </b>Please sign the Discipline Case Feedback Form and close the case.
+                </div>
+              </li>
+              <li class='divider'></li>";
+        $empty = false;
+      }
+      else if($row['REMARKS_ID'] == 16 && $_SESSION['user_type_id'] == 9) {
+        echo "<li>
+                <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
+                  <b>Case {$row['CASE_ID']}: </b>Please provide the respective penalty for the case.
                 </div>
               </li>
               <li class='divider'></li>";
@@ -166,10 +205,14 @@
         echo mysqli_error($dbc);
       }
       else {
+        $user = 'hdo';
+        if($_SESSION['user_type_id'] == 8) $user = 'cdo';
+        else if($_SESSION['user_type_id'] == 9) $user = 'sdfod';
+
         while($row2=mysqli_fetch_array($result2,MYSQLI_ASSOC)){
           if($row2['CASE_ID'] == NULL) {
             echo "<li>
-                    <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='hdo-view-incident-report.php?irn={$row2['INCIDENT_REPORT_ID']}'\">
+                    <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='{$user}-view-incident-report.php?irn={$row2['INCIDENT_REPORT_ID']}'\">
                       <b>Incident Report {$row2['INCIDENT_REPORT_ID']}: </b>Please process and assign an IDO to create an alleged case.</i>
                     </div>
                   </li>
@@ -185,9 +228,6 @@
       }
       else {
         while($row3=mysqli_fetch_array($result3,MYSQLI_ASSOC)) {
-          $user = 'hdo';
-          if($_SESSION['user_type_id'] == 8) $user = 'cdo';
-          else if($_SESSION['user_type_id'] == 9) $user = 'sdfod';
           if($row3['TYPE'] == 'Minor' && $row3['DATEDIFF'] > 2) {
             echo "<li>
                     <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='{$user}-view-case.php?cn={$row3['CASE_ID']}'\">

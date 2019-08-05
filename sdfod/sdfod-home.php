@@ -40,6 +40,17 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    
+    <script>
+      function showSnackbar() {
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+      }
+    </script>
+
 </head>
 
 <body>
@@ -81,13 +92,13 @@
         </div>
         <!-- /.col-lg-12 -->
       </div>
+
+      <div id="snackbar"><i class="fa fa-info-circle fa-fw" style="font-size: 20px"></i> <span id="alert-message">Some text some message..</span></div>
+
     </div>
     <!-- /#page-wrapper -->
   </div>
   <!-- /#wrapper -->
-
-  <!-- jQuery -->
-  <script src="../vendor/jquery/jquery.min.js"></script>
 
   <!-- Bootstrap Core JavaScript -->
   <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -451,6 +462,61 @@
           }
       });
     });
+
+    var count = 0;
+    var prevCount = 0;
+    loadCount();
+
+    function loadCount() {
+      $.ajax({
+        url: '../ajax/user-notifications-count.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          count = response;
+          if(count > 0) {
+            $('#notif-badge').text(count);
+          }
+          else {
+            $('#notif-badge').text('');
+          }
+          if (prevCount != count) {
+            loadReminders();
+            prevCount = count;
+          }
+        }
+      });
+
+      setTimeout(loadCount, 5000);
+    };
+
+    var notifTable;
+
+    function loadReminders() {
+      if (count > 0) {
+        var notif = " new notification";
+        if (count > 1) notif = " new notifications";
+        $('#alert-message').text('You have '+count+notif);
+        setTimeout(function() { showSnackbar(); }, 1500);
+      }
+    }
+
+    notifData();
+
+    function notifData() {
+      $.ajax({
+        url: '../ajax/user-notifications.php',
+        type: 'POST',
+        data: {
+        },
+        success: function(response) {
+          $('#notifTable').html(response);
+        }
+      });
+
+      notifTable = setTimeout(notifData, 5000);
+    }
   });
   
   </script>
@@ -458,3 +524,55 @@
 </body>
 
 </html>
+
+<style>
+.badge-notify{
+   background: red;
+   position: relative;
+   top: -8px;
+   left: -3px;
+   margin: -10px;
+}
+
+#snackbar {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #337ab7;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 15px;
+  position: fixed;
+  z-index: 10;
+  right: 40px;
+  bottom: 40px;
+  font-size: 18px;
+  border-radius: 5px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 40px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 40px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 40px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 40px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>

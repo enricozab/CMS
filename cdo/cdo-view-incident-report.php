@@ -679,7 +679,6 @@ if (!isset($_GET['irn']))
 
 </html>
 
-
 <style>
 #snackbar {
   visibility: hidden;

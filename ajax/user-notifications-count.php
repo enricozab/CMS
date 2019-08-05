@@ -79,6 +79,9 @@
           $count += 1;
         }
       }
+      else if(in_array($row['REMARKS_ID'],array(5,14,16)) && $_SESSION['user_type_id'] == 9) {
+        $count += 1;
+      }
     }
 
     if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
