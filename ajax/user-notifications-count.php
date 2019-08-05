@@ -34,6 +34,14 @@
             LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
+  else if($_SESSION['user_type_id'] == 6){
+    $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
+                        C.REMARKS_ID AS 'REMARKS_ID',
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+            FROM 		    AULC_CASES AULC
+            LEFT JOIN   CASES C ON AULC.CASE_ID = C.CASE_ID
+            ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
+  }
   
   if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
@@ -80,6 +88,9 @@
         }
       }
       else if(in_array($row['REMARKS_ID'],array(5,14,16)) && $_SESSION['user_type_id'] == 9) {
+        $count += 1;
+      }
+      else if(in_array($row['REMARKS_ID'],array(8)) && $_SESSION['user_type_id'] == 6) {
         $count += 1;
       }
     }
