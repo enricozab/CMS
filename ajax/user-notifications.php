@@ -34,6 +34,14 @@
             LEFT JOIN   REF_CASE_PROCEEDINGS RCP ON CRF.PROCEEDINGS = RCP.CASE_PROCEEDINGS_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
+  else if($_SESSION['user_type_id'] == 6){
+    $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
+                        C.REMARKS_ID AS 'REMARKS_ID',
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+            FROM 		    AULC_CASES AULC
+            LEFT JOIN   CASES C ON AULC.CASE_ID = C.CASE_ID
+            ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
+  }
 
   if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
@@ -192,6 +200,15 @@
         echo "<li>
                 <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
                   <b>Case {$row['CASE_ID']}: </b>Please provide the respective penalty for the case.
+                </div>
+              </li>
+              <li class='divider'></li>";
+        $empty = false;
+      }
+      else if($row['REMARKS_ID'] == 8 && $_SESSION['user_type_id'] == 6) {
+        echo "<li>
+                <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='aulc-view-case.php?cn={$row['CASE_ID']}'\">
+                  <b>Case {$row['CASE_ID']}: </b>Please endorse the case to ULC by filing or dismissing the case.
                 </div>
               </li>
               <li class='divider'></li>";

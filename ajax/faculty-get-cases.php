@@ -30,7 +30,8 @@
                       C.PROCEEDING_DECISION AS PROCEEDING_DECISION,
                       RCP.PROCEEDINGS_DESC AS PROCEEDINGS_DESC,
                       C.DATE_CLOSED AS DATE_CLOSED,
-                      F.IF_NEW AS IF_NEW
+                      F.IF_NEW AS IF_NEW,
+                      C.IF_NEW AS IF_NEWM
           FROM 		    CASES C
           LEFT JOIN   FACULTY_CASES F ON C.CASE_ID = F.CASE_ID
           LEFT JOIN	  USERS U ON C.REPORTED_STUDENT_ID = U.USER_ID
@@ -69,7 +70,7 @@
       echo "<tr onmouseover=\"this.style.cursor='pointer'\" onclick=\"location.href='faculty-view-case.php?cn={$row['CASE_ID']}'; viewCaseAudit({$row['CASE_ID']});\">
             <td>{$row['CASE_ID']}";
 
-      if($row['IF_NEW'] == 1) {
+      if($row['IF_NEW'] == 1 && $row['IF_NEWM'] < 2) {
           echo "&nbsp;&nbsp;&nbsp;<span class=\"badge badge-notify\">NEW</span></td>";
       }
 
