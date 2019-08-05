@@ -63,8 +63,6 @@
 
           <div class="row">
             <div class="col-lg-12">
-              <!-- insert code here -->
-              <div class="col-lg-12">
                     <div class="panel panel-default">
                         <!-- <div class="panel-heading">
                             User
@@ -251,53 +249,51 @@
                                         </h4>
                                     </div>
                                     <div id="collapseThree" class="panel-collapse collapse">
-                                        <div class="panel-body">
+                                      <div class="panel-body">
+                                        <div class="form-group" style = "width: 400px;">
+                                          <label>Active Users </label>
+                                            <?php
+                                              $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 1';
+                                              $result=mysqli_query($dbc,$query);
+                                              if(!$result){
+                                                echo mysqli_error($dbc);
+                                              }
+                                            ?>
+                                          <select id='MU_selecteduserdisable' class="chosen-select">
+                                            <option value="" disabled selected>Select User</option>
+                                            <?php
+                                              while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
+                                              {
+                                                echo "<option value=\"{$row['USER_ID']}\">{$row['USER_INFO']}</option>";
+                                              }
+                                            ?>
+                                          </select>
+                                          <br><br>
+                                          <button id="disableuser" type="submit" class="btn btn-default">Disable User</button>
+                                          <br><br>
+                                          
+                                          <label>Disabled Users</label>
+                                            <?php
+                                              $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 2';
+                                              $result=mysqli_query($dbc,$query);
+                                              if(!$result){
+                                                echo mysqli_error($dbc);
+                                              }
+                                            ?>
+                                          <select id='MU_selecteduseractive' class="chosen-select">
+                                            <option value="" disabled selected>Select User</option>
+                                            <?php
+                                              while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
+                                              {
+                                                echo "<option value=\"{$row['USER_ID']}\">{$row['USER_INFO']}</option>";
+                                              }
+                                            ?>
+                                          </select>
 
-                                            <div class="form-group" style = "width: 400px;">
-                                            
-                                            <label>Active Users </label>
-                                              <?php
-                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 1';
-                                                $result=mysqli_query($dbc,$query);
-                                                if(!$result){
-                                                  echo mysqli_error($dbc);
-                                                }
-                                              ?>
-                                            <select id='MU_selecteduserdisable' class="chosen-select">
-                                             <option value="" disabled selected>Select User</option>
-                                              <?php
-                                                while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
-                                                {
-                                                  echo "<option value=\"{$row['USER_ID']}\">{$row['USER_INFO']}</option>";
-                                                }
-                                              ?>
-                                            </select>
-                                            <br><br>
-                                            <button id="disableuser" type="submit" class="btn btn-default">Disable User</button>
-                                            <br><br>
-                                            
-                                            <label>Disabled Users</label>
-                                              <?php
-                                                $query='SELECT USER_ID, CONCAT(USER_ID, " - ", FIRST_NAME, " ", LAST_NAME) AS USER_INFO FROM USERS WHERE ACTIVE = 2';
-                                                $result=mysqli_query($dbc,$query);
-                                                if(!$result){
-                                                  echo mysqli_error($dbc);
-                                                }
-                                              ?>
-                                            <select id='MU_selecteduseractive' class="chosen-select">
-                                             <option value="" disabled selected>Select User</option>
-                                              <?php
-                                                while($row=mysqli_fetch_array($result,MYSQLI_ASSOC))
-                                                {
-                                                  echo "<option value=\"{$row['USER_ID']}\">{$row['USER_INFO']}</option>";
-                                                }
-                                              ?>
-                                            </select>
-
-                                            <br><br>   
-                                            <button id="activateuser" type="submit" class="btn btn-default">Activate User</button>
-                                            
-                                          </div>
+                                          <br><br>   
+                                          <button id="activateuser" type="submit" class="btn btn-default">Activate User</button>
+                                        </div>
+                                      </div>
                                     </div>
                                 </div>
 
@@ -340,6 +336,7 @@
 
                                           <br><br>
                                           <button id="updaterules" type="submit" class="btn btn-default">Update Rules</button>
+                                        </div>
                                       </div>
                                     </div>
                                 </div>
@@ -389,24 +386,20 @@
                                             <input id='MDadd' type='text' class="form-control">
                                             <br>
                                             <button id="MD_add_detail" type="submit" class="btn btn-default">Add Offense Description</button>
-
-
                                           </div>
-
+                                        </div>
                                       </div>
                                     </div>
-                                </div>
 								
-                            </div>
-                        </div>
+                                </div>
+                          </div>
                         <!-- .panel-body -->
                     </div>
                     <!-- /.panel -->
                 </div>
-            </div>
+              </div>
           </div>
           <br><br>
-        </div>
         <!-- /#page-wrapper -->
     </div>
     <!-- /#wrapper -->
@@ -445,7 +438,7 @@
 
     function loadNotif () {
         $.ajax({
-          url: '../ajax/sdfod-notif-incident-reports.php',
+          url: '../ajax/hdo-notif-incident-reports.php',
           type: 'POST',
           data: {
           },

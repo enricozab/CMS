@@ -65,10 +65,10 @@
 					<a href="cdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="#"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports<span class="fa arrow"></span></a>
+					<a href="#"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge badge-notify2"></span> <span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
 						<li>
-							<a href="cdo-incident-reports.php"> View Incident Reports <span id="ir" class="badge badge-notify2"></span></a>
+							<a href="cdo-incident-reports.php"> View Incident Reports </span></a>
 						</li>
 						<li>
 							<a href="cdo-report-student.php"> Encode Incident Report</a>

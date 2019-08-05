@@ -64,14 +64,14 @@
 
           <div class="row">
             <div class="col-lg-12">
-              <!-- insert code here -->
-              <div class="col-lg-12">
-                
-          <br><br>
-          <div style="overflow-y: scroll; max-height: 800px;">
-            <table width="100%" class="table table-striped table-bordered table-hover" id="audit-table">
-            </table>
+              <div style="max-height: 70vh; overflow: auto;">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="audit-table">
+                </table>
+              </div>
+            </div>
           </div>
+          <br><br>
+          
         </div>
         <!-- /#page-wrapper -->
     </div>
@@ -111,7 +111,7 @@
 
     function loadNotif () {
         $.ajax({
-          url: '../ajax/sdfod-notif-incident-reports.php',
+          url: '../ajax/hdo-notif-incident-reports.php',
           type: 'POST',
           data: {
           },

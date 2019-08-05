@@ -301,38 +301,38 @@ if (!isset($_GET['irn']))
       loadNotif();
 
       function loadNotif () {
-          $.ajax({
-            url: '../ajax/hdo-notif-incident-reports.php',
-            type: 'POST',
-            data: {
-            },
-            success: function(response) {
-              if(response > 0) {
-                $('#ir').text(response);
-              }
-              else {
-                $('#ir').text('');
-              }
+        $.ajax({
+          url: '../ajax/hdo-notif-incident-reports.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#ir').text(response);
             }
-          });
-
-          $.ajax({
-            url: '../ajax/sdfod-notif-cases.php',
-            type: 'POST',
-            data: {
-            },
-            success: function(response) {
-              if(response > 0) {
-                $('#cn').text(response);
-              }
-              else {
-                $('#cn').text('');
-              }
+            else {
+              $('#ir').text('');
             }
-          });
+          }
+        });
 
-          setTimeout(loadNotif, 5000);
-      };
+        $.ajax({
+          url: '../ajax/sdfod-notif-cases.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#cn').text(response);
+            }
+            else {
+              $('#cn').text('');
+            }
+          }
+        });
+
+        setTimeout(loadNotif, 5000);
+    };
 
       var caseData;
 

@@ -109,6 +109,21 @@
 
     function loadNotif () {
         $.ajax({
+          url: '../ajax/hdo-notif-incident-reports.php',
+          type: 'POST',
+          data: {
+          },
+          success: function(response) {
+            if(response > 0) {
+              $('#ir').text(response);
+            }
+            else {
+              $('#ir').text('');
+            }
+          }
+        });
+
+        $.ajax({
           url: '../ajax/cdo-notif-cases.php',
           type: 'POST',
           data: {
