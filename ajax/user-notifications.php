@@ -159,6 +159,7 @@
         $empty = false;
       }
     }
+    
     if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
       $result2=mysqli_query($dbc,$query2);
       if(!$result2){

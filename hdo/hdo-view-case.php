@@ -231,107 +231,110 @@ if (!isset($_GET['cn']))
               </div>
               <!-- /.panel -->
 
-              <!--REROUTE & REASSIGN-->
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <b style = "font-size: 17px;">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style="color: black">Reroute Case</a>
-                        </b>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse">
-                        <div class="panel-body">
-                          <div class="form-group">
-                            <div id="rerouteDiv">
-                              <select id="rerouteCase" class="form-control">
-                                <option value="" disabled selected>Select a stage</option>
-                                <?php
-                                  // $getRemarks_id = $dbc->query("SELECT remarks_id FROM cms.cases WHERE case_id = " .$_GET['cn']. " LIMIT 1");
-                                  // $remarks_id = $getRemarks_id->fetch_row();
+              <?php
+              if($row2['STATUS_ID'] == 1 || $row2['STATUS_ID'] == 2) { ?>
+                <!--REROUTE & REASSIGN-->
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                          <b style = "font-size: 17px;">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style="color: black">Reroute Case</a>
+                          </b>
+                      </div>
+                      <div id="collapseOne" class="panel-collapse collapse">
+                          <div class="panel-body">
+                            <div class="form-group">
+                              <div id="rerouteDiv">
+                                <select id="rerouteCase" class="form-control">
+                                  <option value="" disabled selected>Select a stage</option>
+                                  <?php
+                                    // $getRemarks_id = $dbc->query("SELECT remarks_id FROM cms.cases WHERE case_id = " .$_GET['cn']. " LIMIT 1");
+                                    // $remarks_id = $getRemarks_id->fetch_row();
 
-                                  // $remarksQuery= "SELECT * FROM cms.ref_remarks WHERE remarks_id < " . $remarks_id[0];
-                                  // $remarksRes = $dbc->query($remarksQuery);
-                                  // while($remarks = $remarksRes->fetch_assoc())
-                                  // echo 
-                                  //   '<option value="' .$remarks['remarks_id']. '">' . $remarks['description'] . '</option>';
-                                  if ($row2['REMARKS_ID'] > 2) 
-                                    echo 
-                                      '<option value="2">For investigation by IDO</option>';
-                                  if ($row2['REMARKS_ID'] > 4) 
-                                    echo 
-                                      '<option value="4">For resubmission by the student</option>';
-                                ?>
-                              </select>
-                              <br>
-                              <button type="submit" id="btnReroute" name="btnReroute" class="btn btn-primary" style="float: right;">Reroute</button>
-                            </div>
-                            <div id="rerouteDiv2" hidden>
-                              <i>Rerouting is not applicable.</i>
+                                    // $remarksQuery= "SELECT * FROM cms.ref_remarks WHERE remarks_id < " . $remarks_id[0];
+                                    // $remarksRes = $dbc->query($remarksQuery);
+                                    // while($remarks = $remarksRes->fetch_assoc())
+                                    // echo 
+                                    //   '<option value="' .$remarks['remarks_id']. '">' . $remarks['description'] . '</option>';
+                                    if ($row2['REMARKS_ID'] > 2) 
+                                      echo 
+                                        '<option value="2">For investigation by IDO</option>';
+                                    if ($row2['REMARKS_ID'] > 4) 
+                                      echo 
+                                        '<option value="4">For resubmission by the student</option>';
+                                  ?>
+                                </select>
+                                <br>
+                                <button type="submit" id="btnReroute" name="btnReroute" class="btn btn-primary" style="float: right;">Reroute</button>
+                              </div>
+                              <div id="rerouteDiv2" hidden>
+                                <i>Rerouting is not applicable.</i>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <b style = "font-size: 17px;">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style="color: black">Reassign Case</a>
-                        </b>
-                    </div>
-                    <div id="collapseTwo" class="panel-collapse collapse">
-                        <div class="panel-body">
-                          <div class="form-group">
-                              <select id="reassignIDO" class="form-control">
-                                  <option value="" disabled selected>Select an IDO</option>
-                                  <?php
-                                    $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
-                                    $IDORes = $dbc->query($idoQuery);
-                                    $ido_workloads = array();
-                                    $ido_names = array();
+                  <div class="col-lg-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                          <b style = "font-size: 17px;">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style="color: black">Reassign Case</a>
+                          </b>
+                      </div>
+                      <div id="collapseTwo" class="panel-collapse collapse">
+                          <div class="panel-body">
+                            <div class="form-group">
+                                <select id="reassignIDO" class="form-control">
+                                    <option value="" disabled selected>Select an IDO</option>
+                                    <?php
+                                      $idoQuery= "SELECT * FROM cms.users u WHERE u.user_type_id = 4;";
+                                      $IDORes = $dbc->query($idoQuery);
+                                      $ido_workloads = array();
+                                      $ido_names = array();
 
-                                    while($ido = $IDORes->fetch_assoc()){
-                                      $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
-                                      $idoNumber = $ido['user_id'];
-                                      $workloadQuery = $dbc->query("SELECT COUNT(ic.case_id)
-                                                                    FROM ido_cases ic
-                                                                      LEFT JOIN cases c on ic.case_id=c.case_id
-                                                                      WHERE ic.user_id = ".$idoNumber."
-                                                                          && (c.status_id != 3 && c.status_id != 4)
-                                                                          && ic.handle = 1");
-                                      $workload = $workloadQuery->fetch_row();
+                                      while($ido = $IDORes->fetch_assoc()){
+                                        $idoName = $ido['first_name'] . ' ' . $ido['last_name'];
+                                        $idoNumber = $ido['user_id'];
+                                        $workloadQuery = $dbc->query("SELECT COUNT(ic.case_id)
+                                                                      FROM ido_cases ic
+                                                                        LEFT JOIN cases c on ic.case_id=c.case_id
+                                                                        WHERE ic.user_id = ".$idoNumber."
+                                                                            && (c.status_id != 3 && c.status_id != 4)
+                                                                            && ic.handle = 1");
+                                        $workload = $workloadQuery->fetch_row();
 
-                                      if ($idoNumber != $row2['HANDLED_BY_ID'] && $workload[0] < 8) {
-                                        $ido_names[$idoNumber] = $idoName;
-                                        $ido_workloads[$idoNumber] = $workload[0];
-                                        // echo 
-                                        //   '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
+                                        if ($idoNumber != $row2['HANDLED_BY_ID'] && $workload[0] < 8) {
+                                          $ido_names[$idoNumber] = $idoName;
+                                          $ido_workloads[$idoNumber] = $workload[0];
+                                          // echo 
+                                          //   '<option value="' .$idoNumber. '">' . $idoName . ' (Active Cases: ' .$workload[0]. ')</option>';
+                                        }
                                       }
-                                    }
 
-                                    asort($ido_workloads);
-                                    $ido_names_ordered = array();
-                                    
-                                    foreach (array_keys($ido_workloads) as $key) {
-                                      $ido_names_ordered[$key] = $ido_names[$key] ;
-                                    }
-                                    
-                                    foreach($ido_workloads as $x => $x_value) {
-                                      echo '<option value="' .$x. '">' . $ido_names[$x] . ' (Active Cases: ' .$ido_workloads[$x]. ')</option>';
-                                    }
-                                  ?>
-                              </select>
-                              <br>
-                              <button type="submit" id="btnReassign" name="btnReassign" class="btn btn-primary" style="float: right;">Reassign</button>
-                          </div>    
-                        </div>
+                                      asort($ido_workloads);
+                                      $ido_names_ordered = array();
+                                      
+                                      foreach (array_keys($ido_workloads) as $key) {
+                                        $ido_names_ordered[$key] = $ido_names[$key] ;
+                                      }
+                                      
+                                      foreach($ido_workloads as $x => $x_value) {
+                                        echo '<option value="' .$x. '">' . $ido_names[$x] . ' (Active Cases: ' .$ido_workloads[$x]. ')</option>';
+                                      }
+                                    ?>
+                                </select>
+                                <br>
+                                <button type="submit" id="btnReassign" name="btnReassign" class="btn btn-primary" style="float: right;">Reassign</button>
+                            </div>    
+                          </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <!-- REROUTE & REASSIGN -->
+                <!-- REROUTE & REASSIGN -->
+              <?php } ?>
               
             </div>
         </div>
@@ -434,6 +437,7 @@ if (!isset($_GET['cn']))
             })
     });
 
+    //REROUTE & REASSIGN
     var action = "";
 
     var rerouteCase = document.getElementById("rerouteCase");
@@ -509,7 +513,7 @@ if (!isset($_GET['cn']))
                       type: 'POST',
                       data: {
                           userid: <?php echo $_SESSION['user_id'] ?>,
-                          actiondone: 'AULC Case - Reassigned IDO for Case #<?php echo $_GET['cn']; ?>'
+                          actiondone: 'HDO Case - Reassigned IDO for Case #<?php echo $_GET['cn']; ?>'
                       },
                       success: function(response) {
                         console.log('Success');
