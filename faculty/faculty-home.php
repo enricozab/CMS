@@ -313,8 +313,6 @@
       }
     });
 
-    
-    
     // sidebar system audit trail
     $('#sidebar_cases').click(function() {
       $.ajax({

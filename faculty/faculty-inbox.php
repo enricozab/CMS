@@ -130,7 +130,7 @@
     $("#create").hide();
 
     // sidebar system audit trail
-   $('#sidebar_cases').click(function() {
+    $('#sidebar_cases').click(function() {
         $.ajax({
             url: '../ajax/insert_system_audit_trail.php',
             type: 'POST',
