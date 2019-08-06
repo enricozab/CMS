@@ -961,14 +961,39 @@
         }
     });
   });
-
-  $('#logout_button').click(function() {
+  $('#sidebar_sysaudit').click(function() {
     $.ajax({
         url: '../ajax/insert_system_audit_trail.php',
         type: 'POST',
         data: {
             userid: <?php echo $_SESSION['user_id'] ?>,
-            actiondone: 'SDFOD - Logout'
+            actiondone: 'SDFOD Dashboard - Viewed System Audit'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_reports').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Dashboard - Viewed Reports'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_reports').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Dashboard - Viewed Incident Reports'
         },
         success: function(response) {
           console.log('Success');

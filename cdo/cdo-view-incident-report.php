@@ -62,6 +62,7 @@ if (!isset($_GET['irn']))
         x.className = "show";
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
       }
+        });
     </script>
 </head>
 
@@ -559,6 +560,113 @@ if (!isset($_GET['irn']))
 
           notifTable = setTimeout(notifData, 5000);
         }
+
+        // sidebar system audit trail
+          $('#sidebar_dashboard').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'CDO Incident Report - Viewed Dashboard'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_cases').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'CDO Incident Report - Viewed Cases'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_calendar').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'CDO Incident Report - Viewed Calendar'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_drive').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'CDO Incident Report - Viewed Files'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_inbox').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'CDO Incident Report - Viewed Inbox'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_encodereports').click(function() {
+            $.ajax({
+                url: '../ajax/insert_system_audit_trail.php',
+                type: 'POST',
+                data: {
+                    userid: <?php echo $_SESSION['user_id'] ?>,
+                    actiondone: 'CDO Incident Report - Viewed Encode Incident Report'
+                },
+                success: function(response) {
+                  console.log('Success');
+                }
+            });
+          });
+          $('#sidebar_viewreports').click(function() {
+          $.ajax({
+              url: '../ajax/insert_system_audit_trail.php',
+              type: 'POST',
+              data: {
+                  userid: <?php echo $_SESSION['user_id'] ?>,
+                  actiondone: 'CDO Incident Report - Viewed View Incident Reports'
+              },
+              success: function(response) {
+                console.log('Success');
+              }
+          });
+        });
+        $('#sidebar_reports').click(function() {
+          $.ajax({
+              url: '../ajax/insert_system_audit_trail.php',
+              type: 'POST',
+              data: {
+                  userid: <?php echo $_SESSION['user_id'] ?>,
+                  actiondone: 'CDO Incident Report - Viewed Reports'
+              },
+              success: function(response) {
+                console.log('Success');
+              }
+          });
+        });
+
     });
 
     </script>

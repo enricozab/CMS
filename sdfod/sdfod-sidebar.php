@@ -60,7 +60,7 @@
 					<a href="sdfod-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
-					<a href="sdfod-incident-reports.php"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge badge-notify2"></span></a>
+					<a href="sdfod-incident-reports.php" id="sidebar_reports"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
 					<a href="sdfod-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
@@ -75,10 +75,10 @@
 					<a id="sidebar_sysmanagement"><i class="fa fa-users fa-fw"></i> System Management<span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
 						<li>
-							<a href="sdfod-system-management.php">Management</a>
+							<a href="sdfod-system-management.php" id="sidebar_sysmanagement">Management</a>
 						</li>
 						<li>
-							<a href="sdfod-system-audit.php">Audit Trail</a>
+							<a href="sdfod-system-audit.php" id="sidebar_sysaudit">Audit Trail</a>
 						</li>
 					</ul>
 				</li>

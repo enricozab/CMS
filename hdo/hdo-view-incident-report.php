@@ -62,6 +62,20 @@ if (!isset($_GET['irn']))
         x.className = "show";
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
       }
+
+      function viewIRAudit(x) {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: ('HDO Incident Reports - Viewed Incident Report #' + x)
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      }
     </script>
 </head>
 

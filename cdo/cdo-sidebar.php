@@ -54,34 +54,34 @@
 		<div class="sidebar-nav navbar-collapse">
 			<ul class="nav" id="side-menu">
 				<li>
-					<a href="cdo-dashboard.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+					<a href="cdo-dashboard.php" id="sidebar_dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
 				</li>
 				<li>
-					<a href="cdo-home.php"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
+					<a href="cdo-home.php" id="sidebar_cases"><i class="fa fa-briefcase fa-fw"></i> Cases <span id="cn" class="badge badge-notify2"></span></a>
 				</li>
 				<li>
 					<a href="#"><i class="fa fa-file-text-o fa-fw"></i> Incident Reports <span id="ir" class="badge badge-notify2"></span> <span class="fa arrow"></span></a>
 					<ul class="nav nav-second-level">
 						<li>
-							<a href="cdo-incident-reports.php"> View Incident Reports </span></a>
+							<a href="cdo-incident-reports.php" id="sidebar_viewreports"> View Incident Reports </span></a>
 						</li>
 						<li>
-							<a href="cdo-report-student.php"> Encode Incident Report</a>
+							<a href="cdo-report-student.php" id="sidebar_encodereports"> Encode Incident Report</a>
 						</li>
 					</ul>
 					<!-- /.nav-second-level -->
 				</li>
 				<li>
-					<a href="cdo-reports.php"><i class="fa fa-clipboard fa-fw"></i> Reports</a>
+					<a href="cdo-reports.php" id="sidebar_reports"><i class="fa fa-clipboard fa-fw"></i> Reports</a>
 				</li>
 				<li>
-					<a href="cdo-calendar.php"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+					<a href="cdo-calendar.php" id="sidebar_calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
 				</li>
 				<li>
-					<a href="cdo-gdrive.php"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
+					<a href="cdo-gdrive.php" id="sidebar_drive"><i class="fa fa-folder-open  fa-fw"></i> Files</a>
 				</li>
 				<li>
-					<a href="cdo-inbox.php"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
+					<a href="cdo-inbox.php" id="sidebar_inbox"><i class="fa fa-inbox fa-fw"></i> Inbox</a>
 				</li>
 			</ul>
 		</div>

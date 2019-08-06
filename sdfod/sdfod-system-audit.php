@@ -497,7 +497,7 @@
         type: 'POST',
         data: {
             userid: <?php echo $_SESSION['user_id'] ?>,
-            actiondone: 'SDFOD System Management - Viewed Dashboard'
+            actiondone: 'SDFOD System Audit - Viewed Dashboard'
         },
         success: function(response) {
           console.log('Success');
@@ -510,7 +510,7 @@
         type: 'POST',
         data: {
             userid: <?php echo $_SESSION['user_id'] ?>,
-            actiondone: 'SDFOD System Management - Viewed Cases'
+            actiondone: 'SDFOD System Audit - Viewed Cases'
         },
         success: function(response) {
           console.log('Success');
@@ -523,7 +523,7 @@
         type: 'POST',
         data: {
             userid: <?php echo $_SESSION['user_id'] ?>,
-            actiondone: 'SDFOD System Management - Viewed Calendar'
+            actiondone: 'SDFOD System Audit - Viewed Calendar'
         },
         success: function(response) {
           console.log('Success');
@@ -536,7 +536,7 @@
         type: 'POST',
         data: {
             userid: <?php echo $_SESSION['user_id'] ?>,
-            actiondone: 'SDFOD System Management - Viewed Files'
+            actiondone: 'SDFOD System Audit - Viewed Files'
         },
         success: function(response) {
           console.log('Success');
@@ -549,7 +549,7 @@
         type: 'POST',
         data: {
             userid: <?php echo $_SESSION['user_id'] ?>,
-            actiondone: 'SDFOD System Management - Viewed Inbox'
+            actiondone: 'SDFOD System Audit - Viewed Inbox'
         },
         success: function(response) {
           console.log('Success');
@@ -562,7 +562,33 @@
         type: 'POST',
         data: {
             userid: <?php echo $_SESSION['user_id'] ?>,
-            actiondone: 'SDFOD System Management - Viewed System Management'
+            actiondone: 'SDFOD System Audit - Viewed System Management'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_sysaudit').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Audit - Viewed System Audit'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_reports').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD System Audit - Viewed Incident Reports'
         },
         success: function(response) {
           console.log('Success');

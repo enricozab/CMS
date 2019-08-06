@@ -290,6 +290,19 @@
             details: $('#details').val()
           },
           success: function(msg) {
+              // audit trail
+              $.ajax({
+                        url: '../ajax/insert_system_audit_trail.php',
+                        type: 'POST',
+                        data: {
+                            userid: <?php echo $_SESSION['user_id'] ?>,
+                            actiondone: 'CDO Encode Incident Report - Encoded Incident Report'
+                        },
+                        success: function(response) {
+                          console.log('Success');
+                        }
+                    })
+
               generate();
               //$("#message").text('Incident Report has been submitted and sent to your email successfully! Check your email to sign the form.');
               $("#sendModal").modal("show");
@@ -475,6 +488,113 @@
 
         notifTable = setTimeout(notifData, 5000);
       }
+
+      // sidebar system audit trail
+      $('#sidebar_dashboard').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Encode Incident Report - Viewed Dashboard'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Encode Incident Report - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Encode Incident Report - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_drive').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Encode Incident Report - Viewed Files'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Encode Incident Report - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_encodereports').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Encode Incident Report - Viewed Encode Incident Report'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_viewreports').click(function() {
+      $.ajax({
+          url: '../ajax/insert_system_audit_trail.php',
+          type: 'POST',
+          data: {
+              userid: <?php echo $_SESSION['user_id'] ?>,
+              actiondone: 'CDO Encode Incident Report - Viewed View Incident Reports'
+          },
+          success: function(response) {
+            console.log('Success');
+          }
+      });
+    });
+    $('#sidebar_reports').click(function() {
+      $.ajax({
+          url: '../ajax/insert_system_audit_trail.php',
+          type: 'POST',
+          data: {
+              userid: <?php echo $_SESSION['user_id'] ?>,
+              actiondone: 'CDO Encode Incident Report - Viewed Reports'
+          },
+          success: function(response) {
+            console.log('Success');
+          }
+      });
+    });
+
     });
   	</script>
 

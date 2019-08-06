@@ -434,6 +434,19 @@ if (!isset($_GET['cn']))
     $('#evidence').on('click',function() {
       <?php $_SESSION['pass'] = $passCase; ?>
       location.href='cdo-gdrive-case.php';
+
+      // audit trail
+      $.ajax({
+          url: '../ajax/insert_system_audit_trail.php',
+          type: 'POST',
+          data: {
+              userid: <?php echo $_SESSION['user_id'] ?>,
+              actiondone: 'CDO Case - Viewed Evidence for Case #<?php echo $_GET['cn']; ?>'
+          },
+          success: function(response) {
+            console.log('Success');
+          }
+      });
     });
 
     //REROUTE & REASSIGN
@@ -483,9 +496,10 @@ if (!isset($_GET['cn']))
               remark_id : $("#rerouteCase").val(),
             },
             success: function(response) {
-              // audit trail
+              
               $("#message").text("Cases has been rerouted.");
               $("#alertModal").attr('onclick','location.reload()');
+              // audit trail
               $.ajax({
                         url: '../ajax/insert_system_audit_trail.php',
                         type: 'POST',
@@ -516,7 +530,7 @@ if (!isset($_GET['cn']))
                         type: 'POST',
                         data: {
                             userid: <?php echo $_SESSION['user_id'] ?>,
-                            actiondone: 'AULC Case - Reassigned IDO for Case #<?php echo $_GET['cn']; ?>'
+                            actiondone: 'CDO Case - Reassigned IDO for Case #<?php echo $_GET['cn']; ?>'
                         },
                         success: function(response) {
                           console.log('Success');
@@ -586,6 +600,113 @@ if (!isset($_GET['cn']))
 
       notifTable = setTimeout(notifData, 5000);
     }
+
+      // sidebar system audit trail
+      $('#sidebar_dashboard').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Case - Viewed Dashboard'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_cases').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Case - Viewed Cases'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_calendar').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Case - Viewed Calendar'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_drive').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Case - Viewed Files'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_inbox').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Case - Viewed Inbox'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_encodereports').click(function() {
+        $.ajax({
+            url: '../ajax/insert_system_audit_trail.php',
+            type: 'POST',
+            data: {
+                userid: <?php echo $_SESSION['user_id'] ?>,
+                actiondone: 'CDO Case - Viewed Encode Incident Report'
+            },
+            success: function(response) {
+              console.log('Success');
+            }
+        });
+      });
+      $('#sidebar_viewreports').click(function() {
+      $.ajax({
+          url: '../ajax/insert_system_audit_trail.php',
+          type: 'POST',
+          data: {
+              userid: <?php echo $_SESSION['user_id'] ?>,
+              actiondone: 'CDO Case - Viewed View Incident Reports'
+          },
+          success: function(response) {
+            console.log('Success');
+          }
+      });
+    });
+    $('#sidebar_reports').click(function() {
+      $.ajax({
+          url: '../ajax/insert_system_audit_trail.php',
+          type: 'POST',
+          data: {
+              userid: <?php echo $_SESSION['user_id'] ?>,
+              actiondone: 'CDO Case - Viewed Reports'
+          },
+          success: function(response) {
+            console.log('Success');
+          }
+      });
+    });
+
   });
 
   <?php

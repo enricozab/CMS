@@ -1491,6 +1491,32 @@ if (!isset($_GET['cn']))
           }
       });
     });
+    $('#sidebar_sysaudit').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Viewed Case - Viewed System Audit'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
+  $('#sidebar_reports').click(function() {
+    $.ajax({
+        url: '../ajax/insert_system_audit_trail.php',
+        type: 'POST',
+        data: {
+            userid: <?php echo $_SESSION['user_id'] ?>,
+            actiondone: 'SDFOD Case - Viewed Incident Reports'
+        },
+        success: function(response) {
+          console.log('Success');
+        }
+    });
+  });
 
     var count = 0;
     var prevCount = 0;
