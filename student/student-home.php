@@ -36,7 +36,17 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
+    
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    
+    <script>
+      function showSnackbar() {
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+      }
+    </script> 
 </head>
 
 <body>
@@ -48,7 +58,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-8">
-                    <h3 class="page-header">Notifications</h3>
+                    <h3 class="page-header">Cases</h3>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -74,6 +84,10 @@
                   <!-- /.table-responsive -->
                 </div>
                 <!-- /.col-lg-12 -->
+
+                <!-- <button onclick="showSnackbar()">Show Snackbar</button> -->
+                <div id="snackbar"><i class="fa fa-info-circle fa-fw" style="font-size: 20px"></i> <span id="alert-message">Some text some message..</span></div>
+
             </div>
             <br><br><br><br><br>
         </div>
@@ -81,9 +95,6 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -285,9 +296,108 @@
           timeTable = setTimeout(closedTable, 5000);
         }
       });
+      
+      var count = 0;
+      var prevCount = 0;
+      loadCount();
+
+      function loadCount () {
+          $.ajax({
+            url: '../ajax/notifications-count-student.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              count = response;
+              if(count > 0) {
+                $('#notif-badge').text(count);
+              }
+              else {
+                $('#notif-badge').text('');
+              }
+              if (prevCount != count) {
+                loadReminders();
+                prevCount = count;
+              }
+            }
+          });
+
+          setTimeout(loadCount, 5000);
+      };
+
+      var notifTable;
+
+      function loadReminders() {
+        if (count > 0) {
+          var notif = " new notification";
+          if (count > 1) notif = " new notifications";
+          $('#alert-message').text('You have '+count+notif);
+          setTimeout(function() { showSnackbar(); }, 2000);
+        }
+      }
+
+      notifData();
+
+      function notifData() {
+          $.ajax({
+            url: '../ajax/notifications-student.php',
+            type: 'POST',
+            data: {
+            },
+            success: function(response) {
+              $('#notifTable').html(response);
+            }
+          });
+
+          notifTable = setTimeout(notifData, 5000);
+        }
     });
     </script>
 
 </body>
 
 </html>
+
+<style>
+#snackbar {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #337ab7;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 15px;
+  position: fixed;
+  z-index: 1;
+  right: 40px;
+  bottom: 40px;
+  font-size: 18px;
+  border-radius: 5px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.75s;
+  animation: fadein 0.5s, fadeout 0.5s 2.75s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 40px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 40px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 40px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 40px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>

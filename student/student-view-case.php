@@ -45,7 +45,6 @@ if (!isset($_GET['cn']))
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../extra-css/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href ="../extra-css/bootstrap-chosen.css"/>
-
 </head>
 
 <body>
@@ -139,7 +138,7 @@ if (!isset($_GET['cn']))
   <div id="wrapper">
 
     <?php include 'student-sidebar.php';?>
-
+        
         <div id="page-wrapper">
           <div class="row">
               <div class="col-lg-8">
@@ -1299,5 +1298,4 @@ if (!isset($_GET['cn']))
 } */
 
 p{ margin: 0; }
-
 </style>

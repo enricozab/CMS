@@ -20,10 +20,25 @@
 	<!-- /.navbar-header -->
 
 	<ul class="nav navbar-top-links navbar-right">
-		<li><b>Welcome, <?php echo $_SESSION['first_name']; ?>!</b></li>
+		<li><b>Welcome, <?php echo $_SESSION['first_name']; ?>!</b></li>&nbsp;&nbsp;&nbsp;
+		
+		<!-- /.dropdown -->
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-				<i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+				<span>
+					<i class="fa fa-bell fa-2x" style="font-size: 18px; margin: -5px" aria-hidden="true"></i>
+					<span id="notif-badge" class="badge badge-notify"></span>
+				<span>
+			</a>
+			<ul id="notifTable" class="dropdown-menu dropdown-alerts" style="width: 400px; overflow-y: scroll; max-height: 500px;">
+			</ul>
+			<!-- /.dropdown-alerts -->
+		</li>
+		<!-- /.dropdown -->
+
+		<li class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				<i class="fa fa-user fa-fw" style="font-size: 18px; margin: -5px"></i>
 			</a>
 			<ul class="dropdown-menu dropdown-user">
 				<li><a href="../php/usermanagement.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
@@ -69,3 +84,13 @@
 	</div>
 	<!-- /.navbar-static-side -->
 </nav>
+
+<style>
+.badge-notify{
+   background: grey;
+   position: relative;
+   top: -10px;
+   left: 0px;
+   margin: -10px;
+}
+</style>

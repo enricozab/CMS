@@ -397,7 +397,6 @@ if (!isset($_GET['cn']))
                           <a data-toggle="collapse" data-parent="#accordion" href="#caseHistory" style="color: black;">Case History</a>
                         </b>
                       </div>
-                      <!-- /.panel-heading -->
                       <div id="caseHistory" class="panel-collapse collapse">
                         <div class="panel-body" style="overflow-y: scroll; max-height: 300px;">
                           <?php
@@ -424,7 +423,6 @@ if (!isset($_GET['cn']))
                                   </tbody>
                                 </table>
                               </div>
-                              <!-- /.table-responsive -->
                           <?php }
                             else {
                               echo "No case history";
@@ -432,36 +430,50 @@ if (!isset($_GET['cn']))
                           ?>
                           <br>
                         </div>
-                        <!-- /.panel-body -->
                       </div>
-                      <!-- </div> -->
                     </div>
-                    <!-- /.panel -->
                     
                     <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <b style = "font-size: 17px;">Related Cases</b>
-                      </div>
-                      <div class="panel-body" style="overflow-y: scroll; max-height: 500px;">
-                        <ul style="list-style-type:none;">
-                          <div class="btn-group" style='margin-right: 20px; margin-left: -20px;'>
-                            <button type="button" class="tableButton btn btn-default" id="relatedCases">All Related Cases</button>
-                            <button type="button" class="tableButton btn btn-default" id="studentCases">Student's Previous Cases</button>
+                        <div class="panel-heading">
+                          <b style="color: black; font-size: 17px;">Reference</b>
+                        </div>
+                        <div class="panel-body">
+                          <div class="panel-group" id="accordion">
+                            <div class="panel panel-default">
+                              <div class="panel-heading">
+                                <b style = "font-size: 17px;">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#relatedCases" style="color: black;">Related Cases</a>
+                                </b>
+                              </div>
+                              <div id="relatedCases" class="panel-collapse collapse">
+                                <div class="panel-body" style="overflow-y: scroll; max-height: 500px;">
+                                  <ul style="list-style-type:none;">
+                                    <div id='related-cases-table'>
+                                    </div>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                              <div class="panel-heading">
+                                <b style = "font-size: 17px;">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#previousCases" style="color: black;">Previous Cases</a>
+                                </b>
+                              </div>
+                              <div id="previousCases" class="panel-collapse collapse">
+                                <div class="panel-body" style="overflow-y: scroll; max-height: 500px;">
+                                  <ul style="list-style-type:none;">
+                                    <div id='previous-cases-table'>
+                                    </div>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <style>
-                              .tableButton {
-                                width: 200px;
-                              }
-                              #relatedCases {border-radius: 3px 0px 0px 3px;}
-                              #studentCases {border-radius: 0px 3px 3px 0px;}
-                          </style>
-                          <br><br>
-                          <div id='related-cases-table'>
-                          </div>
-                        </ul>
                       </div>
                       <!-- .panel-body -->
-                    </div>
+                  </div>
                 </div>
               </div>
 			
@@ -541,11 +553,10 @@ if (!isset($_GET['cn']))
       $("#revModal").modal("show");
     });*/
 
-    $('#relatedCases').css("background-color", "#e6e6e6");
+    relatedTable();
+    previousTable();
 
-    defaultTable();
-
-    function defaultTable() {
+    function relatedTable() {
       $.ajax({
         url: '../ajax/ulc-related-cases-others.php',
         type: 'POST',
@@ -559,11 +570,7 @@ if (!isset($_GET['cn']))
       });
     }
 
-    $('#studentCases').on('click', function () {
-      $('#studentCases').focus();
-      $('#studentCases').css("background-color", "#e6e6e6");
-      $('#relatedCases').css("background-color", "white");
-
+    function previousTable() {
       $.ajax({
         url: '../ajax/ulc-related-cases-student.php',
         type: 'POST',
@@ -572,18 +579,10 @@ if (!isset($_GET['cn']))
           cn: <?php echo $_GET['cn'] ?>
         },
         success: function(response) {
-          $('#related-cases-table').html(response);
+          $('#previous-cases-table').html(response);
         }
       });
-    });
-
-    $('#relatedCases').on('click', function () {
-      $('#relatedCases').focus();
-      $('#relatedCases').css("background-color", "#e6e6e6");
-      $('#studentCases').css("background-color", "white");
-      
-      defaultTable();
-    });
+    }
 
     $('#sign').click(function() {
 
