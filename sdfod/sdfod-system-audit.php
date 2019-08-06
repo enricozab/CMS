@@ -64,17 +64,15 @@
         <div id="page-wrapper">
           <div class="row">
               <div class="col-lg-8">
-                  <h3 class="page-header">Audit Trail</h3>
+                  <h3 class="page-header">System Audit Trail</h3>
               </div>
               <!-- /.col-lg-12 -->
           </div>
 
           <div class="row">
             <div class="col-lg-12">
-              <div style="max-height: 70vh; overflow: auto;">
-                <table width="100%" class="table table-striped table-bordered table-hover" id="audit-table">
-                </table>
-              </div>
+              <table width="100%" class="table table-striped table-bordered table-hover" id="audit-table">
+              </table>
             </div>
           </div>
           <br><br>
@@ -97,7 +95,7 @@
     <script src="../vendor/morrisjs/morris.min.js"></script>
     <script src="../data/morris-data.js"></script>
 
-	<!-- DataTables JavaScript -->
+	  <!-- DataTables JavaScript -->
     <script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="../vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
     <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
@@ -162,8 +160,10 @@
       data: {
       },
       success: function(response) {
-        console.log('gi');
         $('#audit-table').html(response);
+        $('#audit-table').DataTable({
+          "order": [[ 2, 'desc' ]]
+        });
       }
     });
   }

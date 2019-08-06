@@ -42,6 +42,14 @@
             LEFT JOIN   CASES C ON AULC.CASE_ID = C.CASE_ID
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
   }
+  else if($_SESSION['user_type_id'] == 2){
+    $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
+                        C.REMARKS_ID AS 'REMARKS_ID',
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+            FROM 		    FACULTY_CASES FACULTY
+            LEFT JOIN   CASES C ON FACULTY.CASE_ID = C.CASE_ID
+            ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
+  }
   
   if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
