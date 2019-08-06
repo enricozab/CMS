@@ -5,7 +5,9 @@
   if($_SESSION['user_type_id'] == 1){
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
                         C.REMARKS_ID AS 'REMARKS_ID',
-                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF',
+                        DATEDIFF(CURDATE(),C.DATE_CLOSED) AS 'DATECLOSED',
+                        C.IF_APPEAL AS 'IF_APPEAL'
             FROM 		    CASES C
             WHERE		    C.REPORTED_STUDENT_ID = ".$_SESSION['user_id']."
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
@@ -85,6 +87,9 @@
       else if(in_array($row['REMARKS_ID'],array(3,4)) && $_SESSION['user_type_id'] == 1) {
         $count += 1;
       }
+      else if($row['REMARKS_ID'] == 11 && $_SESSION['user_type_id'] == 1 && ($row['DATECLOSED'] < 6 && $row['DATECLOSED'] != null) && !$row['IF_APPEAL']) {
+        $count += 1;
+      }
       else if(in_array($row['REMARKS_ID'],array(8,9,12,13,14,15,16)) && $_SESSION['user_type_id'] == 7) {
         if ($row['REMARKS_ID'] == 9) {
           if($row['DATEPROC'] >= 0) {
@@ -98,7 +103,7 @@
       else if(in_array($row['REMARKS_ID'],array(5,14,16)) && $_SESSION['user_type_id'] == 9) {
         $count += 1;
       }
-      else if(in_array($row['REMARKS_ID'],array(8)) && $_SESSION['user_type_id'] == 6) {
+      else if(in_array($row['REMARKS_ID'],array(6)) && $_SESSION['user_type_id'] == 6) {
         $count += 1;
       }
     }

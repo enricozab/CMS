@@ -5,7 +5,9 @@
   if($_SESSION['user_type_id'] == 1){
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
                         C.REMARKS_ID AS 'REMARKS_ID',
-                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
+                        DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF',
+                        DATEDIFF(CURDATE(),C.DATE_CLOSED) AS 'DATECLOSED',
+                        C.IF_APPEAL AS 'IF_APPEAL'
             FROM 		    CASES C
             WHERE		    C.REPORTED_STUDENT_ID = ".$_SESSION['user_id']."
             ORDER BY    C.LAST_UPDATE DESC, C.CASE_ID DESC";
@@ -54,6 +56,8 @@
   if(in_array($_SESSION['user_type_id'],array(3,8,9))) {
     $query="SELECT 		  C.CASE_ID AS 'CASE_ID',
                         C.REMARKS_ID AS 'REMARKS_ID',
+                        C.REPORTED_STUDENT_ID AS 'REPORTED_STUDENT_ID',
+                        C.DATE_FILED AS 'DATE_FILED',
                         RO.TYPE AS TYPE,
                         DATEDIFF(CURDATE(),C.LAST_UPDATE) AS 'DATEDIFF'
             FROM 		    CASES C
@@ -118,6 +122,15 @@
               <li class='divider'></li>";
         $empty = false;
       }
+      else if($row['REMARKS_ID'] == 11 && $_SESSION['user_type_id'] == 1 && ($row['DATECLOSED'] < 6 && $row['DATECLOSED'] != null) && !$row['IF_APPEAL']) {
+        echo "<li>
+                <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='student-view-case.php?cn={$row['CASE_ID']}'\">
+                  <b>Case {$row['CASE_ID']}: </b>Verdict and penalty have been given to the case. Student may send an appeal. <i>(Appeal should be sent within 5 days after the decision is given)</i>
+                </div>
+              </li>
+              <li class='divider'></li>";
+        $empty = false;
+      }
       else if($row['REMARKS_ID'] == 7 && $_SESSION['user_type_id'] == 4) {
         $inactivity = '3';
         if($row['TYPE'] == "Major") $inactivity = '5';
@@ -177,7 +190,61 @@
         $empty = false;
       }
       else if($row['REMARKS_ID'] == 5 && $_SESSION['user_type_id'] == 9) {
-        if($row['TYPE'] == 'Minor') {
+        
+        $reportedStudent = $row['REPORTED_STUDENT_ID'];
+        $dateFiled = $row['DATE_FILED'];
+        // MINOR
+        $currentMinorOffense = 0;
+        $numSameMinorOffense = 0;
+        $numSameMinor = 0;
+
+        // GET CASE OFFENSE ID
+        $curcaseq = 'SELECT *
+                    FROM cases c
+                    WHERE c.case_id = '.$row['CASE_ID'];
+
+        $curcaseres = mysqli_query($dbc,$curcaseq);
+
+        if(!$curcaseres){
+          echo mysqli_error($dbc);
+        }
+        else{
+          $curcaserow = mysqli_fetch_array($curcaseres,MYSQLI_ASSOC);
+          $currentMinorOffense = $curcaserow['offense_id'];
+        }
+
+        // COUNT NUMBER OF SAME MINOR OFFENSE
+        $countminoroffenseq = 'SELECT COUNT(c.case_id) as count
+                              FROM cases c
+                              WHERE c.reported_student_id = "'.$reportedStudent.'" AND c.offense_id = "'.$currentMinorOffense.'" AND c.date_filed <= "'.$dateFiled.'"';
+
+        $countminoroffenseres = mysqli_query($dbc,$countminoroffenseq);
+
+        if(!$countminoroffenseres){
+          echo mysqli_error($dbc);
+        }
+        else{
+          $countminoroffenserow = mysqli_fetch_array($countminoroffenseres,MYSQLI_ASSOC);
+          $numSameMinorOffense = $countminoroffenserow['count'];
+        }
+
+        // COUNT NUMBER OF SAME MINOR
+        $countminorq = 'SELECT COUNT(c.case_id) as count
+                        FROM cases c
+                        LEFT JOIN ref_offenses ro on c.offense_id = ro.offense_id
+                        WHERE c.reported_student_id = "'.$reportedStudent.'" AND ro.type = "Minor" AND c.date_filed <= "'.$dateFiled.'"';
+
+        $countminorres = mysqli_query($dbc,$countminorq);
+
+        if(!$countminorres){
+          echo mysqli_error($dbc);
+        }
+        else{
+          $countminorrow = mysqli_fetch_array($countminorres,MYSQLI_ASSOC);
+          $numSameMinor = $countminorrow['count'];
+        }
+
+        if($row['TYPE'] == 'Minor' && !($numSameMinorOffense > 2 || $numSameMinor > 4)) {
           echo "<li>
                   <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
                     <b>Case {$row['CASE_ID']}: </b>Please process the case for closing.
@@ -185,7 +252,7 @@
                 </li>
                 <li class='divider'></li>";
         }
-        else if($row['TYPE'] == 'Major') {
+        else if($row['TYPE'] == 'Major' || ($numSameMinorOffense > 2 || $numSameMinor > 4)) {
           echo "<li>
                   <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='sdfod-view-case.php?cn={$row['CASE_ID']}'\">
                     <b>Case {$row['CASE_ID']}: </b>Please endorse the case to the OULC.
@@ -213,7 +280,7 @@
               <li class='divider'></li>";
         $empty = false;
       }
-      else if($row['REMARKS_ID'] == 8 && $_SESSION['user_type_id'] == 6) {
+      else if($row['REMARKS_ID'] == 6 && $_SESSION['user_type_id'] == 6) {
         echo "<li>
                 <div style='padding: 10px; margin-left: 10px; margin-right: 10px;' onmouseover=\"this.style.cursor='pointer'; this.style.background='#f4f4f4';\" onmouseout=\"this.style.background='white';\" onclick=\"location.href='aulc-view-case.php?cn={$row['CASE_ID']}'\">
                   <b>Case {$row['CASE_ID']}: </b>Please endorse the case to ULC by filing or dismissing the case.
