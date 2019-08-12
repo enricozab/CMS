@@ -1702,12 +1702,8 @@ if (!isset($_GET['cn']))
 </html>
 
 <style>
-
 p{ margin: 0; }
 
-</style>
-
-<style>
 #snackbar {
   visibility: hidden;
   min-width: 300px;
