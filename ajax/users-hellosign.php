@@ -6,7 +6,7 @@
 		$filename = $_POST['formT'];
 
 		//CHANGE SOURCEPATH TO YOUR OWN PC'S DOWNLOAD PATH + \\output.docx
-		$sourcepath = 'C:\\Users\\Enrico Zabayle\\Downloads\\'.$filename;
+		$sourcepath = 'C:\\Users\\Ico\\Downloads\\'.$filename;
 		$targetpath = getcwd().'\\'.$filename;
 
 		rename($sourcepath,$targetpath);
